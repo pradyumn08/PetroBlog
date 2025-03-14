@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Curious Case of Jet Pumping</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1, h2, h3 {
+            font-family: 'Arial', sans-serif;
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .note {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #2c3e50;
+            margin-bottom: 20px;
+        }
+        .figure {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+        }
+        .figure figcaption {
+            font-style: italic;
+            margin-top: 10px;
+        }
+        #simulation-container {
+            width: 100%;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        canvas {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1a252f;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Curious Case of Oil Pumping: How to Lift Heavy Oil with Less Light Oil</h1>
+    <p class="note">Explanation of jet pumping techniques for deep heavy oil reservoirs</p>
+
+    <h2>Introduction: The Problem with Deep Heavy Oil</h2>
+    <p>Imagine you have a milkshake. Not just any milkshake, but one that's incredibly thick and stubborn - so thick that even with the strongest straw, you can barely suck it up. That's essentially the problem with heavy oil in deep reservoirs. It's like trying to drink that milkshake through a very long straw from the basement of a 100-story building.</p>
+    
+    <p>Now, what if I told you that by adding a bit of milk to your milkshake, you could make it much easier to suck up? That's basically what petroleum engineers do with heavy oil - they add lighter oil to make it flow better. But here's the catch: in current operations, they're using way more of this expensive light oil than they actually need. Sometimes up to three times the volume of the heavy oil they're trying to extract!</p>
+
+    <p>Today, we're going to explore how some clever engineers figured out ways to use much less of this light oil while still getting the heavy oil out efficiently. It's a beautiful example of how understanding fundamental principles can lead to practical solutions with significant economic benefits.</p>
+
+    <h2>Understanding Jet Pumps: The Physics of Fluid Movement</h2>
+    <p>Before we dive into the solutions, we need to understand how a jet pump works. Unlike mechanical pumps with moving parts, a jet pump has no moving parts at all. It works on a principle discovered by Daniel Bernoulli in the 18th century.</p>
+    
+    <p>Bernoulli observed that as the velocity of a fluid increases, its pressure decreases. A jet pump exploits this principle. It has three main parts:</p>
+    <ol>
+        <li>A nozzle, where high-pressure fluid (the "power fluid") is accelerated</li>
+        <li>A throat, where the high-velocity power fluid creates a low-pressure area</li>
+        <li>A diffuser, where the combined fluids slow down and pressure is recovered</li>
+    </ol>
+
+    <div class="figure">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Jet_pump_schematic.svg/640px-Jet_pump_schematic.svg.png" alt="Jet Pump Schematic">
+        <figcaption>Basic schematic of a jet pump showing the nozzle, throat, and diffuser</figcaption>
+    </div>
+
+    <p>The magic happens in the throat. As the power fluid shoots through the nozzle at high speed, it creates a low-pressure zone that sucks in the surrounding heavy oil. The two fluids mix in the throat and then flow together through the diffuser, where the velocity decreases and pressure increases, helping to push the combined fluid to the surface.</p>
+
+    <p>The key equation governing this process comes from Bernoulli's principle:</p>
+    
+    <div class="equation-box">
+        \[ P + \frac{1}{2}\rho v^2 + \rho gh = \text{constant} \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(P\) is pressure</li>
+        <li>\(\rho\) is fluid density</li>
+        <li>\(v\) is fluid velocity</li>
+        <li>\(g\) is gravitational acceleration</li>
+        <li>\(h\) is height</li>
+    </ul>
+
+    <p>As velocity (\(v\)) increases in the nozzle, pressure (\(P\)) must decrease to keep the equation balanced. This pressure drop creates suction that draws in the heavy oil.</p>
+
+    <h2>The Viscosity Challenge: Why Oil Mixing Matters</h2>
+    <p>Now, let's talk about viscosity - the resistance of a fluid to flow. Honey has high viscosity; water has low viscosity. Heavy oil can have a viscosity thousands of times higher than light oil. In our case study, the heavy oil had a viscosity of 44,090 mPa·s, while the light oil was only 11.5 mPa·s - that's a difference of nearly 4,000 times!</p>
+
+    <p>When you mix these oils, the viscosity of the mixture follows this relationship:</p>
+    
+    <div class="equation-box">
+        \[ \log(\log \mu_m) = r_1 \log(\log \mu_1) + r_2 \log(\log \mu_2) \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\mu_m\) is the viscosity of the mixture</li>
+        <li>\(\mu_1\) is the viscosity of light oil</li>
+        <li>\(\mu_2\) is the viscosity of heavy oil</li>
+        <li>\(r_1\) and \(r_2\) are the volume ratios of each oil in the mixture</li>
+    </ul>
+
+    <p>This equation tells us how the viscosities combine when we mix oils. It's not a simple average - it's more complex, which is why a small amount of light oil can significantly reduce the viscosity of heavy oil.</p>
+
+    <h2>The Traditional Approach: Using Fresh Light Oil</h2>
+    <p>In the conventional approach, engineers use fresh light oil as the power fluid. This works, but it's inefficient. For every cubic meter of heavy oil produced, they might use 2-3 cubic meters of light oil.</p>
+
+    <p>The M ratio is a key parameter here - it's the ratio of reservoir fluid rate to power fluid rate:</p>
+    
+    <div class="equation-box">
+        \[ M = \frac{Q_r}{Q_{pow}} \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(Q_r\) is the rate of reservoir fluid produced</li>
+        <li>\(Q_{pow}\) is the rate of power fluid injected</li>
+    </ul>
+
+    <p>In conventional operations, this M ratio is often around 0.8, meaning for every 1 cubic meter of power fluid, only 0.8 cubic meters of reservoir fluid is produced.</p>
+
+    <h2>The Innovation: Recycling Produced Fluid</h2>
+    <p>The paper presents two innovative approaches to reduce light oil usage:</p>
+
+    <h3>Approach A: Sequential Recycling</h3>
+    <p>In this approach, we first use light oil as the power fluid. Then, instead of discarding the produced fluid (which is a mixture of light oil and heavy oil), we reuse it as the power fluid for the next cycle. We keep doing this until the viscosity becomes too high for the pump to handle effectively.</p>
+
+    <p>For each cycle, the viscosity of the power fluid changes according to:</p>
+    
+    <div class="equation-box">
+        \[ \log(\log \mu_{pow(n)}) = \frac{1}{(1+M)^{n-1}} \log(\log \mu_l) + \left(1 - \frac{1}{(1+M)^{n-1}}\right) \log(\log \mu_r) \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\mu_{pow(n)}\) is the viscosity of the power fluid in cycle n</li>
+        <li>\(\mu_l\) is the viscosity of light oil</li>
+        <li>\(\mu_r\) is the viscosity of reservoir fluid</li>
+        <li>\(M\) is the ratio of reservoir fluid to power fluid</li>
+        <li>\(n\) is the cycle number</li>
+    </ul>
+
+    <h3>Approach B: Continuous Blending</h3>
+    <p>In this approach, we continuously mix some of the produced fluid with fresh light oil at a constant ratio. The viscosity of this mixture reaches an equilibrium value after a few days.</p>
+
+    <p>The equilibrium viscosity can be calculated as:</p>
+    
+    <div class="equation-box">
+        \[ \log(\log \mu_e) = \frac{a}{1-b} \]
+    </div>
+    
+    <p>Where:</p>
+    <div class="equation-box">
+        \[ a = r_l \log(\log \mu_l) + \frac{r_{pro}}{M+1} \log(\log \mu_r) \]
+        \[ b = \frac{r_{pro} \times M}{M+1} \]
+    </div>
+    
+    <p>And:</p>
+    <ul>
+        <li>\(\mu_e\) is the equilibrium viscosity</li>
+        <li>\(r_l\) is the ratio of light oil to the blended power fluid</li>
+        <li>\(r_{pro}\) is the ratio of produced fluid to the blended power fluid</li>
+    </ul>
+
+    <h2>The Objective: Maximizing Oil Production per Unit of Light Oil</h2>
+    <p>Our goal is to maximize the amount of reservoir fluid produced per unit of light oil used:</p>
+    
+    <div class="equation-box">
+        \[ F = \max\left(\frac{Q_r}{Q_l}\right) \]
+    </div>
+    
+    <p>For Approach A, this becomes:</p>
+    
+    <div class="equation-box">
+        \[ F = \max\left[(1+M)^n - 1\right] \]
+    </div>
+    
+    <p>For Approach B, it's:</p>
+    
+    <div class="equation-box">
+        \[ F = \max\left[\frac{M}{RLO}\right] \]
+    </div>
+    
+    <p>Where RLO is the ratio of light oil to the mixture.</p>
+
+    <h2>Interactive Simulation: Jet Pumping Visualization</h2>
+    <div id="simulation-container">
+        <h3>Jet Pump Simulation</h3>
+        <canvas id="jetPumpCanvas"></canvas>
+        <div class="controls">
+            <div class="slider-container">
+                <label for="m-ratio">M Ratio: <span id="m-ratio-value">0.8</span></label>
+                <input type="range" id="m-ratio" min="0.2" max="1.0" step="0.05" value="0.8">
+            </div>
+            <div class="slider-container">
+                <label for="approach">Approach: <span id="approach-value">Conventional</span></label>
+                <select id="approach">
+                    <option value="conventional">Conventional</option>
+                    <option value="approachA">Approach A</option>
+                    <option value="approachB">Approach B</option>
+                </select>
+            </div>
+            <button id="start-simulation" class="btn">Start Simulation</button>
+            <button id="reset-simulation" class="btn">Reset</button>
+        </div>
+        <div>
+            <p>Light Oil Used: <span id="light-oil-used">0</span> m³</p>
+            <p>Heavy Oil Produced: <span id="heavy-oil-produced">0</span> m³</p>
+            <p>Efficiency Ratio: <span id="efficiency-ratio">0</span></p>
+        </div>
+    </div>
+
+    <h2>Results: The Power of Recycling</h2>
+    <p>The field application results are striking:</p>
+    
+    <table>
+        <tr>
+            <th>Approach</th>
+            <th>Light Oil Used (m³)</th>
+            <th>Heavy Oil Produced (m³)</th>
+            <th>Efficiency Ratio</th>
+        </tr>
+        <tr>
+            <td>Conventional</td>
+            <td>100</td>
+            <td>80</td>
+            <td>0.80</td>
+        </tr>
+        <tr>
+            <td>Approach A</td>
+            <td>100</td>
+            <td>235</td>
+            <td>2.35</td>
+        </tr>
+        <tr>
+            <td>Approach B</td>
+            <td>100</td>
+            <td>258</td>
+            <td>2.58</td>
+        </tr>
+    </table>
+
+    <p>Both new approaches produced about three times more heavy oil with the same amount of light oil! Approach B performed slightly better than Approach A, but Approach A was easier to implement in the field.</p>
+
+    <h2>The Physics Behind the Success</h2>
+    <p>Why do these approaches work so well? It comes down to a few key insights:</p>
+
+    <ol>
+        <li><strong>Viscosity reduction is non-linear</strong>: A small amount of light oil can significantly reduce the viscosity of heavy oil.</li>
+        <li><strong>Energy requirements</strong>: Most of the light oil in conventional operations is used for energy transfer, not viscosity reduction.</li>
+        <li><strong>Recycling efficiency</strong>: The produced fluid still has relatively low viscosity compared to the original reservoir fluid.</li>
+    </ol>
+
+    <p>The viscosity of the produced fluid in the case study was 42.3 mPa·s, which is still much closer to the light oil (11.5 mPa·s) than to the original heavy oil (44,090 mPa·s). This means it can still function effectively as a power fluid for several cycles.</p>
+
+    <h2>Conclusion: The Beauty of First Principles</h2>
+    <p>What I love about this solution is how it applies basic principles of fluid mechanics and viscosity to solve a real-world problem. The engineers didn't invent a new pump or drill a new well - they simply looked at what they already had and found a way to use it more efficiently.</p>
+
+    <p>By understanding the fundamentals of how fluids mix and how jet pumps work, they were able to reduce light oil consumption by more than 60% while increasing heavy oil production by 300%. That's the power of thinking from first principles.</p>
+
+    <p>The next time you're faced with a complex problem, remember this example. Sometimes the solution isn't about adding something new - it's about using what you already have in a smarter way.</p>
+
+    <script>
+        // Jet Pump Simulation
+        const canvas = document.getElementById('jetPumpCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        // Simulation parameters
+        let mRatio = 0.8;
+        let approach = 'conventional';
+        let isRunning = false;
+        let lightOilUsed = 0;
+        let heavyOilProduced = 0;
+        let cycleCount = 0;
+        let powerFluidViscosity = 11.5; // Starting with light oil viscosity
+        
+        // Particles for visualization
+        let lightOilParticles = [];
+        let heavyOilParticles = [];
+        let mixedParticles = [];
+        
+        // DOM elements
+        const mRatioSlider = document.getElementById('m-ratio');
+        const mRatioValue = document.getElementById('m-ratio-value');
+        const approachSelect = document.getElementById('approach');
+        const approachValue = document.getElementById('approach-value');
+        const startButton = document.getElementById('start-simulation');
+        const resetButton = document.getElementById('reset-simulation');
+        const lightOilUsedDisplay = document.getElementById('light-oil-used');
+        const heavyOilProducedDisplay = document.getElementById('heavy-oil-produced');
+        const efficiencyRatioDisplay = document.getElementById('efficiency-ratio');
+        
+        // Event listeners
+        mRatioSlider.addEventListener('input', function() {
+            mRatio = parseFloat(this.value);
+            mRatioValue.textContent = mRatio.toFixed(2);
+        });
+        
+        approachSelect.addEventListener('change', function() {
+            approach = this.value;
+            approachValue.textContent = this.options[this.selectedIndex].text;
+        });
+        
+        startButton.addEventListener('click', function() {
+            if (!isRunning) {
+                isRunning = true;
+                animate();
+            }
+        });
+        
+        resetButton.addEventListener('click', function() {
+            isRunning = false;
+            lightOilUsed = 0;
+            heavyOilProduced = 0;
+            cycleCount = 0;
+            powerFluidViscosity = 11.5;
+            lightOilParticles = [];
+            heavyOilParticles = [];
+            mixedParticles = [];
+            updateDisplays();
+            drawPump();
+        });
+        
+        // Initialize particles
+        function createParticles() {
+            // Clear existing particles
+            lightOilParticles = [];
+            heavyOilParticles = [];
+            mixedParticles = [];
+            
+            // Create new light oil particles
+            for (let i = 0; i < 20; i++) {
+                lightOilParticles.push({
+                    x: canvas.width * 0.2 + Math.random() * 20,
+                    y: canvas.height * 0.2 + Math.random() * 20,
+                    radius: 3,
+                    color: 'rgba(255, 255, 0, 0.8)',
+                    speed: 2 + Math.random()
+                });
+            }
+            
+            // Create heavy oil particles
+            for (let i = 0; i < 20 * mRatio; i++) {
+                heavyOilParticles.push({
+                    x: canvas.width * 0.3 + Math.random() * 20,
+                    y: canvas.height * 0.6 + Math.random() * 20,
+                    radius: 4,
+                    color: 'rgba(139, 69, 19, 0.8)',
+                    speed: 0.5 + Math.random() * 0.5
+                });
+            }
+        }
+        
+        // Draw the jet pump
+        function drawPump() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw pump components
+            ctx.fillStyle = '#e0e0e0';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // Power fluid tank
+            ctx.beginPath();
+            ctx.rect(canvas.width * 0.1, canvas.height * 0.1, canvas.width * 0.2, canvas.height * 0.2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Label
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.fillText('Power Fluid', canvas.width * 0.15, canvas.height * 0.15);
+            
+            // Reservoir
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.rect(canvas.width * 0.2, canvas.height * 0.5, canvas.width * 0.2, canvas.height * 0.3);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Label
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Reservoir', canvas.width * 0.25, canvas.height * 0.65);
+            
+            // Jet pump
+            ctx.fillStyle = '#555';
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.5, canvas.height * 0.4, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Production pipe
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.5, canvas.height * 0.4);
+            ctx.lineTo(canvas.width * 0.8, canvas.height * 0.2);
+            ctx.stroke();
+            
+            // Production tank
+            ctx.fillStyle = '#e0e0e0';
+            ctx.beginPath();
+            ctx.rect(canvas.width * 0.7, canvas.height * 0.1, canvas.width * 0.2, canvas.height * 0.2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Label
+            ctx.fillStyle = '#333';
+            ctx.fillText('Produced Fluid', canvas.width * 0.75, canvas.height * 0.15);
+            
+            // Power fluid pipe
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.2, canvas.height * 0.3);
+            ctx.lineTo(canvas.width * 0.2, canvas.height * 0.4);
+            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.4);
+            ctx.stroke();
+            
+            // Reservoir fluid pipe
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.3, canvas.height * 0.5);
+            ctx.lineTo(canvas.width * 0.3, canvas.height * 0.4);
+            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.4);
+            ctx.stroke();
+            
+            // Draw recycle line for approaches A and B
+            if (approach !== 'conventional') {
+                ctx.strokeStyle = 'blue';
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.8, canvas.height * 0.3);
+                ctx.lineTo(canvas.width * 0.8, canvas.height * 0.8);
+                ctx.lineTo(canvas.width * 0.2, canvas.height * 0.8);
+                ctx.lineTo(canvas.width * 0.2, canvas.height * 0.3);
+                ctx.stroke();
+                
+                ctx.fillStyle = 'blue';
+                ctx.fillText('Recycle Path', canvas.width * 0.45, canvas.height * 0.8);
+            }
+            
+            // Draw viscosity indicator
+            const viscosityHeight = Math.min(canvas.height * 0.3, (powerFluidViscosity / 500) * canvas.height * 0.3);
+            ctx.fillStyle = `rgba(255, ${255 - (powerFluidViscosity/500)*255}, 0, 0.7)`;
+            ctx.fillRect(canvas.width * 0.05, canvas.height * 0.1, 10, viscosityHeight);
+            ctx.strokeRect(canvas.width * 0.05, canvas.height * 0.1, 10, canvas.height * 0.3);
+            
+            ctx.fillStyle = '#333';
+            ctx.fillText('Viscosity', canvas.width * 0.05, canvas.height * 0.45);
+            
+            // Draw particles
+            for (const particle of lightOilParticles) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            for (const particle of heavyOilParticles) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            for (const particle of mixedParticles) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!isRunning) return;
+            
+            if (lightOilParticles.length === 0 && heavyOilParticles.length === 0 && mixedParticles.length === 0) {
+                createParticles();
+            }
+            
+            // Update particles
+            for (const particle of lightOilParticles) {
+                if (particle.x < canvas.width * 0.5) {
+                    particle.x += particle.speed;
+                    if (particle.y < canvas.height * 0.4) {
+                        particle.y += particle.speed * 0.5;
+                    }
+                } else {
+                    // Create a mixed particle when light oil reaches the pump
+                    mixedParticles.push({
+                        x: canvas.width * 0.5,
+                        y: canvas.height * 0.4,
+                        radius: 4,
+                        color: `rgba(${139 + (255-139) * (1 - powerFluidViscosity/500)}, ${69 + (255-69) * (1 - powerFluidViscosity/500)}, ${19 + (255-19) * (1 - powerFluidViscosity/500)}, 0.8)`,
+                        speed: 1.5 + Math.random(),
+                        direction: Math.random() > 0.5 ? 'up' : 'down'
+                    });
+                    
+                    // Remove the light oil particle
+                    lightOilParticles.splice(lightOilParticles.indexOf(particle), 1);
+                    
+                    // Count the light oil used
+                    lightOilUsed += 1;
+                }
+            }
+            
+            for (const particle of heavyOilParticles) {
+                if (particle.x < canvas.width * 0.5) {
+                    particle.x += particle.speed;
+                    if (particle.y > canvas.height * 0.4) {
+                        particle.y -= particle.speed * 0.5;
+                    }
+                } else {
+                    // Create a mixed particle when heavy oil reaches the pump
+                    mixedParticles.push({
+                        x: canvas.width * 0.5,
+                        y: canvas.height * 0.4,
+                        radius: 4,
+                        color: `rgba(${139 + (255-139) * (1 - powerFluidViscosity/500)}, ${69 + (255-69) * (1 - powerFluidViscosity/500)}, ${19 + (255-19) * (1 - powerFluidViscosity/500)}, 0.8)`,
+                        speed: 1.5 + Math.random(),
+                        direction: Math.random() > 0.5 ? 'up' : 'down'
+                    });
+                    
+                    // Remove the heavy oil particle
+                    heavyOilParticles.splice(heavyOilParticles.indexOf(particle), 1);
+                    
+                    // Count the heavy oil produced
+                    heavyOilProduced += 1;
+                }
+            }
+            
+            for (const particle of mixedParticles) {
+                if (particle.x < canvas.width * 0.8) {
+                    particle.x += particle.speed;
+                    particle.y -= particle.speed * 0.5;
+                } else {
+                    // Remove the mixed particle when it reaches the production tank
+                    mixedParticles.splice(mixedParticles.indexOf(particle), 1);
+                    
+                    // If using approach A or B, recycle some of the produced fluid
+                    if (approach !== 'conventional' && Math.random() < 0.7) {
+                        // Create a new power fluid particle
+                        const newColor = approach === 'approachA' ? 
+                            `rgba(${139 + (255-139) * (1 - powerFluidViscosity/500)}, ${69 + (255-69) * (1 - powerFluidViscosity/500)}, ${19 + (255-19) * (1 - powerFluidViscosity/500)}, 0.8)` : 
+                            `rgba(${139 + (255-139) * (1 - powerFluidViscosity/500)}, ${69 + (255-69) * (1 - powerFluidViscosity/500)}, ${19 + (255-19) * (1 - powerFluidViscosity/500)}, 0.8)`;
+                        
+                        lightOilParticles.push({
+                            x: canvas.width * 0.2,
+                            y: canvas.height * 0.2,
+                            radius: 3,
+                            color: newColor,
+                            speed: 2 + Math.random()
+                        });
+                    }
+                }
+            }
+            
+            // Check if all particles have been processed
+            if (lightOilParticles.length === 0 && heavyOilParticles.length === 0) {
+                // Start a new cycle
+                cycleCount++;
+                
+                // Update power fluid viscosity based on approach
+                if (approach === 'approachA') {
+                    // For Approach A, viscosity increases with each cycle
+                    const logLogMul = Math.log(Math.log(11.5)); // Light oil
+                    const logLogMur = Math.log(Math.log(44090)); // Reservoir fluid
+                    const term1 = 1 / Math.pow(1 + mRatio, cycleCount);
+                    const term2 = 1 - term1;
+                    const logLogMupow = term1 * logLogMul + term2 * logLogMur;
+                    powerFluidViscosity = Math.exp(Math.exp(logLogMupow));
+                    
+                    // Limit to reasonable values for visualization
+                    powerFluidViscosity = Math.min(powerFluidViscosity, 500);
+                } else if (approach === 'approachB') {
+                    // For Approach B, viscosity reaches an equilibrium
+                    const RLO = 0.4; // Ratio of light oil to mixture
+                    const logLogMul = Math.log(Math.log(11.5)); // Light oil
+                    const logLogMur = Math.log(Math.log(44090)); // Reservoir fluid
+                    
+                    const a = RLO * logLogMul + ((1-RLO)/(mRatio+1)) * logLogMur;
+                    const b = ((1-RLO) * mRatio) / (mRatio + 1);
+                    
+                    if (b < 1) { // Prevent division by zero
+                        const logLogMue = a / (1 - b);
+                        powerFluidViscosity = Math.exp(Math.exp(logLogMue));
+                        
+                        // Limit to reasonable values for visualization
+                        powerFluidViscosity = Math.min(powerFluidViscosity, 500);
+                    }
+                } else {
+                    // Conventional approach - always use fresh light oil
+                    powerFluidViscosity = 11.5;
+                }
+                
+                // Create new particles for the next cycle
+                createParticles();
+            }
+            
+            // Update displays
+            updateDisplays();
+            
+            // Draw everything
+            drawPump();
+            
+            // Continue animation
+            requestAnimationFrame(animate);
+        }
+        
+        function updateDisplays() {
+            lightOilUsedDisplay.textContent = Math.round(lightOilUsed / 20); // Scale for display
+            heavyOilProducedDisplay.textContent = Math.round(heavyOilProduced / 20); // Scale for display
+            
+            const ratio = heavyOilProduced > 0 ? ((heavyOilProduced / 20) / (lightOilUsed / 20)).toFixed(2) : '0.00';
+            efficiencyRatioDisplay.textContent = ratio;
+        }
+        
+        // Initialize
+        drawPump();
+    </script>
+
+    <h2>Probability Distribution Visualization</h2>
+    <p>Let's also look at how the viscosity distribution changes as we mix light and heavy oil in different proportions. This is key to understanding why our approaches work so well.</p>
+    
+    <div id="viscosity-distribution">
+        <canvas id="viscosityCanvas" width="700" height="400"></canvas>
+        <div class="controls">
+            <div class="slider-container">
+                <label for="light-oil-ratio">Light Oil Ratio: <span id="light-oil-ratio-value">0.5</span></label>
+                <input type="range" id="light-oil-ratio" min="0" max="1" step="0.05" value="0.5">
+            </div>
+            <button id="add-sample" class="btn">Add Sample</button>
+            <button id="reset-dist" class="btn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // Viscosity Distribution Visualization
+        const viscosityCanvas = document.getElementById('viscosityCanvas');
+        const viscosityCtx = viscosityCanvas.getContext('2d');
+        
+        const lightOilRatioSlider = document.getElementById('light-oil-ratio');
+        const lightOilRatioValue = document.getElementById('light-oil-ratio-value');
+        const addSampleButton = document.getElementById('add-sample');
+        const resetDistButton = document.getElementById('reset-dist');
+        
+        let lightOilRatio = 0.5;
+        let samples = [];
+        
+        lightOilRatioSlider.addEventListener('input', function() {
+            lightOilRatio = parseFloat(this.value);
+            lightOilRatioValue.textContent = lightOilRatio.toFixed(2);
+            drawViscosityDistribution();
+        });
+        
+        addSampleButton.addEventListener('click', function() {
+            // Calculate viscosity based on the mixing equation
+            const logLogMul = Math.log(Math.log(11.5)); // Light oil
+            const logLogMur = Math.log(Math.log(44090)); // Reservoir fluid
+            const logLogMum = lightOilRatio * logLogMul + (1 - lightOilRatio) * logLogMur;
+            const viscosity = Math.exp(Math.exp(logLogMum));
+            
+            // Add some randomness to simulate real-world variation
+            const randomFactor = 0.9 + Math.random() * 0.2; // ±10%
+            samples.push(viscosity * randomFactor);
+            
+            drawViscosityDistribution();
+        });
+        
+        resetDistButton.addEventListener('click', function() {
+            samples = [];
+            drawViscosityDistribution();
+        });
+        
+        function drawViscosityDistribution() {
+            viscosityCtx.clearRect(0, 0, viscosityCanvas.width, viscosityCanvas.height);
+            
+            // Draw axes
+            viscosityCtx.strokeStyle = '#333';
+            viscosityCtx.lineWidth = 2;
+            
+            // X-axis (viscosity)
+            viscosityCtx.beginPath();
+            viscosityCtx.moveTo(50, viscosityCanvas.height - 50);
+            viscosityCtx.lineTo(viscosityCanvas.width - 50, viscosityCanvas.height - 50);
+            viscosityCtx.stroke();
+            
+            // Y-axis (probability density)
+            viscosityCtx.beginPath();
+            viscosityCtx.moveTo(50, viscosityCanvas.height - 50);
+            viscosityCtx.lineTo(50, 50);
+            viscosityCtx.stroke();
+            
+            // X-axis label
+            viscosityCtx.fillStyle = '#333';
+            viscosityCtx.font = '14px Arial';
+            viscosityCtx.fillText('Viscosity (mPa·s, log scale)', viscosityCanvas.width / 2 - 70, viscosityCanvas.height - 20);
+            
+            // Y-axis label
+            viscosityCtx.save();
+            viscosityCtx.translate(20, viscosityCanvas.height / 2);
+            viscosityCtx.rotate(-Math.PI / 2);
+            viscosityCtx.fillText('Probability Density', 0, 0);
+            viscosityCtx.restore();
+            
+            // Draw tick marks on x-axis (log scale)
+            const xAxisLength = viscosityCanvas.width - 100;
+            const logMin = Math.log10(10); // 10 mPa·s
+            const logMax = Math.log10(50000); // 50,000 mPa·s
+            
+            for (let i = 1; i <= 5; i++) {
+                const logValue = logMin + (logMax - logMin) * (i / 5);
+                const value = Math.pow(10, logValue);
+                const x = 50 + (Math.log10(value) - logMin) / (logMax - logMin) * xAxisLength;
+                
+                viscosityCtx.beginPath();
+                viscosityCtx.moveTo(x, viscosityCanvas.height - 50);
+                viscosityCtx.lineTo(x, viscosityCanvas.height - 45);
+                viscosityCtx.stroke();
+                
+                viscosityCtx.fillText(value.toExponential(0), x - 15, viscosityCanvas.height - 30);
+            }
+            
+            // Calculate theoretical distribution based on current light oil ratio
+            const logLogMul = Math.log(Math.log(11.5)); // Light oil
+            const logLogMur = Math.log(Math.log(44090)); // Reservoir fluid
+            const logLogMum = lightOilRatio * logLogMul + (1 - lightOilRatio) * logLogMur;
+            const theoreticalViscosity = Math.exp(Math.exp(logLogMum));
+            
+            // Draw theoretical distribution (normal distribution around the calculated value)
+            viscosityCtx.strokeStyle = 'blue';
+            viscosityCtx.beginPath();
+            
+            for (let x = 50; x < viscosityCanvas.width - 50; x++) {
+                const logValue = logMin + (logMax - logMin) * ((x - 50) / xAxisLength);
+                const value = Math.pow(10, logValue);
+                
+                // Normal distribution around theoretical viscosity
+                const normalizedDist = Math.exp(-Math.pow((Math.log10(value) - Math.log10(theoreticalViscosity)), 2) / 0.2);
+                const y = viscosityCanvas.height - 50 - normalizedDist * 200;
+                
+                if (x === 50) {
+                    viscosityCtx.moveTo(x, y);
+                } else {
+                    viscosityCtx.lineTo(x, y);
+                }
+            }
+            
+            viscosityCtx.stroke();
+            
+            // Draw label for theoretical curve
+            viscosityCtx.fillStyle = 'blue';
+            viscosityCtx.fillText('Theoretical Distribution', viscosityCanvas.width - 200, 70);
+            
+            // Draw histogram of samples if any exist
+            if (samples.length > 0) {
+                // Create bins for histogram
+                const numBins = 20;
+                const bins = new Array(numBins).fill(0);
+                
+                for (const sample of samples) {
+                    const logSample = Math.log10(sample);
+                    const binIndex = Math.min(Math.floor((logSample - logMin) / (logMax - logMin) * numBins), numBins - 1);
+                    if (binIndex >= 0) bins[binIndex]++;
+                }
+                
+                // Find max bin count for scaling
+                const maxCount = Math.max(...bins);
+                
+                // Draw histogram bars
+                viscosityCtx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+                
+                for (let i = 0; i < numBins; i++) {
+                    const x = 50 + (i / numBins) * xAxisLength;
+                    const barWidth = xAxisLength / numBins;
+                    const barHeight = (bins[i] / maxCount) * 200;
+                    
+                    viscosityCtx.fillRect(x, viscosityCanvas.height - 50 - barHeight, barWidth, barHeight);
+                }
+                
+                // Draw label for samples
+                viscosityCtx.fillStyle = 'red';
+                viscosityCtx.fillText(`Samples (n=${samples.length})`, viscosityCanvas.width - 200, 90);
+                
+                // Draw mean of samples
+                const meanSample = samples.reduce((sum, val) => sum + val, 0) / samples.length;
+                const meanX = 50 + (Math.log10(meanSample) - logMin) / (logMax - logMin) * xAxisLength;
+                
+                viscosityCtx.strokeStyle = 'red';
+                viscosityCtx.lineWidth = 2;
+                viscosityCtx.beginPath();
+                viscosityCtx.moveTo(meanX, viscosityCanvas.height - 50);
+                viscosityCtx.lineTo(meanX, 50);
+                viscosityCtx.stroke();
+                
+                // Label the mean
+                viscosityCtx.fillStyle = 'red';
+                viscosityCtx.fillText(`Mean: ${meanSample.toExponential(2)} mPa·s`, meanX - 80, 40);
+            }
+            
+            // Indicate light oil and heavy oil positions
+            const lightOilX = 50 + (Math.log10(11.5) - logMin) / (logMax - logMin) * xAxisLength;
+            const heavyOilX = 50 + (Math.log10(44090) - logMin) / (logMax - logMin) * xAxisLength;
+            
+            viscosityCtx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+            viscosityCtx.beginPath();
+            viscosityCtx.arc(lightOilX, viscosityCanvas.height - 50, 5, 0, Math.PI * 2);
+            viscosityCtx.fill();
+            viscosityCtx.fillText('Light Oil', lightOilX - 30, viscosityCanvas.height - 60);
+            
+            viscosityCtx.fillStyle = 'rgba(139, 69, 19, 0.7)';
+            viscosityCtx.beginPath();
+            viscosityCtx.arc(heavyOilX, viscosityCanvas.height - 50, 5, 0, Math.PI * 2);
+            viscosityCtx.fill();
+            viscosityCtx.fillText('Heavy Oil', heavyOilX - 30, viscosityCanvas.height - 60);
+            
+            // Draw current mix point
+            const mixX = 50 + (Math.log10(theoreticalViscosity) - logMin) / (logMax - logMin) * xAxisLength;
+            
+            viscosityCtx.fillStyle = `rgba(${139 + (255-139) * lightOilRatio}, ${69 + (255-69) * lightOilRatio}, ${19 + (255-19) * lightOilRatio}, 0.7)`;
+            viscosityCtx.beginPath();
+            viscosityCtx.arc(mixX, viscosityCanvas.height - 50, 8, 0, Math.PI * 2);
+            viscosityCtx.fill();
+            viscosityCtx.fillText(`Current Mix: ${theoreticalViscosity.toExponential(2)} mPa·s`, mixX - 100, viscosityCanvas.height - 80);
+        }
+        
+        // Initial draw
+        drawViscosityDistribution();
+    </script>
+
+    <h2>Further Exploration</h2>
+    <p>If you're interested in learning more about this topic, here are some related concepts to explore:</p>
+    
+    <ol>
+        <li><strong>Fluid mechanics</strong>: The principles of Bernoulli's equation and how they apply to jet pumps.</li>
+        <li><strong>Rheology</strong>: The study of how materials flow, particularly non-Newtonian fluids like heavy oils.</li>
+        <li><strong>Optimization theory</strong>: How to find the optimal parameters (like M ratio) for complex systems.</li>
+        <li><strong>Energy economics</strong>: The cost-benefit analysis of different oil extraction methods.</li>
+    </ol>
+    
+    <p>Remember, the beauty of physics is that once you understand the fundamental principles, you can apply them to solve all sorts of practical problems - even ones as specific as pumping heavy oil from deep reservoirs!</p>
+
+</body>
