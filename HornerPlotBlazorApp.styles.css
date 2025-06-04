@@ -1,0 +1,35 @@
+/* This file is used to hold Blazor-specific styles for the Horner Plot application */
+.horner-plot-container {
+    margin-top: 20px;
+}
+
+.input-form {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    height: 400px;
+    margin-bottom: 30px;
+}
+
+.results-panel {
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.parameter-row {
+    margin-bottom: 10px;
+}
+
+.parameter-label {
+    font-weight: bold;
+}
+
+.calculation-result {
+    font-weight: bold;
+    color: #0d6efd;
+}

@@ -1,0 +1,25 @@
+[theme]
+primaryColor = "#1a5276"  # Match PetroBlog primary color
+backgroundColor = "#f8f9fa"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#333333"
+font = "sans serif"
+
+[server]
+enableCORS = true
+enableXsrfProtection = true
+fileWatcherType = "none"  # Disable file watching completely
+maxUploadSize = 200
+
+[browser]
+gatherUsageStats = false
+serverAddress = "localhost"
+serverPort = 8501
+
+[runner]
+magicEnabled = false  # Disable magic commands
+fastReruns = true
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true 

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Horner Plot Analysis Tool</title>
+    <base href="/PetroBlog/horner-plot-tool/" />
+    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/app.css" rel="stylesheet" />
+    <link href="../HornerPlotBlazorApp.styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="../favicon.png" />
+    <style>
+        .loading-progress {
+            position: relative;
+            display: block;
+            width: 8rem;
+            height: 8rem;
+            margin: 20vh auto 1rem auto;
+        }
+        
+        .loading-progress circle {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 0.6rem;
+            transform-origin: 50% 50%;
+            transform: rotate(-90deg);
+        }
+        
+        .loading-progress circle:last-child {
+            stroke: #1a5276;
+            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+            transition: stroke-dasharray 0.05s ease-in-out;
+        }
+        
+        .loading-progress-text {
+            position: absolute;
+            text-align: center;
+            font-weight: bold;
+            inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+        }
+        
+        .loading-progress-text:after {
+            content: var(--blazor-load-percentage-text, "Loading");
+        }
+        
+        .blazor-error-ui {
+            background: lightyellow;
+            bottom: 0;
+            box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+            display: none;
+            left: 0;
+            padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .blazor-error-ui .dismiss {
+            cursor: pointer;
+            position: absolute;
+            right: 0.75rem;
+            top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading-progress">
+            <svg>
+                <circle r="40%" cx="50%" cy="50%" />
+                <circle r="40%" cx="50%" cy="50%" />
+            </svg>
+            <div class="loading-progress-text"></div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    
+    <script src="../_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+      Blazor.start({
+        loadBootResource: function (type, name, defaultUri, integrity) {
+          let resourceUri = defaultUri;
+
+          // Determine the correct base path for resources based on deployment.
+          // Since index.html is in 'horner-plot-tool', '..' goes up to 'PetroBlog'.
+          const baseResourcePath = '../'; 
+
+          if (name === 'blazor.boot.json') {
+            // blazor.boot.json is at _framework/blazor.boot.json relative to baseResourcePath
+            resourceUri = `${baseResourcePath}${defaultUri}`;
+          } else if (type === 'dotnetjs' || type === 'dotnetwasm' || type === 'globalization') {
+            // Runtime files are located in _framework/ relative to baseResourcePath
+            // defaultUri (which is same as 'name' for these) is just the filename e.g., 'dotnet.wasm'
+            resourceUri = `${baseResourcePath}_framework/${name}`;
+          } else if (type === 'assembly' || type === 'pdb' || type === 'satellite-assembly' || defaultUri.startsWith('_content/')) {
+            // Assemblies, PDBs, and _content files are relative to baseResourcePath
+            // defaultUri for these already includes _framework/ or _content/
+            resourceUri = `${baseResourcePath}${defaultUri}`;
+          } else {
+            // Fallback or unknown type, try to use defaultUri prefixed with base path.
+            // This case might need adjustment if other resource types appear.
+            resourceUri = `${baseResourcePath}${defaultUri}`;
+          }
+
+          // console.log(`Loading: type='${type}', name='${name}', defaultUri='${defaultUri}', resolvedUri='${resourceUri}', integrity='${integrity}'`);
+
+          if (type === 'dotnetjs') {
+            return resourceUri; // Return URI string for dotnetjs
+          }
+
+          return fetch(resourceUri, { integrity: integrity, cache: 'no-cache' });
+        }
+      });
+    </script>
+    <!-- <script>navigator.serviceWorker.register('../service-worker.js');</script> -->
+    
+    <!-- Chart.js Library (must be before ChartJs interop) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    
+    <!-- ChartJS Blazor Interop -->
+    <script src="../_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+    
+    <!-- Custom Chart.js Interop Helper -->
+    <script src="../js/chartJsInterop.js"></script>
+</body>
+</html>
