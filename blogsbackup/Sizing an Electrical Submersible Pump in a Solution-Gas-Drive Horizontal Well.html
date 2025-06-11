@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Curious Physics of Pumping Oil in Horizontal Wells</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1, h2, h3 {
+            font-family: 'Helvetica', sans-serif;
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .intro {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #555;
+            border-left: 4px solid #ddd;
+            padding-left: 15px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .interactive {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .note {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #ffd700;
+            margin: 15px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .formula {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .canvas-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+            flex: 1 1 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .slider-value {
+            font-size: 0.9em;
+            color: #666;
+            text-align: right;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1 1 300px;
+        }
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>The Curious Physics of Pumping Oil in Horizontal Wells</h1>
+        <p class="intro">Exploring the fascinating world of electrical submersible pumps in solution-gas-drive horizontal wells, where physics, fluid dynamics, and engineering meet in the depths of the Earth.</p>
+    </header>
+
+    <section>
+        <p>Hello friends! Today, I want to talk about something that might sound complicated at first: sizing electrical submersible pumps (ESPs) for horizontal oil wells. But don't worry - we're going to break it down step by step until it all makes perfect sense.</p>
+        
+    </section>
+
+    <section>
+        <h2>Why Horizontal Wells and Why Do They Need Pumps?</h2>
+        
+        <p>First, let's understand the context. Traditional oil wells are vertical - they go straight down into the Earth until they hit an oil reservoir. But horizontal wells are different. They start vertically, but then make a turn (called a "dogleg") and extend horizontally through the oil-bearing rock formation.</p>
+        
+        <p>Why go through all this trouble? Well, a horizontal well can contact much more of the oil reservoir than a vertical one, potentially increasing production significantly. It's like the difference between dipping the tip of your straw into a milkshake versus laying it along the bottom of the glass - you'll get a lot more milkshake with the second approach!</p>
+        
+        <p>But here's the challenge: oil doesn't always flow to the surface on its own. Sometimes it needs help in the form of artificial lift methods, and that's where electrical submersible pumps (ESPs) come in. These are essentially powerful electric pumps that are lowered deep into the well to push the oil up to the surface.</p>
+        
+        <p>Sizing these pumps correctly is crucial. Too small, and they won't produce enough oil. Too large, and you're wasting money and energy. But the physics of flow in horizontal wells makes this sizing particularly challenging.</p>
+    </section>
+
+    <section>
+        <h2>The Three Key Components of Our System</h2>
+        
+        <p>The paper breaks down the production system into three main components:</p>
+        
+        <ol>
+            <li><strong>Inflow Performance Relationship (IPR)</strong>: How oil flows from the reservoir into the wellbore</li>
+            <li><strong>Outflow Performance</strong>: How the fluid travels through the wellbore to the pump and then up to the surface</li>
+            <li><strong>Pump Performance</strong>: How the ESP handles the fluid and provides the necessary lift</li>
+        </ol>
+        
+        <p>Let's examine each of these components using first principles.</p>
+    </section>
+
+    <section>
+        <h2>Inflow Performance: How Oil Enters the Well</h2>
+        
+        <p>The IPR describes how much oil will flow from the reservoir into the wellbore at different pressures. It's essentially a relationship between flow rate and pressure.</p>
+        
+        <p>The paper presents two equations for horizontal wells. The first one, developed by Bendakhlia and Aziz, is:</p>
+        
+        <div class="formula">
+            $$\frac{q_o}{q_{omax}} = (1.0 \cdot V(\frac{P_{wf}}{P_r}) \cdot (1 \cdot V)(\frac{P_{wf}}{P_r})^2)^n$$
+        </div>
+        
+        <p>And the second, by Cheng, is:</p>
+        
+        <div class="formula">
+            $$\frac{q_o}{q_{omax}} = 0.9885 + 0.2055 (\frac{P_{wf}}{P_r}) - 1.1818 (\frac{P_{wf}}{P_r})^2$$
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(q_o\) is the oil flow rate</li>
+            <li>\(q_{omax}\) is the maximum oil flow rate</li>
+            <li>\(P_{wf}\) is the flowing bottom-hole pressure</li>
+            <li>\(P_r\) is the average reservoir pressure</li>
+            <li>\(V\) and \(n\) are functions related to the recovery factor</li>
+        </ul>
+        
+        <p>These equations might look intimidating, but they're actually telling us something quite intuitive: the amount of oil that flows into the well depends on the pressure difference between the reservoir and the wellbore. The greater this difference (or "drawdown"), the more oil flows in.</p>
+        
+        <p>Think of it like a balloon. When you squeeze a balloon (increasing the pressure inside), air wants to escape. The harder you squeeze (greater pressure difference), the faster the air escapes. Oil reservoirs work on a similar principle - the pressure difference drives the flow.</p>
+        
+        <div class="interactive">
+            <h3>Interactive IPR Curve Explorer</h3>
+            <p>Let's visualize how the IPR curve changes with different parameters. Adjust the sliders to see how the relationship between pressure ratio and flow rate changes.</p>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="reservoirPressure">Reservoir Pressure (psi): <span id="reservoirPressureValue">1500</span></label>
+                    <input type="range" id="reservoirPressure" min="500" max="3000" value="1500" step="50">
+                </div>
+                
+                <div class="control-group">
+                    <label for="maxFlowRate">Maximum Flow Rate (STB/D): <span id="maxFlowRateValue">500</span></label>
+                    <input type="range" id="maxFlowRate" min="100" max="1000" value="500" step="50">
+                </div>
+                
+                <div class="control-group">
+                    <label for="iprModel">IPR Model:</label>
+                    <select id="iprModel">
+                        <option value="bendakhlia">Bendakhlia-Aziz</option>
+                        <option value="cheng">Cheng</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="iprChart"></canvas>
+            </div>
+            
+            <p class="note">Notice how the curve shape affects the relationship between pressure and flow rate. This is crucial for understanding how much oil we can expect to produce at different operating conditions.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>The Gas Problem: A Unique Challenge in Horizontal Wells</h2>
+        
+        <p>Now, here's where things get especially interesting. In many oil reservoirs, there's dissolved gas in the oil - like the carbon dioxide dissolved in a sealed bottle of soda. When the pressure drops (as it does when oil flows into the wellbore), this gas comes out of solution - just like when you open a soda bottle.</p>
+        
+        <p>In horizontal wells, this released gas can create a phenomenon called "gas slugging," which is a major headache for ESP operations. There are two types of gas slugging the paper identifies:</p>
+        
+        <ol>
+            <li><strong>Pipeline type slugging</strong>: Occurs with high velocities of gas and liquid</li>
+            <li><strong>Terrain-dominated (severe) slugging</strong>: Occurs with low velocities and is caused by stratification of liquid and gas</li>
+        </ol>
+        
+        <p>The paper uses the Beggs and Brill flow regime indicator to check for pipeline type slugging, and Boe's criteria to check for severe slugging:</p>
+        
+        <div class="formula">
+            $$v_{sg} \leq (1-H_g)^{5/2}(\frac{\rho_l - \rho_g}{\rho_g} g D \cos\alpha)^{1/2}$$
+        </div>
+        
+        <p>and</p>
+        
+        <div class="formula">
+            $$v_{sl} \geq \frac{P_p}{\sin\beta \rho_g g L (1-H_g)} \times v_{sg}$$
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(v_{sg}\) is the superficial gas velocity</li>
+            <li>\(v_{sl}\) is the superficial liquid velocity</li>
+            <li>\(H_g\) is the liquid hold-up</li>
+            <li>\(\rho_l\) and \(\rho_g\) are the densities of liquid and gas</li>
+            <li>\(D\) is the pipe diameter</li>
+            <li>\(\alpha\) is the inclination angle</li>
+            <li>\(P_p\) is the pressure in the pipe</li>
+            <li>\(\beta\) is the angle of the riser from horizontal (90°)</li>
+            <li>\(L\) is the length of the horizontal section</li>
+            <li>\(g\) is the acceleration due to gravity</li>
+        </ul>
+        
+        <p>What these equations are telling us is that the behavior of gas in the horizontal section depends on the geometry of the well, the properties of the fluids, and the flow rates. The inclination of the horizontal section is particularly important - a slight upward or downward tilt can dramatically affect gas behavior.</p>
+    </section>
+
+    <section>
+        <h2>Gas Separation: Dealing with the Bubble Trouble</h2>
+        
+        <p>ESPs don't handle gas well. If too much gas enters the pump, it can "gas lock" and stop working effectively. To prevent this, gas separators are often installed before the pump intake.</p>
+        
+        <p>The paper discusses how to account for gas separation, including the use of rotary gas separators like the RGV and KGV. The effectiveness of these separators depends on flow rate and the amount of free gas present.</p>
+        
+        <p>The Turpin, Lea, and Bearden correlation is used to assess gas degradation in the pump:</p>
+        
+        <div class="formula">
+            $$\text{PHI} = \frac{2000}{3} \frac{Q_G}{Q_l}$$
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(Q_G\) is the free gas at the pump intake</li>
+            <li>\(Q_l\) is the total liquid at the pump intake</li>
+        </ul>
+        
+        <p>When PHI < 1, there's negligible degradation of the pump performance. This gives us a quantitative way to assess whether the gas will be a problem for our pump.</p>
+        
+        <div class="interactive">
+            <h3>Gas Behavior Simulator</h3>
+            <p>Let's simulate the behavior of gas in a horizontal well and see how it affects our pump selection. Adjust the parameters to see different gas behaviors and their impact.</p>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="gasOilRatio">Gas-Oil Ratio (SCF/STB): <span id="gasOilRatioValue">800</span></label>
+                    <input type="range" id="gasOilRatio" min="200" max="2000" value="800" step="50">
+                </div>
+                
+                <div class="control-group">
+                    <label for="inclination">Horizontal Section Inclination (degrees): <span id="inclinationValue">0</span></label>
+                    <input type="range" id="inclination" min="-5" max="5" value="0" step="0.5">
+                </div>
+                
+                <div class="control-group">
+                    <label for="flowRate">Flow Rate (STB/D): <span id="flowRateValue">400</span></label>
+                    <input type="range" id="flowRate" min="100" max="800" value="400" step="50">
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="gasSimulation"></canvas>
+            </div>
+            
+            <div id="sluggingWarning" class="note" style="display:none; color: red;">
+                Warning: These conditions may lead to severe gas slugging!
+            </div>
+            
+            <div id="phiValue" class="note">
+                PHI Value: <span id="phiValueDisplay">0.5</span> - Pump degradation is <span id="degradationStatus">negligible</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Sizing the Pump: Finding the Perfect Match</h2>
+        
+        <p>Now we come to the heart of the matter: how to select the right pump for our horizontal well.</p>
+        
+        <p>The pump needs to provide enough pressure to lift the fluid from the intake depth to the surface. This required pressure is the difference between the discharge pressure and the intake pressure, which we calculate from our pressure traverse analysis.</p>
+        
+        <p>The paper explains that pumps are characterized by their head curves and brake horsepower curves. The head is essentially the pressure the pump can generate at different flow rates, and the brake horsepower is the power required to operate the pump.</p>
+        
+        <p>When sizing a pump, we need to consider:</p>
+        <ol>
+            <li>The intake and discharge volumes</li>
+            <li>The required pressure increase</li>
+            <li>The operating frequency (which affects pump performance)</li>
+            <li>The physical constraints of getting the equipment through the dogleg</li>
+        </ol>
+        
+        <p>The number of stages in the pump determines the total head it can provide. Each stage adds a certain amount of head, and we can calculate the total required stages using:</p>
+        
+        <div class="formula">
+            $$\text{Number of Stages} = \frac{\text{Required Head}}{\text{Head per Stage}}$$
+        </div>
+        
+        <p>The paper also discusses how to account for changes in fluid properties as the fluid moves through the pump, particularly the compression of gas back into solution, which affects the volume and therefore the required staging.</p>
+        
+        <div class="interactive">
+            <h3>ESP Sizing Calculator</h3>
+            <p>Let's put it all together and size an ESP for a horizontal well. Enter the well parameters and see what pump configuration is recommended.</p>
+            
+            <div class="two-column">
+                <div class="column">
+                    <div class="control-group">
+                        <label for="desiredFlow">Desired Flow Rate (STB/D):</label>
+                        <input type="number" id="desiredFlow" min="100" max="1000" value="400">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="pumpDepth">Pump Set Depth (ft):</label>
+                        <input type="number" id="pumpDepth" min="1000" max="10000" value="7000">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="wellheadPressure">Wellhead Pressure (psi):</label>
+                        <input type="number" id="wellheadPressure" min="50" max="500" value="150">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="bottomholePressure">Producing Bottom-hole Pressure (psi):</label>
+                        <input type="number" id="bottomholePressure" min="100" max="1000" value="300">
+                    </div>
+                </div>
+                
+                <div class="column">
+                    <div class="control-group">
+                        <label for="gasOilRatioCalc">Gas-Oil Ratio (SCF/STB):</label>
+                        <input type="number" id="gasOilRatioCalc" min="200" max="2000" value="800">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="operatingFrequency">Operating Frequency (Hz):</label>
+                        <input type="number" id="operatingFrequency" min="40" max="80" value="60">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="casingSize">Casing Size (inches):</label>
+                        <select id="casingSize">
+                            <option value="5.5">5 1/2"</option>
+                            <option value="7" selected>7"</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="gasHandling">Gas Handling Method:</label>
+                        <select id="gasHandling">
+                            <option value="none">No Gas Separator</option>
+                            <option value="rgv" selected>RGV Gas Separator</option>
+                            <option value="rtgv">RTGV Gas Separator</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="calculatePump" class="button">Calculate Pump Requirements</button>
+            
+            <div id="pumpResults" class="highlight" style="display:none;">
+                <h4>Recommended Pump Configuration:</h4>
+                <p><strong>Pump Type:</strong> <span id="pumpType">RC-5</span></p>
+                <p><strong>Number of Stages:</strong> <span id="pumpStages">150</span></p>
+                <p><strong>Brake Horsepower Required:</strong> <span id="bhpRequired">45</span> hp</p>
+                <p><strong>Free Gas at Intake:</strong> <span id="freeGasIntake">15</span>% by volume</p>
+                <p><strong>Intake Pressure:</strong> <span id="intakePressure">300</span> psi</p>
+                <p><strong>Discharge Pressure:</strong> <span id="dischargePressure">2500</span> psi</p>
+                <div id="pumpWarnings" class="note" style="display:none; color: orange;">
+                    Warning: This configuration may be susceptible to gas interference.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Verification: How Well Does This Work in Practice?</h2>
+        
+        <p>The paper verifies the model with three case studies of actual horizontal wells with ESPs installed. In all three cases, the model's predictions for required staging and horsepower were very close to the actual values used in the field.</p>
+        
+        <p>For example, in Well A, the model predicted 146 stages of an RC-5 pump requiring 42 hp, while the actual well used 144 stages with a 45 hp motor. That's remarkably accurate for such a complex system!</p>
+        
+        <p>This verification gives us confidence that the physics-based approach used in the model captures the essential behavior of these complex systems.</p>
+    </section>
+
+    <section>
+        <h2>The Big Picture: What We've Learned</h2>
+        
+        <p>So what's the fundamental understanding we've gained from this exploration?</p>
+        
+        <ol>
+            <li><strong>System Thinking</strong>: Oil production from horizontal wells involves multiple interacting components - reservoir inflow, wellbore flow, and pump performance - that must be analyzed together.</li>
+            <li><strong>Phase Behavior</strong>: The way gas comes out of solution as pressure drops creates unique challenges in horizontal wells.</li>
+            <li><strong>Geometry Matters</strong>: The inclination of the horizontal section significantly affects flow behavior, particularly gas slugging.</li>
+            <li><strong>Energy Balance</strong>: At its core, sizing an ESP is about providing enough energy (in the form of pressure) to move fluid from the reservoir to the surface.</li>
+        </ol>
+        
+        <p>The beauty of this approach is that it combines fundamental physics principles with empirical correlations to solve a practical engineering problem. It's a perfect example of how theoretical understanding translates into real-world applications.</p>
+    </section>
+
+    <section>
+        <h2>Conclusion: The Value of Understanding</h2>
+        
+        <p>The model presented in this paper is more than just a calculation tool - it's a framework for understanding the physics of horizontal wells and ESPs. By breaking down the complex system into manageable components and applying fundamental principles, we gain insights that help us make better decisions in the field.</p>
+        
+        <p>As the author notes, the model is "strictly a modeling tool and not to be perceived as a rigid answer or solution." It's meant to be used alongside experience and intuition - a perfect example of how science and engineering work together in practice.</p>
+        
+        <p>I hope this exploration has given you a deeper appreciation for the fascinating physics that lies beneath the surface of oil production. Even if you never work in this field, the principles of fluid flow, pressure, and energy transfer we've discussed apply to many systems in our world.</p>
+        
+        <p>And that's what I find most beautiful about physics - the same fundamental principles appear again and again in different contexts, connecting seemingly unrelated phenomena through the elegant language of mathematics.</p>
+    </section>
+
+
+    <script>
+        // Initialize charts and interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // IPR Chart
+            const iprCtx = document.getElementById('iprChart').getContext('2d');
+            const iprChart = new Chart(iprCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Flow Rate (fraction of maximum)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Pressure Ratio (Pwf/Pr)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Flow Rate Ratio (q/qmax)'
+                            },
+                            min: 0,
+                            max: 1
+                        }
+                    }
+                }
+            });
+
+            // Gas Simulation Chart
+            const gasCtx = document.getElementById('gasSimulation').getContext('2d');
+            const gasChart = new Chart(gasCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Liquid', 'Free Gas'],
+                    datasets: [{
+                        label: 'Volume Fraction',
+                        data: [0.7, 0.3],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Volume Fraction'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update IPR Chart based on inputs
+            function updateIPRChart() {
+                const reservoirPressure = parseFloat(document.getElementById('reservoirPressure').value);
+                const maxFlowRate = parseFloat(document.getElementById('maxFlowRate').value);
+                const iprModel = document.getElementById('iprModel').value;
+                
+                document.getElementById('reservoirPressureValue').textContent = reservoirPressure;
+                document.getElementById('maxFlowRateValue').textContent = maxFlowRate;
+                
+                const pressureRatios = [];
+                const flowRateRatios = [];
+                
+                for (let i = 0; i <= 1; i += 0.05) {
+                    pressureRatios.push(i.toFixed(2));
+                    
+                    let flowRatio;
+                    if (iprModel === 'bendakhlia') {
+                        // Simplified Bendakhlia-Aziz model (V=0.5, n=1 for demonstration)
+                        flowRatio = (1.0 * 0.5 * i + (1 - 0.5) * Math.pow(i, 2));
+                        flowRatio = Math.max(0, 1 - flowRatio);
+                    } else {
+                        // Cheng model
+                        flowRatio = 0.9885 + 0.2055 * i - 1.1818 * Math.pow(i, 2);
+                        flowRatio = Math.max(0, Math.min(1, flowRatio));
+                    }
+                    
+                    flowRateRatios.push(flowRatio);
+                }
+                
+                iprChart.data.labels = pressureRatios;
+                iprChart.data.datasets[0].data = flowRateRatios;
+                iprChart.update();
+            }
+
+            // Update Gas Simulation based on inputs
+            function updateGasSimulation() {
+                const gasOilRatio = parseFloat(document.getElementById('gasOilRatio').value);
+                const inclination = parseFloat(document.getElementById('inclination').value);
+                const flowRate = parseFloat(document.getElementById('flowRate').value);
+                
+                document.getElementById('gasOilRatioValue').textContent = gasOilRatio;
+                document.getElementById('inclinationValue').textContent = inclination;
+                document.getElementById('flowRateValue').textContent = flowRate;
+                
+                // Calculate gas fraction (simplified model)
+                const gasFraction = Math.min(0.95, gasOilRatio / 10000 + flowRate / 5000 - inclination / 50);
+                const liquidFraction = 1 - gasFraction;
+                
+                gasChart.data.datasets[0].data = [liquidFraction, gasFraction];
+                gasChart.update();
+                
+                // Calculate PHI value
+                const phiValue = (2000/3) * (gasFraction / liquidFraction);
+                document.getElementById('phiValueDisplay').textContent = phiValue.toFixed(2);
+                
+                if (phiValue < 1) {
+                    document.getElementById('degradationStatus').textContent = "negligible";
+                    document.getElementById('degradationStatus').style.color = "green";
+                } else {
+                    document.getElementById('degradationStatus').textContent = "significant";
+                    document.getElementById('degradationStatus').style.color = "red";
+                }
+                
+                // Check for slugging conditions (simplified)
+                const sluggingRisk = (inclination < -1 && flowRate < 300) || (gasFraction > 0.6 && flowRate > 600);
+                document.getElementById('sluggingWarning').style.display = sluggingRisk ? 'block' : 'none';
+            }
+
+            // ESP Sizing Calculator
+            document.getElementById('calculatePump').addEventListener('click', function() {
+                const desiredFlow = parseFloat(document.getElementById('desiredFlow').value);
+                const pumpDepth = parseFloat(document.getElementById('pumpDepth').value);
+                const wellheadPressure = parseFloat(document.getElementById('wellheadPressure').value);
+                const bottomholePressure = parseFloat(document.getElementById('bottomholePressure').value);
+                const gasOilRatio = parseFloat(document.getElementById('gasOilRatioCalc').value);
+                const operatingFrequency = parseFloat(document.getElementById('operatingFrequency').value);
+                const casingSize = document.getElementById('casingSize').value;
+                const gasHandling = document.getElementById('gasHandling').value;
+                
+                // Simplified pump sizing calculation
+                let pumpType, stages, bhp, freeGas;
+                
+                // Determine pump type based on flow rate and casing size
+                if (casingSize === '7') {
+                    if (desiredFlow < 1200) {
+                        pumpType = "RC-5";
+                    } else {
+                        pumpType = "R-7";
+                    }
+                } else {
+                    if (desiredFlow < 800) {
+                        pumpType = "RC-5";
+                    } else {
+                        pumpType = "R-7";
+                    }
+                }
+                
+                // Calculate free gas percentage (simplified)
+                freeGas = Math.min(90, (gasOilRatio / 20) * (1 - bottomholePressure / 2000));
+                
+                // Adjust for gas separator
+                if (gasHandling === 'rgv') {
+                    freeGas = Math.max(0, freeGas - 40);
+                } else if (gasHandling === 'rtgv') {
+                    freeGas = Math.max(0, freeGas - 70);
+                }
+                
+                // Calculate intake and discharge pressures (simplified)
+                const intakePressure = bottomholePressure * 0.9;
+                const dischargePressure = wellheadPressure + (pumpDepth * 0.35);
+                
+                // Calculate required stages based on pressure differential
+                const pressureDiff = dischargePressure - intakePressure;
+                const headPerStage = (pumpType === "RC-5") ? 32 : 28;
+                stages = Math.ceil(pressureDiff / headPerStage);
+                
+                // Adjust stages for frequency
+                stages = Math.ceil(stages * Math.pow(60 / operatingFrequency, 2));
+                
+                // Calculate brake horsepower (simplified)
+                bhp = Math.ceil(desiredFlow * pressureDiff / 100000 * (1 + freeGas/100));
+                
+                // Adjust BHP for frequency
+                bhp = Math.ceil(bhp * Math.pow(operatingFrequency / 60, 3));
+                
+                // Display results
+                document.getElementById('pumpType').textContent = pumpType;
+                document.getElementById('pumpStages').textContent = stages;
+                document.getElementById('bhpRequired').textContent = bhp;
+                document.getElementById('freeGasIntake').textContent = freeGas.toFixed(1);
+                document.getElementById('intakePressure').textContent = intakePressure.toFixed(0);
+                document.getElementById('dischargePressure').textContent = dischargePressure.toFixed(0);
+                
+                // Show warnings if needed
+                const hasWarnings = freeGas > 15 || (gasOilRatio > 1000 && gasHandling === 'none');
+                document.getElementById('pumpWarnings').style.display = hasWarnings ? 'block' : 'none';
+                
+                // Show results
+                document.getElementById('pumpResults').style.display = 'block';
+            });
+
+            // Initialize charts
+            updateIPRChart();
+            updateGasSimulation();
+            
+            // Add event listeners for controls
+            document.getElementById('reservoirPressure').addEventListener('input', updateIPRChart);
+            document.getElementById('maxFlowRate').addEventListener('input', updateIPRChart);
+            document.getElementById('iprModel').addEventListener('change', updateIPRChart);
+            
+            document.getElementById('gasOilRatio').addEventListener('input', updateGasSimulation);
+            document.getElementById('inclination').addEventListener('input', updateGasSimulation);
+            document.getElementById('flowRate').addEventListener('input', updateGasSimulation);
+        });
+    </script>
+</body>

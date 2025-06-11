@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Pressure Buildup Analysis in Naturally Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-top: 1.5em;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .author-info {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .key-concept {
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive-element {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .slider {
+            width: 100%;
+        }
+        canvas {
+            max-width: 100%;
+            margin: 20px auto;
+            display: block;
+        }
+        .footnote {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 40px;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .reference {
+            font-size: 0.9em;
+            margin-left: 20px;
+            text-indent: -20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cracking the Code: Understanding Pressure Buildup Analysis in Naturally Fractured Reservoirs</h1>
+    <div class="author-info">
+        Published: June 15, 2023 | Reading Time: 12 minutes
+    </div>
+
+    <p>
+        Imagine trying to understand how water flows through a sponge versus through a cracked piece of glass. The sponge (like a conventional reservoir) has uniform tiny pores, while the glass (like a naturally fractured reservoir) has both tiny pores and larger cracks. How would you measure and model these different flow behaviors? Today, we're diving deep into the fascinating world of pressure buildup analysis in naturally fractured reservoirs - a critical tool for petroleum engineers that reveals the hidden properties of underground rock formations.
+    </p>
+
+    <div class="key-concept">
+        <h3>What You'll Learn</h3>
+        <p>
+            In this post, we'll break down a complex academic paper on pressure buildup analysis in naturally fractured reservoirs. You'll understand how engineers analyze pressure data to determine key reservoir properties, why naturally fractured reservoirs behave differently from conventional ones, and how to identify different flow regimes that reveal the reservoir's secret characteristics.
+        </p>
+    </div>
+
+    <h2>The Dual-Porosity System: Nature's Two-Lane Highway</h2>
+
+    <p>
+        Naturally fractured reservoirs aren't simple. They contain two interconnected systems:
+    </p>
+
+    <ol>
+        <li><strong>The matrix system</strong> - the bulk rock containing tiny pores that hold most of the oil or gas</li>
+        <li><strong>The fracture system</strong> - a network of cracks that provides highways for fluid to flow to the well</li>
+    </ol>
+
+    <div class="analogy">
+        <h3>The Highway-Neighborhood Analogy</h3>
+        <p>
+            Think of a naturally fractured reservoir as a city. The matrix is like residential neighborhoods with narrow streets (small pores) where most people (oil) live. The fractures are like highways that allow fast travel but don't house many people. When production starts, the highways empty quickly, but then they need to be refilled from the neighborhoods - a much slower process.
+        </p>
+    </div>
+
+    <p>
+        When engineers drill a well into this system and produce oil or gas at a constant pressure, the fluid first flows from the fractures (they empty quickly), then gradually from the matrix into the fractures and finally to the well. When the well is shut in, the pressure builds back up in a pattern that reveals crucial information about both systems.
+    </p>
+
+    <h2>The Mathematical Foundation: Key Dimensionless Parameters</h2>
+
+    <p>
+        Before diving into the analysis, we need to understand several dimensionless parameters that characterize naturally fractured reservoirs. These parameters allow engineers to compare different reservoirs regardless of their specific physical dimensions.
+    </p>
+
+    <div class="equation-box">
+        <h3>Dimensionless Storage Ratio (ω)</h3>
+        <p>
+            This parameter represents the ratio of fracture storage capacity to total storage capacity:
+        </p>
+        <p>
+            \[ \omega = \frac{\phi_f c_{tf}}{\phi_f c_{tf} + \phi_m c_{tm}} \]
+        </p>
+        <p>
+            Where:
+        </p>
+        <ul>
+            <li>\(\phi_f\) = fracture porosity (fraction)</li>
+            <li>\(\phi_m\) = matrix porosity (fraction)</li>
+            <li>\(c_{tf}\) = fracture total compressibility (psi<sup>-1</sup>)</li>
+            <li>\(c_{tm}\) = matrix total compressibility (psi<sup>-1</sup>)</li>
+        </ul>
+        <p>
+            Typical values range from 10<sup>-4</sup> to 10<sup>-1</sup>.
+        </p>
+    </div>
+
+    <div class="equation-box">
+        <h3>Dimensionless Transfer Coefficient (λ)</h3>
+        <p>
+            This parameter controls how easily fluid flows between matrix and fracture:
+        </p>
+        <p>
+            \[ \lambda = \frac{8k_m}{k_f r_{Dma}^2} \]
+        </p>
+        <p>
+            Where:
+        </p>
+        <ul>
+            <li>\(k_m\) = matrix permeability (md)</li>
+            <li>\(k_f\) = fracture permeability (md)</li>
+            <li>\(r_{Dma}\) = dimensionless matrix size = \(a/r_w\)</li>
+            <li>\(a\) = characteristic matrix block size (ft)</li>
+            <li>\(r_w\) = wellbore radius (ft)</li>
+        </ul>
+        <p>
+            Typical values range from 10<sup>-10</sup> to 10<sup>-5</sup>.
+        </p>
+    </div>
+
+    <div class="interactive-element">
+        <h3>Interactive Exploration: Effect of ω and λ on Reservoir Behavior</h3>
+        <p>Adjust the sliders to see how different values of ω and λ affect the pressure response in a naturally fractured reservoir.</p>
+        
+        <div class="slider-container">
+            <label for="omega-slider">Storage Ratio (ω): <span id="omega-value">0.001</span></label>
+            <input type="range" id="omega-slider" class="slider" min="-4" max="-1" step="0.1" value="-3">
+        </div>
+        
+        <div class="slider-container">
+            <label for="lambda-slider">Transfer Coefficient (λ): <span id="lambda-value">1.0e-7</span></label>
+            <input type="range" id="lambda-slider" class="slider" min="-10" max="-5" step="0.5" value="-7">
+        </div>
+        
+        <canvas id="pressure-chart" width="700" height="400"></canvas>
+        
+        <p>
+            <strong>What to observe:</strong> Notice how smaller values of ω create more pronounced "dual-porosity" behavior with clearer separation between flow regimes. As λ decreases, the transition period between fracture flow and total system flow becomes longer.
+        </p>
+    </div>
+
+    <h2>The Three Flow Regimes: Decoding the Reservoir's Signature</h2>
+
+    <p>
+        One of the paper's key findings is that pressure buildup analysis in naturally fractured reservoirs can reveal up to three distinct flow regimes, each with its own characteristic behavior on semi-log plots.
+    </p>
+
+    <h3>Flow Regime 1: Fracture-Dominated Flow</h3>
+    
+    <p>
+        In this early phase, fluid flows primarily from the fractures. The matrix contribution is minimal. On a semi-log plot of 1/q<sub>D</sub> vs t<sub>D</sub> (or p<sub>D</sub>/q<sub>D</sub> vs (t+Δt)/Δt for buildup), this appears as a straight line with a slope of 1.151 per log cycle.
+    </p>
+
+    <div class="equation-box">
+        <p>
+            The mathematical expression for this regime during flowing period is:
+        </p>
+        <p>
+            \[ \frac{1}{q_D} = 1.151 \log t_D + 0.4045 + S \]
+        </p>
+        <p>
+            Where S is the skin factor, a dimensionless measure of near-wellbore damage or stimulation.
+        </p>
+    </div>
+
+    <h3>Flow Regime 2: Transition Flow</h3>
+    
+    <p>
+        This intermediate phase represents the period when the matrix begins contributing significantly to flow. The slope of this semi-log straight line depends on ω:
+    </p>
+
+    <ul>
+        <li>When ω ≤ 10<sup>-3</sup>: slope = 0.5756 per log cycle (exactly half of Flow Regime 1)</li>
+        <li>When ω = 10<sup>-2</sup>: slope = 0.625 per log cycle</li>
+        <li>When ω = 10<sup>-1</sup>: slope = 0.75 per log cycle</li>
+    </ul>
+
+    <div class="equation-box">
+        <p>
+            The mathematical expression for this regime (when ω ≤ 10<sup>-3</sup>) is:
+        </p>
+        <p>
+            \[ \frac{1}{q_D} = 0.5756 \left[ \log t_D - \log \frac{\lambda(1-\omega)}{\omega} + 1.734 \right] + S \]
+        </p>
+    </div>
+
+    <h3>Flow Regime 3: Total System Flow</h3>
+    
+    <p>
+        In this late phase, the matrix and fracture systems behave as a single unit. The semi-log straight line has a slope of 1.151 per log cycle (same as Flow Regime 1).
+    </p>
+
+    <div class="equation-box">
+        <p>
+            The mathematical expression for this regime is:
+        </p>
+        <p>
+            \[ \frac{1}{q_D} = 1.151 \log \omega t_D + 0.4045 + S \]
+        </p>
+    </div>
+
+    <div class="key-concept">
+        <h3>Key Insight: The Slope Ratio Reveals ω</h3>
+        <p>
+            One of the paper's most significant contributions is showing that the ratio of slopes between Flow Regime 1 and Flow Regime 2 is not always 2:1 as previously thought. This ratio actually depends on ω and can range from 2:1 (when ω ≤ 10<sup>-3</sup>) to about 1.19:1 (when ω approaches 10<sup>-1</sup>).
+        </p>
+        <p>
+            This means engineers can estimate ω directly from the slope ratio without needing to know λ!
+        </p>
+    </div>
+
+    <h2>Pressure Buildup Analysis: The Detective Work</h2>
+
+    <p>
+        When a well is shut in after producing at constant pressure, the pressure buildup response follows patterns similar to the flowing period but requires different analysis techniques.
+    </p>
+
+    <p>
+        The paper introduces a critical concept: the appropriate dimensionless pressure group for buildup analysis is:
+    </p>
+
+    <div class="equation-box">
+        <p>
+            \[ \frac{p_{Ds}(\Delta t_D)}{q_D(t_D)} = \frac{k_f h(p_{ws} - p_{wf})}{7.2\pi \times 10^{-6} q(t) \mu B} \]
+        </p>
+        <p>
+            Where:
+        </p>
+        <ul>
+            <li>\(p_{ws}\) = shut-in wellbore pressure</li>
+            <li>\(p_{wf}\) = flowing wellbore pressure before shut-in</li>
+            <li>\(q(t)\) = flow rate at the time of shut-in</li>
+            <li>\(k_f\) = fracture permeability</li>
+            <li>\(h\) = reservoir thickness</li>
+            <li>\(\mu\) = fluid viscosity</li>
+            <li>\(B\) = formation volume factor</li>
+        </ul>
+    </div>
+
+    <p>
+        The paper shows that plotting this pressure group versus (t+Δt)/Δt on semi-log paper (a Horner plot) will yield straight lines corresponding to the flow regimes present during the flowing period.
+    </p>
+
+    <h3>Case 1: Well Shut-in During Flow Regime 1</h3>
+    
+    <p>
+        If the well is shut in while Flow Regime 1 dominates, the Horner plot will show a straight line with a slope of 1.151 per log cycle. The fracture permeability can be calculated from:
+    </p>
+
+    <div class="equation-box">
+        <p>
+            \[ k_f h = \frac{5.088 \times 10^4 q(t) \mu B}{m_1} \]
+        </p>
+        <p>
+            Where \(m_1\) is the slope of the semi-log straight line.
+        </p>
+    </div>
+
+    <h3>Case 2: Well Shut-in During Flow Regime 2</h3>
+    
+    <p>
+        If the well is shut in during Flow Regime 2, the Horner plot may show two straight lines: one reflecting Flow Regime 1 and another reflecting Flow Regime 2. The slopes of these lines can be used to determine both \(k_f h\) and ω.
+    </p>
+
+    <h3>Case 3: Well Shut-in During Flow Regime 3</h3>
+    
+    <p>
+        If the well is shut in during Flow Regime 3, the Horner plot may show all three flow regimes. The paper provides equations to calculate reservoir parameters from each segment.
+    </p>
+
+    <div class="interactive-element">
+        <h3>Interactive Simulator: Horner Buildup Analysis</h3>
+        <p>Use this simulator to generate and analyze Horner plots for different shut-in scenarios.</p>
+        
+        <div class="slider-container">
+            <label for="omega-slider2">Storage Ratio (ω): <span id="omega-value2">0.001</span></label>
+            <input type="range" id="omega-slider2" class="slider" min="-4" max="-1" step="0.1" value="-3">
+        </div>
+        
+        <div class="slider-container">
+            <label for="lambda-slider2">Transfer Coefficient (λ): <span id="lambda-value2">1.0e-7</span></label>
+            <input type="range" id="lambda-slider2" class="slider" min="-10" max="-5" step="0.5" value="-7">
+        </div>
+        
+        <div class="slider-container">
+            <label for="shutin-slider">Shut-in Time (dimensionless): <span id="shutin-value">1.0e+5</span></label>
+            <input type="range" id="shutin-slider" class="slider" min="3" max="7" step="0.1" value="5">
+        </div>
+        
+        <canvas id="horner-chart" width="700" height="400"></canvas>
+        
+        <div id="analysis-result">
+            <p><strong>Analysis Results:</strong></p>
+            <p>Flow regimes visible: <span id="flow-regimes">1, 2, 3</span></p>
+            <p>Estimated k<sub>f</sub>h: <span id="kfh-value">--</span> md-ft</p>
+            <p>Estimated ω: <span id="omega-est">--</span></p>
+            <p>Estimated λ: <span id="lambda-est">--</span></p>
+        </div>
+    </div>
+
+    <h2>Practical Applications: From Theory to the Field</h2>
+
+    <p>
+        The paper's findings have significant practical implications for reservoir engineers:
+    </p>
+
+    <ol>
+        <li>
+            <strong>Formation Property Determination:</strong> Rate and pressure data can be used to determine key reservoir properties including flow capacity (k<sub>f</sub>h), storage ratio (ω), interporosity flow coefficient (λ), and skin factor (S).
+        </li>
+        <li>
+            <strong>Reservoir Characterization:</strong> The presence and characteristics of the three flow regimes help identify naturally fractured reservoirs and distinguish them from other reservoir types.
+        </li>
+        <li>
+            <strong>Well Performance Prediction:</strong> Understanding these parameters allows engineers to predict future well performance and optimize production strategies.
+        </li>
+        <li>
+            <strong>Reservoir Management:</strong> The insights gained help in designing better production and pressure maintenance strategies for naturally fractured reservoirs.
+        </li>
+    </ol>
+
+    <h2>Conclusion: The Power of Pressure Buildup Analysis</h2>
+
+    <p>
+        Pressure buildup analysis in naturally fractured reservoirs is like a forensic investigation that reveals the hidden structure and properties of these complex systems. The paper we've explored makes several important contributions:
+    </p>
+
+    <ol>
+        <li>It establishes that the ratio of slopes between early and intermediate flow regimes is not always 2:1 but depends on ω.</li>
+        <li>It demonstrates that the appropriate dimensionless pressure group for buildup analysis is p<sub>D</sub>/q<sub>D</sub>.</li>
+        <li>It provides practical methods to determine reservoir properties from rate and pressure data.</li>
+    </ol>
+
+    <p>
+        By understanding these concepts, reservoir engineers can better characterize naturally fractured reservoirs, leading to more efficient production strategies and improved resource recovery.
+    </p>
+
+    <div class="footnote">
+        <h3>References</h3>
+        <p class="reference">
+            1. Barenblatt, G.E., Zheltov, I.P. and Kochina, I.N.: "Basic concepts in the theory of homogeneous liquids in fissured rocks": J. Appl. Math Mech. (U.S.S.R. 245) (1960) 1286-1303.
+        </p>
+        <p class="reference">
+            2. Warren, J.E. and Root, P.J.: "The Behavior of Naturally Fractured Reservoirs," SPE J. (Sept. 1963), 245-255.
+        </p>
+        <p class="reference">
+            3. Kazemi, H.: "Pressure Transient Analysis of Naturally Fractured Reservoirs," Trans., AIME (1969), 256, 451-461.
+        </p>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize values from sliders
+            document.getElementById('omega-value').textContent = '1.0e-' + document.getElementById('omega-slider').value;
+            document.getElementById('lambda-value').textContent = '1.0e' + document.getElementById('lambda-slider').value;
+            document.getElementById('omega-value2').textContent = '1.0e-' + document.getElementById('omega-slider2').value;
+            document.getElementById('lambda-value2').textContent = '1.0e' + document.getElementById('lambda-slider2').value;
+            document.getElementById('shutin-value').textContent = '1.0e+' + document.getElementById('shutin-slider').value;
+    
+            // Update values when sliders change
+            document.getElementById('omega-slider').addEventListener('input', function() {
+                document.getElementById('omega-value').textContent = '1.0e-' + this.value;
+                updatePressureChart();
+            });
+    
+            document.getElementById('lambda-slider').addEventListener('input', function() {
+                document.getElementById('lambda-value').textContent = '1.0e' + this.value;
+                updatePressureChart();
+            });
+    
+            document.getElementById('omega-slider2').addEventListener('input', function() {
+                document.getElementById('omega-value2').textContent = '1.0e-' + this.value;
+                updateHornerChart();
+            });
+    
+            document.getElementById('lambda-slider2').addEventListener('input', function() {
+                document.getElementById('lambda-value2').textContent = '1.0e' + this.value;
+                updateHornerChart();
+            });
+    
+            document.getElementById('shutin-slider').addEventListener('input', function() {
+                document.getElementById('shutin-value').textContent = '1.0e+' + this.value;
+                updateHornerChart();
+            });
+    
+            // Function to generate flowing period data
+            function generateFlowingData(omega, lambda) {
+                const logTD = [];
+                const invQD = [];
+                
+                // Generate logarithmically spaced time points
+                for (let i = 0; i <= 100; i++) {
+                    const logT = 0 + i * (8 - 0) / 100;
+                    logTD.push(logT);
+                    
+                    const tD = Math.pow(10, logT);
+                    let value;
+                    
+                    // Flow regime 1 (early time)
+                    if (tD < omega / (8 * lambda * (1 - omega))) {
+                        value = 1.151 * logT + 0.4045;
+                    }
+                    // Flow regime 2 (intermediate time)
+                    else if (tD < lambda * (1 - omega) / (1.5 * omega)) {
+                        let slope;
+                        if (omega <= 0.001) {
+                            slope = 0.5756;
+                        } else if (omega <= 0.01) {
+                            slope = 0.625;
+                        } else {
+                            slope = 0.75;
+                        }
+                        value = slope * (logT - Math.log10(lambda * (1 - omega) / omega) + 1.734);
+                    }
+                    // Flow regime 3 (late time)
+                    else {
+                        value = 1.151 * (logT + Math.log10(omega)) + 0.4045;
+                    }
+                    
+                    invQD.push(value);
+                }
+                
+                return { logTD, invQD };
+            }
+    
+            // Function to generate Horner buildup data
+            function generateHornerData(omega, lambda, shutinTime) {
+                const hornerRatio = [];
+                const pDqD = [];
+                
+                // Calculate dimensionless flowing time
+                const tD = Math.pow(10, shutinTime);
+                
+                // Determine which flow regime exists at shut-in
+                let flowRegime;
+                if (tD < omega / (8 * lambda * (1 - omega))) {
+                    flowRegime = 1;
+                } else if (tD < lambda * (1 - omega) / (1.5 * omega)) {
+                    flowRegime = 2;
+                } else {
+                    flowRegime = 3;
+                }
+                
+                // Generate Horner plot data
+                for (let i = 0; i <= 100; i++) {
+                    // Generate logarithmically spaced Horner time ratio
+                    const ratio = 1 + Math.pow(10, 4 - i * 4 / 100);
+                    hornerRatio.push(ratio);
+                    
+                    const deltaT = tD / (ratio - 1);
+                    let value = 0;
+                    
+                    // Flow regime 1 response
+                    if (flowRegime >= 1 && deltaT < omega / (8 * lambda * (1 - omega))) {
+                        value = 1.151 * Math.log10(ratio);
+                        if (flowRegime === 3) {
+                            value += 1.151 * Math.log10(omega);
+                        }
+                    }
+                    // Flow regime 2 response
+                    else if (flowRegime >= 2 && deltaT < lambda * (1 - omega) / (1.5 * omega)) {
+                        let slope;
+                        if (omega <= 0.001) {
+                            slope = 0.5756;
+                        } else if (omega <= 0.01) {
+                            slope = 0.625;
+                        } else {
+                            slope = 0.75;
+                        }
+                        value = slope * Math.log10(ratio);
+                        if (flowRegime === 3) {
+                            value += slope * Math.log10(lambda * (1 - omega) / (2 * omega));
+                        }
+                    }
+                    // Flow regime 3 response
+                    else if (flowRegime === 3) {
+                        value = 1.151 * Math.log10(ratio);
+                    }
+                    
+                    pDqD.push(value);
+                }
+                
+                return { hornerRatio, pDqD, flowRegime };
+            }
+    
+            // Function to update pressure chart
+            function updatePressureChart() {
+                const omega = Math.pow(10, -document.getElementById('omega-slider').value);
+                const lambda = Math.pow(10, parseFloat(document.getElementById('lambda-slider').value));
+                
+                const data = generateFlowingData(omega, lambda);
+                
+                // Create chart if it doesn't exist, otherwise update it
+                if (window.pressureChart) {
+                    window.pressureChart.data.labels = data.logTD;
+                    window.pressureChart.data.datasets[0].data = data.invQD;
+                    window.pressureChart.update();
+                } else {
+                    const ctx = document.getElementById('pressure-chart').getContext('2d');
+                    window.pressureChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.logTD,
+                            datasets: [{
+                                label: '1/qD vs. log(tD)',
+                                data: data.invQD,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    title: {
+                                        display: true,
+                                        text: 'log(tD) - Dimensionless Time'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: '1/qD - Reciprocal Dimensionless Rate'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Flowing Period Response in Naturally Fractured Reservoir'
+                                },
+                                annotation: {
+                                    annotations: {
+                                        regime1: {
+                                            type: 'line',
+                                            borderColor: 'rgba(255, 99, 132, 0.5)',
+                                            borderWidth: 2,
+                                            label: {
+                                                content: 'Flow Regime 1',
+                                                enabled: true
+                                            },
+                                            scaleID: 'x',
+                                            value: Math.log10(omega / (8 * lambda * (1 - omega)))
+                                        },
+                                        regime2: {
+                                            type: 'line',
+                                            borderColor: 'rgba(54, 162, 235, 0.5)',
+                                            borderWidth: 2,
+                                            label: {
+                                                content: 'Flow Regime 2',
+                                                enabled: true
+                                            },
+                                            scaleID: 'x',
+                                            value: Math.log10(lambda * (1 - omega) / (1.5 * omega))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+    
+            // Function to update Horner chart
+            function updateHornerChart() {
+                const omega = Math.pow(10, -document.getElementById('omega-slider2').value);
+                const lambda = Math.pow(10, parseFloat(document.getElementById('lambda-slider2').value));
+                const shutinTime = parseFloat(document.getElementById('shutin-slider').value);
+                
+                const data = generateHornerData(omega, lambda, shutinTime);
+                
+                // Update analysis results
+                document.getElementById('flow-regimes').textContent = data.flowRegime === 1 ? '1' : 
+                                                                     data.flowRegime === 2 ? '1, 2' : 
+                                                                     '1, 2, 3';
+                
+                // Estimate parameters
+                let slopeRatio;
+                if (data.flowRegime >= 2) {
+                    // Calculate slope ratio based on omega
+                    if (omega <= 0.001) {
+                        slopeRatio = 2.0;
+                    } else if (omega <= 0.01) {
+                        slopeRatio = 1.151 / 0.625;
+                    } else {
+                        slopeRatio = 1.151 / 0.75;
+                    }
+                    
+                    document.getElementById('kfh-value').textContent = (5.088 * Math.pow(10, 4) / 1.151).toFixed(0);
+                    document.getElementById('omega-est').textContent = omega.toExponential(1);
+                    
+                    // Estimate lambda if flow regime 3 is visible
+                    if (data.flowRegime === 3) {
+                        document.getElementById('lambda-est').textContent = lambda.toExponential(1);
+                    } else {
+                        document.getElementById('lambda-est').textContent = "Not enough data";
+                    }
+                } else {
+                    document.getElementById('kfh-value').textContent = (5.088 * Math.pow(10, 4) / 1.151).toFixed(0);
+                    document.getElementById('omega-est').textContent = "Not enough data";
+                    document.getElementById('lambda-est').textContent = "Not enough data";
+                }
+                
+                // Create chart if it doesn't exist, otherwise update it
+                if (window.hornerChart) {
+                    window.hornerChart.data.labels = data.hornerRatio;
+                    window.hornerChart.data.datasets[0].data = data.pDqD;
+                    window.hornerChart.update();
+                } else {
+                    const ctx = document.getElementById('horner-chart').getContext('2d');
+                    window.hornerChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.hornerRatio,
+                            datasets: [{
+                                label: 'pD/qD vs. (t+Δt)/Δt',
+                                data: data.pDqD,
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'logarithmic',
+                                    title: {
+                                        display: true,
+                                        text: '(t+Δt)/Δt - Horner Time Ratio'
+                                    },
+                                    reverse: true
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'pD/qD - Dimensionless Pressure/Rate'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Horner Buildup Analysis in Naturally Fractured Reservoir'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+    
+            // Initialize charts
+            updatePressureChart();
+            updateHornerChart();
+});
+</script>
+</body>
+</html>

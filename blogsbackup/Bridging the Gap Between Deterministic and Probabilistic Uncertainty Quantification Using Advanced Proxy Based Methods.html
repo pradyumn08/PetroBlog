@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Hamiltonian Monte Carlo: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        #simulation-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+        .control-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .slider-container {
+            margin: 10px 0;
+        }
+        input[type="range"] {
+            width: 70%;
+            vertical-align: middle;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        canvas {
+            display: block;
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 8px 15px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hamiltonian Monte Carlo: Sampling from Complex Probability Distributions</h1>
+    
+    <p>In today's blog post, we'll dive deep into Hamiltonian Monte Carlo (HMC), an advanced sampling technique that has revolutionized Bayesian statistics, machine learning, and uncertainty quantification. We'll break down this complex algorithm using first principles, making it accessible even if you're new to the field.</p>
+    
+    <div class="highlight">
+        <p>HMC stands out among sampling methods because it leverages concepts from physics to efficiently explore probability distributions, especially in high-dimensional spaces where traditional methods struggle.</p>
+    </div>
+    
+    <h2>The Problem: Why Traditional Sampling Methods Fall Short</h2>
+    
+    <p>Imagine you're trying to characterize uncertainty in a complex system - perhaps a reservoir simulation model with dozens of parameters, as described in our reference paper. The traditional approach, Random Walk Markov Chain Monte Carlo (RWMCMC), works like this:</p>
+    
+    <ol>
+        <li>Start at a current position in parameter space</li>
+        <li>Propose a random step in some direction</li>
+        <li>Accept or reject the step based on the target probability distribution</li>
+        <li>Repeat many times to build a sample</li>
+    </ol>
+    
+    <p>This approach has a critical flaw: in high dimensions, it takes an extremely long time to explore the parameter space effectively. The paper highlights this limitation:</p>
+    
+    <div class="note">
+        <p>"The main pitfall of simple random walk MCMC techniques... is a focus on theoretical properties which are not observed in practical implementations. This gives rise to potential gross errors, which are not generally appreciated by practitioners."</p>
+    </div>
+    
+    <h2>Understanding Hamiltonian Monte Carlo from First Principles</h2>
+    
+    <p>Hamiltonian Monte Carlo solves this problem by borrowing ideas from physics. Instead of randomly stumbling around parameter space, HMC uses the gradient of the probability distribution to guide its exploration.</p>
+    
+    <h3>The Key Insight: Energy and Momentum</h3>
+    
+    <p>In physics, a Hamiltonian system describes the total energy of a particle as the sum of its potential energy and kinetic energy. HMC applies this concept to probability sampling:</p>
+    
+    <div class="equation-box">
+        <p>\(H(q, p) = U(q) + K(p)\)</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(q\) represents our parameters (position)</li>
+        <li>\(p\) represents auxiliary momentum variables</li>
+        <li>\(U(q)\) is the potential energy (related to our probability distribution)</li>
+        <li>\(K(p)\) is the kinetic energy (typically \(\frac{p^T p}{2}\))</li>
+    </ul>
+    
+    <p>The connection to our probability distribution comes from setting:</p>
+    
+    <div class="equation-box">
+        <p>\(U(q) = -\log(P(q))\)</p>
+    </div>
+    
+    <p>Where \(P(q)\) is our target probability distribution. This means regions of high probability correspond to low potential energy.</p>
+    
+    <h3>Hamilton's Equations: The Engine of HMC</h3>
+    
+    <p>The system evolves according to Hamilton's equations:</p>
+    
+    <div class="equation-box">
+        <p>\(\frac{dq}{dt} = \frac{\partial H}{\partial p} = p\)</p>
+        <p>\(\frac{dp}{dt} = -\frac{\partial H}{\partial q} = -\frac{\partial U}{\partial q} = \nabla \log(P(q))\)</p>
+    </div>
+    
+    <p>These equations describe how the position and momentum change over time. The key insight is that following these equations preserves the total energy of the system, which means we can move along these trajectories and maintain the correct probability distribution.</p>
+    
+    <h3>The Leapfrog Integrator: Making It Practical</h3>
+    
+    <p>To implement HMC, we need to discretize Hamilton's equations. The leapfrog integrator is commonly used because it's simple and preserves important properties of the continuous system:</p>
+    
+    <div class="equation-box">
+        <p>\(p_{t+\epsilon/2} = p_t - \frac{\epsilon}{2}\nabla U(q_t)\)</p>
+        <p>\(q_{t+\epsilon} = q_t + \epsilon p_{t+\epsilon/2}\)</p>
+        <p>\(p_{t+\epsilon} = p_{t+\epsilon/2} - \frac{\epsilon}{2}\nabla U(q_{t+\epsilon})\)</p>
+    </div>
+    
+    <p>Where \(\epsilon\) is the step size. This integration scheme alternates half-steps for momentum with full steps for position.</p>
+    
+    <h3>The Complete HMC Algorithm</h3>
+    
+    <ol>
+        <li>Start at current position \(q\)</li>
+        <li>Sample a random momentum \(p\) from a standard normal distribution</li>
+        <li>Perform \(L\) leapfrog steps to get a proposal \((q', p')\)</li>
+        <li>Accept or reject the proposal with probability \(\min(1, \exp(H(q, p) - H(q', p')))\)</li>
+        <li>Return to step 1 and repeat</li>
+    </ol>
+    
+    <p>The acceptance probability ensures we maintain the correct distribution despite numerical errors in the integration.</p>
+    
+    <h2>Interactive Demonstration: Exploring HMC</h2>
+    
+    <p>Let's visualize how HMC works compared to random walk methods. The simulation below shows particles moving in a 2D probability distribution. You can adjust parameters to see how they affect sampling efficiency.</p>
+    
+    <div class="control-panel">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(event, 'hmc-tab')">HMC</div>
+            <div class="tab" onclick="switchTab(event, 'rwmcmc-tab')">Random Walk MCMC</div>
+        </div>
+        
+        <div id="hmc-tab" class="tab-content active">
+            <div class="slider-container">
+                <label for="hmc-step-size">Step Size (ε): </label>
+                <input type="range" id="hmc-step-size" min="0.01" max="0.3" step="0.01" value="0.1">
+                <span id="hmc-step-size-value">0.1</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="hmc-num-steps">Number of Leapfrog Steps: </label>
+                <input type="range" id="hmc-num-steps" min="1" max="50" step="1" value="20">
+                <span id="hmc-num-steps-value">20</span>
+            </div>
+        </div>
+        
+        <div id="rwmcmc-tab" class="tab-content">
+            <div class="slider-container">
+                <label for="rw-step-size">Step Size: </label>
+                <input type="range" id="rw-step-size" min="0.01" max="1" step="0.01" value="0.2">
+                <span id="rw-step-size-value">0.2</span>
+            </div>
+        </div>
+        
+        <div class="slider-container">
+            <label for="distribution-type">Distribution Type: </label>
+            <select id="distribution-type">
+                <option value="gaussian">Multivariate Gaussian</option>
+                <option value="banana">Banana Distribution</option>
+            </select>
+        </div>
+        
+        <button id="start-button">Start Simulation</button>
+        <button id="reset-button">Reset</button>
+    </div>
+    
+    <div id="simulation-container">
+        <canvas id="simulation-canvas" width="800" height="400"></canvas>
+    </div>
+    
+    <div id="stats-container">
+        <p>Acceptance Rate: <span id="acceptance-rate">0%</span></p>
+        <p>Effective Sample Size: <span id="effective-sample-size">0</span></p>
+    </div>
+    
+    <h2>The Mathematics Behind HMC</h2>
+    
+    <p>Let's explore the mathematical foundations in more detail. The paper mentions that HMC requires calculating derivatives of the likelihood function:</p>
+    
+    <div class="equation-box">
+        <p>The Hamiltonian is defined as:</p>
+        <p>\(H(\mathbf{x}, \mathbf{p}) = -L(\mathbf{x}) + \frac{1}{2}\mathbf{p}^T \mathbf{M}^{-1} \mathbf{p}\)</p>
+        <p>where \(L(\mathbf{x})\) is the likelihood function, \(\mathbf{p}\) is the momentum variable, and \(\mathbf{M}\) is a mass matrix.</p>
+    </div>
+    
+    <p>The equations of motion are:</p>
+    
+    <div class="equation-box">
+        <p>\(\frac{\partial \mathbf{x}}{\partial t} = \mathbf{M}^{-1} \mathbf{p}\)</p>
+        <p>\(\frac{\partial \mathbf{p}}{\partial t} = -\nabla_{\mathbf{x}} L(\mathbf{x})\)</p>
+    </div>
+    
+    <p>For the leapfrog integrator, we implement these as:</p>
+    
+    <div class="equation-box">
+        <p>\(\mathbf{p}(\tau + \frac{\epsilon}{2}) = \mathbf{p}(\tau) - \frac{\epsilon}{2} \nabla_{\mathbf{x}} L(\mathbf{x}(\tau))\)</p>
+        <p>\(\mathbf{x}(\tau + \epsilon) = \mathbf{x}(\tau) + \epsilon \mathbf{M}^{-1} \mathbf{p}(\tau + \frac{\epsilon}{2})\)</p>
+        <p>\(\mathbf{p}(\tau + \epsilon) = \mathbf{p}(\tau + \frac{\epsilon}{2}) - \frac{\epsilon}{2} \nabla_{\mathbf{x}} L(\mathbf{x}(\tau + \epsilon))\)</p>
+    </div>
+    
+    <h3>The No-U-Turn Sampler (NUTS)</h3>
+    
+    <p>The paper mentions a key advancement called NUTS (No-U-Turn Sampler). This algorithm automatically tunes two critical parameters of HMC:</p>
+    
+    <ol>
+        <li>The step size \(\epsilon\)</li>
+        <li>The number of leapfrog steps \(L\)</li>
+    </ol>
+    
+    <p>NUTS works by running the leapfrog integrator forward and backward in time until the trajectory starts to double back on itself (hence "No-U-Turn"). This adaptively determines the appropriate trajectory length for each sample.</p>
+    
+    <div class="equation-box">
+        <p>The NUTS criterion stops when:</p>
+        <p>\((q_+ - q_-) \cdot p_- < 0\) or \((q_+ - q_-) \cdot p_+ < 0\)</p>
+        <p>where \(q_+, p_+\) are the furthest forward position and momentum, and \(q_-, p_-\) are the furthest backward position and momentum.</p>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>The paper describes applying these methods to reservoir simulation models. In such models, we might have dozens or hundreds of parameters representing geological properties, fluid characteristics, and other factors.</p>
+    
+    <p>Traditional methods would require millions of simulation runs to adequately explore this space, which is computationally infeasible. HMC dramatically reduces the number of required simulations while providing more accurate uncertainty quantification.</p>
+    
+    <div class="note">
+        <p>From the paper: "We hope the approach described in this paper, and the associated software tools, will demonstrate that it is possible, with recent research, to perform probabilistic subsurface uncertainty which is both statistically valid, and which does not require an enormous computational burden."</p>
+    </div>
+    
+    <h2>The Proxy Model Connection</h2>
+    
+    <p>A key component of the paper's approach is the use of proxy models to make HMC practical for expensive simulations. A proxy model is a fast approximation of the actual simulation:</p>
+    
+    <ol>
+        <li>Run a limited number of full simulations at carefully chosen points</li>
+        <li>Build a proxy model (like a Gaussian process) that approximates the simulation</li>
+        <li>Run HMC on the proxy model, which is much faster</li>
+        <li>Validate the proxy results with selective full simulations</li>
+    </ol>
+    
+    <p>The mathematical form of the proxy model is:</p>
+    
+    <div class="equation-box">
+        <p>\(y(\mathbf{x}) = \mathbf{f}(\mathbf{x})^T \mathbf{\beta} + \sum_{k=1}^{n} \lambda_k \phi(||\mathbf{x} - \mathbf{x}_k||)\)</p>
+        <p>where \(\mathbf{f}(\mathbf{x})^T \mathbf{\beta}\) is a polynomial trend and the sum represents the correlation structure.</p>
+    </div>
+    
+    <h2>Conclusion: Why HMC Matters</h2>
+    
+    <p>Hamiltonian Monte Carlo represents a significant advancement in our ability to quantify uncertainty in complex systems. By leveraging physical principles and gradient information, it explores probability distributions far more efficiently than traditional methods.</p>
+    
+    <p>The paper demonstrates that this approach can provide statistically valid uncertainty quantification for reservoir models without requiring an impractical number of simulations. This has important implications for decision-making in the oil and gas industry, but the principles apply broadly to any field dealing with complex computational models.</p>
+    
+    <p>By understanding HMC from first principles, we can appreciate how this algorithm bridges theoretical statistics with practical engineering challenges, ultimately leading to better decisions under uncertainty.</p>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('simulation-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width;
+        let height = canvas.height;
+        
+        // Simulation parameters
+        let running = false;
+        let hmcMode = true;
+        let particles = [];
+        let acceptanceCount = 0;
+        let totalProposals = 0;
+        let samples = [];
+        
+        // Distribution parameters
+        let mean = [width/2, height/2];
+        let sigma = [width/6, height/6];
+        let correlation = 0.8;
+        let bananaB = 0.1;
+        let bananaA = 10;
+        
+        // Get UI elements
+        const hmcStepSize = document.getElementById('hmc-step-size');
+        const hmcNumSteps = document.getElementById('hmc-num-steps');
+        const rwStepSize = document.getElementById('rw-step-size');
+        const distributionType = document.getElementById('distribution-type');
+        const startButton = document.getElementById('start-button');
+        const resetButton = document.getElementById('reset-button');
+        const acceptanceRateEl = document.getElementById('acceptance-rate');
+        const effectiveSampleSizeEl = document.getElementById('effective-sample-size');
+        
+        // Update displayed values
+        hmcStepSize.addEventListener('input', () => {
+            document.getElementById('hmc-step-size-value').textContent = hmcStepSize.value;
+        });
+        
+        hmcNumSteps.addEventListener('input', () => {
+            document.getElementById('hmc-num-steps-value').textContent = hmcNumSteps.value;
+        });
+        
+        rwStepSize.addEventListener('input', () => {
+            document.getElementById('rw-step-size-value').textContent = rwStepSize.value;
+        });
+        
+        // Tab switching
+        function switchTab(event, tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Deactivate all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and activate the tab
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Set simulation mode
+            hmcMode = (tabId === 'hmc-tab');
+        }
+        
+        // Potential energy functions (negative log probability)
+        function gaussianPotential(x, y) {
+            const dx = x - mean[0];
+            const dy = y - mean[1];
+            const term1 = dx * dx / (sigma[0] * sigma[0]);
+            const term2 = dy * dy / (sigma[1] * sigma[1]);
+            const term3 = 2 * correlation * dx * dy / (sigma[0] * sigma[1]);
+            return 0.5 * (term1 + term2 - term3);
+        }
+        
+        function bananaPotential(x, y) {
+            // Normalized coordinates
+            const nx = (x - mean[0]) / sigma[0];
+            const ny = (y - mean[1]) / sigma[1];
+            
+            return 0.5 * (nx * nx / (bananaA * bananaA) + 
+                          Math.pow(ny - bananaB * (nx * nx - bananaA * bananaA), 2));
+        }
+        
+        function getPotential(x, y) {
+            if (distributionType.value === 'gaussian') {
+                return gaussianPotential(x, y);
+            } else {
+                return bananaPotential(x, y);
+            }
+        }
+        
+        // Gradient of potential energy
+        function gradientGaussian(x, y) {
+            const dx = x - mean[0];
+            const dy = y - mean[1];
+            
+            const gradX = dx / (sigma[0] * sigma[0]) - correlation * dy / (sigma[0] * sigma[1]);
+            const gradY = dy / (sigma[1] * sigma[1]) - correlation * dx / (sigma[0] * sigma[1]);
+            
+            return [gradX, gradY];
+        }
+        
+        function gradientBanana(x, y) {
+            // Normalized coordinates
+            const nx = (x - mean[0]) / sigma[0];
+            const ny = (y - mean[1]) / sigma[1];
+            
+            const term = ny - bananaB * (nx * nx - bananaA * bananaA);
+            
+            const gradX = nx / (bananaA * bananaA * sigma[0]) - 
+                          2 * bananaB * nx * term / sigma[0];
+            const gradY = term / sigma[1];
+            
+            return [gradX, gradY];
+        }
+        
+        function getGradient(x, y) {
+            if (distributionType.value === 'gaussian') {
+                return gradientGaussian(x, y);
+            } else {
+                return gradientBanana(x, y);
+            }
+        }
+        
+        // HMC leapfrog integrator
+        function leapfrog(position, momentum, stepSize, numSteps) {
+            let x = position[0];
+            let y = position[1];
+            let px = momentum[0];
+            let py = momentum[1];
+            
+            // First half-step for momentum
+            let grad = getGradient(x, y);
+            px -= stepSize * grad[0] / 2;
+            py -= stepSize * grad[1] / 2;
+            
+            // Full steps for position and momentum
+            for (let i = 0; i < numSteps; i++) {
+                // Full step for position
+                x += stepSize * px;
+                y += stepSize * py;
+                
+                // Full step for momentum (except at the end)
+                if (i < numSteps - 1) {
+                    grad = getGradient(x, y);
+                    px -= stepSize * grad[0];
+                    py -= stepSize * grad[1];
+                }
+            }
+            
+            // Last half-step for momentum
+            grad = getGradient(x, y);
+            px -= stepSize * grad[0] / 2;
+            py -= stepSize * grad[1] / 2;
+            
+            return {
+                position: [x, y],
+                momentum: [px, py]
+            };
+        }
+        
+        // Random walk proposal
+        function randomWalk(position, stepSize) {
+            const x = position[0] + (Math.random() * 2 - 1) * stepSize * width;
+            const y = position[1] + (Math.random() * 2 - 1) * stepSize * height;
+            return [x, y];
+        }
+        
+        // Hamiltonian (total energy)
+        function hamiltonian(position, momentum) {
+            const potential = getPotential(position[0], position[1]);
+            const kinetic = 0.5 * (momentum[0] * momentum[0] + momentum[1] * momentum[1]);
+            return potential + kinetic;
+        }
+        
+        // HMC step
+        function hmcStep(particle) {
+            // Sample random momentum
+            const momentum = [
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1
+            ];
+            
+            const initialPosition = [particle.x, particle.y];
+            const initialMomentum = momentum;
+            
+            // Compute initial Hamiltonian
+            const initialH = hamiltonian(initialPosition, initialMomentum);
+            
+            // Perform leapfrog integration
+            const stepSize = parseFloat(hmcStepSize.value) * Math.min(width, height);
+            const numSteps = parseInt(hmcNumSteps.value);
+            
+            const result = leapfrog(
+                initialPosition,
+                initialMomentum,
+                stepSize,
+                numSteps
+            );
+            
+            // Compute final Hamiltonian
+            const finalH = hamiltonian(result.position, result.momentum);
+            
+            // Metropolis acceptance
+            totalProposals++;
+            const acceptanceProbability = Math.min(1, Math.exp(initialH - finalH));
+            
+            if (Math.random() < acceptanceProbability) {
+                acceptanceCount++;
+                particle.x = result.position[0];
+                particle.y = result.position[1];
+                samples.push([particle.x, particle.y]);
+            }
+            
+            // Update statistics
+            updateStats();
+        }
+        
+        // Random walk MCMC step
+        function rwmcmcStep(particle) {
+            const initialPosition = [particle.x, particle.y];
+            const initialPotential = getPotential(initialPosition[0], initialPosition[1]);
+            
+            // Propose new position
+            const stepSize = parseFloat(rwStepSize.value);
+            const proposedPosition = randomWalk(initialPosition, stepSize);
+            
+            // Compute potentials
+            const proposedPotential = getPotential(proposedPosition[0], proposedPosition[1]);
+            
+            // Metropolis acceptance
+            totalProposals++;
+            const acceptanceProbability = Math.min(1, Math.exp(initialPotential - proposedPotential));
+            
+            if (Math.random() < acceptanceProbability) {
+                acceptanceCount++;
+                particle.x = proposedPosition[0];
+                particle.y = proposedPosition[1];
+                samples.push([particle.x, particle.y]);
+            }
+            
+            // Update statistics
+            updateStats();
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            const acceptanceRate = (totalProposals > 0) ? 
+                (acceptanceCount / totalProposals * 100).toFixed(1) + '%' : '0%';
+            acceptanceRateEl.textContent = acceptanceRate;
+            
+            // Simplified effective sample size calculation
+            // In practice, this would involve autocorrelation analysis
+            const effectiveSampleSize = Math.min(samples.length, 
+                Math.floor(samples.length * (acceptanceCount / Math.max(1, totalProposals))));
+            effectiveSampleSizeEl.textContent = effectiveSampleSize;
+        }
+        
+        // Draw background density
+        function drawDensity() {
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+            
+            let minPotential = Infinity;
+            let maxPotential = -Infinity;
+            
+            // First pass: find min and max potential
+            for (let y = 0; y < height; y += 4) {
+                for (let x = 0; x < width; x += 4) {
+                    const potential = getPotential(x, y);
+                    minPotential = Math.min(minPotential, potential);
+                    maxPotential = Math.max(maxPotential, potential);
+                }
+            }
+            
+            // Second pass: draw density
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const potential = getPotential(x, y);
+                    const normalizedPotential = (potential - minPotential) / (maxPotential - minPotential);
+                    const intensity = Math.floor(255 * (1 - Math.min(1, normalizedPotential * 3)));
+                    
+                    const index = (y * width + x) * 4;
+                    data[index] = intensity;     // R
+                    data[index + 1] = intensity; // G
+                    data[index + 2] = intensity; // B
+                    data[index + 3] = 255;       // A
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        // Draw particles and samples
+        function drawParticles() {
+            // Draw samples as small dots
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.5)';
+            for (const sample of samples) {
+                ctx.beginPath();
+                ctx.arc(sample[0], sample[1], 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw current particles
+            ctx.fillStyle = '#e74c3c';
+            for (const particle of particles) {
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!running) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw density
+            drawDensity();
+            
+            // Update particles
+            for (const particle of particles) {
+                if (hmcMode) {
+                    hmcStep(particle);
+                } else {
+                    rwmcmcStep(particle);
+                }
+            }
+            
+            // Draw particles and samples
+            drawParticles();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Initialize simulation
+        function initSimulation() {
+            // Reset statistics
+            acceptanceCount = 0;
+            totalProposals = 0;
+            samples = [];
+            
+            // Create particles
+            particles = [];
+            particles.push({
+                x: width / 2,
+                y: height / 2
+            });
+            
+            // Update UI
+            updateStats();
+            
+            // Draw initial state
+            ctx.clearRect(0, 0, width, height);
+            drawDensity();
+            drawParticles();
+        }
+        
+        // Event listeners
+        startButton.addEventListener('click', () => {
+            if (!running) {
+                running = true;
+                startButton.textContent = 'Pause';
+                animate();
+            } else {
+                running = false;
+                startButton.textContent = 'Start Simulation';
+            }
+        });
+        
+        resetButton.addEventListener('click', () => {
+            running = false;
+            startButton.textContent = 'Start Simulation';
+            initSimulation();
+        });
+        
+        distributionType.addEventListener('change', () => {
+            initSimulation();
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', initSimulation);
+    </script>
+</body>
+</html>

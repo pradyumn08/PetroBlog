@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Solution Gas-Drive Reservoirs with Gravity Segregation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .simulation-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        canvas {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: block;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Solution Gas-Drive Reservoirs with Gravity Segregation: A First Principles Approach</h1>
+    
+    <p>Today, we're going to explore a fascinating concept in petroleum engineering: how oil and gas behave in reservoirs when they're subjected to both solution gas-drive (where gas bubbles out of oil as pressure drops) and gravity segregation (where fluids separate based on density). This concept might sound complex, but we'll break it down step by step using first principles.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll explore:</p>
+        <ul>
+            <li>What happens in a solution gas-drive reservoir when gravity forces are significant</li>
+            <li>How to model this behavior mathematically</li>
+            <li>The critical balance between viscous and gravity forces</li>
+            <li>How to predict oil recovery before gas breakthrough</li>
+            <li>A simple way to understand complex fluid dynamics in reservoirs</li>
+        </ul>
+    </div>
+
+    <h2>The Problem: Understanding Fluid Behavior in Oil Reservoirs</h2>
+    
+    <p>Imagine you have an oil reservoir deep underground. Initially, the oil contains dissolved gas - like carbonation in a soda. As you produce oil, the pressure drops, and just like opening a soda bottle, gas bubbles start to form within the oil. But unlike a soda bottle, in a reservoir, these fluids can move and reorganize themselves based on two competing forces:</p>
+    
+    <div class="two-column">
+        <div class="column">
+            <p><strong>Viscous forces</strong>: These push fluids toward the production well</p>
+            <p><strong>Gravity forces</strong>: These cause lighter fluids (gas) to rise and heavier fluids (oil) to sink</p>
+        </div>
+        <div class="column">
+            <figure>
+                <img src="https://miro.medium.com/max/700/1*QJyBPu7Ej-8CZQOHLo-5dQ.png" alt="Conceptual diagram of reservoir" style="max-width: 100%;">
+                <figcaption>Conceptual representation of forces in a reservoir (image for illustration only)</figcaption>
+            </figure>
+        </div>
+    </div>
+
+    <div class="analogy">
+        <h3>An Everyday Analogy</h3>
+        <p>Think of the reservoir like a tall glass of Italian salad dressing. The oil and vinegar naturally separate due to gravity (with oil on top). But if you stir the glass (adding viscous forces), the fluids mix. In a reservoir, production creates a "stirring" effect, while gravity constantly tries to separate the fluids.</p>
+    </div>
+
+    <h2>The Gravity Segregation Number: A Key to Understanding</h2>
+    
+    <p>The paper introduces a brilliant concept: the <strong>gravity segregation number</strong> (ξᵣ), which quantifies the balance between viscous and gravity forces. This dimensionless parameter is the key to predicting reservoir behavior.</p>
+    
+    <div class="formula">
+        <p>The gravity segregation number is defined as:</p>
+        $$\xi_r = \frac{q_{ow}/kA}{(q_{ow}/kA)_{cref}}$$
+        
+        <p>Or more explicitly:</p>
+        $$\xi_r = \frac{q_{ow}(\mu_o B_o)_{psat}}{C_5 kA k_{ro}(S_{gc})\Delta\rho_{psat}\frac{g}{g_c}}$$
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(q_{ow}\) = oil production rate</li>
+            <li>\(k\) = permeability</li>
+            <li>\(A\) = cross-sectional area</li>
+            <li>\(\mu_o\) = oil viscosity</li>
+            <li>\(B_o\) = oil formation volume factor</li>
+            <li>\(k_{ro}\) = relative permeability to oil</li>
+            <li>\(\Delta\rho\) = density difference between oil and gas</li>
+            <li>\(g\) = gravitational acceleration</li>
+        </ul>
+    </div>
+
+    <p>This number tells us which force dominates:</p>
+    <ul>
+        <li>When \(0 < \xi_r < 1\): Gravity forces dominate (gas rises, oil sinks)</li>
+        <li>When \(\xi_r > 1\): Viscous forces dominate (fluids flow toward the well)</li>
+    </ul>
+
+    <h2>The Three Regions of a Gravity-Dominated Reservoir</h2>
+    
+    <p>When gravity segregation is significant, the reservoir develops three distinct regions:</p>
+    
+    <figure>
+        <img src="https://www.researchgate.net/profile/Mahmood-Jamiolahmady/publication/254529021/figure/fig1/AS:669499088764941@1536632583331/Schematic-of-the-gas-oil-gravity-drainage-in-a-porous-medium.png" alt="Three regions in reservoir" style="max-width: 100%;">
+        <figcaption>Conceptual representation of the three regions in a gravity-dominated reservoir (image for illustration only)</figcaption>
+    </figure>
+    
+    <ol>
+        <li><strong>Upper region</strong>: Gas accumulates here, forming a displacing front moving downward</li>
+        <li><strong>Intermediate region</strong>: A zone with uniform gas saturation</li>
+        <li><strong>Lower region</strong>: Mostly oil, with a second front developing</li>
+    </ol>
+
+    <div class="note">
+        <p>A key insight: In gravity-dominated reservoirs, gas that bubbles out of solution immediately rises to the top, leaving only the critical gas saturation at the producing end before breakthrough.</p>
+    </div>
+
+    <h2>The Mathematical Model: Governing Equations</h2>
+    
+    <p>Let's examine the key equations that govern this system. Don't worry if they look intimidating - we'll break them down!</p>
+    
+    <h3>Material Balance Equation</h3>
+    
+    <p>For gravity-dominated reservoirs (\(\xi_r < 1\)), the material balance equation simplifies to:</p>
+    
+    <div class="formula">
+        $$\frac{d\overline{S_o}}{d\overline{p}} = \overline{C_t} + \frac{\overline{S_o}}{\overline{B_o}}\frac{d\overline{B_o}}{d\overline{p}}$$
+    </div>
+    
+    <p>This elegant equation tells us how the average oil saturation changes with pressure. It's remarkably simple compared to the general case and doesn't contain relative permeability terms!</p>
+    
+    <h3>Modeling the Saturation Fronts</h3>
+    
+    <p>The dynamics of the saturation fronts are described by:</p>
+    
+    <div class="formula">
+        $$v(z,t) = \frac{dz}{dt} = \frac{C_4 q_t}{A\phi}\left[\frac{\partial f_g}{\partial S_g}\right]_{q_t}$$
+    </div>
+    
+    <p>This equation is an extension of the Buckley-Leverett theory to compressible flow. It describes how fast each saturation plane moves through the reservoir.</p>
+    
+    <p>The saturation along a characteristic changes according to:</p>
+    
+    <div class="formula">
+        $$\frac{dS_o}{d\overline{p}} = C_t\frac{\lambda_o}{\lambda_t} + \frac{S_o}{\overline{B_o}}\frac{d\overline{B_o}}{d\overline{p}}$$
+    </div>
+    
+    <p>This is essentially Muskat's equation for solution gas-drive reservoirs.</p>
+
+    <h2>Interactive Simulation: Exploring Gravity Segregation</h2>
+    
+    <div class="simulation-container">
+        <h3>Gravity Segregation Simulator</h3>
+        <p>Adjust the parameters below to see how they affect the behavior of a solution gas-drive reservoir with gravity segregation.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="xiR">Gravity Segregation Number (ξᵣ):</label>
+                    <input type="range" id="xiR" min="0.01" max="2" step="0.01" value="0.4">
+                    <span class="value-display" id="xiR-value">0.4</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="time">Time (normalized):</label>
+                    <input type="range" id="time" min="0" max="1" step="0.01" value="0.5">
+                    <span class="value-display" id="time-value">0.5</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="permeability">Permeability (mD):</label>
+                    <input type="range" id="permeability" min="10" max="500" step="10" value="150">
+                    <span class="value-display" id="permeability-value">150</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="thickness">Reservoir Thickness (ft):</label>
+                    <input type="range" id="thickness" min="10" max="100" step="5" value="50">
+                    <span class="value-display" id="thickness-value">50</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="saturationProfileChart"></canvas>
+        </div>
+        
+        <div class="chart-container" style="margin-top: 30px;">
+            <canvas id="recoveryChart"></canvas>
+        </div>
+        
+        <div class="note" style="margin-top: 20px;">
+            <p><strong>What to observe:</strong></p>
+            <ul>
+                <li>When ξᵣ is small (< 1), notice how gas accumulates at the top, creating a sharp front</li>
+                <li>As ξᵣ increases (> 1), the gas distribution becomes more uniform</li>
+                <li>The oil recovery at breakthrough decreases as ξᵣ increases</li>
+                <li>The intermediate region with uniform gas saturation is clearly visible at moderate ξᵣ values</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Key Insights from First Principles</h2>
+    
+    <p>Now that we've explored the model, let's extract some fundamental insights:</p>
+    
+    <ol>
+        <li><strong>Gravity segregation improves recovery</strong>: When gravity forces dominate (ξᵣ < 1), gas rises to the top, allowing more oil to be produced before gas breakthrough.</li>
+        <li><strong>Production rate matters</strong>: Higher production rates increase ξᵣ, reducing the effectiveness of gravity segregation.</li>
+        <li><strong>The intermediate region behaves like a tank</strong>: It supplies gas to the upper region and oil to the lower region, with the transfer rate determined by ξᵣ.</li>
+        <li><strong>Pressure gradients are negligible</strong>: In gravity-dominated reservoirs, pressure is essentially uniform throughout the reservoir at any given time.</li>
+        <li><strong>Before breakthrough, GOR equals solution GOR</strong>: Since no free gas is produced before breakthrough, the gas-oil ratio equals the solution gas-oil ratio.</li>
+    </ol>
+
+    <h2>Real-World Applications</h2>
+    
+    <p>Understanding gravity segregation has important practical implications:</p>
+    
+    <ul>
+        <li><strong>Optimizing production rates</strong>: By controlling production rates to maintain ξᵣ < 1, operators can maximize oil recovery before gas breakthrough.</li>
+        <li><strong>Well placement</strong>: Placing production wells at the bottom of the reservoir takes advantage of gravity segregation.</li>
+        <li><strong>Reservoir management</strong>: Understanding the three regions helps in planning production strategies and predicting reservoir performance.</li>
+        <li><strong>Enhanced oil recovery</strong>: Some EOR techniques deliberately use gravity segregation to improve sweep efficiency.</li>
+    </ul>
+
+    <h2>Conclusion: The Beauty of First Principles</h2>
+    
+    <p>What makes this model elegant is how it reduces a complex physical process to a few key parameters and equations. By understanding the balance between viscous and gravity forces (quantified by ξᵣ), we can predict reservoir behavior with remarkable accuracy.</p>
+    
+    <p>The authors showed that despite the complexity of the physics involved, the material balance equation for gravity-dominated reservoirs is surprisingly simple. This is the power of a first principles approach - it cuts through the complexity to reveal the fundamental relationships.</p>
+    
+    <p>Next time you open a carbonated drink, remember that the same principles causing those bubbles to rise are at work in oil reservoirs around the world, influencing how we extract one of our most valuable resources.</p>
+
+    <script>
+        // Update value displays when sliders change
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                document.getElementById(`${this.id}-value`).textContent = this.value;
+                updateCharts();
+            });
+        });
+
+        // Initialize charts
+        let saturationProfileChart;
+        let recoveryChart;
+
+        function initializeCharts() {
+            // Saturation profile chart
+            const satProfileCtx = document.getElementById('saturationProfileChart').getContext('2d');
+            saturationProfileChart = new Chart(satProfileCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 21}, (_, i) => i * 5),
+                    datasets: [
+                        {
+                            label: 'Gas Saturation',
+                            data: [],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: true
+                        },
+                        {
+                            label: 'Oil Saturation',
+                            data: [],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Depth from Top of Reservoir (ft)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Saturation'
+                            },
+                            min: 0,
+                            max: 1
+                        }
+                    }
+                }
+            });
+            
+            // Recovery chart
+            const recoveryCtx = document.getElementById('recoveryChart').getContext('2d');
+            recoveryChart = new Chart(recoveryCtx, {
+                type: 'line',
+                data: {
+                    labels: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                    datasets: [
+                        {
+                            label: 'Oil Recovery Factor',
+                            data: [],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Gas-Oil Ratio',
+                            data: [],
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Normalized Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Recovery Factor'
+                            },
+                            min: 0,
+                            max: 0.5
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Gas-Oil Ratio (scf/stb)'
+                            },
+                            min: 0,
+                            max: 2000,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const xiR = parseFloat(document.getElementById('xiR').value);
+            const time = parseFloat(document.getElementById('time').value);
+            const permeability = parseFloat(document.getElementById('permeability').value);
+            const thickness = parseFloat(document.getElementById('thickness').value);
+            
+            // Calculate saturation profiles
+            const depths = Array.from({length: 21}, (_, i) => i * 5);
+            const gasSaturations = [];
+            const oilSaturations = [];
+            
+            // Breakthrough time depends on xiR
+            const breakthroughTime = Math.min(1, 0.8 / xiR);
+            
+            // Position of gas front depends on xiR and time
+            const gasPosition = Math.min(thickness, (time / breakthroughTime) * thickness);
+            
+            // Position of intermediate region
+            const intermediatePosition = Math.min(thickness, gasPosition + (0.2 * thickness * xiR));
+            
+            // Gas saturation in intermediate region (increases with time)
+            const intermediateSaturation = Math.min(0.6, time * 0.7);
+            
+            depths.forEach(depth => {
+                if (depth < gasPosition) {
+                    // Gas region
+                    gasSaturations.push(Math.min(1, 0.9 + (depth / thickness) * 0.1));
+                    oilSaturations.push(Math.max(0, 1 - gasSaturations[gasSaturations.length - 1]));
+                } else if (depth < intermediatePosition) {
+                    // Intermediate region
+                    gasSaturations.push(intermediateSaturation);
+                    oilSaturations.push(1 - intermediateSaturation);
+                } else {
+                    // Oil region
+                    const distanceFromIntermediate = (depth - intermediatePosition) / (thickness - intermediatePosition);
+                    const gasSat = Math.max(0, intermediateSaturation * (1 - distanceFromIntermediate));
+                    gasSaturations.push(gasSat);
+                    oilSaturations.push(1 - gasSat);
+                }
+            });
+            
+            // Update saturation profile chart
+            saturationProfileChart.data.datasets[0].data = gasSaturations;
+            saturationProfileChart.data.datasets[1].data = oilSaturations;
+            saturationProfileChart.update();
+            
+            // Calculate recovery factor and GOR
+            const recoveryFactors = [];
+            const gasOilRatios = [];
+            
+            const timePoints = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+            
+            timePoints.forEach(t => {
+                // Recovery factor increases with time, but rate depends on xiR
+                // Lower xiR (more gravity segregation) gives higher recovery
+                const maxRecovery = 0.45 - (xiR * 0.15);
+                let recovery;
+                
+                if (t < breakthroughTime) {
+                    // Before breakthrough
+                    recovery = (t / breakthroughTime) * (maxRecovery * 0.7);
+                } else {
+                    // After breakthrough
+                    const postBTTime = (t - breakthroughTime) / (1 - breakthroughTime);
+                    recovery = (maxRecovery * 0.7) + (postBTTime * (maxRecovery * 0.3));
+                }
+                
+                recoveryFactors.push(recovery);
+                
+                // GOR is constant before breakthrough, then increases
+                if (t < breakthroughTime) {
+                    gasOilRatios.push(500); // Solution GOR
+                } else {
+                    const postBTTime = (t - breakthroughTime) / (1 - breakthroughTime);
+                    gasOilRatios.push(500 + (postBTTime * 1500 * xiR)); // Increasing GOR after breakthrough
+                }
+            });
+            
+            // Update recovery chart
+            recoveryChart.data.datasets[0].data = recoveryFactors;
+            recoveryChart.data.datasets[1].data = gasOilRatios;
+            recoveryChart.update();
+        }
+
+        // Initialize charts when the page loads
+        window.onload = initializeCharts;
+    </script>
+</body>
+</html>

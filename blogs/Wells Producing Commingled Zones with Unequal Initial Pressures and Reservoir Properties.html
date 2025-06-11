@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Commingled Reservoir Behavior: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .simulator {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .simulator-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        canvas {
+            width: 100%;
+            max-height: 400px;
+        }
+        .note {
+            background-color: #fffaed;
+            border-left: 4px solid #f1c40f;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        img {
+            max-width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Multilayer Reservoir Behavior: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered what happens when a well produces from multiple zones that have different initial pressures? This seemingly complex scenario is actually quite common in petroleum engineering, yet understanding the underlying physics can be challenging. Today, we'll break down this complexity using first principles and explore the fascinating world of commingled reservoir behavior.</p>
+    
+    <div class="highlight">
+        <p><strong>Key Insight:</strong> When a well produces from multiple reservoir layers with different initial pressures, the pressure transients and flow rates follow patterns that reveal important information about each layer's properties. Understanding these patterns allows engineers to better characterize reservoirs and optimize production strategies.</p>
+    </div>
+    
+    <h2>The Problem: Commingled Production from Multiple Zones</h2>
+    
+    <p>Imagine a well that penetrates several distinct reservoir layers separated by impermeable barriers. Each layer has its own set of properties:</p>
+    
+    <ul>
+        <li>Different initial pressures (p<sub>0j</sub>)</li>
+        <li>Different permeabilities (k<sub>j</sub>)</li>
+        <li>Different thicknesses (h<sub>j</sub>)</li>
+        <li>Different porosities (φ<sub>j</sub>)</li>
+        <li>Different skin factors (s<sub>j</sub>)</li>
+    </ul>
+    
+    <p>When the well is perforated, these layers begin producing simultaneously, but their contributions to the total flow aren't equal. How do we understand and predict this behavior?</p>
+    
+    <h2>The Conceptual Model: Stacked Cylindrical Disks</h2>
+    
+    <p>To approach this problem, we'll visualize our reservoir as a stack of cylindrical disks (layers) separated by impermeable barriers. Each disk has:</p>
+    
+    <ul>
+        <li>A homogeneous rock matrix</li>
+        <li>A fluid with small, constant compressibility</li>
+        <li>No flow between layers (except through the wellbore)</li>
+        <li>No gravity effects</li>
+    </ul>
+    
+    <div class="note">
+        <p><strong>Note:</strong> This "no-crossflow" model is a simplification that works well for many reservoirs where impermeable shale barriers separate productive zones.</p>
+    </div>
+    
+    <h2>The Mathematical Foundation: Diffusivity Equation</h2>
+    
+    <p>At the heart of our analysis is the radial diffusivity equation, which describes how pressure propagates through each layer:</p>
+    
+    <div class="equation-container">
+        $$\frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial p_j}{\partial r}\right) = \frac{1}{\eta_j}\frac{\partial p_j}{\partial t}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_j(r,t)\) is the pressure in layer j at radius r and time t</li>
+        <li>\(\eta_j\) is the hydraulic diffusivity of layer j, given by \(\eta_j = \frac{k_j}{\phi_j \mu c_t}\)</li>
+    </ul>
+    
+    <p>This equation captures how pressure changes propagate through porous media over time, and it's the foundation for understanding transient pressure behavior.</p>
+    
+    <h2>Key Dimensionless Parameters</h2>
+    
+    <p>To simplify our analysis, we'll introduce several dimensionless parameters that help us compare layers and understand their relative contributions:</p>
+    
+    <h3>Flow Capacity Fraction</h3>
+    
+    <div class="equation-container">
+        $$b_j = \frac{(kh)_j}{\sum_{i=1}^{n}(kh)_i} = \frac{\beta_j}{\bar{\beta}}$$
+    </div>
+    
+    <p>This represents each layer's contribution to the total flow capacity of the system.</p>
+    
+    <h3>Storage Capacity Fraction</h3>
+    
+    <div class="equation-container">
+        $$d_j = \frac{(\phi c_t h)_j}{\sum_{i=1}^{n}(\phi c_t h)_i}$$
+    </div>
+    
+    <p>This represents each layer's contribution to the total storage capacity of the system.</p>
+    
+    <h3>Dimensionless Radius and Time</h3>
+    
+    <div class="equation-container">
+        $$r_{eDj} = \frac{r_{ej}}{r_w}$$
+        $$t_D = \frac{0.000264 \bar{k} t}{\phi \mu c_t r_w^2}$$
+    </div>
+    
+    <p>These parameters normalize distances and times, making it easier to compare different reservoir systems.</p>
+    
+    <h2>The Surprising Role of Initial Pressure Differences</h2>
+    
+    <p>When layers have different initial pressures, something fascinating happens. The wellbore pressure behavior can be expressed as:</p>
+    
+    <div class="equation-container">
+        $$p_w(t_D) = p_0(t_{0D} + t_D) - \frac{141.2 q B \mu}{\bar{k}\bar{h}}p_{wD}(t_D)$$
+    </div>
+    
+    <p>This equation has two key components:</p>
+    
+    <ol>
+        <li>The pressure that would exist if there were no production: \(p_0(t_{0D} + t_D)\)</li>
+        <li>The pressure drop due to production: \(\frac{141.2 q B \mu}{\bar{k}\bar{h}}p_{wD}(t_D)\)</li>
+    </ol>
+    
+    <div class="highlight">
+        <p><strong>Key Insight:</strong> The effects of initial pressure differences are inversely proportional to the production rate. This means higher production rates can mask these differences, while lower rates make them more apparent.</p>
+    </div>
+    
+    <h2>Interactive Simulator: Multilayer Reservoir Behavior</h2>
+    
+    <div class="simulator">
+        <h3>Two-Layer Reservoir Simulator</h3>
+        <p>Adjust the parameters below to see how different layer properties affect wellbore pressure behavior.</p>
+        
+        <div class="simulator-controls">
+            <div class="control-group">
+                <h4>Layer 1 Properties</h4>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Initial Pressure (psi):</span>
+                        <span id="p01-value">3000</span>
+                    </div>
+                    <input type="range" id="p01" min="2000" max="5000" value="3000" step="100">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Flow Capacity (kh) Ratio:</span>
+                        <span id="kh1-value">4</span>
+                    </div>
+                    <input type="range" id="kh1" min="0.1" max="10" value="4" step="0.1">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Skin Factor:</span>
+                        <span id="s1-value">0</span>
+                    </div>
+                    <input type="range" id="s1" min="-5" max="10" value="0" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h4>Layer 2 Properties</h4>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Initial Pressure (psi):</span>
+                        <span id="p02-value">5000</span>
+                    </div>
+                    <input type="range" id="p02" min="2000" max="5000" value="5000" step="100">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Storage Capacity (φcth) Ratio:</span>
+                        <span id="phict2-value">1.5</span>
+                    </div>
+                    <input type="range" id="phict2" min="0.1" max="5" value="1.5" step="0.1">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Skin Factor:</span>
+                        <span id="s2-value">0</span>
+                    </div>
+                    <input type="range" id="s2" min="-5" max="10" value="0" step="1">
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <canvas id="pressureChart"></canvas>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <canvas id="flowRateChart"></canvas>
+        </div>
+        
+        <div class="note" style="margin-top: 20px;">
+            <p><strong>What to observe:</strong> Notice how the wellbore pressure transitions from being dominated by the high-permeability layer during early times to being influenced by all layers at later times. Also observe how skin factors dramatically change the contribution of each layer.</p>
+        </div>
+    </div>
+    
+    <h2>The Three Distinct Flow Periods</h2>
+    
+    <p>The pressure response in a multilayer reservoir follows three distinct periods:</p>
+    
+    <h3>1. The Infinite-Acting Period</h3>
+    
+    <p>During early times, pressure transients haven't reached the boundaries of any layer. The wellbore pressure can be approximated by:</p>
+    
+    <div class="equation-container">
+        $$p_{wD}(t_D) = \frac{1}{2}(\ln t_D + 0.80907) - \ln \tilde{a} + \frac{1}{2}(\ln t_D + 1.247) \cdot \ln a_* - \ln a_*$$
+    </div>
+    
+    <p>Where \(\tilde{a}\) and \(a_*\) are complex functions of layer properties.</p>
+    
+    <div class="highlight">
+        <p><strong>Key Insight:</strong> During this period, high-permeability layers dominate the flow, but their influence is strongly affected by skin factors.</p>
+    </div>
+    
+    <h3>2. The Transition Period</h3>
+    
+    <p>As pressure transients reach the boundaries of some layers but not others, the behavior becomes more complex. This transition period can be quite long for multilayer systems with contrasting properties.</p>
+    
+    <h3>3. The Pseudo-Steady State Period</h3>
+    
+    <p>Eventually, pressure transients reach all boundaries, and the system enters pseudo-steady state flow, characterized by:</p>
+    
+    <div class="equation-container">
+        $$p_{wD}(t_{DA}) = 2\pi t_{DA} + \sum_{j=1}^{n}\frac{a_j^2}{b_j}(\ln r_{eD} - \frac{3}{4}) + s_{pss}$$
+    </div>
+    
+    <p>Where \(s_{pss}\) is the pseudo-steady state skin factor average.</p>
+    
+    <h2>Well Test Analysis: Extracting Layer Properties</h2>
+    
+    <p>One of the most valuable applications of this theory is determining individual layer properties from pressure transient tests. Let's explore how this works.</p>
+    
+    <h3>Before Production Starts</h3>
+    
+    <p>If we have pressure measurements before production begins, we can use them to estimate the kh-average of initial pressures:</p>
+    
+    <div class="equation-container">
+        $$\frac{\tilde{p}_0}{\tilde{p}_0 - p_w(t_D)} = \frac{0.9775}{\ln \tilde{a}/\hat{a}}[0.5(\ln t_D + 1.247) - \ln a_*]$$
+    </div>
+    
+    <p>By plotting \(\frac{\tilde{p}_0}{\tilde{p}_0 - p_w(t_D)}\) versus \(\log t_D\), we can determine \(\tilde{p}_0\) through a trial-and-error procedure.</p>
+    
+    <h3>During Production (Buildup Tests)</h3>
+    
+    <p>For two-layer reservoirs with known pore-volume ratios, we can determine the flow capacity of each layer from long buildup tests. The key is to analyze the second rise in the Horner plot, which contains information about individual layer properties.</p>
+    
+    <div class="note">
+        <p><strong>Note:</strong> Standard analysis techniques (MDH, Horner) can yield significant errors for multilayer systems, especially when layers have unequal skin factors.</p>
+    </div>
+    
+    <h2>The Practical Game: "Layer Detective"</h2>
+    
+    <p>Let's put your understanding to the test with a simple game. You'll be given pressure data from a two-layer reservoir, and your job is to determine the properties of each layer.</p>
+    
+    <div class="simulator">
+        <h3>Layer Detective Game</h3>
+        <p>You've run a pressure buildup test on a well producing from two layers. Based on the Horner plot below, can you determine the flow capacity ratio of the layers?</p>
+        
+        <div style="margin: 20px 0;">
+            <canvas id="hornerPlotGame"></canvas>
+        </div>
+        
+        <div class="simulator-controls" style="justify-content: center;">
+            <div class="control-group" style="max-width: 300px;">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Your estimate of (kh)₁/(kh)₂:</span>
+                        <span id="kh-ratio-value">1.0</span>
+                    </div>
+                    <input type="range" id="kh-ratio" min="0.1" max="10" value="1.0" step="0.1">
+                </div>
+                
+                <button id="check-answer">Check Answer</button>
+                <p id="game-feedback" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>Understanding multilayer reservoir behavior has several practical applications:</p>
+    
+    <ol>
+        <li><strong>Reservoir Characterization:</strong> Identifying flow and storage capacity of individual layers</li>
+        <li><strong>Completion Optimization:</strong> Deciding which zones to perforate and how to stimulate them</li>
+        <li><strong>Production Strategy:</strong> Determining optimal production rates to balance recovery from all layers</li>
+        <li><strong>Pressure Maintenance:</strong> Planning injection strategies for reservoirs with varying pressures</li>
+    </ol>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>By breaking down the complex problem of multilayer reservoir behavior into fundamental physical principles, we've gained valuable insights:</p>
+    
+    <ul>
+        <li>Differences in initial pressures create transients that are inversely proportional to production rate</li>
+        <li>Skin factors dramatically influence layer contributions and can mask or amplify differences</li>
+        <li>Standard analysis techniques must be used with caution for multilayer systems</li>
+        <li>Specialized methods can extract individual layer properties from pressure transient data</li>
+    </ul>
+    
+    <p>This first-principles understanding allows engineers to better characterize reservoirs, optimize completions, and maximize recovery from multilayer systems.</p>
+    
+    <div class="highlight">
+        <p><strong>Final Thought:</strong> The next time you encounter a well producing from multiple zones, remember that beneath the complex pressure and rate behaviors lies a beautiful set of physical principles that, once understood, can guide better decision-making and more efficient resource development.</p>
+    </div>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize sliders and their value displays
+            function initializeSlider(sliderId, valueId) {
+                const slider = document.getElementById(sliderId);
+                const valueDisplay = document.getElementById(valueId);
+                
+                valueDisplay.textContent = slider.value;
+                
+                slider.addEventListener('input', function() {
+                    valueDisplay.textContent = this.value;
+                    updateCharts();
+                });
+            }
+            
+            // Initialize all sliders
+            initializeSlider('p01', 'p01-value');
+            initializeSlider('kh1', 'kh1-value');
+            initializeSlider('s1', 's1-value');
+            initializeSlider('p02', 'p02-value');
+            initializeSlider('phict2', 'phict2-value');
+            initializeSlider('s2', 's2-value');
+            initializeSlider('kh-ratio', 'kh-ratio-value');
+            
+            // Initialize charts
+            let pressureChart, flowRateChart, hornerPlotChart;
+            
+            function createCharts() {
+                // Pressure Chart
+                const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+                pressureChart = new Chart(pressureCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Wellbore Pressure',
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                data: [],
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 1 Contribution',
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                data: [],
+                                borderDash: [5, 5],
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 2 Contribution',
+                                borderColor: '#2ecc71',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                data: [],
+                                borderDash: [5, 5],
+                                fill: false,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Time (hours)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Pressure (psi)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Flow Rate Chart
+                const flowRateCtx = document.getElementById('flowRateChart').getContext('2d');
+                flowRateChart = new Chart(flowRateCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Layer 1 Flow Rate',
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                data: [],
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 2 Flow Rate',
+                                borderColor: '#2ecc71',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                data: [],
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Total Flow Rate',
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                data: [],
+                                borderWidth: 3,
+                                fill: false,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Time (hours)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Flow Rate (STB/D)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Horner Plot Game
+                const hornerPlotCtx = document.getElementById('hornerPlotGame').getContext('2d');
+                
+                // Generate synthetic Horner plot data for the game
+                const correctKhRatio = 3.5; // This is what the player needs to guess
+                const hornerTimes = Array.from({length: 20}, (_, i) => 1 + i/5);
+                const hornerPressures = hornerTimes.map(t => generateHornerPressure(t, correctKhRatio));
+                
+                hornerPlotChart = new Chart(hornerPlotCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Actual Test Data',
+                                data: hornerTimes.map((t, i) => ({x: t, y: hornerPressures[i]})),
+                                backgroundColor: '#3498db',
+                                pointRadius: 6
+                            },
+                            {
+                                label: 'Your Model Prediction',
+                                data: hornerTimes.map((t, i) => ({x: t, y: generateHornerPressure(t, 1.0)})),
+                                backgroundColor: '#e74c3c',
+                                pointRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                reverse: true,
+                                title: {
+                                    display: true,
+                                    text: '(tp + Δt)/Δt'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Pressure (psi)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Set up the game check button
+                document.getElementById('check-answer').addEventListener('click', function() {
+                    const userGuess = parseFloat(document.getElementById('kh-ratio').value);
+                    const feedback = document.getElementById('game-feedback');
+                    
+                    if (Math.abs(userGuess - correctKhRatio) <= 0.5) {
+                        feedback.textContent = 'Excellent! Your estimate is very close to the correct value of ' + correctKhRatio;
+                        feedback.style.color = '#2ecc71';
+                    } else if (Math.abs(userGuess - correctKhRatio) <= 1.0) {
+                        feedback.textContent = 'Good try! You\'re in the right ballpark. The correct value is ' + correctKhRatio;
+                        feedback.style.color = '#f39c12';
+                    } else {
+                        if (userGuess < correctKhRatio) {
+                            feedback.textContent = 'Try a higher value. Your estimate is too low.';
+                        } else {
+                            feedback.textContent = 'Try a lower value. Your estimate is too high.';
+                        }
+                        feedback.style.color = '#e74c3c';
+                    }
+                });
+                
+                // Update Horner plot when slider changes
+                document.getElementById('kh-ratio').addEventListener('input', function() {
+                    const khRatio = parseFloat(this.value);
+                    updateHornerPlot(khRatio);
+                });
+            }
+            
+            function updateHornerPlot(khRatio) {
+                const hornerTimes = Array.from({length: 20}, (_, i) => 1 + i/5);
+                hornerPlotChart.data.datasets[1].data = hornerTimes.map(t => ({
+                    x: t, 
+                    y: generateHornerPressure(t, khRatio)
+                }));
+                hornerPlotChart.update();
+            }
+            
+            function generateHornerPressure(hornerTime, khRatio) {
+                // This is a simplified model of how Horner plot pressures depend on kh ratio
+                // In a real scenario, this would be based on the actual equations from the paper
+                const baseP = 3000;
+                const slope = 150 * (1 + 0.1 * Math.log(khRatio));
+                const secondSlopeEffect = 50 * Math.log(khRatio) * Math.max(0, 1.5 - hornerTime);
+                
+                return baseP + slope * Math.log10(hornerTime) + secondSlopeEffect;
+            }
+            
+            function updateCharts() {
+                // Get values from sliders
+                const p01 = parseFloat(document.getElementById('p01').value);
+                const kh1 = parseFloat(document.getElementById('kh1').value);
+                const s1 = parseFloat(document.getElementById('s1').value);
+                const p02 = parseFloat(document.getElementById('p02').value);
+                const phict2 = parseFloat(document.getElementById('phict2').value);
+                const s2 = parseFloat(document.getElementById('s2').value);
+                
+                // Calculate parameters
+                const b1 = kh1 / (kh1 + 1);
+                const b2 = 1 - b1;
+                const d1 = 1 / (1 + phict2);
+                const d2 = 1 - d1;
+                
+                // Calculate average pressures
+                const khAvgP = b1 * p01 + b2 * p02;
+                const phiCtAvgP = d1 * p01 + d2 * p02;
+                
+                // Generate time points (logarithmically spaced)
+                const times = Array.from({length: 50}, (_, i) => 0.1 * Math.pow(10, i/10));
+                
+                // Calculate pressure and flow rate profiles
+                const pressures = times.map(t => calculatePressure(t, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2));
+                const layer1Pressures = times.map(t => calculateLayerPressure(t, 1, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2));
+                const layer2Pressures = times.map(t => calculateLayerPressure(t, 2, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2));
+                
+                const layer1Rates = times.map(t => calculateLayerRate(t, 1, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2));
+                const layer2Rates = times.map(t => calculateLayerRate(t, 2, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2));
+                const totalRates = times.map((_, i) => layer1Rates[i] + layer2Rates[i]);
+                
+                // Update pressure chart
+                pressureChart.data.labels = times;
+                pressureChart.data.datasets[0].data = pressures;
+                pressureChart.data.datasets[1].data = layer1Pressures;
+                pressureChart.data.datasets[2].data = layer2Pressures;
+                pressureChart.update();
+                
+                // Update flow rate chart
+                flowRateChart.data.labels = times;
+                flowRateChart.data.datasets[0].data = layer1Rates;
+                flowRateChart.data.datasets[1].data = layer2Rates;
+                flowRateChart.data.datasets[2].data = totalRates;
+                flowRateChart.update();
+            }
+            
+            function calculatePressure(time, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2) {
+                // This is a simplified model of wellbore pressure based on the paper's equations
+                // In a real implementation, this would use the full mathematical model
+                
+                const khAvgP = b1 * p01 + b2 * p02;
+                const phiCtAvgP = d1 * p01 + d2 * p02;
+                
+                // Early time behavior dominated by initial pressure differences
+                const initialPressureEffect = (phiCtAvgP - khAvgP) * Math.exp(-time / 10);
+                
+                // Effect of skin factors
+                const skinEffect = 100 * (b1 * s1 + b2 * s2) * Math.exp(-time / 50);
+                
+                // Transition to pseudo-steady state
+                const pssTransition = 200 * (1 - Math.exp(-time / 500));
+                
+                // Combined effect
+                return khAvgP + initialPressureEffect + skinEffect - pssTransition;
+            }
+            
+            function calculateLayerPressure(time, layer, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2) {
+                // Simplified model of individual layer pressure contribution
+                const p0 = layer === 1 ? p01 : p02;
+                const s = layer === 1 ? s1 : s2;
+                const b = layer === 1 ? b1 : b2;
+                const d = layer === 1 ? d1 : d2;
+                
+                // Layer's contribution depends on its properties and time
+                const initialEffect = p0 * Math.exp(-time / (10 * (layer === 1 ? 1 : phict2)));
+                const skinEffect = 50 * s * Math.exp(-time / 50);
+                const flowEffect = 200 * b * (1 - Math.exp(-time / 500));
+                
+                return initialEffect - skinEffect - flowEffect;
+            }
+            
+            function calculateLayerRate(time, layer, p01, p02, kh1, phict2, s1, s2, b1, b2, d1, d2) {
+                // Simplified model of layer flow rate
+                const p0 = layer === 1 ? p01 : p02;
+                const s = layer === 1 ? s1 : s2;
+                const b = layer === 1 ? b1 : b2;
+                const d = layer === 1 ? d1 : d2;
+                
+                // Base rate proportional to flow capacity
+                const baseRate = 1000 * b;
+                
+                // Effect of initial pressure
+                const pressureEffect = (p0 - (b1 * p01 + b2 * p02)) * 0.5 * Math.exp(-time / 20);
+                
+                // Effect of skin
+                const skinEffect = -100 * s * Math.exp(-time / 30);
+                
+                // Time-dependent behavior
+                const timeEffect = 200 * b * (1 - Math.exp(-time / 200));
+                
+                return Math.max(0, baseRate + pressureEffect + skinEffect + timeEffect);
+            }
+            
+            // Initialize everything when the page loads
+            window.addEventListener('load', function() {
+                createCharts();
+                updateCharts();
+            });
+});
+</script>
+</body>
+</html>

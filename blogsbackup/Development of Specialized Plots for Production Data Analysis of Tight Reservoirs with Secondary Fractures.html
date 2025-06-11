@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Fluid Flow in Fractured Reservoirs: The Quadrilinear Flow Model Explained</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .figure-caption {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #ffd700;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .key-concept {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #f0f7e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #7cb342;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .tab-container {
+            margin: 20px 0;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab-content {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 0 0 5px 5px;
+        }
+        .tab-content > div {
+            display: none;
+        }
+        .tab-content > div.active {
+            display: block;
+        }
+        .active-tab {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Fluid Flow in Fractured Reservoirs: The Quadrilinear Flow Model Explained</h1>
+    
+    <p>
+        Have you ever wondered how oil and gas flow through tight rock formations with complex fracture networks? Today, we're going to break down a sophisticated mathematical model that helps petroleum engineers understand and predict this flow - the Quadrilinear Flow Model (QFM).
+    </p>
+
+    <div class="key-concept">
+        <h3>Key Takeaways</h3>
+        <ul>
+            <li>Traditional models don't accurately capture how fluid moves through reservoirs with multiple fracture networks</li>
+            <li>The Quadrilinear Flow Model (QFM) provides a more accurate representation by accounting for direct matrix-to-hydraulic fracture communication</li>
+            <li>Understanding different flow regions helps engineers estimate reservoir properties and optimize production</li>
+            <li>We can simplify complex mathematical equations to practical analysis tools for field applications</li>
+        </ul>
+    </div>
+
+    <h2>The Problem: Modeling Complex Fracture Networks</h2>
+
+    <p>
+        Modern oil and gas production often relies on horizontal wells with multiple hydraulic fractures in tight or shale reservoirs. These reservoirs frequently contain natural secondary fracture networks that significantly impact how fluids flow.
+    </p>
+    
+    <p>
+        Existing models have significant limitations:
+    </p>
+    
+    <ul>
+        <li><strong>Dual-porosity models</strong> assume negligible secondary fractures</li>
+        <li><strong>Triple-porosity models</strong> assume negligible fluid transfer between the rock matrix and hydraulic fractures</li>
+    </ul>
+
+    <div class="analogy">
+        <h3>Plumbing Analogy</h3>
+        <p>
+            Think of fluid flow in fractured reservoirs like water flowing through a complex plumbing system:
+        </p>
+        <ul>
+            <li><strong>Matrix (rock)</strong>: Tiny, interconnected sponges holding water</li>
+            <li><strong>Secondary fractures</strong>: Small pipes connecting some sponges</li>
+            <li><strong>Hydraulic fractures</strong>: Large pipes deliberately installed to collect water</li>
+            <li><strong>Horizontal well</strong>: The main drainage pipe that carries water away</li>
+        </ul>
+        <p>
+            Traditional models assumed water could only flow from sponges to small pipes to large pipes. The QFM recognizes that water can also flow directly from some sponges to the large pipes.
+        </p>
+    </div>
+
+    <h2>The Quadrilinear Flow Model: A First Principles Approach</h2>
+
+    <p>
+        The Quadrilinear Flow Model (QFM) addresses these limitations by conceptually dividing the matrix volume into two sub-domains:
+    </p>
+
+    <ol>
+        <li>One sub-domain that feeds hydraulic fractures directly</li>
+        <li>Another sub-domain that feeds micro-fractures (secondary fractures)</li>
+    </ol>
+
+    <div class="interactive-container">
+        <h3>Interactive Reservoir Model</h3>
+        <div class="slider-container">
+            <label for="omega1-slider">Matrix to Micro-fracture (ω₁): <span id="omega1-value">0.5</span></label>
+            <input type="range" id="omega1-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <div class="slider-container">
+            <label for="omega2-slider">Matrix to Hydraulic fracture (ω₂): <span id="omega2-value">0.5</span></label>
+            <input type="range" id="omega2-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <div class="slider-container">
+            <label for="lambda-slider">Fracture transmissivity (λ): <span id="lambda-value">0.001</span></label>
+            <input type="range" id="lambda-slider" min="0.0001" max="0.01" step="0.0001" value="0.001">
+        </div>
+        <div class="canvas-container">
+            <canvas id="reservoir-model" width="700" height="400"></canvas>
+        </div>
+        <div>
+            <button id="start-simulation">Start Flow Simulation</button>
+            <button id="reset-simulation">Reset</button>
+        </div>
+        <p class="figure-caption">
+            This interactive model shows how fluid flows through the different components of a fractured reservoir according to the QFM. Adjust the parameters to see how they affect flow patterns.
+        </p>
+    </div>
+
+    <h2>The Mathematical Foundation</h2>
+
+    <p>
+        The QFM is described by a set of partial differential equations that govern fluid flow through the different components of the reservoir. Let's break down the key equations:
+    </p>
+
+    <div class="equation-box">
+        <h3>General QFM Solution in Laplace Space</h3>
+        <p>
+            For constant bottom-hole pressure:
+            \begin{align}
+            \overline{q}_{wDL} = \frac{\sqrt{sf(s)}}{s\coth(\sqrt{sf(s)}y_{De})}
+            \end{align}
+        </p>
+        <p>
+            For constant bottom-hole rate:
+            \begin{align}
+            \overline{P}_{wDL} = \frac{\coth(\sqrt{sf(s)}y_{De})}{s\sqrt{sf(s)}}
+            \end{align}
+        </p>
+        <p>
+            Where the transfer functions are:
+            \begin{align}
+            f_m(s) &= \frac{3s\omega_2\omega_m}{\lambda_{AC,Fm}} \\
+            f_f(s) &= \left\{\frac{3\omega_f}{\lambda_{AC,Ff}} + \frac{\lambda_{AC,fm}}{s\lambda_{AC,Ff}}\sqrt{\frac{3s\omega_1\omega_m}{\lambda_{AC,fm}}}\tanh\left(\sqrt{\frac{3s\omega_1\omega_m}{\lambda_{AC,fm}}}\right)\right\} \\
+            f(s) &= \omega_F + \frac{\lambda_{AC,Ff}}{3s}\sqrt{sf_f(s)}\tanh(\sqrt{sf_f(s)}) + \frac{\lambda_{AC,Fm}}{3s}\sqrt{f_m(s)}\tanh(\sqrt{f_m(s)})
+            \end{align}
+        </p>
+    </div>
+
+    <p>
+        These equations may look intimidating, but they represent how pressure and flow rate change over time in the reservoir. Let's break down what each component means:
+    </p>
+
+    <ul>
+        <li>\( \omega_1 \) and \( \omega_2 \) are weighting parameters that control the fraction of fluid in the matrix that goes into micro-fractures and hydraulic fractures</li>
+        <li>\( \lambda_{AC,Fm} \) represents the fluid transmissivity between the matrix and hydraulic fractures</li>
+        <li>\( \lambda_{AC,Ff} \) represents the fluid transmissivity between micro-fractures and hydraulic fractures</li>
+        <li>\( \lambda_{AC,fm} \) represents the fluid transmissivity between the matrix and micro-fractures</li>
+        <li>\( \omega_F \), \( \omega_f \), and \( \omega_m \) are the storativity ratios for hydraulic fractures, micro-fractures, and matrix</li>
+    </ul>
+
+    <h2>Flow Regions: Understanding the Physics</h2>
+
+    <p>
+        One of the key insights from the QFM is the identification of distinct flow regions that occur during production. Each region has a characteristic slope on a log-log plot of pressure derivative or rate versus time.
+    </p>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-button active-tab" data-tab="region1">Region 1</button>
+            <button class="tab-button" data-tab="region2">Region 2</button>
+            <button class="tab-button" data-tab="region3">Region 3</button>
+            <button class="tab-button" data-tab="region4">Region 4</button>
+            <button class="tab-button" data-tab="region5">Region 5</button>
+            <button class="tab-button" data-tab="region6">Region 6</button>
+        </div>
+        <div class="tab-content">
+            <div id="region1" class="active">
+                <h3>Region 1: Linear Transient Depletion in Hydraulic Fractures (½ slope)</h3>
+                <p>
+                    This occurs at very early times when there is negligible pressure support from both matrix and micro-fractures. The hydraulic fractures are the primary source of production.
+                </p>
+                <div class="equation-box">
+                    <p>
+                        For constant rate production:
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \sqrt{\frac{t_D}{\pi\omega_F}}
+                        \end{align}
+                    </p>
+                    <p>
+                        For constant pressure production:
+                        \begin{align}
+                        q_{wDL} \to \sqrt{\frac{\omega_F}{\pi t_D}}
+                        \end{align}
+                    </p>
+                    <p>
+                        Valid when: \( t_D \leq \frac{y_e^2\omega_F}{9} \)
+                    </p>
+                </div>
+            </div>
+            <div id="region2">
+                <h3>Region 2: Bilinear Flow (¼ slope)</h3>
+                <p>
+                    This region occurs when hydraulic fractures require fluid support from surrounding matrix or micro-fractures. There are three possible cases:
+                </p>
+                <h4>Case A: Matrix to Hydraulic Fracture Communication Dominates</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \left(\frac{3t_D}{\omega_2\omega_m\lambda_{AC,Fm}}\right)^{\frac{1}{4}} \times \frac{1}{\Gamma(0.25)}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case B: Micro-Fracture to Hydraulic Fracture Communication Dominates</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \left(\frac{3t_D}{\omega_f\lambda_{AC,Ff}}\right)^{\frac{1}{4}} \times \frac{1}{\Gamma(0.25)}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case C: Pseudosteady State Depletion of Hydraulic Fractures</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{t_D}{\omega_F y_{De}}
+                        \end{align}
+                    </p>
+                </div>
+            </div>
+            <div id="region3">
+                <h3>Region 3: Linear Flow (½ slope after ¼ slope)</h3>
+                <p>
+                    This region occurs after Region 2 and represents different flow scenarios:
+                </p>
+                <h4>Case A: Simultaneous Transient Depletion in Matrix and Micro-Fractures</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{1}{y_{De}}\sqrt{\frac{3t_D}{\pi}} \frac{1}{\sqrt{\omega_f\lambda_{AC,Ff}} + \sqrt{\omega_2\omega_m\lambda_{AC,Fm}}}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case B: Linear Flow due to Transient Depletion in Micro-Fractures</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{1}{y_{De}}\sqrt{\frac{3t_D}{\pi\omega_f\lambda_{AC,Ff}}}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case C: Linear Flow due to Transient Depletion in Matrix</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{1}{y_{De}}\sqrt{\frac{3t_D}{\pi\omega_2\omega_m\lambda_{AC,Fm}}}
+                        \end{align}
+                    </p>
+                </div>
+            </div>
+            <div id="region4">
+                <h3>Region 4: Complex Flow Patterns</h3>
+                <p>
+                    This region shows either pseudosteady state depletion in micro-fractures or bilinear flow from matrix:
+                </p>
+                <h4>Case A: Pseudo-steady state Depletion in Micro-Fractures</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{t_D}{\omega_f y_{De}}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case B: Bilinear Flow from Matrix to Fracture Systems</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \sqrt{\frac{\sqrt{3t_D}}{(\sqrt{\omega_1\omega_m\lambda_{AC,fm}} + \sqrt{\omega_2\omega_m\lambda_{AC,Fm}})}} \times \frac{1}{\Gamma(0.25)}
+                        \end{align}
+                    </p>
+                </div>
+            </div>
+            <div id="region5">
+                <h3>Region 5: Late-Time Linear Flow</h3>
+                <p>
+                    This region represents linear flow in the later stages of production:
+                </p>
+                <h4>Case A: Linear Flow due to Transient Depletion in Micro-Fractures</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{1}{y_{De}}\sqrt{\frac{3t_D}{\pi\omega_1\omega_m\lambda_{AC,Ff}}}
+                        \end{align}
+                    </p>
+                </div>
+                <h4>Case B: Linear Flow from Matrix Outer Edges</h4>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{1}{y_{De}}\sqrt{\frac{3t_D}{\pi\omega_m}} \left\{\frac{1}{\sqrt{\omega_1\lambda_{AC,fm}} + \sqrt{\omega_2\lambda_{AC,Fm}}}\right\}
+                        \end{align}
+                    </p>
+                </div>
+            </div>
+            <div id="region6">
+                <h3>Region 6: Pseudosteady State Depletion</h3>
+                <p>
+                    This final region occurs when depletion has reached all no-flow boundaries in the reservoir. The matrix, micro-fractures, and hydraulic fractures behave as a single flow unit.
+                </p>
+                <div class="equation-box">
+                    <p>
+                        \begin{align}
+                        \frac{\partial P_{wDL}}{\partial(\ln t_D)} \to \frac{t_D}{y_{De}}
+                        \end{align}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Practical Application: Analyzing Field Production Data</h2>
+
+    <p>
+        The QFM analysis equations can be applied to real production data to estimate reservoir properties. Here's a step-by-step procedure:
+    </p>
+
+    <ol>
+        <li>Obtain field production rate and pressure data</li>
+        <li>Make a log-log plot of pressure derivative versus time for constant rate production or rate-normalized pressure versus time for constant pressure production</li>
+        <li>Identify the linear, bilinear, and pseudo-steady state flow regions</li>
+        <li>Make specialized plots based on the identified flow regions</li>
+        <li>Draw a straight line passing through the origin on these specialized plots</li>
+        <li>Determine the slope of this line</li>
+        <li>Estimate unknown reservoir parameters by inputting this slope into the corresponding analysis equations</li>
+    </ol>
+
+    <div class="interactive-container">
+        <h3>Interactive Production Data Analyzer</h3>
+        <div class="slider-container">
+            <label for="time-range">Time Range (days): <span id="time-range-value">100</span></label>
+            <input type="range" id="time-range" min="10" max="1000" step="10" value="100">
+        </div>
+        <div class="slider-container">
+            <label for="flow-type">Flow Regime: <span id="flow-type-value">Bilinear (1/4 slope)</span></label>
+            <input type="range" id="flow-type" min="1" max="3" step="1" value="1">
+        </div>
+        <div class="slider-container">
+            <label for="noise-level">Noise Level: <span id="noise-level-value">0.05</span></label>
+            <input type="range" id="noise-level" min="0" max="0.2" step="0.01" value="0.05">
+        </div>
+        <div class="canvas-container">
+            <canvas id="production-data" width="700" height="400"></canvas>
+        </div>
+        <div>
+            <button id="generate-data">Generate Data</button>
+            <button id="analyze-data">Analyze Flow Regions</button>
+            <button id="fit-line">Fit Line to Selected Region</button>
+        </div>
+        <div id="analysis-result" style="margin-top: 15px; font-weight: bold;"></div>
+        <p class="figure-caption">
+            This tool generates synthetic production data with different flow regimes. Use the buttons to analyze the data and estimate reservoir parameters.
+        </p>
+    </div>
+
+    <h2>Key Insights and Practical Implications</h2>
+
+    <p>
+        The QFM provides several important insights for reservoir engineers:
+    </p>
+
+    <ol>
+        <li><strong>Identification of secondary fracture networks</strong>: The model can help determine whether secondary fractures significantly contribute to production.</li>
+        <li><strong>Estimation of hydraulic fracture properties</strong>: The effective half-length and conductivity of hydraulic fractures can be estimated from production data.</li>
+        <li><strong>Optimization of well completion</strong>: Understanding the flow physics can guide decisions about fracture spacing and treatment design.</li>
+        <li><strong>Uncertainty management</strong>: The simplified analysis equations help reduce uncertainty in reservoir parameter estimation.</li>
+    </ol>
+
+    <div class="key-concept">
+        <h3>Practical Takeaway</h3>
+        <p>
+            When analyzing production data from fractured reservoirs:
+        </p>
+        <ol>
+            <li>Look for characteristic flow region signatures (slopes on log-log plots)</li>
+            <li>Use specialized plots to estimate lumped reservoir parameters</li>
+            <li>Consider multiple possible interpretations of the flow physics</li>
+            <li>Focus on parameter groups rather than individual values to reduce uncertainty</li>
+        </ol>
+    </div>
+
+    <h2>Conclusion</h2>
+
+    <p>
+        The Quadrilinear Flow Model represents a significant advancement in our understanding of fluid flow in fractured reservoirs. By accounting for direct matrix-to-hydraulic fracture communication, it provides a more accurate representation of the complex flow physics in these systems.
+    </p>
+
+    <p>
+        The simplified analysis equations derived in this study make the model more practical for field applications, allowing engineers to extract valuable information from production data. This can lead to better reservoir characterization, more accurate production forecasts, and optimized well completions.
+    </p>
+
+    <p>
+        As we continue to develop unconventional resources, models like the QFM will play an increasingly important role in maximizing recovery and improving economic outcomes.
+    </p>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and content
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active-tab'));
+                document.querySelectorAll('.tab-content > div').forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active-tab');
+                document.getElementById(button.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        // Reservoir Model Visualization
+        const canvas = document.getElementById('reservoir-model');
+        const ctx = canvas.getContext('2d');
+        
+        // Sliders
+        const omega1Slider = document.getElementById('omega1-slider');
+        const omega2Slider = document.getElementById('omega2-slider');
+        const lambdaSlider = document.getElementById('lambda-slider');
+        const omega1Value = document.getElementById('omega1-value');
+        const omega2Value = document.getElementById('omega2-value');
+        const lambdaValue = document.getElementById('lambda-value');
+        
+        // Buttons
+        const startSimulationBtn = document.getElementById('start-simulation');
+        const resetSimulationBtn = document.getElementById('reset-simulation');
+        
+        // Model parameters
+        let omega1 = parseFloat(omega1Slider.value);
+        let omega2 = parseFloat(omega2Slider.value);
+        let lambda = parseFloat(lambdaSlider.value);
+        let isSimulating = false;
+        let particles = [];
+        
+        // Update display values
+        omega1Slider.addEventListener('input', () => {
+            omega1 = parseFloat(omega1Slider.value);
+            omega1Value.textContent = omega1.toFixed(2);
+            omega2 = 1 - omega1;
+            omega2Slider.value = omega2;
+            omega2Value.textContent = omega2.toFixed(2);
+            drawReservoirModel();
+        });
+        
+        omega2Slider.addEventListener('input', () => {
+            omega2 = parseFloat(omega2Slider.value);
+            omega2Value.textContent = omega2.toFixed(2);
+            omega1 = 1 - omega2;
+            omega1Slider.value = omega1;
+            omega1Value.textContent = omega1.toFixed(2);
+            drawReservoirModel();
+        });
+        
+        lambdaSlider.addEventListener('input', () => {
+            lambda = parseFloat(lambdaSlider.value);
+            lambdaValue.textContent = lambda.toFixed(4);
+            drawReservoirModel();
+        });
+        
+        // Draw reservoir model
+        function drawReservoirModel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw well
+            ctx.fillStyle = 'black';
+            ctx.fillRect(50, 200, 600, 10);
+            
+            // Draw hydraulic fractures
+            ctx.fillStyle = 'red';
+            for (let i = 0; i < 5; i++) {
+                ctx.fillRect(150 + i * 100, 100, 10, 200);
+            }
+            
+            // Draw micro-fractures
+            ctx.fillStyle = 'blue';
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 2; j++) {
+                    ctx.fillRect(100 + i * 30, 80 + j * 240, 5, 60);
+                }
+            }
+            
+            // Draw matrix
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.fillRect(50, 50, 600, 300);
+            
+            // Draw legend
+            ctx.fillStyle = 'black';
+            ctx.font = '14px Arial';
+            ctx.fillText('Horizontal Well', 620, 205);
+            
+            ctx.fillStyle = 'red';
+            ctx.fillRect(620, 220, 20, 10);
+            ctx.fillStyle = 'black';
+            ctx.fillText('Hydraulic Fractures', 650, 225);
+            
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(620, 240, 20, 10);
+            ctx.fillStyle = 'black';
+            ctx.fillText('Micro-Fractures', 650, 245);
+            
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.fillRect(620, 260, 20, 10);
+            ctx.fillStyle = 'black';
+            ctx.fillText('Matrix', 650, 265);
+            
+            // Draw flow proportions
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            ctx.fillRect(50, 350, omega2 * 600, 30);
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+            ctx.fillRect(50 + omega2 * 600, 350, omega1 * 600, 30);
+            
+            ctx.fillStyle = 'black';
+            ctx.fillText(`Matrix → Hydraulic Fracture (${(omega2*100).toFixed(0)}%)`, 60, 370);
+            ctx.fillText(`Matrix → Micro-Fracture (${(omega1*100).toFixed(0)}%)`, 60 + omega2 * 600 + 10, 370);
+            
+            // Draw particles if simulation is running
+            if (isSimulating) {
+                drawParticles();
+            }
+        }
+        
+        // Particle simulation
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: 50 + Math.random() * 600,
+                    y: 50 + Math.random() * 300,
+                    targetType: Math.random() < omega2 ? 'hydraulic' : 'micro',
+                    speed: 0.5 + Math.random() * lambda * 1000,
+                    size: 2 + Math.random() * 3,
+                    arrived: false
+                });
+            }
+        }
+        
+        function drawParticles() {
+            particles.forEach(p => {
+                if (!p.arrived) {
+                    ctx.fillStyle = p.targetType === 'hydraulic' ? 'rgba(255, 0, 0, 0.7)' : 'rgba(0, 0, 255, 0.7)';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+        
+        function updateParticles() {
+            if (!isSimulating) return;
+            
+            particles.forEach(p => {
+                if (p.arrived) return;
+                
+                if (p.targetType === 'hydraulic') {
+                    // Find closest hydraulic fracture
+                    let closestFrac = Math.floor((p.x - 100) / 100) * 100 + 150;
+                    closestFrac = Math.max(150, Math.min(550, closestFrac));
+                    
+                    // Move toward it
+                    let dx = closestFrac - p.x;
+                    let dy = 200 - p.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < 5) {
+                        p.arrived = true;
+                    } else {
+                        p.x += (dx / dist) * p.speed;
+                        p.y += (dy / dist) * p.speed;
+                    }
+                } else {
+                    // Find closest micro-fracture
+                    let closestFracX = Math.floor((p.x - 85) / 30) * 30 + 100;
+                    closestFracX = Math.max(100, Math.min(670, closestFracX));
+                    let closestFracY = p.y < 200 ? 110 : 290;
+                    
+                    // Move toward it
+                    let dx = closestFracX - p.x;
+                    let dy = closestFracY - p.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < 5) {
+                        p.arrived = true;
+                    } else {
+                        p.x += (dx / dist) * p.speed;
+                        p.y += (dy / dist) * p.speed;
+                    }
+                }
+            });
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawReservoirModel();
+            
+            requestAnimationFrame(updateParticles);
+        }
+        
+        startSimulationBtn.addEventListener('click', () => {
+            isSimulating = true;
+            initParticles();
+            updateParticles();
+        });
+        
+        resetSimulationBtn.addEventListener('click', () => {
+            isSimulating = false;
+            drawReservoirModel();
+        });
+        
+        // Production Data Analyzer
+        const productionCanvas = document.getElementById('production-data');
+        const prodCtx = productionCanvas.getContext('2d');
+        
+        // Sliders and buttons
+        const timeRangeSlider = document.getElementById('time-range');
+        const flowTypeSlider = document.getElementById('flow-type');
+        const noiseLevelSlider = document.getElementById('noise-level');
+        const timeRangeValue = document.getElementById('time-range-value');
+        const flowTypeValue = document.getElementById('flow-type-value');
+        const noiseLevelValue = document.getElementById('noise-level-value');
+        
+        const generateDataBtn = document.getElementById('generate-data');
+        const analyzeDataBtn = document.getElementById('analyze-data');
+        const fitLineBtn = document.getElementById('fit-line');
+        const analysisResult = document.getElementById('analysis-result');
+        
+        // Production data
+        let timeRange = parseInt(timeRangeSlider.value);
+        let flowType = parseInt(flowTypeSlider.value);
+        let noiseLevel = parseFloat(noiseLevelSlider.value);
+        let productionData = [];
+        let selectedRegion = null;
+        
+        // Update display values
+        timeRangeSlider.addEventListener('input', () => {
+            timeRange = parseInt(timeRangeSlider.value);
+            timeRangeValue.textContent = timeRange;
+        });
+        
+        flowTypeSlider.addEventListener('input', () => {
+            flowType = parseInt(flowTypeSlider.value);
+            if (flowType === 1) {
+                flowTypeValue.textContent = "Bilinear (1/4 slope)";
+            } else if (flowType === 2) {
+                flowTypeValue.textContent = "Linear (1/2 slope)";
+            } else {
+                flowTypeValue.textContent = "Boundary-Dominated (1 slope)";
+            }
+        });
+        
+        noiseLevelSlider.addEventListener('input', () => {
+            noiseLevel = parseFloat(noiseLevelSlider.value);
+            noiseLevelValue.textContent = noiseLevel.toFixed(2);
+        });
+        
+        // Generate synthetic production data
+        function generateProductionData() {
+            productionData = [];
+            const numPoints = 100;
+            
+            for (let i = 0; i < numPoints; i++) {
+                const t = Math.exp(Math.log(1) + (Math.log(timeRange) - Math.log(1)) * i / (numPoints - 1));
+                let pressure;
+                
+                if (flowType === 1) {
+                    // Bilinear flow (1/4 slope)
+                    pressure = 10 * Math.pow(t, 0.25);
+                } else if (flowType === 2) {
+                    // Linear flow (1/2 slope)
+                    pressure = 5 * Math.pow(t, 0.5);
+                } else {
+                    // Boundary-dominated flow (1 slope)
+                    pressure = 2 * t;
+                }
+                
+                // Add noise
+                pressure *= (1 + (Math.random() - 0.5) * 2 * noiseLevel);
+                
+                productionData.push({ time: t, pressure: pressure });
+            }
+            
+            drawProductionData();
+        }
+        
+        // Draw production data
+        function drawProductionData() {
+            prodCtx.clearRect(0, 0, productionCanvas.width, productionCanvas.height);
+            
+            // Set up log-log scale
+            const margin = { top: 40, right: 40, bottom: 40, left: 60 };
+            const width = productionCanvas.width - margin.left - margin.right;
+            const height = productionCanvas.height - margin.top - margin.bottom;
+            
+            const minTime = Math.min(...productionData.map(d => d.time));
+            const maxTime = Math.max(...productionData.map(d => d.time));
+            const minPressure = Math.min(...productionData.map(d => d.pressure));
+            const maxPressure = Math.max(...productionData.map(d => d.pressure));
+            
+            function logScaleX(value) {
+                return margin.left + width * (Math.log(value) - Math.log(minTime)) / (Math.log(maxTime) - Math.log(minTime));
+            }
+            
+            function logScaleY(value) {
+                return margin.top + height - height * (Math.log(value) - Math.log(minPressure)) / (Math.log(maxPressure) - Math.log(minPressure));
+            }
+            
+            // Draw axes
+            prodCtx.strokeStyle = 'black';
+            prodCtx.lineWidth = 1;
+            prodCtx.beginPath();
+            prodCtx.moveTo(margin.left, margin.top);
+            prodCtx.lineTo(margin.left, margin.top + height);
+            prodCtx.lineTo(margin.left + width, margin.top + height);
+            prodCtx.stroke();
+            
+            // Draw axis labels
+            prodCtx.fillStyle = 'black';
+            prodCtx.font = '14px Arial';
+            prodCtx.textAlign = 'center';
+            prodCtx.fillText('Time (days)', margin.left + width / 2, margin.top + height + 30);
+            
+            prodCtx.save();
+            prodCtx.translate(margin.left - 40, margin.top + height / 2);
+            prodCtx.rotate(-Math.PI / 2);
+            prodCtx.fillText('Pressure Derivative', 0, 0);
+            prodCtx.restore();
+            
+            // Draw title
+            prodCtx.font = '16px Arial';
+            prodCtx.fillText('Log-Log Diagnostic Plot', margin.left + width / 2, margin.top - 20);
+            
+            // Draw grid lines
+            prodCtx.strokeStyle = '#ddd';
+            prodCtx.lineWidth = 0.5;
+            
+            // Draw time ticks
+            let timeDecades = [];
+            let t = 1;
+            while (t <= maxTime) {
+                timeDecades.push(t);
+                t *= 10;
+            }
+            
+            timeDecades.forEach(t => {
+                if (t >= minTime && t <= maxTime) {
+                    const x = logScaleX(t);
+                    prodCtx.beginPath();
+                    prodCtx.moveTo(x, margin.top);
+                    prodCtx.lineTo(x, margin.top + height);
+                    prodCtx.stroke();
+                    
+                    prodCtx.fillStyle = 'black';
+                    prodCtx.font = '12px Arial';
+                    prodCtx.textAlign = 'center';
+                    prodCtx.fillText(t.toString(), x, margin.top + height + 15);
+                }
+            });
+            
+            // Draw pressure ticks
+            let pressureDecades = [];
+            let p = 1;
+            while (p <= maxPressure) {
+                pressureDecades.push(p);
+                p *= 10;
+            }
+            
+            pressureDecades.forEach(p => {
+                if (p >= minPressure && p <= maxPressure) {
+                    const y = logScaleY(p);
+                    prodCtx.beginPath();
+                    prodCtx.moveTo(margin.left, y);
+                    prodCtx.lineTo(margin.left + width, y);
+                    prodCtx.stroke();
+                    
+                    prodCtx.fillStyle = 'black';
+                    prodCtx.font = '12px Arial';
+                    prodCtx.textAlign = 'right';
+                    prodCtx.fillText(p.toString(), margin.left - 5, y + 4);
+                }
+            });
+            
+            // Draw reference slopes
+            prodCtx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            prodCtx.lineWidth = 2;
+            
+            // 1/4 slope
+            prodCtx.beginPath();
+            const startX1 = logScaleX(minTime * 2);
+            const startY1 = logScaleY(minPressure * 2);
+            prodCtx.moveTo(startX1, startY1);
+            prodCtx.lineTo(startX1 * Math.pow(2, 1), startY1 / Math.pow(2, 0.25));
+            prodCtx.stroke();
+            
+            prodCtx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+            prodCtx.font = '12px Arial';
+            prodCtx.textAlign = 'left';
+            prodCtx.fillText('1/4 slope', startX1 + 5, startY1 - 5);
+            
+            // 1/2 slope
+            prodCtx.strokeStyle = 'rgba(0, 128, 0, 0.5)';
+            prodCtx.beginPath();
+            const startX2 = logScaleX(minTime * 4);
+            const startY2 = logScaleY(minPressure * 2);
+            prodCtx.moveTo(startX2, startY2);
+            prodCtx.lineTo(startX2 * Math.pow(2, 1), startY2 / Math.pow(2, 0.5));
+            prodCtx.stroke();
+            
+            prodCtx.fillStyle = 'rgba(0, 128, 0, 0.7)';
+            prodCtx.fillText('1/2 slope', startX2 + 5, startY2 - 5);
+            
+            // Unit slope
+            prodCtx.strokeStyle = 'rgba(0, 0, 255, 0.5)';
+            prodCtx.beginPath();
+            const startX3 = logScaleX(minTime * 8);
+            const startY3 = logScaleY(minPressure * 2);
+            prodCtx.moveTo(startX3, startY3);
+            prodCtx.lineTo(startX3 * Math.pow(2, 1), startY3 / Math.pow(2, 1));
+            prodCtx.stroke();
+            
+            prodCtx.fillStyle = 'rgba(0, 0, 255, 0.7)';
+            prodCtx.fillText('1 slope', startX3 + 5, startY3 - 5);
+            
+            // Draw data points
+            prodCtx.fillStyle = 'black';
+            productionData.forEach(d => {
+                prodCtx.beginPath();
+                prodCtx.arc(logScaleX(d.time), logScaleY(d.pressure), 3, 0, Math.PI * 2);
+                prodCtx.fill();
+            });
+            
+            // Draw selected region if any
+            if (selectedRegion) {
+                prodCtx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
+                prodCtx.lineWidth = 2;
+                prodCtx.strokeRect(
+                    logScaleX(selectedRegion.minTime),
+                    logScaleY(selectedRegion.maxPressure),
+                    logScaleX(selectedRegion.maxTime) - logScaleX(selectedRegion.minTime),
+                    logScaleY(selectedRegion.minPressure) - logScaleY(selectedRegion.maxPressure)
+                );
+            }
+        }
+        
+        // Analyze flow regions
+        function analyzeFlowRegions() {
+            // In a real application, this would use regression to identify slopes
+            // For this demo, we'll just use the known flow type
+            
+            if (flowType === 1) {
+                selectedRegion = {
+                    minTime: timeRange * 0.1,
+                    maxTime: timeRange * 0.5,
+                    minPressure: productionData.find(d => d.time >= timeRange * 0.1).pressure,
+                    maxPressure: productionData.find(d => d.time <= timeRange * 0.5).pressure,
+                    slope: 0.25,
+                    type: 'Bilinear Flow'
+                };
+            } else if (flowType === 2) {
+                selectedRegion = {
+                    minTime: timeRange * 0.1,
+                    maxTime: timeRange * 0.7,
+                    minPressure: productionData.find(d => d.time >= timeRange * 0.1).pressure,
+                    maxPressure: productionData.find(d => d.time <= timeRange * 0.7).pressure,
+                    slope: 0.5,
+                    type: 'Linear Flow'
+                };
+            } else {
+                selectedRegion = {
+                    minTime: timeRange * 0.5,
+                    maxTime: timeRange,
+                    minPressure: productionData.find(d => d.time >= timeRange * 0.5).pressure,
+                    maxPressure: productionData.find(d => d.time <= timeRange).pressure,
+                    slope: 1.0,
+                    type: 'Boundary-Dominated Flow'
+                };
+            }
+            
+            drawProductionData();
+            analysisResult.textContent = `Detected ${selectedRegion.type} (${selectedRegion.slope} slope) from t = ${selectedRegion.minTime.toFixed(1)} to ${selectedRegion.maxTime.toFixed(1)} days`;
+        }
+        
+        // Fit line to selected region
+        function fitLine() {
+            if (!selectedRegion) {
+                analysisResult.textContent = "Please analyze flow regions first";
+                return;
+            }
+            
+            // Filter data in selected region
+            const regionData = productionData.filter(d => 
+                d.time >= selectedRegion.minTime && d.time <= selectedRegion.maxTime
+            );
+            
+            // In a real application, we would perform regression
+            // For this demo, we'll use the known slope
+            
+            const slope = selectedRegion.slope;
+            
+            // Calculate intercept (c) from y = c * t^m
+            let sumLogC = 0;
+            regionData.forEach(d => {
+                sumLogC += Math.log(d.pressure) - slope * Math.log(d.time);
+            });
+            const logC = sumLogC / regionData.length;
+            const c = Math.exp(logC);
+            
+            // Draw fitted line
+            const margin = { top: 40, right: 40, bottom: 40, left: 60 };
+            const width = productionCanvas.width - margin.left - margin.right;
+            const height = productionCanvas.height - margin.top - margin.bottom;
+            
+            const minTime = Math.min(...productionData.map(d => d.time));
+            const maxTime = Math.max(...productionData.map(d => d.time));
+            const minPressure = Math.min(...productionData.map(d => d.pressure));
+            const maxPressure = Math.max(...productionData.map(d => d.pressure));
+            
+            function logScaleX(value) {
+                return margin.left + width * (Math.log(value) - Math.log(minTime)) / (Math.log(maxTime) - Math.log(minTime));
+            }
+            
+            function logScaleY(value) {
+                return margin.top + height - height * (Math.log(value) - Math.log(minPressure)) / (Math.log(maxPressure) - Math.log(minPressure));
+            }
+            
+            prodCtx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            prodCtx.lineWidth = 2;
+            prodCtx.beginPath();
+            
+            const fitPoints = [];
+            for (let i = 0; i < 100; i++) {
+                const t = Math.exp(Math.log(selectedRegion.minTime) + (Math.log(selectedRegion.maxTime) - Math.log(selectedRegion.minTime)) * i / 99);
+                const p = c * Math.pow(t, slope);
+                fitPoints.push({ time: t, pressure: p });
+            }
+            
+            prodCtx.moveTo(logScaleX(fitPoints[0].time), logScaleY(fitPoints[0].pressure));
+            for (let i = 1; i < fitPoints.length; i++) {
+                prodCtx.lineTo(logScaleX(fitPoints[i].time), logScaleY(fitPoints[i].pressure));
+            }
+            prodCtx.stroke();
+            
+            // Calculate parameter estimates based on flow region
+            let parameterEstimate = "";
+            
+            if (selectedRegion.slope === 0.25) {
+                // Bilinear flow
+                parameterEstimate = `Estimated parameter group: k_f(ϕc_t)_f√k_F = ${(c * 0.867).toFixed(6)}`;
+            } else if (selectedRegion.slope === 0.5) {
+                // Linear flow
+                parameterEstimate = `Estimated parameter group: y_e√k_f(ϕc_t)_f = ${(c * 0.5).toFixed(6)}`;
+            } else {
+                // Boundary-dominated flow
+                parameterEstimate = `Estimated parameter group: y_e(ϕc_t)_t = ${(c).toFixed(6)}`;
+            }
+            
+            analysisResult.textContent = `Fitted equation: p = ${c.toFixed(4)} × t^${slope.toFixed(2)}\n${parameterEstimate}`;
+        }
+        
+        generateDataBtn.addEventListener('click', generateProductionData);
+        analyzeDataBtn.addEventListener('click', analyzeFlowRegions);
+        fitLineBtn.addEventListener('click', fitLine);
+        
+        // Initialize visualizations
+        drawReservoirModel();
+        generateProductionData();
+    </script>
+</body>
+</html>

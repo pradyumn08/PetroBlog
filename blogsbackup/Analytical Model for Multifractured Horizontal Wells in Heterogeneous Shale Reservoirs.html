@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demystifying Multi-Stage Fracturing in Shale Reservoirs: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .canvas-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .code {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            border-left: 4px solid #2980b9;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .output {
+            min-height: 30px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Multi-Stage Fracturing in Shale Reservoirs: A First Principles Approach</h1>
+    
+    <p>Ever wondered how we extract natural gas from those stubborn shale formations that seem to grip their resources like a miser clutching coins? Today, we're diving deep into the fascinating world of multi-stage fracturing—the key technology that has revolutionized shale gas production—by breaking down a complex analytical model into digestible first principles.</p>
+    
+    <div class="note">
+        <strong>The Big Picture:</strong> Shale reservoirs are notoriously difficult to produce from because of their ultra-low permeability. Multi-stage fracturing creates multiple pathways for gas to flow, but modeling this process accurately requires accounting for the unique characteristics of shale—something previous models have often overlooked.
+    </div>
+    
+    <h2>The Unique Nature of Shale Gas Flow</h2>
+    
+    <p>Before we jump into equations, let's understand what makes shale gas flow so different from conventional reservoirs. In shale, gas doesn't just flow through pores—it's stored and moves in four distinct ways:</p>
+    
+    <ol>
+        <li><strong>Free gas in matrix nanopores</strong> - tiny pores where gas molecules are tightly packed</li>
+        <li><strong>Free gas in natural fractures</strong> - pre-existing cracks in the formation</li>
+        <li><strong>Adsorbed gas on organic matter</strong> - gas molecules stuck to the surface of organic materials</li>
+        <li><strong>Gas flowing through artificially created fracture networks</strong> - our human-made superhighways</li>
+    </ol>
+    
+    <div class="analogy">
+        <strong>Analogy:</strong> Think of shale gas extraction like trying to get honey out of a sponge that's been frozen. The honey (gas) is trapped in tiny spaces, stuck to surfaces, and can't flow easily. Multi-stage fracturing is like creating multiple straws inserted at different points, while also warming portions of the sponge to make the honey flow better.
+    </div>
+    
+    <h2>The Seven-Region Flow Model: A Mental Map</h2>
+    
+    <p>The paper introduces a seven-region flow model—a significant advancement over previous five-region models. Let's visualize this conceptually:</p>
+    
+    <div class="interactive-container">
+        <div class="canvas-container">
+            <canvas id="regionCanvas" width="700" height="400"></canvas>
+        </div>
+        <div class="slider-container">
+            <label for="viewAngle">Viewing Angle: </label>
+            <input type="range" id="viewAngle" min="0" max="360" value="30">
+        </div>
+        <div>
+            <p><strong>Regions in the model:</strong></p>
+            <ol>
+                <li>Inner-reservoir region 1 (adjacent to hydraulic fracture)</li>
+                <li>Inner-reservoir region 2</li>
+                <li>Outer-reservoir region 3</li>
+                <li>Outer-reservoir region 4</li>
+                <li>Upper-reservoir region 5</li>
+                <li>Upper-reservoir region 6</li>
+                <li>Hydraulic fracture region</li>
+            </ol>
+        </div>
+    </div>
+    
+    <p>Each of these regions, except the hydraulic fracture, is modeled as a transient dual-porosity medium—meaning it has two interconnected systems: the matrix (rock) and the natural fractures.</p>
+    
+    <h2>The Multi-Mechanism Flow: Breaking Down the Physics</h2>
+    
+    <p>Let's tackle the fundamental mechanisms of gas flow in shale, starting with the core principles:</p>
+    
+    <h3>1. Gas Slip Flow and Knudsen Diffusion</h3>
+    
+    <p>In conventional reservoirs, we typically model flow using Darcy's law. But in shale's nanopores (smaller than 5 nanometers), gas molecules interact with pore walls as much as with each other. This creates what we call "slip flow" or "Knudsen diffusion."</p>
+    
+    <p>The diffusion velocity in nanopores can be expressed by Fick's law:</p>
+    
+    <div class="equation-box">
+        $$\nu_{dm} = -\frac{M_g D_m}{\rho_{mg}} \frac{\partial C_m}{\partial r}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\nu_{dm}\) is the velocity of Knudsen diffusion</li>
+        <li>\(M_g\) is the gas molecular weight</li>
+        <li>\(\rho_{mg}\) is molar concentration</li>
+        <li>\(C_m\) is matrix gas density</li>
+        <li>\(D_m\) is the diffusivity coefficient</li>
+    </ul>
+    
+    <p>The diffusivity coefficient can be approximated as:</p>
+    
+    <div class="equation-box">
+        $$D_m = \frac{31.54}{\sqrt{M_g}} k_m^{0.67}$$
+    </div>
+    
+    <p>Where \(k_m\) is the absolute permeability of the matrix nanopore.</p>
+    
+    <h3>2. Modified Darcy Flow with Slip Effects</h3>
+    
+    <p>Pressure forces still create Darcy flow, but we need to modify it for slip effects:</p>
+    
+    <div class="equation-box">
+        $$\nu_{sm} = -\frac{k_{am}}{\mu_{mg}} \frac{\partial p_m}{\partial r}$$
+    </div>
+    
+    <p>Where \(k_{am}\) is the measured matrix gas permeability with slippage effects. This is different from intrinsic permeability and can be calculated using Klinkenberg's equation:</p>
+    
+    <div class="equation-box">
+        $$k_{am} = k_m \left(1 + \frac{b_k}{p_{m,ave}}\right)$$
+    </div>
+    
+    <p>Or alternatively:</p>
+    
+    <div class="equation-box">
+        $$k_{am} = k_m F$$
+    </div>
+    
+    <p>Where:</p>
+    
+    <div class="equation-box">
+        $$F = 1 + \frac{4c\lambda_{ave}}{r_p}$$
+    </div>
+    
+    <p>The term \(\lambda_{ave}\) is the gas molecular mean free path, and \(r_p\) is the nanopore radius.</p>
+    
+    <div class="analogy">
+        <strong>Analogy:</strong> Imagine trying to move through a narrow hallway. In a wide hallway (conventional pores), you mainly interact with other people (gas molecules). In a very narrow hallway (nanopores), you constantly brush against the walls. This wall interaction creates a different kind of movement—that's slip flow.
+    </div>
+    
+    <h3>3. Adsorption/Desorption Effects</h3>
+    
+    <p>A significant portion of gas in shale is adsorbed onto organic matter surfaces. As pressure decreases during production, this gas desorbs and contributes to the flow. This is modeled using the Langmuir isotherm:</p>
+    
+    <div class="equation-box">
+        $$V_{Esc} = \frac{V_L p_m}{p_L + p_m}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(V_{Esc}\) is the equilibrium volume that can be adsorbed by a rock of unit volume at pressure \(p_m\)</li>
+        <li>\(V_L\) is Langmuir volumetric concentration (constant)</li>
+        <li>\(p_L\) is Langmuir pressure (constant)</li>
+    </ul>
+    
+    <div class="analogy">
+        <strong>Analogy:</strong> Think of adsorbed gas like water droplets clinging to a shower wall. As you increase the temperature (analogous to decreasing pressure in the reservoir), the droplets eventually release and become free to flow.
+    </div>
+    
+    <h3>4. Combined Flow Model</h3>
+    
+    <p>The total flow velocity through nanopores in the matrix is the combination of diffusion velocity and modified Darcy velocity:</p>
+    
+    <div class="equation-box">
+        $$\nu_{tm} = -\frac{k_{am}}{\mu_{mg}} \frac{\partial p_m}{\partial r} - \frac{M_g D_m}{\rho_{mg}} \frac{\partial C_m}{\partial r}$$
+    </div>
+    
+    <h2>The Desorption Coefficient: A Key Parameter</h2>
+    
+    <p>One of the most important parameters in the model is the dimensionless desorption coefficient:</p>
+    
+    <div class="equation-box">
+        $$a_{ave} = \frac{c_{mg,ave} + \frac{(1-\phi_m)}{\phi_m} \frac{p_{sc}T Z_{ave}}{Z_{sx}T_{sc}p_{m,ave}} \frac{V_L p_L}{(p_L + p_{m,ave})^2}}{c_{mg,ave}}$$
+    </div>
+    
+    <p>This parameter essentially tells us how much gas will be released from organic surfaces as pressure decreases. A larger desorption coefficient means more gas is desorbed, contributing to higher production.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Desorption Simulator</h3>
+        <div class="slider-container">
+            <label for="langmuirVolume">Langmuir Volume (V<sub>L</sub>): </label>
+            <input type="range" id="langmuirVolume" min="50" max="300" value="150" step="10">
+            <span id="langmuirVolumeValue">150</span> scf/ton
+        </div>
+        <div class="slider-container">
+            <label for="langmuirPressure">Langmuir Pressure (p<sub>L</sub>): </label>
+            <input type="range" id="langmuirPressure" min="300" max="1500" value="800" step="50">
+            <span id="langmuirPressureValue">800</span> psi
+        </div>
+        <div class="slider-container">
+            <label for="reservoirPressure">Reservoir Pressure (p<sub>m</sub>): </label>
+            <input type="range" id="reservoirPressure" min="100" max="3000" value="2000" step="100">
+            <span id="reservoirPressureValue">2000</span> psi
+        </div>
+        <div class="canvas-container">
+            <canvas id="desorptionCanvas" width="600" height="300"></canvas>
+        </div>
+        <div>
+            <p>Desorption Coefficient: <span id="desorptionCoefficient">-</span></p>
+            <p>Gas Released: <span id="gasReleased">-</span> scf/ton</p>
+        </div>
+    </div>
+    
+    <h2>The Mathematical Model: Putting It All Together</h2>
+    
+    <p>The complete model requires solving a system of diffusivity equations for each region. Let's look at the core equations in dimensionless form.</p>
+    
+    <h3>Matrix Spherical Flow</h3>
+    
+    <p>For the matrix in each region, we have:</p>
+    
+    <div class="equation-box">
+        $$\frac{1}{r_D^2} \frac{\partial}{\partial r_D} \left[ r_D^2 \frac{\partial \overline{p}_{pmD}}{\partial r_D} \right] = \frac{s}{\eta_{mDi}} \overline{p}_{pmD} \quad (i=1,2,3,...,6)$$
+    </div>
+    
+    <h3>Fracture Flow in Different Regions</h3>
+    
+    <p>For example, in region 2 (inner reservoir), we have:</p>
+    
+    <div class="equation-box">
+        $$\frac{\partial^2 \overline{p}_{pfD2}}{\partial y_D^2} + \frac{k_{f4}}{k_{f2}x_{1D}} \frac{\partial \overline{p}_{pfD4}}{\partial x_D}\bigg|_{x_D=x_{1D}} + \frac{k_{f6,v}}{k_{f2,v}z_{1D}} \frac{\partial \overline{p}_{pfD6}}{\partial z_D}\bigg|_{z_D=z_{1D}} - c(s)_2 s \overline{p}_{pfD2} = 0$$
+    </div>
+    
+    <p>Similar equations exist for each region, with appropriate boundary conditions that ensure continuity of pressure and flux across interfaces.</p>
+    
+    <h2>Practical Implications: What Does This Mean for Shale Gas Production?</h2>
+    
+    <p>Let's explore how different parameters affect production using insights from the model:</p>
+    
+    <h3>1. Impact of Gas Desorption</h3>
+    
+    <p>The model shows that desorption significantly contributes to production. Larger desorption coefficients lead to:</p>
+    <ul>
+        <li>Lower pressure drops during production</li>
+        <li>Slower rate decline</li>
+        <li>Significantly higher cumulative production</li>
+        <li>Delayed boundary-dominated flow</li>
+    </ul>
+    
+    <h3>2. Matrix Permeability Effects</h3>
+    
+    <p>Interestingly, matrix permeability is important but only up to a point:</p>
+    <ul>
+        <li>Ultra-low permeability (nano-darcy range) significantly limits production</li>
+        <li>Increasing permeability has diminishing returns beyond a certain threshold</li>
+        <li>For typical shale reservoirs (10-100 nD), other factors may be more important to optimize</li>
+    </ul>
+    
+    <h3>3. Secondary Fracture Permeability: The Hidden Champion</h3>
+    
+    <p>The model reveals that secondary fracture permeability (natural fractures enhanced during stimulation) has a stronger influence than matrix permeability:</p>
+    <ul>
+        <li>Cumulative production dramatically increases with higher secondary fracture permeability</li>
+        <li>Creating effective secondary fracture networks may be more important than trying to enhance matrix permeability</li>
+    </ul>
+    
+    <h3>4. Hydraulic Fracture Conductivity: Finding the Sweet Spot</h3>
+    
+    <p>There's an optimal fracture conductivity for each reservoir:</p>
+    <ul>
+        <li>Insufficient conductivity limits production</li>
+        <li>Excessive conductivity provides minimal additional benefit at higher cost</li>
+        <li>The model can help identify the economic optimum</li>
+    </ul>
+    
+    <h2>Fracture Pattern Optimization: A Practical Application</h2>
+    
+    <p>One of the most valuable applications of this model is optimizing fracture patterns in heterogeneous reservoirs. The key insight: <strong>location matters more than number</strong>.</p>
+    
+    <p>In heterogeneous reservoirs, the model shows that:</p>
+    <ul>
+        <li>Fractures placed in high-permeability zones perform significantly better</li>
+        <li>A well-placed fracture in a high-permeability zone outperforms multiple fractures in low-permeability zones</li>
+        <li>Optimizing fracture placement can double production with the same number of fractures</li>
+    </ul>
+    
+    <div class="interactive-container">
+        <h3>Fracture Pattern Optimization Game</h3>
+        <p>Place fractures in a heterogeneous reservoir to maximize production. You have a budget for 5 fractures.</p>
+        <div class="canvas-container">
+            <canvas id="fractureGameCanvas" width="600" height="400"></canvas>
+        </div>
+        <div>
+            <button id="placeFracture">Place Fracture</button>
+            <button id="resetGame">Reset Game</button>
+            <p>Fractures Remaining: <span id="fracturesRemaining">5</span></p>
+            <p>Estimated Production: <span id="estimatedProduction">0</span> MMscf</p>
+        </div>
+        <div id="gameMessage" class="output"></div>
+    </div>
+    
+    <h2>Conclusion: The Power of First-Principles Modeling</h2>
+    
+    <p>This analytical model represents a significant advancement in our understanding of shale gas production. By breaking down the complex physics into fundamental mechanisms—diffusion, slip flow, desorption, and multi-region flow—we gain insights that weren't possible with simpler models.</p>
+    
+    <p>The key takeaways:</p>
+    
+    <ol>
+        <li>Shale gas flow is fundamentally different from conventional reservoirs and requires modeling multiple mechanisms</li>
+        <li>Desorption can contribute significantly to long-term production</li>
+        <li>Secondary fracture networks may be more important than matrix properties</li>
+        <li>Fracture placement optimization in heterogeneous reservoirs can dramatically improve economics</li>
+        <li>There's an optimal fracture conductivity beyond which returns diminish</li>
+    </ol>
+    
+    <p>By understanding these principles, engineers can design more effective fracturing strategies, better predict well performance, and ultimately extract more gas from these challenging reservoirs.</p>
+    
+    <script>
+        // Region visualization
+        const regionCanvas = document.getElementById('regionCanvas');
+        const regionCtx = regionCanvas.getContext('2d');
+        const viewAngleSlider = document.getElementById('viewAngle');
+        
+        function drawRegions() {
+            const angle = viewAngleSlider.value * Math.PI / 180;
+            const centerX = regionCanvas.width / 2;
+            const centerY = regionCanvas.height / 2;
+            
+            regionCtx.clearRect(0, 0, regionCanvas.width, regionCanvas.height);
+            
+            // Draw base rectangle
+            const width = 400;
+            const height = 200;
+            const depth = 150;
+            
+            // 3D projection based on angle
+            const projectedWidth = width * Math.cos(angle);
+            const projectedDepth = depth * Math.sin(angle);
+            
+            // Draw the regions with different colors
+            
+            // Hydraulic fracture (center)
+            regionCtx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX - 5, centerY - height/2, 10, height);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Inner region 1 (left of fracture)
+            regionCtx.fillStyle = 'rgba(255, 165, 0, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX - 55, centerY - height/2, 50, height);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Inner region 2 (right of fracture)
+            regionCtx.fillStyle = 'rgba(255, 165, 0, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX + 5, centerY - height/2, 50, height);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Outer region 3 (far left)
+            regionCtx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX - 155, centerY - height/2, 100, height);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Outer region 4 (far right)
+            regionCtx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX + 55, centerY - height/2, 100, height);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Upper region 5 (top left)
+            regionCtx.fillStyle = 'rgba(144, 238, 144, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX - 155, centerY - height/2 - 50, 150, 50);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Upper region 6 (top right)
+            regionCtx.fillStyle = 'rgba(144, 238, 144, 0.5)';
+            regionCtx.beginPath();
+            regionCtx.rect(centerX + 5, centerY - height/2 - 50, 150, 50);
+            regionCtx.fill();
+            regionCtx.strokeStyle = 'black';
+            regionCtx.stroke();
+            
+            // Labels
+            regionCtx.fillStyle = 'black';
+            regionCtx.font = '12px Arial';
+            regionCtx.fillText("Hydraulic Fracture", centerX - 45, centerY + 100);
+            regionCtx.fillText("Inner Region 1", centerX - 100, centerY - 10);
+            regionCtx.fillText("Inner Region 2", centerX + 60, centerY - 10);
+            regionCtx.fillText("Outer Region 3", centerX - 200, centerY - 10);
+            regionCtx.fillText("Outer Region 4", centerX + 150, centerY - 10);
+            regionCtx.fillText("Upper Region 5", centerX - 100, centerY - height/2 - 30);
+            regionCtx.fillText("Upper Region 6", centerX + 60, centerY - height/2 - 30);
+        }
+        
+        viewAngleSlider.addEventListener('input', drawRegions);
+        drawRegions();
+        
+        // Desorption simulator
+        const desorptionCanvas = document.getElementById('desorptionCanvas');
+        const desorptionCtx = desorptionCanvas.getContext('2d');
+        const langmuirVolumeSlider = document.getElementById('langmuirVolume');
+        const langmuirPressureSlider = document.getElementById('langmuirPressure');
+        const reservoirPressureSlider = document.getElementById('reservoirPressure');
+        const langmuirVolumeValue = document.getElementById('langmuirVolumeValue');
+        const langmuirPressureValue = document.getElementById('langmuirPressureValue');
+        const reservoirPressureValue = document.getElementById('reservoirPressureValue');
+        const desorptionCoefficient = document.getElementById('desorptionCoefficient');
+        const gasReleased = document.getElementById('gasReleased');
+        
+        function updateDesorptionSimulation() {
+            const VL = parseFloat(langmuirVolumeSlider.value);
+            const pL = parseFloat(langmuirPressureSlider.value);
+            const pm = parseFloat(reservoirPressureSlider.value);
+            
+            langmuirVolumeValue.textContent = VL;
+            langmuirPressureValue.textContent = pL;
+            reservoirPressureValue.textContent = pm;
+            
+            // Calculate adsorbed gas at current pressure
+            const adsorbedGas = (VL * pm) / (pL + pm);
+            
+            // Calculate desorption coefficient (simplified version)
+            const desorpCoeff = 1 + (VL * pL) / ((pL + pm) * (pL + pm));
+            desorptionCoefficient.textContent = desorpCoeff.toFixed(2);
+            
+            // Calculate gas released if pressure drops by 500 psi
+            const newPressure = Math.max(100, pm - 500);
+            const newAdsorbedGas = (VL * newPressure) / (pL + newPressure);
+            const released = adsorbedGas - newAdsorbedGas;
+            gasReleased.textContent = released.toFixed(2);
+            
+            // Draw the desorption curve
+            desorptionCtx.clearRect(0, 0, desorptionCanvas.width, desorptionCanvas.height);
+            
+            // Draw axes
+            desorptionCtx.beginPath();
+            desorptionCtx.moveTo(50, 250);
+            desorptionCtx.lineTo(550, 250);
+            desorptionCtx.moveTo(50, 250);
+            desorptionCtx.lineTo(50, 50);
+            desorptionCtx.strokeStyle = 'black';
+            desorptionCtx.stroke();
+            
+            // Axis labels
+            desorptionCtx.fillStyle = 'black';
+            desorptionCtx.font = '12px Arial';
+            desorptionCtx.fillText("Pressure (psi)", 300, 280);
+            desorptionCtx.save();
+            desorptionCtx.translate(20, 150);
+            desorptionCtx.rotate(-Math.PI/2);
+            desorptionCtx.fillText("Adsorbed Gas (scf/ton)", 0, 0);
+            desorptionCtx.restore();
+            
+            // Draw the Langmuir isotherm curve
+            desorptionCtx.beginPath();
+            for (let p = 0; p <= 3000; p += 50) {
+                const x = 50 + p * 500 / 3000;
+                const y = 250 - (VL * p) / (pL + p) * 200 / VL;
+                
+                if (p === 0) {
+                    desorptionCtx.moveTo(x, y);
+                } else {
+                    desorptionCtx.lineTo(x, y);
+                }
+            }
+            desorptionCtx.strokeStyle = 'blue';
+            desorptionCtx.stroke();
+            
+            // Mark current pressure
+            const currentX = 50 + pm * 500 / 3000;
+            const currentY = 250 - (VL * pm) / (pL + pm) * 200 / VL;
+            
+            desorptionCtx.beginPath();
+            desorptionCtx.arc(currentX, currentY, 5, 0, Math.PI * 2);
+            desorptionCtx.fillStyle = 'red';
+            desorptionCtx.fill();
+            
+            // Mark new pressure after 500 psi drop
+            const newX = 50 + newPressure * 500 / 3000;
+            const newY = 250 - (VL * newPressure) / (pL + newPressure) * 200 / VL;
+            
+            desorptionCtx.beginPath();
+            desorptionCtx.arc(newX, newY, 5, 0, Math.PI * 2);
+            desorptionCtx.fillStyle = 'green';
+            desorptionCtx.fill();
+            
+            // Draw arrow between points
+            desorptionCtx.beginPath();
+            desorptionCtx.moveTo(currentX, currentY);
+            desorptionCtx.lineTo(newX, newY);
+            desorptionCtx.strokeStyle = 'purple';
+            desorptionCtx.stroke();
+            
+            // Draw released gas annotation
+            desorptionCtx.fillStyle = 'purple';
+            desorptionCtx.fillText(`Gas Released: ${released.toFixed(2)} scf/ton`, (currentX + newX)/2 - 80, (currentY + newY)/2 - 10);
+        }
+        
+        langmuirVolumeSlider.addEventListener('input', updateDesorptionSimulation);
+        langmuirPressureSlider.addEventListener('input', updateDesorptionSimulation);
+        reservoirPressureSlider.addEventListener('input', updateDesorptionSimulation);
+        updateDesorptionSimulation();
+        
+        // Fracture pattern optimization game
+        const fractureGameCanvas = document.getElementById('fractureGameCanvas');
+        const gameCtx = fractureGameCanvas.getContext('2d');
+        const placeFractureBtn = document.getElementById('placeFracture');
+        const resetGameBtn = document.getElementById('resetGame');
+        const fracturesRemaining = document.getElementById('fracturesRemaining');
+        const estimatedProduction = document.getElementById('estimatedProduction');
+        const gameMessage = document.getElementById('gameMessage');
+        
+        // Game state
+        let gameState = {
+            grid: [
+                { perm: 0.01, color: '#ffcccc', production: 100 },  // Very low
+                { perm: 0.1, color: '#ffaaaa', production: 300 },   // Low
+                { perm: 1.0, color: '#ff8888', production: 700 },   // Medium
+                { perm: 10.0, color: '#ff6666', production: 1200 },  // High
+                { perm: 100.0, color: '#ff4444', production: 2000 }  // Very high
+            ],
+            reservoir: [],
+            fractures: [],
+            remainingFractures: 5,
+            totalProduction: 0,
+            cellSize: 60,
+            selectedCell: null
+        };
+        
+        function initGame() {
+            // Create a 10x5 reservoir with random permeability zones
+            gameState.reservoir = [];
+            for (let i = 0; i < 5; i++) {
+                let row = [];
+                for (let j = 0; j < 10; j++) {
+                    // Randomly assign permeability, with bias toward lower values
+                    const rand = Math.random();
+                    let permIndex;
+                    if (rand < 0.4) permIndex = 0;
+                    else if (rand < 0.7) permIndex = 1;
+                    else if (rand < 0.85) permIndex = 2;
+                    else if (rand < 0.95) permIndex = 3;
+                    else permIndex = 4;
+                    
+                    row.push({
+                        x: j,
+                        y: i,
+                        permIndex: permIndex,
+                        hasFracture: false
+                    });
+                }
+                gameState.reservoir.push(row);
+            }
+            
+            gameState.fractures = [];
+            gameState.remainingFractures = 5;
+            gameState.totalProduction = 0;
+            gameState.selectedCell = null;
+            
+            fracturesRemaining.textContent = gameState.remainingFractures;
+            estimatedProduction.textContent = '0';
+            gameMessage.textContent = '';
+            
+            drawGame();
+        }
+        
+        function drawGame() {
+            gameCtx.clearRect(0, 0, fractureGameCanvas.width, fractureGameCanvas.height);
+            
+            // Draw reservoir grid
+            for (let i = 0; i < gameState.reservoir.length; i++) {
+                for (let j = 0; j < gameState.reservoir[i].length; j++) {
+                    const cell = gameState.reservoir[i][j];
+                    const permData = gameState.grid[cell.permIndex];
+                    
+                    gameCtx.fillStyle = permData.color;
+                    gameCtx.fillRect(j * gameState.cellSize, i * gameState.cellSize, 
+                                     gameState.cellSize, gameState.cellSize);
+                    
+                    gameCtx.strokeStyle = 'black';
+                    gameCtx.strokeRect(j * gameState.cellSize, i * gameState.cellSize, 
+                                      gameState.cellSize, gameState.cellSize);
+                    
+                    // Draw permeability value
+                    gameCtx.fillStyle = 'black';
+                    gameCtx.font = '12px Arial';
+                    gameCtx.fillText(permData.perm + ' mD', 
+                                    j * gameState.cellSize + 5, 
+                                    i * gameState.cellSize + 15);
+                    
+                    // Draw production potential
+                    gameCtx.fillText(permData.production + ' MMscf', 
+                                    j * gameState.cellSize + 5, 
+                                    i * gameState.cellSize + 30);
+                }
+            }
+            
+            // Draw fractures
+            for (const fracture of gameState.fractures) {
+                gameCtx.fillStyle = 'blue';
+                gameCtx.beginPath();
+                gameCtx.arc(
+                    fracture.x * gameState.cellSize + gameState.cellSize/2,
+                    fracture.y * gameState.cellSize + gameState.cellSize/2,
+                    gameState.cellSize/4, 0, Math.PI * 2
+                );
+                gameCtx.fill();
+            }
+            
+            // Draw selected cell
+            if (gameState.selectedCell) {
+                gameCtx.strokeStyle = 'yellow';
+                gameCtx.lineWidth = 3;
+                gameCtx.strokeRect(
+                    gameState.selectedCell.x * gameState.cellSize,
+                    gameState.selectedCell.y * gameState.cellSize,
+                    gameState.cellSize, gameState.cellSize
+                );
+                gameCtx.lineWidth = 1;
+            }
+        }
+        
+        function handleCanvasClick(event) {
+            const rect = fractureGameCanvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Convert to grid coordinates
+            const gridX = Math.floor(x / gameState.cellSize);
+            const gridY = Math.floor(y / gameState.cellSize);
+            
+            // Check if within bounds
+            if (gridX >= 0 && gridX < 10 && gridY >= 0 && gridY < 5) {
+                gameState.selectedCell = { x: gridX, y: gridY };
+                drawGame();
+            }
+        }
+        
+        function placeFracture() {
+            if (!gameState.selectedCell) {
+                gameMessage.textContent = "Please select a cell first!";
+                return;
+            }
+            
+            if (gameState.remainingFractures <= 0) {
+                gameMessage.textContent = "No fractures remaining!";
+                return;
+            }
+            
+            // Check if cell already has a fracture
+            const cell = gameState.reservoir[gameState.selectedCell.y][gameState.selectedCell.x];
+            if (cell.hasFracture) {
+                gameMessage.textContent = "This cell already has a fracture!";
+                return;
+            }
+            
+            // Place fracture
+            cell.hasFracture = true;
+            gameState.fractures.push({
+                x: gameState.selectedCell.x,
+                y: gameState.selectedCell.y,
+                production: gameState.grid[cell.permIndex].production
+            });
+            
+            // Update game state
+            gameState.remainingFractures--;
+            gameState.totalProduction += gameState.grid[cell.permIndex].production;
+            
+            fracturesRemaining.textContent = gameState.remainingFractures;
+            estimatedProduction.textContent = gameState.totalProduction;
+            
+            // Check if game is over
+            if (gameState.remainingFractures === 0) {
+                if (gameState.totalProduction > 8000) {
+                    gameMessage.textContent = "Excellent job! You've optimized your fracture placement perfectly!";
+                } else if (gameState.totalProduction > 6000) {
+                    gameMessage.textContent = "Good job! Your fracture placement is effective.";
+                } else if (gameState.totalProduction > 4000) {
+                    gameMessage.textContent = "Not bad, but you could optimize your fracture placement better.";
+                } else {
+                    gameMessage.textContent = "You should reconsider your strategy. Try placing fractures in higher permeability zones.";
+                }
+            }
+            
+            drawGame();
+        }
+        
+        fractureGameCanvas.addEventListener('click', handleCanvasClick);
+        placeFractureBtn.addEventListener('click', placeFracture);
+        resetGameBtn.addEventListener('click', initGame);
+        
+        // Initialize the game
+        initGame();
+    </script>
+</body>
+</html>

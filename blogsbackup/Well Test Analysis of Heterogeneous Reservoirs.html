@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demystifying Green's Functions in Heterogeneous Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #ffd700;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        .two-column {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .two-column > div {
+            width: 48%;
+        }
+        @media (max-width: 700px) {
+            .two-column > div {
+                width: 100%;
+            }
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Green's Functions in Heterogeneous Reservoirs: A First Principles Approach</h1>
+    
+    <p class="note">
+        This post breaks down the complex mathematical concept of Green's functions in heterogeneous reservoirs, making it accessible to anyone with basic calculus knowledge. We'll build our understanding from first principles and include an interactive simulation to visualize these concepts.
+    </p>
+    
+    <h2>What Are Green's Functions and Why Should You Care?</h2>
+    
+    <p>
+        Imagine you're trying to understand how pressure changes propagate through an oil reservoir with varying properties. This is a classic problem in petroleum engineering, and it's surprisingly difficult to solve mathematically.
+    </p>
+    
+    <p>
+        Green's functions are a powerful mathematical tool that can help us solve these complex problems. Think of a Green's function as the "impulse response" of a system - it tells us how the system responds to a single, instantaneous "kick" at a specific point.
+    </p>
+    
+    <div class="highlight">
+        <strong>Real-world analogy:</strong> Imagine dropping a pebble into a pond. The ripples that spread out represent how the disturbance propagates through the water. A Green's function is like a mathematical description of those ripples.
+    </div>
+    
+    <h2>The Core Problem: Heterogeneous vs. Homogeneous Reservoirs</h2>
+    
+    <p>
+        In a homogeneous reservoir, properties like permeability and porosity are constant throughout. This makes the math relatively straightforward. But real-world reservoirs are heterogeneous - their properties vary from place to place.
+    </p>
+    
+    <p>
+        The academic paper we're exploring extends Green's function methods from simple homogeneous reservoirs to more realistic heterogeneous ones. Let's break down what this means from first principles.
+    </p>
+    
+    <h3>The Diffusivity Equation: Our Starting Point</h3>
+    
+    <p>
+        The flow of fluids through porous media is governed by the diffusivity equation. In a homogeneous reservoir, this equation looks like:
+    </p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{\partial^{2}G}{\partial x^{2}} + \frac{\partial^{2}G}{\partial y^{2}} + \frac{\partial^{2}G}{\partial z^{2}} = \frac{\phi\mu c_{t}}{k}\frac{\partial G}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(G\) is the pressure response (Green's function)</li>
+        <li>\(\phi\) is porosity (fraction of void space)</li>
+        <li>\(\mu\) is fluid viscosity</li>
+        <li>\(c_t\) is total compressibility</li>
+        <li>\(k\) is permeability</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <p>
+        But in a heterogeneous reservoir, these properties vary with position, making the equation more complex:
+    </p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{\partial}{\partial x}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial x} + \frac{\partial}{\partial y}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial y} + \frac{\partial}{\partial z}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial z} = \phi(x,y,z)c_{t}(x,y,z)\frac{\partial G}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>
+        Notice how \(k\), \(\mu\), \(\phi\), and \(c_t\) are now functions of position, not constants. This makes the equation much harder to solve!
+    </p>
+    
+    <h2>Defining Green's Functions for Heterogeneous Reservoirs</h2>
+    
+    <p>
+        The paper presents two ways to define Green's functions for heterogeneous reservoirs. Let's focus on the first approach, which treats the instantaneous source as an initial condition:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \frac{\partial}{\partial x}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial x} + \frac{\partial}{\partial y}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial y} + \frac{\partial}{\partial z}\frac{k(x,y,z)}{\mu(x,y,z)}\frac{\partial G}{\partial z} = \phi(x,y,z)c_{t}(x,y,z)\frac{\partial G}{\partial t}
+        \end{align}
+    </div>
+    
+    <p>
+        With the initial condition:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        G(x,y,z,x^{\prime},y^{\prime},z^{\prime},0) = \frac{\delta(x-x^{\prime})\delta(y-y^{\prime})\delta(z-z^{\prime})}{\phi(x^{\prime},y^{\prime},z^{\prime})c_{t}(x^{\prime},y^{\prime},z^{\prime})}
+        \end{align}
+    </div>
+    
+    <p>
+        Here, \(\delta\) is the Dirac delta function, which represents an instantaneous point source. Think of it as a mathematical representation of a "spike" that is infinitely tall but infinitesimally wide, with a total area of 1.
+    </p>
+    
+    <div class="highlight">
+        <strong>Simplified explanation:</strong> The Green's function tells us how pressure changes at point (x,y,z) at time t when we inject a tiny amount of fluid at point (x',y',z') at time 0.
+    </div>
+    
+    <h2>The Principle of Reciprocity: A Fundamental Property</h2>
+    
+    <p>
+        One of the most powerful properties of Green's functions is reciprocity, which can be stated as:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        G(x,y,z,x^{\prime},y^{\prime},z^{\prime},t-\tau) = G(x^{\prime},y^{\prime},z^{\prime},x,y,z,t-\tau)
+        \end{align}
+    </div>
+    
+    <p>
+        In plain English: The pressure response at point A due to an injection at point B is the same as the pressure response at point B due to an identical injection at point A.
+    </p>
+    
+    <p>
+        This might seem intuitive, but it's actually quite profound. It means we can swap the source and observation points and get the same result. This property is especially useful for well testing and reservoir characterization.
+    </p>
+    
+    <h2>Expressing Pressure in Terms of Green's Functions</h2>
+    
+    <p>
+        Now for the practical part: how do we use Green's functions to solve real problems? The general solution for pressure can be expressed as:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        p(x,y,z,t) &= \int_{0}^{t}\int_{S_{e}}\frac{k}{\mu}(G\frac{\partial p}{\partial n} + p\frac{\partial G}{\partial n})dS_{e}d\tau \\
+        &- \int_{0}^{t}\int_{\Omega}G \cdot f dx^{\prime}dy^{\prime}dz^{\prime}d\tau \\
+        &+ \int_{\Omega}\phi c_{t}G(t) \cdot g dx^{\prime}dy^{\prime}dz^{\prime}
+        \end{align}
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(f(x,y,z,t)\) is the source distribution (e.g., injection or production rate)</li>
+        <li>\(g(x,y,z)\) is the initial pressure distribution</li>
+        <li>\(S_e\) is the reservoir boundary</li>
+        <li>\(\Omega\) is the reservoir domain</li>
+    </ul>
+    
+    <p>
+        This formula looks intimidating, but it's actually quite elegant. It says that the pressure at any point and time can be calculated by:
+    </p>
+    
+    <ol>
+        <li>Accounting for boundary conditions (first term)</li>
+        <li>Accounting for sources and sinks (second term)</li>
+        <li>Accounting for initial conditions (third term)</li>
+    </ol>
+    
+    <h2>Finding Green's Functions: Four Practical Methods</h2>
+    
+    <p>
+        The paper presents four methods to find Green's functions for heterogeneous reservoirs:
+    </p>
+    
+    <h3>1. Separation of Variables</h3>
+    
+    <p>
+        This classic method works for certain one-dimensional problems. For example, when \(\frac{k(x)}{\mu(x)} = e^x\) and \(\phi(x)c_t(x) = e^x\), we can find the Green's function as:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        G(x,x^{\prime},t) = 2e^{-\frac{x^{\prime}+x}{2}-\frac{t}{4}}\sum_{n=1}^{\infty}e^{-n^{2}\pi^{2}t}\sin n\pi x^{\prime}\sin n\pi x
+        \end{align}
+    </div>
+    
+    <h3>2. Fourier Transformation</h3>
+    
+    <p>
+        When dealing with infinite domains or continuous spectra of eigenvalues, Fourier transformation is useful. For a two-region problem with a plane interface, this method yields solutions in terms of Fourier integrals.
+    </p>
+    
+    <h3>3. Working in Laplace Space</h3>
+    
+    <p>
+        For infinite reservoirs, working in Laplace space allows us to focus on spatial variables without worrying about the time variable. The solution is then inverted back to the time domain.
+    </p>
+    
+    <h3>4. Decomposition</h3>
+    
+    <p>
+        In special cases, we can decompose a multi-dimensional problem into several one-dimensional problems that are easier to solve.
+    </p>
+    
+    <h2>Interactive Visualization: Green's Function for a Circular Discontinuity</h2>
+    
+    <p>
+        Let's visualize one of the examples from the paper: an infinite reservoir with a circular discontinuity in properties. This is Case 3 from the paper, where the reservoir has different properties inside and outside a circular region.
+    </p>
+    
+    <div class="interactive-container">
+        <h3>Pressure Response in a Reservoir with Circular Discontinuity</h3>
+        
+        <div class="two-column">
+            <div>
+                <div class="slider-container">
+                    <label for="k1-slider">k₁ (inner permeability):</label>
+                    <input type="range" id="k1-slider" min="1" max="100" value="10" step="1">
+                    <span id="k1-value">10 mD</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="k2-slider">k₂ (outer permeability):</label>
+                    <input type="range" id="k2-slider" min="1" max="100" value="50" step="1">
+                    <span id="k2-value">50 mD</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="ct1-slider">c₁ (inner compressibility):</label>
+                    <input type="range" id="ct1-slider" min="1" max="20" value="5" step="0.5">
+                    <span id="ct1-value">5 × 10⁻⁶ psi⁻¹</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="ct2-slider">c₂ (outer compressibility):</label>
+                    <input type="range" id="ct2-slider" min="1" max="20" value="10" step="0.5">
+                    <span id="ct2-value">10 × 10⁻⁶ psi⁻¹</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="a-slider">a (radius of discontinuity):</label>
+                    <input type="range" id="a-slider" min="50" max="500" value="200" step="10">
+                    <span id="a-value">200 ft</span>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="well-position">Well Position:</label>
+                    <select id="well-position">
+                        <option value="inside">Inside Circle</option>
+                        <option value="outside">Outside Circle</option>
+                    </select>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="time-slider">Time:</label>
+                    <input type="range" id="time-slider" min="0.1" max="100" value="10" step="0.1">
+                    <span id="time-value">10 hours</span>
+                </div>
+            </div>
+            
+            <div>
+                <canvas id="reservoir-canvas" width="350" height="350"></canvas>
+                <div id="pressure-info"></div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Practical Applications and Limitations</h2>
+    
+    <p>
+        Understanding when and how to apply Green's functions is crucial. Here are some key takeaways:
+    </p>
+    
+    <h3>When Reciprocity Holds</h3>
+    
+    <p>
+        Reciprocity holds for:
+    </p>
+    <ul>
+        <li>Heterogeneous reservoirs with uniform initial pressure and no-flow boundaries</li>
+        <li>Heterogeneous reservoirs with uniform initial pressure and constant pressure boundaries</li>
+        <li>Heterogeneous infinite reservoirs with uniform initial pressure</li>
+        <li>Homogeneous infinite reservoirs with wellbore storage</li>
+    </ul>
+    
+    <h3>When Reciprocity Doesn't Hold</h3>
+    
+    <p>
+        Reciprocity doesn't hold for:
+    </p>
+    <ul>
+        <li>Reservoirs with non-uniform initial pressure</li>
+        <li>Reservoirs with non-zero flux across the outer boundary</li>
+        <li>Certain cases with wellbore storage</li>
+    </ul>
+    
+    <h3>Practical Implications</h3>
+    
+    <p>
+        These findings have important implications for well testing and reservoir characterization:
+    </p>
+    <ul>
+        <li>In interference testing, we can use reciprocity to reduce the number of tests needed</li>
+        <li>Understanding when reciprocity holds helps us design more efficient testing programs</li>
+        <li>Green's functions provide a powerful tool for modeling pressure behavior in complex reservoirs</li>
+    </ul>
+    
+    <h2>Conclusion: The Power of Green's Functions</h2>
+    
+    <p>
+        Green's functions offer a powerful mathematical framework for solving pressure diffusion problems in heterogeneous reservoirs. By understanding the conditions under which they can be applied and the principle of reciprocity, engineers can model complex reservoir behaviors more accurately.
+    </p>
+    
+    <p>
+        While finding Green's functions for heterogeneous reservoirs is more challenging than for homogeneous ones, the methods presented in the paper provide practical approaches for various scenarios. The interactive visualization demonstrates how these concepts apply to a reservoir with a circular discontinuity, allowing you to explore the effects of different parameters on pressure response.
+    </p>
+    
+    <p>
+        As reservoir characterization techniques continue to advance, the ability to accurately model heterogeneous properties becomes increasingly important. Green's functions provide a robust foundation for these efforts, bridging the gap between mathematical theory and practical engineering applications.
+    </p>
+    
+    <script>
+        // Initialize all the UI elements and their event handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const k1Slider = document.getElementById('k1-slider');
+            const k2Slider = document.getElementById('k2-slider');
+            const ct1Slider = document.getElementById('ct1-slider');
+            const ct2Slider = document.getElementById('ct2-slider');
+            const aSlider = document.getElementById('a-slider');
+            const wellPosition = document.getElementById('well-position');
+            const timeSlider = document.getElementById('time-slider');
+            
+            const k1Value = document.getElementById('k1-value');
+            const k2Value = document.getElementById('k2-value');
+            const ct1Value = document.getElementById('ct1-value');
+            const ct2Value = document.getElementById('ct2-value');
+            const aValue = document.getElementById('a-value');
+            const timeValue = document.getElementById('time-value');
+            
+            const canvas = document.getElementById('reservoir-canvas');
+            const ctx = canvas.getContext('2d');
+            const pressureInfo = document.getElementById('pressure-info');
+            
+            // Update display values
+            function updateValues() {
+                k1Value.textContent = k1Slider.value + ' mD';
+                k2Value.textContent = k2Slider.value + ' mD';
+                ct1Value.textContent = ct1Slider.value + ' × 10⁻⁶ psi⁻¹';
+                ct2Value.textContent = ct2Slider.value + ' × 10⁻⁶ psi⁻¹';
+                aValue.textContent = aSlider.value + ' ft';
+                timeValue.textContent = timeSlider.value + ' hours';
+            }
+            
+            // Draw the reservoir visualization
+            function drawReservoir() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = parseInt(aSlider.value) / 3; // Scale down for visualization
+                
+                // Draw outer region (region 2)
+                ctx.fillStyle = `rgba(173, 216, 230, ${k2Slider.value / 100})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw inner region (region 1)
+                ctx.fillStyle = `rgba(255, 165, 0, ${k1Slider.value / 100})`;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw boundary
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Draw well
+                let wellX, wellY;
+                if (wellPosition.value === 'inside') {
+                    // Place well inside the circle
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = radius * 0.6;
+                    wellX = centerX + Math.cos(angle) * distance;
+                    wellY = centerY + Math.sin(angle) * distance;
+                } else {
+                    // Place well outside the circle
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = radius * 1.5;
+                    wellX = centerX + Math.cos(angle) * distance;
+                    wellY = centerY + Math.sin(angle) * distance;
+                }
+                
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.arc(wellX, wellY, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw pressure contours
+                drawPressureContours(centerX, centerY, radius, wellX, wellY);
+            }
+            
+            // Draw pressure contours (simplified model)
+            function drawPressureContours(centerX, centerY, radius, wellX, wellY) {
+                const k1 = parseInt(k1Slider.value);
+                const k2 = parseInt(k2Slider.value);
+                const ct1 = parseFloat(ct1Slider.value) * 1e-6;
+                const ct2 = parseFloat(ct2Slider.value) * 1e-6;
+                const time = parseFloat(timeSlider.value);
+                
+                // Calculate diffusivity constants
+                const eta1 = 0.000264 * k1 / (0.2 * 1 * ct1); // simplified diffusivity for region 1
+                const eta2 = 0.000264 * k2 / (0.2 * 1 * ct2); // simplified diffusivity for region 2
+                
+                // Draw pressure contours as circles with varying radii
+                const isWellInside = Math.sqrt(Math.pow(wellX - centerX, 2) + Math.pow(wellY - centerY, 2)) < radius;
+                const maxRadius = Math.min(canvas.width, canvas.height) / 2;
+                
+                // Calculate pressure drop
+                let pressureDrop;
+                if (isWellInside) {
+                    // Simplified pressure calculation for well inside region 1
+                    pressureDrop = 141.2 * 1 * 1 / k1 * Math.log(Math.sqrt(eta1 * time) / 0.1);
+                } else {
+                    // Simplified pressure calculation for well outside region 1
+                    pressureDrop = 141.2 * 1 * 1 / k2 * Math.log(Math.sqrt(eta2 * time) / 0.1);
+                }
+                
+                // Display pressure drop information
+                pressureInfo.innerHTML = `
+                    <strong>Estimated Pressure Drop:</strong> ${pressureDrop.toFixed(2)} psi<br>
+                    <strong>Diffusivity Region 1:</strong> ${eta1.toFixed(2)} ft²/hr<br>
+                    <strong>Diffusivity Region 2:</strong> ${eta2.toFixed(2)} ft²/hr
+                `;
+                
+                // Draw pressure contours
+                for (let i = 1; i <= 5; i++) {
+                    const contourRadius = Math.sqrt(4 * (isWellInside ? eta1 : eta2) * time) * i / 5;
+                    const scaledRadius = Math.min(contourRadius, maxRadius);
+                    
+                    ctx.strokeStyle = `rgba(0, 0, 255, ${0.8 - i * 0.15})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(wellX, wellY, scaledRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            // Update everything when a control changes
+            function updateAll() {
+                updateValues();
+                drawReservoir();
+            }
+            
+            // Add event listeners
+            k1Slider.addEventListener('input', updateAll);
+            k2Slider.addEventListener('input', updateAll);
+            ct1Slider.addEventListener('input', updateAll);
+            ct2Slider.addEventListener('input', updateAll);
+            aSlider.addEventListener('input', updateAll);
+            wellPosition.addEventListener('change', updateAll);
+            timeSlider.addEventListener('input', updateAll);
+            
+            // Initial update
+            updateAll();
+        });
+    </script>
+</body>
+</html>

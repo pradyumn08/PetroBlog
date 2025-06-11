@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Gas-Oil Gravity Drainage in Naturally Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            color: #2980b9;
+            font-size: 1.3em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 1em;
+            margin: 1.5em 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 4px;
+            padding: 1em;
+            margin: 1em 0;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 1.5em 0;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .figure {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .figure img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+        }
+        .figure-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 8px;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 0.9em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gravity Drainage in Naturally Fractured Reservoirs: A First Principles Approach</h1>
+    
+    <p class="highlight">
+        In this blog post, we'll break down the complex phenomenon of gas-oil gravity drainage in naturally fractured reservoirs. 
+        We'll take a first principles approach to understand how oil moves from matrix blocks to fractures under gravity forces, 
+        and how this critical process can be modeled for reservoir simulation.
+    </p>
+    
+    <h2>Introduction: The Fundamentals of Fractured Reservoirs</h2>
+    
+    <div class="two-column">
+        <div class="column">
+            <p>
+                Imagine a sponge soaked in honey, with tiny cracks running through it. The sponge represents the <strong>matrix</strong> of a 
+                naturally fractured reservoir, where most of the oil is stored, while the cracks represent the <strong>fractures</strong>, 
+                which provide pathways for fluid flow. When gas is injected or naturally migrates into such a reservoir, it typically 
+                flows through the high-permeability fractures, displacing oil.
+            </p>
+            
+            <p>
+                But how does the oil trapped in the matrix blocks eventually make its way into the fractures? This is where 
+                <strong>gravity drainage</strong> comes into play - a critical recovery mechanism in fractured reservoirs.
+            </p>
+        </div>
+        <div class="column">
+            <div class="figure">
+                <img src="https://i.ibb.co/9ZST9Bm/fractured-reservoir.png" alt="Naturally Fractured Reservoir Model">
+                <div class="figure-caption">Fig. 1: Conceptual model of a naturally fractured reservoir showing matrix blocks separated by fractures</div>
+            </div>
+        </div>
+    </div>
+    
+    <p>
+        The academic paper we're exploring today presents a detailed analysis of this process, with a focus on how to model 
+        the transfer of oil from matrix to fracture in numerical simulations. Let's break down the core concepts from first principles.
+    </p>
+    
+    <h2>The Physics of Gravity Drainage: Forces at Play</h2>
+    
+    <p>
+        When gas displaces oil in a fractured reservoir, three main forces influence the flow:
+    </p>
+    
+    <ol>
+        <li><strong>Gravity forces</strong>: Due to density differences between oil and gas</li>
+        <li><strong>Capillary forces</strong>: Due to interfacial tension between fluids and rock wettability</li>
+        <li><strong>Viscous forces</strong>: Due to pressure gradients and fluid viscosity</li>
+    </ol>
+    
+    <p>
+        In gravity drainage, the density difference between oil and gas is the primary driving force. Gas, being lighter, 
+        tends to rise to the top while oil, being heavier, tends to sink. This creates a natural segregation that can 
+        help expel oil from the matrix into the fractures.
+    </p>
+    
+    <div class="note">
+        <strong>Key Insight:</strong> The paper makes a crucial simplification by showing that gas viscous pressure drop 
+        can be neglected because gas viscosity is typically very low compared to oil viscosity. This simplification makes 
+        the mathematical model more tractable while maintaining physical accuracy.
+    </div>
+    
+    <h2>The Mathematical Foundation: From Darcy's Law to Transfer Functions</h2>
+    
+    <p>
+        To understand gravity drainage, we need to start with the fundamental equations governing fluid flow in porous media.
+    </p>
+    
+    <h3>Darcy's Law for Oil and Gas Phases</h3>
+    
+    <div class="equation-container">
+        <p>
+            For oil phase:
+            \begin{equation}
+            u_{o}=-\frac{k k_{r o}}{\mu_{o}}\frac{\partial\Phi_{o}}{\partial z}
+            \end{equation}
+        </p>
+        
+        <p>
+            For gas phase:
+            \begin{equation}
+            u_{g}=-\frac{k k_{r g}}{\mu_{g}}\frac{\partial\Phi_{g}}{\partial z}
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(u_o\) and \(u_g\) are the oil and gas velocities (flux)</li>
+        <li>\(k\) is the absolute permeability</li>
+        <li>\(k_{ro}\) and \(k_{rg}\) are the relative permeabilities to oil and gas</li>
+        <li>\(\mu_o\) and \(\mu_g\) are the oil and gas viscosities</li>
+        <li>\(\Phi_o\) and \(\Phi_g\) are the oil and gas potentials</li>
+        <li>\(z\) is the vertical coordinate (positive upward)</li>
+    </ul>
+    
+    <h3>Continuity Equations</h3>
+    
+    <div class="equation-container">
+        <p>
+            For oil and gas phases, assuming constant density and porosity:
+            \begin{equation}
+            \frac{\partial u_{o}}{\partial z}+\phi\frac{\partial S_{o}}{\partial t}=0
+            \end{equation}
+            
+            \begin{equation}
+            \frac{\partial u_{g}}{\partial z}+\phi\frac{\partial S_{g}}{\partial t}=0
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(\phi\) is the porosity</li>
+        <li>\(S_o\) and \(S_g\) are the oil and gas saturations</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <h3>Fluid Potentials and Capillary Pressure</h3>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \Phi_{o}=p_{o}+\rho_{o}\frac{g}{g_{c}}z
+            \end{equation}
+            
+            \begin{equation}
+            \Phi_{g}=p_{g}+\rho_{g}\frac{g}{g_{c}}z
+            \end{equation}
+            
+            \begin{equation}
+            P_{c}=p_{g}-p_{o}
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(p_o\) and \(p_g\) are the oil and gas pressures</li>
+        <li>\(\rho_o\) and \(\rho_g\) are the oil and gas densities</li>
+        <li>\(g\) is the gravitational acceleration</li>
+        <li>\(g_c\) is the gravitational units conversion constant</li>
+        <li>\(P_c\) is the capillary pressure</li>
+    </ul>
+    
+    <h3>The Key Simplification: Neglecting Gas Viscous Pressure Drop</h3>
+    
+    <p>
+        A critical insight from the paper is that the viscous pressure drop in the gas phase can be considered negligible:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \frac{\partial\Phi_{g}}{\partial z}\approx0
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        This simplification is valid because gas viscosity is typically much lower than oil viscosity. With this assumption, we can derive the basic equation for co-current flow of oil and gas in the vertical direction:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \frac{\partial S_{o}}{\partial t}+\frac{k}{\phi\mu_{o}}\frac{\partial}{\partial z}\left[k_{r o}\left(\frac{\partial P_{c}}{\partial z}-\Delta\rho\frac{g}{g_{c}}\right)\right]=0
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        And the oil flux equation:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            u_{o}=\frac{k}{\mu_{o}}k_{r o}\left(\frac{\partial P_{c}}{\partial z}-\Delta\rho\frac{g}{g_{c}}\right)
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        Where \(\Delta\rho = \rho_o - \rho_g\) is the density difference between oil and gas.
+    </p>
+    
+    <h2>Dimensionless Analysis: Simplifying the Complex</h2>
+    
+    <p>
+        One of the powerful approaches in the paper is the use of dimensionless variables to simplify the analysis. By expressing the equations in dimensionless form, we can identify the key parameters controlling the gravity drainage process.
+    </p>
+    
+    <p>
+        The key dimensionless variables are:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{align}
+            z_D &= \frac{z}{h} \\
+            t_D &= \frac{k \Delta\rho \frac{g}{g_c} k_{ro}^0 t}{\phi \mu_o h} \\
+            k_{roD} &= \frac{k_{ro}}{k_{ro}^0} \\
+            P_{cD} &= \frac{P_c}{\Delta\rho \frac{g}{g_c} h} \\
+            u_{oD} &= \frac{u_o}{k \Delta\rho \frac{g}{g_c} \frac{k_{ro}^0}{\mu_o}} \\
+            S_{oD} &= \frac{S_o - S_{or}}{1 - S_{wi} - S_{or}}
+            \end{align}
+        </p>
+    </div>
+    
+    <p>
+        Using these dimensionless variables, the basic equation for gravity drainage becomes:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \frac{\partial S_{o D}}{\partial t_{D}}+\frac{\partial}{\partial z_{D}}\left[k_{r o D}\left(\frac{\partial P_{c D}}{\partial z_{D}}-1\right)\right]=0
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        And the dimensionless oil flux equation:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            u_{o D}=-k_{r o D}\left(1-\frac{\partial P_{c D}}{\partial z_{D}}\right)
+            \end{equation}
+        </p>
+    </div>
+    
+    <h2>The Special Case: Gravity Drainage with Negligible Capillary Pressure</h2>
+    
+    <p>
+        A particularly interesting case is when capillary pressure can be neglected. In this scenario, the equations simplify further:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \frac{\partial S_{o D}}{\partial t_{D}}-\frac{\partial k_{r o D}}{\partial z_{D}}=0
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        This is a Buckley-Leverett type equation. The solution gives us the dimensionless oil flux:
+    </p>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            u_{o D}=-k_{r o D}
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        This elegant result tells us that with no capillary pressure, the dimensionless oil flux at any position in the matrix is equal to the dimensionless relative permeability of oil.
+    </p>
+    
+    <h2>Transfer Functions: The Bridge Between Matrix and Fracture</h2>
+    
+    <p>
+        In reservoir simulation, the interaction between matrix and fracture is modeled using "transfer functions." These functions quantify the rate of fluid exchange between the matrix and fracture systems.
+    </p>
+    
+    <p>
+        The paper compares several transfer function models:
+    </p>
+    
+    <h3>1. Sonier et al. Model</h3>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \tau_{o}=-k_{m}\lambda_{r o m}\sigma\left[p_{o f}-p_{o m}-\rho_{o}\frac{g}{g_{c}}\Delta z\left(S_{w f D}+S_{g f D}-S_{w m D}-S_{g m D}\right)\right]
+            \end{equation}
+        </p>
+    </div>
+    
+    <h3>2. Quandalle and Sabathier Model</h3>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \tau_{o z}=-2k_{m}\lambda_{r o}\sigma\left(\Phi_{o f z}^{+}-\Phi_{o m}\right)
+            \end{equation}
+        </p>
+    </div>
+    
+    <h3>3. Bech et al. Model</h3>
+    
+    <div class="equation-container">
+        <p>
+            \begin{equation}
+            \tau_{o}=-\frac{k_{m}\lambda_{r o}\sigma}{S_{o m D}}\left[p_{c m}-p_{c f}-\Delta\rho\frac{g}{g_{c}}\left(z_{g f}-z_{g m}\right)\right]
+            \end{equation}
+        </p>
+    </div>
+    
+    <p>
+        The paper concludes that the Bech et al. model better represents oil transfer from matrix to fracture than other dual porosity models.
+    </p>
+    
+    <h2>Interactive Visualization: Understanding Gravity Drainage</h2>
+    
+    <div class="interactive">
+        <h3>Gravity Drainage Simulator</h3>
+        <p>
+            This interactive tool demonstrates how oil drains from a matrix block under gravity forces. Adjust the parameters to see how they affect the drainage process.
+        </p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Matrix Height (m):</span>
+            <input type="range" id="height-slider" min="1" max="10" value="5" step="0.1">
+            <span id="height-value">5.0</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability (mD):</span>
+            <input type="range" id="perm-slider" min="1" max="100" value="10" step="1">
+            <span id="perm-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Oil Viscosity (cP):</span>
+            <input type="range" id="visc-slider" min="0.5" max="10" value="3" step="0.1">
+            <span id="visc-value">3.0</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Density Difference (g/cm³):</span>
+            <input type="range" id="density-slider" min="0.1" max="0.8" value="0.3" step="0.01">
+            <span id="density-value">0.3</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Capillary Pressure:</span>
+            <input type="range" id="capillary-slider" min="0" max="1" value="0.5" step="0.01">
+            <span id="capillary-value">0.5</span>
+        </div>
+        
+        <canvas id="simulation-canvas" width="700" height="400"></canvas>
+        
+        <div>
+            <button id="start-btn" class="btn">Start Simulation</button>
+            <button id="reset-btn" class="btn">Reset</button>
+        </div>
+        
+        <div id="time-display">Time: 0 days</div>
+        <div id="recovery-display">Recovery: 0%</div>
+    </div>
+    
+    <h2>Key Insights from the Model</h2>
+    
+    <p>
+        The paper provides several important insights about gravity drainage in naturally fractured reservoirs:
+    </p>
+    
+    <ol>
+        <li>
+            <strong>Flow Direction:</strong> With gravity drainage, flow is primarily in the vertical direction with minimal or no flow to lateral fractures.
+        </li>
+        <li>
+            <strong>Maximum Oil Flux:</strong> There is a maximum oil flux from matrix to fracture, which is a function of matrix permeability, oil relative permeability, oil viscosity, and the density difference between oil and gas.
+        </li>
+        <li>
+            <strong>Reinfiltration:</strong> In a stack of matrix blocks, oil can reinfiltrate from upper blocks to lower blocks, which is a critical mechanism for recovery.
+        </li>
+        <li>
+            <strong>Pseudo Functions:</strong> Proper modeling requires the use of pseudo relative permeability and capillary pressure functions that account for gravity effects.
+        </li>
+    </ol>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>
+        Understanding gravity drainage is crucial for:
+    </p>
+    
+    <ul>
+        <li><strong>Reservoir Simulation:</strong> Accurate modeling of naturally fractured reservoirs</li>
+        <li><strong>Recovery Optimization:</strong> Designing recovery strategies that maximize gravity drainage</li>
+        <li><strong>Field Development:</strong> Planning well placement and production strategies</li>
+        <li><strong>History Matching:</strong> Calibrating simulation models to match observed production data</li>
+    </ul>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>
+        By starting from the fundamental physics of fluid flow in porous media and making strategic simplifications, 
+        we've developed a clear understanding of gas-oil gravity drainage in naturally fractured reservoirs. The dimensionless 
+        analysis allowed us to identify the key controlling parameters, and the comparison of transfer function models 
+        provides guidance for numerical simulation.
+    </p>
+    
+    <p>
+        The most important takeaways are:
+    </p>
+    
+    <ol>
+        <li>Gravity drainage is a dominant recovery mechanism in naturally fractured reservoirs</li>
+        <li>Flow is primarily vertical, with minimal lateral flow</li>
+        <li>The Bech et al. model provides the most accurate representation of matrix-fracture transfer</li>
+        <li>Reinfiltration is a critical process in stacked matrix blocks</li>
+        <li>Proper modeling requires pseudo functions that account for gravity effects</li>
+    </ol>
+    
+    <p>
+        By understanding these principles, reservoir engineers can more accurately model and optimize recovery from naturally fractured reservoirs.
+    </p>
+    
+    <script>
+        // Interactive simulation code
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('simulation-canvas');
+            const ctx = canvas.getContext('2d');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const timeDisplay = document.getElementById('time-display');
+            const recoveryDisplay = document.getElementById('recovery-display');
+            
+            // Get slider elements
+            const heightSlider = document.getElementById('height-slider');
+            const permSlider = document.getElementById('perm-slider');
+            const viscSlider = document.getElementById('visc-slider');
+            const densitySlider = document.getElementById('density-slider');
+            const capillarySlider = document.getElementById('capillary-slider');
+            
+            // Get value display elements
+            const heightValue = document.getElementById('height-value');
+            const permValue = document.getElementById('perm-value');
+            const viscValue = document.getElementById('visc-value');
+            const densityValue = document.getElementById('density-value');
+            const capillaryValue = document.getElementById('capillary-value');
+            
+            // Update values when sliders change
+            heightSlider.addEventListener('input', function() {
+                heightValue.textContent = parseFloat(this.value).toFixed(1);
+                resetSimulation();
+            });
+            
+            permSlider.addEventListener('input', function() {
+                permValue.textContent = this.value;
+                resetSimulation();
+            });
+            
+            viscSlider.addEventListener('input', function() {
+                viscValue.textContent = parseFloat(this.value).toFixed(1);
+                resetSimulation();
+            });
+            
+            densitySlider.addEventListener('input', function() {
+                densityValue.textContent = parseFloat(this.value).toFixed(2);
+                resetSimulation();
+            });
+            
+            capillarySlider.addEventListener('input', function() {
+                capillaryValue.textContent = parseFloat(this.value).toFixed(2);
+                resetSimulation();
+            });
+            
+            // Simulation variables
+            let isRunning = false;
+            let animationId = null;
+            let time = 0;
+            let recovery = 0;
+            let matrixGrid = [];
+            const gridSize = 20;
+            const cellSize = canvas.height / gridSize;
+            const matrixWidth = Math.floor(canvas.width * 0.4 / cellSize);
+            const fractureWidth = Math.floor(canvas.width * 0.1 / cellSize);
+            
+            // Initialize the matrix grid
+            function initializeGrid() {
+                matrixGrid = [];
+                for (let i = 0; i < gridSize; i++) {
+                    matrixGrid[i] = [];
+                    for (let j = 0; j < matrixWidth; j++) {
+                        // 1 represents oil, 0 represents gas
+                        matrixGrid[i][j] = 1;
+                    }
+                }
+                
+                // Initialize fracture with gas
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = matrixWidth; j < matrixWidth + fractureWidth; j++) {
+                        matrixGrid[i][j] = 0;
+                    }
+                }
+            }
+            
+            // Draw the simulation
+            function drawSimulation() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw matrix and fracture
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < matrixWidth + fractureWidth; j++) {
+                        if (j < matrixWidth) {
+                            // Matrix cells
+                            if (matrixGrid[i][j] > 0.5) {
+                                // Oil
+                                ctx.fillStyle = `rgba(139, 69, 19, ${matrixGrid[i][j]})`;
+                            } else {
+                                // Gas
+                                ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+                            }
+                        } else {
+                            // Fracture cells
+                            ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+                        }
+                        
+                        ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                        ctx.strokeStyle = '#ddd';
+                        ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    }
+                }
+                
+                // Draw labels
+                ctx.fillStyle = 'black';
+                ctx.font = '16px Arial';
+                ctx.fillText('Matrix', matrixWidth * cellSize / 2 - 20, gridSize * cellSize + 20);
+                ctx.fillText('Fracture', (matrixWidth + fractureWidth/2) * cellSize - 30, gridSize * cellSize + 20);
+                
+                // Draw oil-gas contact
+                let contactRow = 0;
+                for (let i = 0; i < gridSize; i++) {
+                    if (matrixGrid[i][0] < 0.5) {
+                        contactRow = i;
+                        break;
+                    }
+                }
+                
+                if (contactRow > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, contactRow * cellSize);
+                    ctx.lineTo(matrixWidth * cellSize, contactRow * cellSize);
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+                }
+                
+                // Draw recovery graph
+                const graphX = (matrixWidth + fractureWidth + 1) * cellSize;
+                const graphWidth = canvas.width - graphX - 20;
+                const graphHeight = canvas.height - 40;
+                
+                ctx.fillStyle = 'white';
+                ctx.fillRect(graphX, 20, graphWidth, graphHeight);
+                ctx.strokeStyle = 'black';
+                ctx.strokeRect(graphX, 20, graphWidth, graphHeight);
+                
+                // Draw axes
+                ctx.beginPath();
+                ctx.moveTo(graphX, 20 + graphHeight);
+                ctx.lineTo(graphX + graphWidth, 20 + graphHeight);
+                ctx.moveTo(graphX, 20);
+                ctx.lineTo(graphX, 20 + graphHeight);
+                ctx.stroke();
+                
+                // Label axes
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Arial';
+                ctx.fillText('Time', graphX + graphWidth/2 - 10, 20 + graphHeight + 15);
+                ctx.save();
+                ctx.translate(graphX - 15, 20 + graphHeight/2);
+                ctx.rotate(-Math.PI/2);
+                ctx.fillText('Recovery (%)', 0, 0);
+                ctx.restore();
+                
+                // Plot recovery curve
+                if (time > 0) {
+                    const timeScale = graphWidth / 100; // Assuming max time is 100
+                    const recoveryScale = graphHeight / 100; // Recovery is in percentage
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(graphX, 20 + graphHeight - 0 * recoveryScale);
+                    ctx.lineTo(graphX + Math.min(time, 100) * timeScale, 20 + graphHeight - recovery * recoveryScale);
+                    ctx.strokeStyle = 'blue';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+                }
+            }
+            
+            // Update the simulation
+            function updateSimulation() {
+                if (!isRunning) return;
+                
+                // Get parameters from sliders
+                const height = parseFloat(heightSlider.value);
+                const perm = parseInt(permSlider.value);
+                const visc = parseFloat(viscSlider.value);
+                const densityDiff = parseFloat(densitySlider.value);
+                const capillary = parseFloat(capillarySlider.value);
+                
+                // Calculate drainage rate based on parameters
+                // This is a simplified model of the equations in the paper
+                const drainageRate = (perm * densityDiff) / (visc * height) * (1 - capillary);
+                
+                // Update time
+                time += 0.5;
+                timeDisplay.textContent = `Time: ${time.toFixed(1)} days`;
+                
+                // Calculate new saturations
+                let totalOil = 0;
+                const initialOil = matrixWidth * gridSize;
+                
+                // Apply gravity drainage from bottom to top
+                for (let i = gridSize - 1; i >= 0; i--) {
+                    for (let j = 0; j < matrixWidth; j++) {
+                        if (matrixGrid[i][j] > 0) {
+                            // Calculate drainage based on position, saturation, and parameters
+                            const heightFactor = (gridSize - i) / gridSize;
+                            const saturationFactor = matrixGrid[i][j];
+                            const drainageFactor = drainageRate * heightFactor * saturationFactor * 0.05;
+                            
+                            // Apply capillary retention
+                            const capillaryRetention = capillary * 0.01 * (1 - heightFactor);
+                            
+                            // Update saturation
+                            matrixGrid[i][j] = Math.max(0, matrixGrid[i][j] - drainageFactor + capillaryRetention);
+                            
+                            // Count remaining oil
+                            totalOil += matrixGrid[i][j];
+                        }
+                    }
+                }
+                
+                // Calculate recovery
+                recovery = 100 * (1 - totalOil / initialOil);
+                recoveryDisplay.textContent = `Recovery: ${recovery.toFixed(1)}%`;
+                
+                // Draw the updated simulation
+                drawSimulation();
+                
+                // Continue the animation
+                if (time < 100 && recovery < 99.9) {
+                    animationId = requestAnimationFrame(updateSimulation);
+                } else {
+                    isRunning = false;
+                    startBtn.textContent = 'Start Simulation';
+                }
+            }
+            
+            // Start/pause the simulation
+            startBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    isRunning = false;
+                    cancelAnimationFrame(animationId);
+                    this.textContent = 'Start Simulation';
+                } else {
+                    isRunning = true;
+                    this.textContent = 'Pause Simulation';
+                    updateSimulation();
+                }
+            });
+            
+            // Reset the simulation
+            function resetSimulation() {
+                isRunning = false;
+                cancelAnimationFrame(animationId);
+                startBtn.textContent = 'Start Simulation';
+                time = 0;
+                recovery = 0;
+                timeDisplay.textContent = 'Time: 0 days';
+                recoveryDisplay.textContent = 'Recovery: 0%';
+                initializeGrid();
+                drawSimulation();
+            }
+            
+            resetBtn.addEventListener('click', resetSimulation);
+            
+            // Initialize and draw the simulation
+            initializeGrid();
+            drawSimulation();
+        });
+    </script>
+    
+    <h2>References and Further Reading</h2>
+    
+    <ol>
+        <li>Warren, J.E. and Root, P.J.: "The Behavior of Naturally Fractured Reservoirs," SPEJ (Sept. 1963) 245-255.</li>
+        <li>Kazemi, H., Merrill, L.S., Porterfield, K.L., and Zeman, P.R.: "Numerical Simulation of Water-Oil Flow in Naturally Fractured Reservoirs," SPEJ (Dec. 1976) 317-326.</li>
+        <li>Firoozabadi, A. and Hauge, J.: "Capillary Pressure in Fractured Porous Media," JPT (June 1990) 784-791.</li>
+        <li>Gilman, J.R. and Kazemi, H.: "Improved Calculations for Viscous and Gravity Displacement in Matrix Blocks in Dual-Porosity Simulators," JPT (Jan. 1988) 60-70.</li>
+        <li>Bech, N., Jensen, O.K., and Nielsen, B.: "Modeling of Gravity-Imbibition and Gravity-Drainage Processes: Analytical and Numerical Solutions," SPE Reservoir Engineering (Feb. 1991) 129-136.</li>
+    </ol>
+</body>
+</html>

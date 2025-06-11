@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Interference Pressure in Multilayered Composite Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .equation {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 200px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .step {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding-left: 50px;
+            position: relative;
+        }
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Interference Pressure Behavior in Multilayered Composite Reservoirs</h1>
+    
+    <p class="highlight">
+        <strong>First Principles Explanation:</strong> This blog post breaks down a complex petroleum engineering concept from the academic paper by Hatzignatiou et al. We'll explore how pressure behaves when one well affects another in layered reservoirs with different rock properties, using both intuitive explanations and the precise mathematics behind the model.
+    </p>
+    
+    <h2>Introduction: Why Interference Pressure Matters</h2>
+    
+    <p>Imagine you're drinking a milkshake through a straw. Now imagine someone else puts another straw in your milkshake and starts drinking too. You'll notice it becomes harder to suck up the liquid - that's interference! In oil and gas reservoirs, a similar phenomenon occurs when multiple wells are drilled into the same formation.</p>
+    
+    <p>In petroleum engineering, understanding how wells "interfere" with each other is crucial for:</p>
+    
+    <ul>
+        <li>Optimizing well placement and spacing</li>
+        <li>Accurately estimating reservoir properties</li>
+        <li>Predicting future production rates</li>
+        <li>Planning enhanced oil recovery operations</li>
+    </ul>
+    
+    <p>But real reservoirs are complex - they have multiple layers with different properties, and fluid banks of different compositions. The paper we're exploring provides a mathematical model for these complex scenarios.</p>
+    
+    <div class="analogy">
+        <strong>The Layer Cake Analogy:</strong> Think of a multilayered reservoir as a layer cake. Each layer has different ingredients (permeability, porosity), and sometimes fluid can move between layers (crossflow). When you insert a straw (well) and suck, the pressure changes travel through the cake at different speeds in different layers. Our model predicts how a pressure change at one straw affects what happens at another straw.
+    </div>
+    
+    <h2>The Physical System: What Are We Modeling?</h2>
+    
+    <p>Before diving into equations, let's understand the physical system:</p>
+    
+    <ul>
+        <li><strong>Two wells:</strong> An active well (where fluid is being produced or injected) and an observation well (where we measure pressure changes)</li>
+        <li><strong>Two layers:</strong> Upper and lower rock layers with different properties</li>
+        <li><strong>Two regions in each layer:</strong> An inner region near the active well and an outer region extending to the reservoir boundary</li>
+        <li><strong>Crossflow:</strong> Fluid can move between layers (typically from the less permeable to the more permeable layer)</li>
+        <li><strong>Wellbore effects:</strong> Storage and skin (damage) at the active well</li>
+    </ul>
+    
+    <p>Here's a simplified diagram of what this looks like:</p>
+    
+    <div style="text-align: center;">
+        <img src="https://mermaid.ink/img/pako:eNp1ksFuwjAMhl_F8qkgwZ5gJ6QdEBKHwbpJVVWlTVpQm1RJCkJV3n3OUgbbBj5Z_v3_ju04Z7XRhDmrQRPUhj6oQW9Rw0ZBQ0_Qgm6hhcbCGXyHF2qpgwFO0Dv3VLvnDmwNDzCQHXfG9bSFvZnQCH2mOx5BKeED4YmUXKEiZTrjQDjQWNLDGb8cLqGEXNGZnEjfGRXp4YLOOPHjGZVcyZZcMCYnWpEaP4RwI9WQIw8p-Ey2lP3IiZHcPE1Mx9rH8RP8rMVVnj2LkRlJyTGnPjlSYuR9Lh8mTHR0wF9e-HH5jzd_9Xm5vL5Z5Mv8WO1TkW3zdJNvH9N0kWbFYnX_tCyuCeRxvYvXu3i3jNP1Kk3yIs7yTZLfRQvJJtFvzPXqiMdV9JBvVnGxzIrN_XJRfAHhpKfV?type=png" alt="Multilayered Composite Reservoir Model" style="max-width: 600px;">
+    </div>
+    
+    <h2>The Core Mathematical Model: From First Principles</h2>
+    
+    <p>The foundation of this model comes from the physics of fluid flow in porous media. The basic equation governing this flow is derived from three fundamental principles:</p>
+    
+    <ol>
+        <li>Conservation of mass (fluid doesn't disappear)</li>
+        <li>Darcy's law (flow rate is proportional to pressure gradient)</li>
+        <li>Equation of state (fluid compressibility relates pressure to density)</li>
+    </ol>
+    
+    <p>Combining these principles for a layered reservoir with crossflow gives us:</p>
+    
+    <div class="equation">
+        \begin{equation}
+        \frac{k_{1}h_{1}}{{\mu}_{1}}\nabla^{2}p_{1}=(\phi c_{t}h)_{1}\frac{\partial p_{1}}{\partial t}-\beta\frac{k_{2}}{{\mu}_{2}}(p_{2}-p_{1})
+        \end{equation}
+    </div>
+    
+    <p>For our two-layered composite system, we have a similar equation for each region and layer:</p>
+    
+    <div class="equation">
+        \begin{equation}
+        \frac{k_{1m}h_{1}}{\mu_{1m}}\nabla^{2}p_{1m}=(\phi c_{t}h)_{1m}\frac{\partial p_{1m}}{\partial t}-\beta_{1}\frac{k_{2m}}{\mu_{2m}}(p_{2m}-p_{1m})
+        \end{equation}
+    </div>
+    
+    <p>For the second layer:</p>
+    
+    <div class="equation">
+        \begin{equation}
+        \frac{k_{2m}h_{2}}{\mu_{2m}}\nabla^{2}p_{2m}=(\phi c_{t}h)_{2m}\frac{\partial p_{2m}}{\partial t}+\beta_{2}\frac{k_{2m}}{\mu_{2m}}(p_{2m}-p_{1m})
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(k_{jm}\) = permeability of layer j in region m (millidarcies)</li>
+        <li>\(h_{j}\) = thickness of layer j (feet)</li>
+        <li>\(\mu_{jm}\) = fluid viscosity in layer j, region m (centipoise)</li>
+        <li>\(p_{jm}\) = pressure in layer j, region m (psi)</li>
+        <li>\(\phi\) = porosity (fraction)</li>
+        <li>\(c_t\) = total compressibility (psi<sup>-1</sup>)</li>
+        <li>\(\beta\) = interporosity shape factor (ft<sup>-2</sup>)</li>
+        <li>\(m\) = region index (1 for inner, 2 for outer)</li>
+        <li>\(j\) = layer index (1 for upper, 2 for lower)</li>
+    </ul>
+    
+    <div class="note">
+        <strong>Key Insight:</strong> The left side of these equations represents fluid flow due to pressure gradients (Darcy's law). The right side has two terms: the first describes fluid storage due to compressibility, and the second describes crossflow between layers.
+    </div>
+    
+    <h2>Boundary and Initial Conditions: Completing the Model</h2>
+    
+    <p>To solve these differential equations, we need boundary and initial conditions:</p>
+    
+    <ol>
+        <li><strong>Initial condition:</strong> Uniform pressure throughout the reservoir initially
+            \begin{equation}
+            p_{jm}(r,0) = p_i \text{ for all } r
+            \end{equation}
+        </li>
+        <li><strong>Outer boundary condition:</strong> Pressure at infinite distance equals initial pressure
+            \begin{equation}
+            \lim_{r \to \infty} p_{jm}(r,t) = p_i
+            \end{equation}
+        </li>
+        <li><strong>Inner boundary condition:</strong> Flow rate at wellbore accounts for wellbore storage
+            \begin{equation}
+            qB = C\frac{dp_w}{dt} - 2\pi r_w \left[ \sum_{j=1}^{2} \left( \frac{k_{j1}h_j}{\mu_{j1}} \right) \left( \frac{\partial p_{j1}}{\partial r} \right) \bigg|_{r_w} \right]
+            \end{equation}
+        </li>
+        <li><strong>Interface conditions:</strong> Pressure continuity at layer interfaces and at the radial discontinuity
+            \begin{equation}
+            p_{11}(r_w,t) = p_{21}(r_w,t) = p_w(t)
+            \end{equation}
+        </li>
+    </ol>
+    
+    <h2>Dimensionless Variables: Simplifying the Analysis</h2>
+    
+    <p>To make our analysis more general and easier to work with, we introduce dimensionless variables:</p>
+    
+    <div class="equation">
+        \begin{align}
+        p_{D_{jm}} &= \left[ \frac{1}{a_p qB} \frac{k_{1j}h_1 + k_{2j}h_2}{\mu_{jm}} \right] (p_{jm} - p_i) \\
+        t_{D_j} &= \frac{a_t(k_{1j}h_j + k_{2j}h_j)t}{[(\phi c_t h)_{1j} + (\phi c_t h)_{2j}]\mu_m r_w^2} \\
+        r_D &= \frac{r}{r_w}
+        \end{align}
+    </div>
+    
+    <p>We also define key dimensionless parameters that control the system behavior:</p>
+    
+    <div class="equation">
+        \begin{align}
+        C_{D1} &= \frac{a_C C}{[(\phi c_t h)_{11} + (\phi c_t h)_{21}]r_w^2} \quad \text{(Wellbore storage coefficient)} \\
+        \kappa_1 &= \frac{k_{11}h_1}{k_{11}h_1 + k_{21}h_2} \quad \text{(Permeability ratio, inner region)} \\
+        \kappa_2 &= \frac{k_{12}h_1}{k_{12}h_1 + k_{22}h_2} \quad \text{(Permeability ratio, outer region)} \\
+        \lambda_1 &= \beta_1 r_w^2 \frac{k_{21}h_2}{k_{11}h_1 + k_{21}h_2} \quad \text{(Crossflow parameter, inner region)} \\
+        \lambda_2 &= \beta_2 r_w^2 \frac{k_{22}h_2}{k_{12}h_1 + k_{22}h_2} \quad \text{(Crossflow parameter, outer region)} \\
+        \omega_m &= \frac{(\phi c_t h)_{1m}}{(\phi c_t h)_{1m} + (\phi c_t h)_{2m}} \quad \text{(Storativity ratio)}
+        \end{align}
+    </div>
+    
+    <div class="analogy">
+        <strong>Parameter Analogies:</strong>
+        <ul>
+            <li>\(\kappa\) (permeability ratio): Think of this as the "highway preference" - what fraction of the traffic flows through the upper layer versus the lower layer</li>
+            <li>\(\lambda\) (crossflow parameter): This is like the number of "interchanges" between highways - how easily fluid can move between layers</li>
+            <li>\(\omega\) (storativity ratio): This is like the "parking capacity" - how much fluid can be stored in each layer</li>
+            <li>\(C_{D1}\) (wellbore storage): This is like a "buffer tank" at the well - it temporarily stores fluid before it enters the well</li>
+        </ul>
+    </div>
+    
+    <h2>Solution Method: Laplace Transform</h2>
+    
+    <p>To solve this system of partial differential equations, we use the Laplace transform, which converts time-dependent differential equations into simpler algebraic equations. After applying the Laplace transform and solving the resulting equations, we get:</p>
+    
+    <p>For the pressure at the observation well:</p>
+    
+    <div class="equation">
+        \begin{equation}
+        \overline{p}_{wD2} = [K_0(\sigma_{12}r_D)]D_1 + [K_0(\sigma_{22}r_D)]D_2
+        \end{equation}
+    </div>
+    
+    <p>Where \(K_0\) is the modified Bessel function of the second kind and order zero, and \(D_1\) and \(D_2\) are coefficients determined from boundary conditions.</p>
+    
+    <p>To get back to the time domain, we use numerical Laplace inversion (Stehfest algorithm).</p>
+    
+    <h2>Key Findings: What the Model Tells Us</h2>
+    
+    <p>After analyzing the model, several important insights emerge:</p>
+    
+    <ol>
+        <li><strong>Early-time behavior:</strong> Initially, the system behaves like two separate layers without crossflow</li>
+        <li><strong>Transition period:</strong> As time progresses, crossflow develops between layers</li>
+        <li><strong>Late-time behavior:</strong> Eventually, the system behaves like a single homogeneous layer with average properties</li>
+        <li><strong>Observation well pressure:</strong> Is more affected by outer region properties than inner region properties</li>
+        <li><strong>Active well pressure:</strong> Shows two semi-log straight lines - the first reflecting inner region properties, the second reflecting the total system</li>
+    </ol>
+    
+    <div class="note">
+        <strong>Important:</strong> The paper shows that using a single-layer model to interpret data from a multi-layered reservoir can overestimate the total formation capacity by 15-20%!
+    </div>
+    
+    <h2>Interactive Simulation: Explore the Model Yourself</h2>
+    
+    <div class="interactive">
+        <h3>Interference Pressure Simulator</h3>
+        <p>Adjust the parameters below to see how they affect pressure behavior at the observation well:</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Wellbore Storage (C<sub>D1</sub>):</span>
+            <input type="range" id="cd1-slider" min="0" max="8" step="1" value="3">
+            <span class="output" id="cd1-value">10<sup>3</sup></span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Inner Crossflow (λ<sub>1</sub>):</span>
+            <input type="range" id="lambda1-slider" min="-10" max="-4" step="1" value="-7">
+            <span class="output" id="lambda1-value">10<sup>-7</sup></span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Outer Crossflow (λ<sub>2</sub>):</span>
+            <input type="range" id="lambda2-slider" min="-10" max="-4" step="1" value="-7">
+            <span class="output" id="lambda2-value">10<sup>-7</sup></span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Inner Permeability Ratio (κ<sub>1</sub>):</span>
+            <input type="range" id="kappa1-slider" min="0.1" max="0.9" step="0.1" value="0.5">
+            <span class="output" id="kappa1-value">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Outer Permeability Ratio (κ<sub>2</sub>):</span>
+            <input type="range" id="kappa2-slider" min="0.1" max="0.9" step="0.1" value="0.5">
+            <span class="output" id="kappa2-value">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Distance Ratio (r<sub>Db</sub>/r<sub>Ds</sub>):</span>
+            <input type="range" id="distance-slider" min="1" max="20" step="1" value="10">
+            <span class="output" id="distance-value">10</span>
+        </div>
+        
+        <canvas id="pressure-chart" width="600" height="400"></canvas>
+        
+        <p>This simulation shows dimensionless pressure (p<sub>D</sub>) vs. dimensionless time (t<sub>D</sub>) at the observation well.</p>
+    </div>
+    
+    <h2>Practical Applications: Using the Model in the Field</h2>
+    
+    <p>This model provides a methodology for analyzing interference test data from multi-layered composite reservoirs. Here's how it can be applied:</p>
+    
+    <div class="step">
+        <h3>Collect pressure-time data from both active and observation wells</h3>
+        <p>This requires pressure gauges in both wells during a production or injection test.</p>
+    </div>
+    
+    <div class="step">
+        <h3>Perform semi-log analysis of active well data</h3>
+        <p>The first straight line provides the total capacity of the inner zone:</p>
+        <div class="equation">
+            \begin{equation}
+            k_{11}h_1 + k_{21}h_2 = \frac{162.6 \cdot q \cdot B \mu_a}{m_1}
+            \end{equation}
+        </div>
+        <p>The second straight line yields:</p>
+        <div class="equation">
+            \begin{equation}
+            k_{12}h_1 + k_{22}h_2 = \frac{162.6 \cdot q \cdot B \mu_a}{m_2}
+            \end{equation}
+        </div>
+    </div>
+    
+    <div class="step">
+        <h3>Type curve match the active well data</h3>
+        <p>This refines the values and estimates the wellbore storage coefficient:</p>
+        <div class="equation">
+            \begin{equation}
+            C = \frac{a_t(k_{11}h_1 + k_{21}h_2)}{a_C}\left(\frac{t_m}{t_D/C_{D1}}\right)_{MATCH}
+            \end{equation}
+        </div>
+    </div>
+    
+    <div class="step">
+        <h3>Type curve match the observation well data</h3>
+        <p>This provides estimates of parameters like \(C_{D1}\), \(\lambda_2\), \(\kappa_1\), \(\kappa_2\), etc.</p>
+    </div>
+    
+    <div class="step">
+        <h3>Calculate reservoir properties</h3>
+        <p>Using the matched parameters, calculate individual layer properties:</p>
+        <div class="equation">
+            \begin{align}
+            k_{11}h_1 &= \kappa_1(k_{11}h_1 + k_{21}h_2) \\
+            k_{21}h_2 &= \frac{162.6 \cdot q \cdot B \mu_a}{m_1} - \kappa_1(k_{11}h_1 + k_{21}h_2) \\
+            (\phi c_t h)_{11} &= \frac{a_C C \omega_1}{C_{D1}r_w^2} \\
+            (\phi c_t h)_{21} &= (\phi c_t h)_{11} \cdot \frac{1-\omega_1}{\omega_1}
+            \end{align}
+        </div>
+    </div>
+    
+    <h2>Conclusion: The Power of Mathematical Modeling</h2>
+    
+    <p>The model presented in this paper provides a powerful tool for understanding interference pressure behavior in complex reservoirs. By accounting for multiple layers, crossflow, and composite regions, it allows engineers to:</p>
+    
+    <ul>
+        <li>More accurately interpret interference test data</li>
+        <li>Determine individual layer properties</li>
+        <li>Understand the impact of crossflow on reservoir behavior</li>
+        <li>Make better decisions about well spacing and reservoir management</li>
+    </ul>
+    
+    <p>While the mathematics may seem complex, the physical principles are intuitive: pressure changes propagate through different layers at different rates, crossflow allows communication between layers, and the observation well "sees" a combination of these effects.</p>
+    
+    <p>The next time you're analyzing well test data, remember that what appears to be a simple pressure response may actually contain rich information about the complex structure of the subsurface!</p>
+    
+    <script>
+        // Update slider value displays
+        document.getElementById('cd1-slider').addEventListener('input', function() {
+            document.getElementById('cd1-value').textContent = '10^' + this.value;
+            updateChart();
+        });
+        
+        document.getElementById('lambda1-slider').addEventListener('input', function() {
+            document.getElementById('lambda1-value').textContent = '10^' + this.value;
+            updateChart();
+        });
+        
+        document.getElementById('lambda2-slider').addEventListener('input', function() {
+            document.getElementById('lambda2-value').textContent = '10^' + this.value;
+            updateChart();
+        });
+        
+        document.getElementById('kappa1-slider').addEventListener('input', function() {
+            document.getElementById('kappa1-value').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('kappa2-slider').addEventListener('input', function() {
+            document.getElementById('kappa2-value').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('distance-slider').addEventListener('input', function() {
+            document.getElementById('distance-value').textContent = this.value;
+            updateChart();
+        });
+        
+        // Set up the chart
+        const canvas = document.getElementById('pressure-chart');
+        const ctx = canvas.getContext('2d');
+        
+        // Function to calculate simplified pressure response
+        function calculatePressure(tD, cd1, lambda1, lambda2, kappa1, kappa2, distanceRatio) {
+            // This is a simplified model based on the paper's findings
+            // In a real implementation, you would use the full mathematical model
+            
+            // Convert parameters from slider values
+            cd1 = Math.pow(10, cd1);
+            lambda1 = Math.pow(10, lambda1);
+            lambda2 = Math.pow(10, lambda2);
+            
+            // Early time behavior (dominated by wellbore storage)
+            let earlyFactor = Math.exp(-tD / (cd1 * 10));
+            
+            // Transition period (affected by crossflow)
+            let transitionFactor = (1 - Math.exp(-lambda2 * tD * 10)) * (1 - kappa2);
+            
+            // Late time behavior (pseudo-steady state)
+            let lateFactor = Math.sqrt(tD) / distanceRatio;
+            
+            // Combined effect
+            return earlyFactor * 0.1 + transitionFactor * 0.4 + lateFactor * 0.5;
+        }
+        
+        function updateChart() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get current parameter values
+            const cd1 = parseInt(document.getElementById('cd1-slider').value);
+            const lambda1 = parseInt(document.getElementById('lambda1-slider').value);
+            const lambda2 = parseInt(document.getElementById('lambda2-slider').value);
+            const kappa1 = parseFloat(document.getElementById('kappa1-slider').value);
+            const kappa2 = parseFloat(document.getElementById('kappa2-slider').value);
+            const distanceRatio = parseInt(document.getElementById('distance-slider').value);
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 350);
+            ctx.lineTo(550, 350);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+            
+            // Axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Dimensionless Time (tD)', 250, 380);
+            ctx.save();
+            ctx.translate(20, 200);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Dimensionless Pressure (pD)', 0, 0);
+            ctx.restore();
+            
+            // Log scale for x-axis
+            for (let i = -4; i <= 4; i++) {
+                const x = 50 + (i + 4) * 500 / 8;
+                ctx.beginPath();
+                ctx.moveTo(x, 350);
+                ctx.lineTo(x, 355);
+                ctx.stroke();
+                ctx.fillText('10^' + i, x - 10, 370);
+            }
+            
+            // Linear scale for y-axis
+            for (let i = 0; i <= 5; i++) {
+                const y = 350 - i * 60;
+                ctx.beginPath();
+                ctx.moveTo(45, y);
+                ctx.lineTo(50, y);
+                ctx.stroke();
+                ctx.fillText((i * 0.2).toFixed(1), 30, y + 5);
+            }
+            
+            // Draw the pressure curve
+            ctx.beginPath();
+            ctx.moveTo(50, 350);
+            
+            // Calculate points for the curve
+            for (let i = -4; i <= 4; i += 0.1) {
+                const tD = Math.pow(10, i);
+                const pD = calculatePressure(tD, cd1, lambda1, lambda2, kappa1, kappa2, distanceRatio);
+                
+                const x = 50 + (i + 4) * 500 / 8;
+                const y = 350 - pD * 300;
+                
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw comparison curve (homogeneous reservoir)
+            ctx.beginPath();
+            ctx.moveTo(50, 350);
+            
+            // Calculate points for the homogeneous curve
+            for (let i = -4; i <= 4; i += 0.1) {
+                const tD = Math.pow(10, i);
+                // Simplified homogeneous solution
+                const pD = 0.5 * Math.sqrt(tD) / distanceRatio;
+                
+                const x = 50 + (i + 4) * 500 / 8;
+                const y = 350 - pD * 300;
+                
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Add legend
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(400, 70, 15, 15);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Multilayer Composite', 420, 82);
+            
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(400, 95, 15, 15);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Homogeneous', 420, 107);
+        }
+        
+        // Initial chart
+        updateChart();
+    </script>
+</body>
+</html>

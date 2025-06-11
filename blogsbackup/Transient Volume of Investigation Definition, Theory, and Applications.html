@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transient Volume of Investigation: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .formula-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #eaf2f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        .key-concept {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-left: 4px solid #2ecc71;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #fef9e7;
+            padding: 15px;
+            border-left: 4px solid #f1c40f;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transient Volume of Investigation: A First Principles Approach</h1>
+    
+    <p><em>Understanding how much of a reservoir we've actually tested is one of the most fundamental questions in well testing. Today, we'll break down the concept of "transient volume of investigation" from first principles, and show why it's a game-changer for reservoir engineers.</em></p>
+    
+    <h2>Introduction: The Problem with Traditional Methods</h2>
+    
+    <p>For decades, petroleum engineers have relied on concepts like "radius of investigation" to determine how much of a reservoir has been tested during a pressure transient test. The traditional formula for radius of investigation in dimensionless form is:</p>
+    
+    <div class="formula-box">
+        $$r_{iD}=2{\sqrt{t_{D}}}$$
+    </div>
+    
+    <p>Or in field units:</p>
+    
+    <div class="formula-box">
+        $$r_{i}=\sqrt{\frac{k t}{948\Phi\upmu c_{t}}}$$
+    </div>
+    
+    <div class="analogy">
+        <h3>The Flashlight Analogy</h3>
+        <p>Think of a pressure transient test like shining a flashlight in a dark cave. The traditional radius of investigation tells you how far your light reaches, but only if the cave is perfectly circular and your flashlight is at the center. What if the cave has an irregular shape? What if there are obstacles? The traditional approach breaks down.</p>
+    </div>
+    
+    <p>The problem with this approach is that it makes several restrictive assumptions:</p>
+    
+    <ul>
+        <li>It assumes radial flow</li>
+        <li>It requires known permeability (or infinite-acting radial flow to estimate it)</li>
+        <li>It assumes homogeneous, isotropic permeability</li>
+        <li>It assumes uniform reservoir thickness</li>
+    </ul>
+    
+    <p>But real reservoirs are complex. They have irregular shapes, heterogeneous properties, and often exhibit multiple flow regimes during a test. What we need is a more general approach that works regardless of flow regime or reservoir complexity.</p>
+    
+    <h2>First Principles: The Diffusivity Equation</h2>
+    
+    <p>To develop a more general concept, we need to start from first principles. The foundation of all pressure transient analysis is the diffusivity equation, which describes how pressure changes propagate through a porous medium.</p>
+    
+    <p>When a well produces at a constant rate, any solution to the diffusivity equation must satisfy these fundamental conditions:</p>
+    
+    <div class="formula-box">
+        $$\begin{array}{r l}
+        &{p_{wD}(t_{D})>0}\\ 
+        &{\frac{d p_{wD}}{d t_{D}}\geq0}\\ 
+        &{\frac{d^{2}p_{wD}}{d t_{D}^2}\leq0}
+        \end{array}$$
+    </div>
+    
+    <p>Additionally, a critical property that can be proven mathematically is that:</p>
+    
+    <div class="formula-box">
+        $$\frac{d p_{wD}}{d t_{D}}\geq\frac{d p_{D}(\vec{r}_{D},t_{D})}{d t_{D}}$$
+    </div>
+    
+    <div class="key-concept">
+        <h3>Key Insight</h3>
+        <p>This inequality tells us something profound: the rate of pressure change at the wellbore is always greater than or equal to the rate of pressure change at any other point in the reservoir. This is true regardless of flow regime, geometry, or heterogeneity.</p>
+    </div>
+    
+    <h2>Defining the Volume of Investigation</h2>
+    
+    <p>Using this fundamental property, we can define the "volume of investigation" as:</p>
+    
+    <div class="formula-box">
+        <p><strong>The minimum reservoir volume necessary to provide sufficient pressure support to produce the observed rate of change of sand-face pressure as a function of time.</strong></p>
+    </div>
+    
+    <p>Mathematically, we can derive this by assuming a uniform rate of change of pressure throughout the volume, equal to the rate of change at the wellbore:</p>
+    
+    <div class="formula-box">
+        $$\frac{d p_{D}}{d t_{D}}=\frac{d p_{_{w}D}}{d t_{D}}$$
+    </div>
+    
+    <p>This assumption is the defining characteristic of pseudosteady-state flow. In field units, during pseudosteady state flow from a reservoir of arbitrary shape, the reservoir pore volume is given by:</p>
+    
+    <div class="formula-box">
+        $$V_{p}=\frac{0.234q B}{c_{t}\frac{d p}{d t}}$$
+    </div>
+    
+    <p>We define the investigated pore volume \(V_{pi}\) at any point in time during constant rate production as:</p>
+    
+    <div class="formula-box">
+        $$V_{pi}=\frac{0.234q B}{{c_{t}}|\frac{d p_{w}}{d t}|}$$
+    </div>
+    
+    <h3>From Pore Volume to Practical Metrics</h3>
+    
+    <p>If porosity is uniform, we can calculate the investigated bulk volume:</p>
+    
+    <div class="formula-box">
+        $$V_{bi}=\frac{0.234q B}{\phi c_{t}|\frac{d p_{w}}{d t}|}$$
+    </div>
+    
+    <p>Assuming uniform thickness and radial symmetry, we can calculate the radius of investigation:</p>
+    
+    <div class="formula-box">
+        $$r_{i}=\sqrt{\frac{0.234q B}{\pi h\phi c_{t}\left|\frac{d p_{w}}{d t}\right|}}$$
+    </div>
+    
+    <p>For a two-phase oil-water system, if water saturation is known, we can calculate the investigated stock-tank oil in place:</p>
+    
+    <div class="formula-box">
+        $$N_{i}=\frac{(1-S_{w})q}{24c_{t}\left|\frac{d p_{w}}{d t}\right|}$$
+    </div>
+    
+    <div class="analogy">
+        <h3>The Bank Account Analogy</h3>
+        <p>Think of the volume of investigation like checking your bank account balance. The traditional radius of investigation is like estimating your balance based on your salary and spending habits (your model). The volume of investigation is like directly checking your actual balance (model-independent). It tells you exactly how much money you have right now, regardless of how you earned or spent it.</p>
+    </div>
+    
+    <h2>Interactive Simulation: Explore the Volume of Investigation</h2>
+    
+    <div class="interactive">
+        <h3>Volume of Investigation Simulator</h3>
+        <p>Adjust the parameters below to see how the volume of investigation changes for different scenarios.</p>
+        
+        <div class="slider-container">
+            <label for="flowRate">Flow Rate (STB/D):</label>
+            <input type="range" id="flowRate" min="100" max="5000" value="1000" step="100">
+            <span id="flowRateValue" class="value-display">1000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="fvf">Formation Volume Factor:</label>
+            <input type="range" id="fvf" min="1.0" max="2.0" value="1.2" step="0.1">
+            <span id="fvfValue" class="value-display">1.2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="porosity">Porosity (fraction):</label>
+            <input type="range" id="porosity" min="0.05" max="0.35" value="0.2" step="0.01">
+            <span id="porosityValue" class="value-display">0.2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="compressibility">Total Compressibility (1/psi):</label>
+            <input type="range" id="compressibility" min="1" max="50" value="10" step="1">
+            <span id="compressibilityValue" class="value-display">10×10⁻⁶</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="thickness">Thickness (ft):</label>
+            <input type="range" id="thickness" min="10" max="300" value="50" step="5">
+            <span id="thicknessValue" class="value-display">50</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="dpdt">|dp/dt| (psi/hr):</label>
+            <input type="range" id="dpdt" min="0.1" max="50" value="5" step="0.1">
+            <span id="dpdtValue" class="value-display">5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="waterSat">Water Saturation (fraction):</label>
+            <input type="range" id="waterSat" min="0.1" max="0.6" value="0.3" step="0.05">
+            <span id="waterSatValue" class="value-display">0.3</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="flowRegime">Flow Regime:</label>
+            <select id="flowRegime">
+                <option value="radial">Radial Flow</option>
+                <option value="linear">Linear Flow</option>
+                <option value="bilinear">Bilinear Flow</option>
+                <option value="spherical">Spherical Flow</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <label for="testTime">Test Time (hours):</label>
+            <input type="range" id="testTime" min="1" max="100" value="24" step="1">
+            <span id="testTimeValue" class="value-display">24</span>
+        </div>
+        
+        <button id="calculateBtn">Calculate</button>
+        
+        <div id="results" style="margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
+            <p><strong>Pore Volume Investigated:</strong> <span id="poreVolume">-</span> ft³</p>
+            <p><strong>Bulk Volume Investigated:</strong> <span id="bulkVolume">-</span> ft³</p>
+            <p><strong>Radius/Depth of Investigation:</strong> <span id="radiusDepth">-</span> ft</p>
+            <p><strong>Hydrocarbons Investigated:</strong> <span id="oilInPlace">-</span> STB</p>
+        </div>
+        
+        <canvas id="simulationCanvas" width="700" height="400"></canvas>
+    </div>
+    
+    <h2>Applications to Different Flow Regimes</h2>
+    
+    <p>One of the most powerful aspects of the volume of investigation concept is that it can be applied to any flow regime. Let's examine how it works for the four common flow regimes.</p>
+    
+    <h3>1. Radial Flow</h3>
+    
+    <p>During infinite-acting radial flow, the volume of investigation is:</p>
+    
+    <div class="formula-box">
+        $$V_{bi}=\frac{0.539q B}{\phi c_{t}m}t$$
+    </div>
+    
+    <p>Where \(m\) is the slope of the semilog straight line. The radius of investigation is:</p>
+    
+    <div class="formula-box">
+        $$r_{i}=\sqrt{\frac{V_{bi}}{\pi h}}=\sqrt{\frac{0.539q B t}{\pi\phi h c_{t}m}}$$
+    </div>
+    
+    <p>This matches the traditional radius of investigation formula when we substitute the expression for \(m\).</p>
+    
+    <h3>2. Linear Flow</h3>
+    
+    <p>For linear flow (such as in a channel reservoir or from a hydraulic fracture), the volume of investigation is:</p>
+    
+    <div class="formula-box">
+        $$V_{bi}=\frac{0.468q B}{\phi c_{t}m_{L}}\sqrt{t}$$
+    </div>
+    
+    <p>Where \(m_L\) is the slope of the square root of time plot. The depth of investigation is:</p>
+    
+    <div class="formula-box">
+        $$l_{i}=\sqrt{\frac{k t}{1,207\phi\mu c_{t}}}$$
+    </div>
+    
+    <h3>3. Spherical Flow</h3>
+    
+    <p>For spherical flow (such as from a partially penetrating well), the volume of investigation is:</p>
+    
+    <div class="formula-box">
+        $$V_{bi}=\frac{0.468q B}{\phi c_{t}m_{s}}t\sqrt{t}$$
+    </div>
+    
+    <p>Where \(m_s\) is the slope of the inverse square root of time plot.</p>
+    
+    <h3>4. Bilinear Flow</h3>
+    
+    <p>For bilinear flow (such as from a finite-conductivity fracture), the volume of investigation is:</p>
+    
+    <div class="formula-box">
+        $$V_{bi}=\frac{0.936q B}{\phi c_{t}m_{b}}t^{3/4}$$
+    </div>
+    
+    <p>Where \(m_b\) is the slope of the fourth root of time plot.</p>
+    
+    <h2>Investigation Depletion Factor</h2>
+    
+    <p>An important concept related to the volume of investigation is the "investigation depletion factor," which tells us how much fluid we've removed relative to what we've investigated:</p>
+    
+    <div class="formula-box">
+        $$F_d=\frac{N_p}{N_i}$$
+    </div>
+    
+    <p>Where \(N_p\) is the fluid produced during the test and \(N_i\) is the investigated fluid in place.</p>
+    
+    <p>The investigation depletion factor varies significantly by flow regime:</p>
+    
+    <ul>
+        <li><strong>Radial flow:</strong> Typically small (often &lt;1%)</li>
+        <li><strong>Linear flow:</strong> Approaches \(\frac{1}{2(1-S_w)}\) (often 25-50%)</li>
+        <li><strong>Bilinear flow:</strong> Approaches \(\frac{1}{4(1-S_w)}\) (often 12-25%)</li>
+        <li><strong>Spherical flow:</strong> Approaches 0% as time increases</li>
+    </ul>
+    
+    <div class="key-concept">
+        <h3>Why This Matters</h3>
+        <p>The high depletion factors for linear and bilinear flow explain why unconventional reservoirs with hydraulic fractures show such rapid production declines. They're depleting a significant portion of the investigated volume during the early production period.</p>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>The volume of investigation concept has several powerful applications:</p>
+    
+    <ol>
+        <li><strong>Reserves Estimation:</strong> It provides a rigorous lower bound on fluid in place, independent of flow regime or geometry.</li>
+        <li><strong>Diagnostic Tool:</strong> The volume of investigation curve can identify flow regimes and boundaries.</li>
+        <li><strong>Test Design:</strong> It helps determine how long a test needs to run to investigate a desired volume.</li>
+        <li><strong>Unconventional Reservoirs:</strong> It explains production behavior in tight formations with hydraulic fractures.</li>
+        <li><strong>Complex Reservoirs:</strong> It works for dual porosity, multilayer, and composite systems.</li>
+    </ol>
+    
+    <h2>Conclusion</h2>
+    
+    <p>The transient volume of investigation represents a paradigm shift in pressure transient analysis. Unlike traditional methods that depend on specific flow regimes and idealized models, it provides a model-independent measure of the reservoir volume that has been tested.</p>
+    
+    <p>By focusing on what we can directly observe (the rate of pressure change at the wellbore) rather than what we must infer (permeability, flow regime, etc.), we get a more robust and reliable measure of what we've actually tested.</p>
+    
+    <p>The next time you analyze a well test, consider plotting the volume of investigation alongside your traditional diagnostic plots. You might be surprised by what it reveals about your reservoir.</p>
+    
+    <script>
+        // Update displayed values for sliders
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const valueDisplay = document.getElementById(this.id + 'Value');
+                if (this.id === 'compressibility') {
+                    valueDisplay.textContent = this.value + '×10⁻⁶';
+                } else {
+                    valueDisplay.textContent = this.value;
+                }
+                
+                // Update canvas on slider change
+                drawSimulation();
+            });
+        });
+        
+        document.getElementById('testTime').addEventListener('input', function() {
+            document.getElementById('testTimeValue').textContent = this.value;
+            drawSimulation();
+        });
+        
+        document.getElementById('flowRegime').addEventListener('change', drawSimulation);
+        
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            // Get values from sliders
+            const q = parseFloat(document.getElementById('flowRate').value);
+            const B = parseFloat(document.getElementById('fvf').value);
+            const phi = parseFloat(document.getElementById('porosity').value);
+            const ct = parseFloat(document.getElementById('compressibility').value) * 1e-6;
+            const h = parseFloat(document.getElementById('thickness').value);
+            const dpdt = parseFloat(document.getElementById('dpdt').value);
+            const Sw = parseFloat(document.getElementById('waterSat').value);
+            const flowRegime = document.getElementById('flowRegime').value;
+            const t = parseFloat(document.getElementById('testTime').value);
+            
+            // Calculate pore volume investigated
+            let Vpi = 0.234 * q * B / (ct * dpdt);
+            
+            // Calculate bulk volume
+            let Vbi = Vpi / phi;
+            
+            // Calculate radius/depth of investigation based on flow regime
+            let radiusDepth = 0;
+            
+            if (flowRegime === 'radial') {
+                radiusDepth = Math.sqrt(Vbi / (Math.PI * h));
+            } else if (flowRegime === 'linear') {
+                // Assuming a channel width of 100 ft for simplicity
+                const w = 100;
+                radiusDepth = Vbi / (2 * w * h);
+            } else if (flowRegime === 'spherical') {
+                radiusDepth = Math.pow((3 * Vbi) / (4 * Math.PI), 1/3);
+            } else if (flowRegime === 'bilinear') {
+                // For bilinear, we don't have a simple geometric interpretation
+                // Just showing the equivalent radius
+                radiusDepth = Math.sqrt(Vbi / (Math.PI * h));
+            }
+            
+            // Calculate oil in place
+            let Ni = (1 - Sw) * Vpi / B;
+            
+            // Update results
+            document.getElementById('poreVolume').textContent = Vpi.toExponential(2);
+            document.getElementById('bulkVolume').textContent = Vbi.toExponential(2);
+            document.getElementById('radiusDepth').textContent = radiusDepth.toFixed(1);
+            document.getElementById('oilInPlace').textContent = Ni.toFixed(0);
+            
+            // Update visualization
+            drawSimulation();
+        });
+        
+        // Draw the simulation visualization
+        function drawSimulation() {
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get values
+            const flowRegime = document.getElementById('flowRegime').value;
+            const t = parseFloat(document.getElementById('testTime').value);
+            
+            // Draw reservoir
+            ctx.fillStyle = '#e6f7ff';
+            ctx.fillRect(50, 50, 600, 300);
+            
+            // Draw well
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(350, 200, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw investigation area based on flow regime
+            const maxRadius = 250;
+            let radius;
+            
+            if (flowRegime === 'radial') {
+                // Radial flow - circular area
+                radius = Math.min(maxRadius, Math.sqrt(t) * 25);
+                
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.beginPath();
+                ctx.arc(350, 200, radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(350, 200, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+            } else if (flowRegime === 'linear') {
+                // Linear flow - rectangular area
+                const width = 100;
+                const length = Math.min(maxRadius * 2, Math.sqrt(t) * 50);
+                
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.fillRect(350 - width/2, 200 - length/2, width, length);
+                
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(350 - width/2, 200 - length/2, width, length);
+                
+            } else if (flowRegime === 'spherical') {
+                // Spherical flow - circular area with gradient
+                radius = Math.min(maxRadius, Math.pow(t, 1/3) * 40);
+                
+                const gradient = ctx.createRadialGradient(350, 200, 0, 350, 200, radius);
+                gradient.addColorStop(0, 'rgba(155, 89, 182, 0.5)');
+                gradient.addColorStop(1, 'rgba(155, 89, 182, 0.1)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(350, 200, radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#9b59b6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(350, 200, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+            } else if (flowRegime === 'bilinear') {
+                // Bilinear flow - fracture with perpendicular flow
+                const fracLength = Math.min(maxRadius * 2, Math.pow(t, 1/4) * 100);
+                const width = Math.min(maxRadius, Math.pow(t, 1/4) * 60);
+                
+                ctx.fillStyle = 'rgba(230, 126, 34, 0.3)';
+                ctx.fillRect(350 - 5, 200 - fracLength/2, 10, fracLength);
+                
+                ctx.fillStyle = 'rgba(230, 126, 34, 0.2)';
+                ctx.fillRect(350 - width/2, 200 - fracLength/2, width, fracLength);
+                
+                ctx.strokeStyle = '#e67e22';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(350 - width/2, 200 - fracLength/2, width, fracLength);
+                
+                // Draw fracture
+                ctx.fillStyle = '#e67e22';
+                ctx.fillRect(350 - 5, 200 - fracLength/2, 10, fracLength);
+            }
+            
+            // Draw legend
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.fillText('Well', 50, 380);
+            ctx.fillText('Investigated Volume', 150, 380);
+            ctx.fillText('Flow Regime: ' + flowRegime.charAt(0).toUpperCase() + flowRegime.slice(1) + ' Flow', 350, 380);
+            
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(35, 375, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            if (flowRegime === 'radial') {
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.fillRect(120, 365, 20, 20);
+                ctx.strokeStyle = '#3498db';
+                ctx.strokeRect(120, 365, 20, 20);
+            } else if (flowRegime === 'linear') {
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.fillRect(120, 365, 20, 20);
+                ctx.strokeStyle = '#2ecc71';
+                ctx.strokeRect(120, 365, 20, 20);
+            } else if (flowRegime === 'spherical') {
+                ctx.fillStyle = 'rgba(155, 89, 182, 0.3)';
+                ctx.fillRect(120, 365, 20, 20);
+                ctx.strokeStyle = '#9b59b6';
+                ctx.strokeRect(120, 365, 20, 20);
+            } else if (flowRegime === 'bilinear') {
+                ctx.fillStyle = 'rgba(230, 126, 34, 0.3)';
+                ctx.fillRect(120, 365, 20, 20);
+                ctx.strokeStyle = '#e67e22';
+                ctx.strokeRect(120, 365, 20, 20);
+            }
+        }
+        
+        // Initial draw
+        window.onload = function() {
+            drawSimulation();
+        };
+    </script>
+</body>
+</html>

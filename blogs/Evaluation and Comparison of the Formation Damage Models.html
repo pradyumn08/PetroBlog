@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Formation Damage Models from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .author {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .date {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        code {
+            background-color: #f9f9f9;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .formula-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .interactive {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 10px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .conclusion {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Understanding Formation Damage Models from First Principles</h1>
+        <p class="author">By Dr. Reservoir Engineer</p>
+        <p class="date">Published: March 15, 2023</p>
+    </header>
+
+    <section>
+        <h2>Introduction: The Hidden World of Formation Damage</h2>
+        
+        <p>Imagine you're sipping a thick milkshake through a straw. At first, it flows easily, but gradually becomes harder to drink. This everyday experience mirrors a critical problem in petroleum engineering called <strong>formation damage</strong> - a phenomenon that costs the oil and gas industry billions of dollars annually.</p>
+        
+        <p>Formation damage occurs when the natural pathways (pores) in reservoir rocks become restricted or blocked, reducing the ability of oil and gas to flow. Despite its importance, the mathematical modeling of this process has remained challenging and somewhat mysterious to many practitioners.</p>
+        
+        <p>In this blog post, we'll break down the complex mathematical models of formation damage into understandable pieces using first principles. We'll focus on how particles suspended in fluids interact with porous media (like sandstone) and how these interactions lead to reduced permeability - the rock's ability to let fluids flow through it.</p>
+        
+        <div class="note">
+            <p><strong>Why This Matters:</strong> Understanding formation damage models helps engineers predict and mitigate production decline, optimize well treatments, and design better drilling and completion fluids. The economic impact of these decisions can be enormous!</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>The Core Concept: Porous Media as a Network of Tubes</h2>
+        
+        <p>To understand formation damage, we first need a conceptual model of porous media. Let's start with the simplest approach: imagining the rock as a bundle of tubes.</p>
+        
+        <figure>
+            <img src="https://miro.medium.com/max/700/1*3qYi_HSnJ7D4QjyQe8i3ew.png" alt="Conceptual model of porous media as tubes">
+            <figcaption>Conceptual representation of porous media as a bundle of tubes with different diameters</figcaption>
+        </figure>
+        
+        <p>In the Wojtanowicz model (one of the six models analyzed in the paper), porous media is visualized as having tortuous pathways represented by \(N_h\) tubes of the same mean hydraulic equivalent diameter, \(D_h\). The tortuosity factor for these tubes is defined as:</p>
+        
+        <div class="formula-block">
+            <p>\[ \tau = \frac{L_h}{L} \]</p>
+            <p>Where:</p>
+            <ul>
+                <li>\(\tau\) = tortuosity factor</li>
+                <li>\(L_h\) = actual tube length</li>
+                <li>\(L\) = length of the core</li>
+            </ul>
+        </div>
+        
+        <p>The cross-sectional area of these hydraulic tubes is approximated by:</p>
+        
+        <div class="formula-block">
+            <p>\[ A_h = C_1 D_h^2 \]</p>
+            <p>Where \(C_1\) is an empirical shape factor accounting for deviation from circular perimeter.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Formation Damage Mechanisms: What Blocks the Flow?</h2>
+        
+        <p>The paper identifies three primary mechanisms of formation damage:</p>
+        
+        <ol>
+            <li><strong>Gradual pore blocking by surface deposition</strong> - Small particles coat the walls of pores, gradually narrowing them</li>
+            <li><strong>Single pore blocking by screening</strong> - Larger particles completely block individual pore throats</li>
+            <li><strong>Pore volume filling by straining</strong> - Multiple particles accumulate and fill the pore space</li>
+        </ol>
+        
+        <figure>
+            <img src="https://www.researchgate.net/profile/Meftah-Hrairi/publication/264545493/figure/fig1/AS:669499077472261@1536632797238/Different-mechanisms-of-formation-damage-due-to-particle-invasion.png" alt="Formation damage mechanisms">
+            <figcaption>Different mechanisms of formation damage due to particle invasion</figcaption>
+        </figure>
+        
+        <p>For each mechanism, the relationship between permeability (\(K\)) and open flow area (\(A_E\)) takes a different mathematical form:</p>
+        
+        <h3>1. Gradual Pore Blocking (Surface Deposition)</h3>
+        
+        <div class="formula-block">
+            <p>\[ A_E = C_3 K^{1/2} \]</p>
+            <p>Where \(C_3 = C_2 N_h^{1/2}\) and \(C_2^2 = 32 A \tau \pi C_1\)</p>
+        </div>
+        
+        <h3>2. Single Pore Blocking</h3>
+        
+        <div class="formula-block">
+            <p>\[ A_E = C_4 K \]</p>
+            <p>Where \(C_4 = C_2^2/A_h\)</p>
+        </div>
+        
+        <h3>3. Pore Volume Filling</h3>
+        
+        <div class="formula-block">
+            <p>\[ K(t) = \frac{L}{L_C R_C(t) + L_m R_m} \]</p>
+            <p>Where:</p>
+            <ul>
+                <li>\(R_C(t) = 1/K_C(t)\) = resistance of pore filling region</li>
+                <li>\(R_m = 1/K_m\) = resistance of uninvaded region</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>The Mathematical Heart: Particle Mass Balance</h2>
+        
+        <p>At the core of all formation damage models is the particle mass balance equation. This tracks where particles go as they flow through the porous media.</p>
+        
+        <div class="formula-block">
+            <p>\[ \frac{d}{dt}[AL(\phi\rho_f P + \sigma_s P)] + q(\rho_f P)_{out} - q(\rho_f P)_{in} = 0 \]</p>
+            <p>Where:</p>
+            <ul>
+                <li>\(\phi\) = porosity</li>
+                <li>\(\rho_f P\) = particle mass concentration in fluid</li>
+                <li>\(\sigma_s P\) = mass of particles retained per unit volume</li>
+                <li>\(q\) = flow rate</li>
+                <li>\(A\) = cross-sectional area</li>
+                <li>\(L\) = length of core section</li>
+            </ul>
+        </div>
+        
+        <p>This equation simply states: the rate of accumulation of particles equals the difference between particles flowing in and particles flowing out.</p>
+        
+        <p>For practical applications, this is often simplified to:</p>
+        
+        <div class="formula-block">
+            <p>\[ (\rho_f P)_{out} = (\rho_f P)_{in} - (AL/q)\frac{d\sigma_s P}{dt} \]</p>
+        </div>
+        
+        <p>This equation tells us that the concentration of particles leaving a section is equal to the concentration entering minus the particles that get retained in that section.</p>
+    </section>
+
+    <section>
+        <h2>Particle Retention and Release: The Dynamic Balance</h2>
+        
+        <p>Formation damage isn't just about particles getting stuck - it's a dynamic process where particles are both retained and released. The net rate of particle deposition is:</p>
+        
+        <div class="formula-block">
+            <p>\[ \frac{d\sigma_s P}{dt} = k_r \rho_f P - k_e \sigma_s P \]</p>
+            <p>Where:</p>
+            <ul>
+                <li>\(k_r\) = particle retention rate constant</li>
+                <li>\(k_e\) = particle entrainment (release) rate constant</li>
+            </ul>
+        </div>
+        
+        <p>This equation captures a fundamental balance: particles are continuously being deposited from the flowing fluid (\(k_r \rho_f P\)) and simultaneously being swept away by the fluid (\(k_e \sigma_s P\)).</p>
+        
+        <p>Different models express the retention and release rates differently:</p>
+        
+        <ul>
+            <li>Khilar and Fogler model includes both chemical (colloidal) and physical (hydrodynamic) release mechanisms</li>
+            <li>Gruesbeck and Collins model separates pluggable and non-pluggable flow paths</li>
+            <li>Ohen and Civan model includes swelling of clay minerals</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Permeability Reduction: The End Result</h2>
+        
+        <p>The ultimate goal of these models is to predict permeability reduction. The relationship between particle deposition and permeability is often expressed as:</p>
+        
+        <div class="formula-block">
+            <p>\[ \frac{K}{K_i} = \left[1 - \frac{\sigma_s P}{\sigma_s^* P_i}\right]^2 \]</p>
+            <p>or</p>
+            <p>\[ \frac{K}{K_i} = \left(\frac{\phi_{eff}}{\phi_i}\right)^3 \]</p>
+            <p>Where:</p>
+            <ul>
+                <li>\(K_i\) = initial permeability</li>
+                <li>\(\phi_i\) = initial porosity</li>
+                <li>\(\phi_{eff}\) = effective porosity</li>
+            </ul>
+        </div>
+        
+        <p>These equations link the microscopic process (particle deposition) to the macroscopic property we care about (permeability).</p>
+    </section>
+
+    <section class="interactive">
+        <h2>Interactive Formation Damage Simulator</h2>
+        
+        <p>Let's see these concepts in action! This simulator demonstrates how particles flowing through porous media cause formation damage over time.</p>
+        
+        <div class="controls">
+            <div class="slider-container">
+                <label for="particleConcentration">Particle Concentration (\(\rho_f P\)): <span id="particleConcentrationValue">5</span> kg/m³</label>
+                <input type="range" id="particleConcentration" min="1" max="20" value="5" step="1">
+            </div>
+            
+            <div class="slider-container">
+                <label for="retentionRate">Retention Rate Constant (\(k_r\)): <span id="retentionRateValue">0.2</span></label>
+                <input type="range" id="retentionRate" min="0.01" max="0.5" value="0.2" step="0.01">
+            </div>
+            
+            <div class="slider-container">
+                <label for="entrainmentRate">Entrainment Rate Constant (\(k_e\)): <span id="entrainmentRateValue">0.05</span></label>
+                <input type="range" id="entrainmentRate" min="0.01" max="0.2" value="0.05" step="0.01">
+            </div>
+            
+            <div class="slider-container">
+                <label for="flowRate">Flow Rate (q): <span id="flowRateValue">10</span> m³/day</label>
+                <input type="range" id="flowRate" min="1" max="50" value="10" step="1">
+            </div>
+            
+            <button id="startSimulation">Start Simulation</button>
+            <button id="resetSimulation">Reset</button>
+        </div>
+        
+        <div>
+            <canvas id="simulationCanvas" width="700" height="300"></canvas>
+        </div>
+        
+        <div>
+            <canvas id="permeabilityChart" width="700" height="200"></canvas>
+        </div>
+        
+        <p>This simulation shows:</p>
+        <ol>
+            <li>How particles (blue dots) flow through the porous media</li>
+            <li>How some particles get retained (red dots)</li>
+            <li>How permeability decreases over time as particles accumulate</li>
+        </ol>
+        
+        <p>Try adjusting the sliders to see how different parameters affect the formation damage process!</p>
+    </section>
+
+    <section>
+        <h2>Comparing the Six Models: Strengths and Limitations</h2>
+        
+        <p>The academic paper reviews six different formation damage models. Here's a simplified comparison:</p>
+        
+        <table>
+            <tr>
+                <th>Model</th>
+                <th>Key Features</th>
+                <th>Strengths</th>
+                <th>Limitations</th>
+            </tr>
+            <tr>
+                <td>Wojtanowicz et al.</td>
+                <td>Hydraulic tubes approach; three damage mechanisms</td>
+                <td>Simple; easy to implement</td>
+                <td>Limited to single-phase flow</td>
+            </tr>
+            <tr>
+                <td>Khilar and Fogler</td>
+                <td>Compartment model; colloidal and hydrodynamic release</td>
+                <td>Good for clay-related damage</td>
+                <td>Complex parameter determination</td>
+            </tr>
+            <tr>
+                <td>Gruesbeck and Collins</td>
+                <td>Separates pluggable and non-pluggable paths</td>
+                <td>Accounts for pore size distribution</td>
+                <td>Assumes constant flow rate</td>
+            </tr>
+            <tr>
+                <td>Ohen and Civan</td>
+                <td>Includes clay swelling; maximum gradient approach</td>
+                <td>Comprehensive; includes many mechanisms</td>
+                <td>Many parameters (12+)</td>
+            </tr>
+            <tr>
+                <td>Sharma and Yortsos</td>
+                <td>Network model; population balance</td>
+                <td>Accounts for pore structure</td>
+                <td>Computationally intensive</td>
+            </tr>
+            <tr>
+                <td>Rege and Fogler</td>
+                <td>Tracks individual particles; network model</td>
+                <td>Most detailed particle tracking</td>
+                <td>Very computationally intensive</td>
+            </tr>
+        </table>
+        
+        <p>As we move from Wojtanowicz to Rege and Fogler, the models become more complex but potentially more accurate. The trade-off is between simplicity and realism.</p>
+    </section>
+
+    <section>
+        <h2>Real-World Analogy: The Highway Traffic Model</h2>
+        
+        <p>To better understand these models, let's use a highway traffic analogy:</p>
+        
+        <ul>
+            <li><strong>Porous media</strong> = Highway network</li>
+            <li><strong>Pore throats</strong> = Narrow sections of road</li>
+            <li><strong>Particles</strong> = Vehicles</li>
+            <li><strong>Permeability</strong> = Traffic flow capacity</li>
+            <li><strong>Formation damage</strong> = Traffic congestion</li>
+        </ul>
+        
+        <p>The different damage mechanisms are like:</p>
+        
+        <ul>
+            <li><strong>Surface deposition</strong> = Lane narrowing due to construction</li>
+            <li><strong>Single pore blocking</strong> = Complete road closure</li>
+            <li><strong>Pore filling</strong> = Traffic jam that grows backward</li>
+        </ul>
+        
+        <p>Just as traffic engineers use models to predict congestion, petroleum engineers use formation damage models to predict permeability reduction.</p>
+    </section>
+
+    <section class="conclusion">
+        <h2>Conclusion: From Mathematics to Practical Applications</h2>
+        
+        <p>Formation damage modeling is a fascinating blend of physics, chemistry, and mathematics. The six models reviewed in the paper represent different approaches to a complex problem, each with its own strengths and limitations.</p>
+        
+        <p>Key takeaways:</p>
+        
+        <ol>
+            <li>Formation damage is primarily caused by particle retention in porous media</li>
+            <li>The process is dynamic, with both retention and release mechanisms</li>
+            <li>Different mathematical models capture different aspects of the process</li>
+            <li>The relationship between microscopic particle behavior and macroscopic permeability is non-linear</li>
+            <li>Model selection depends on the specific application and available data</li>
+        </ol>
+        
+        <p>As computational power increases, we can expect more sophisticated models that combine the best features of these approaches. The ultimate goal remains the same: to better predict and mitigate formation damage, improving oil and gas recovery while reducing environmental impact.</p>
+        
+        <p>What formation damage challenges are you facing in your operations? Let me know in the comments!</p>
+    </section>
+
+    <script>
+        // Interactive simulation code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const particleConcentrationSlider = document.getElementById('particleConcentration');
+            const retentionRateSlider = document.getElementById('retentionRate');
+            const entrainmentRateSlider = document.getElementById('entrainmentRate');
+            const flowRateSlider = document.getElementById('flowRate');
+            
+            const particleConcentrationValue = document.getElementById('particleConcentrationValue');
+            const retentionRateValue = document.getElementById('retentionRateValue');
+            const entrainmentRateValue = document.getElementById('entrainmentRateValue');
+            const flowRateValue = document.getElementById('flowRateValue');
+            
+            const startButton = document.getElementById('startSimulation');
+            const resetButton = document.getElementById('resetSimulation');
+            
+            const simulationCanvas = document.getElementById('simulationCanvas');
+            const permeabilityCanvas = document.getElementById('permeabilityChart');
+            
+            const simCtx = simulationCanvas.getContext('2d');
+            const permCtx = permeabilityCanvas.getContext('2d');
+            
+            // Update slider value displays
+            particleConcentrationSlider.addEventListener('input', function() {
+                particleConcentrationValue.textContent = this.value;
+            });
+            
+            retentionRateSlider.addEventListener('input', function() {
+                retentionRateValue.textContent = this.value;
+            });
+            
+            entrainmentRateSlider.addEventListener('input', function() {
+                entrainmentRateValue.textContent = this.value;
+            });
+            
+            flowRateSlider.addEventListener('input', function() {
+                flowRateValue.textContent = this.value;
+            });
+            
+            // Simulation variables
+            let particles = [];
+            let retainedParticles = [];
+            let permeabilityHistory = [];
+            let initialPermeability = 1000; // mD
+            let currentPermeability = initialPermeability;
+            let time = 0;
+            let animationId;
+            let isRunning = false;
+            
+            // Pore structure (simplified)
+            const pores = [];
+            const numPores = 15;
+            const poreWidth = 30;
+            const poreSpacing = simulationCanvas.width / (numPores + 1);
+            
+            for (let i = 0; i < numPores; i++) {
+                pores.push({
+                    x: (i + 1) * poreSpacing,
+                    y: simulationCanvas.height / 2,
+                    radius: Math.random() * 10 + 15,
+                    throatWidth: Math.random() * 15 + poreWidth
+                });
+            }
+            
+            // Initialize simulation
+            function initSimulation() {
+                particles = [];
+                retainedParticles = [];
+                permeabilityHistory = [];
+                currentPermeability = initialPermeability;
+                time = 0;
+                
+                drawPorousMedia();
+                drawPermeabilityChart();
+            }
+            
+            // Draw porous media
+            function drawPorousMedia() {
+                simCtx.clearRect(0, 0, simulationCanvas.width, simulationCanvas.height);
+                
+                // Draw pores and throats
+                simCtx.fillStyle = '#f0f0f0';
+                simCtx.strokeStyle = '#888';
+                simCtx.lineWidth = 2;
+                
+                for (let i = 0; i < pores.length; i++) {
+                    const pore = pores[i];
+                    
+                    // Draw pore
+                    simCtx.beginPath();
+                    simCtx.arc(pore.x, pore.y, pore.radius, 0, Math.PI * 2);
+                    simCtx.fill();
+                    simCtx.stroke();
+                    
+                    // Draw throat to next pore
+                    if (i < pores.length - 1) {
+                        const nextPore = pores[i + 1];
+                        const throatWidth = (pore.throatWidth + nextPore.throatWidth) / 2;
+                        
+                        simCtx.beginPath();
+                        simCtx.moveTo(pore.x + pore.radius, pore.y - throatWidth/2);
+                        simCtx.lineTo(nextPore.x - nextPore.radius, nextPore.y - throatWidth/2);
+                        simCtx.lineTo(nextPore.x - nextPore.radius, nextPore.y + throatWidth/2);
+                        simCtx.lineTo(pore.x + pore.radius, pore.y + throatWidth/2);
+                        simCtx.closePath();
+                        simCtx.fill();
+                        simCtx.stroke();
+                    }
+                }
+                
+                // Draw particles
+                simCtx.fillStyle = 'rgba(0, 100, 255, 0.7)';
+                for (const particle of particles) {
+                    simCtx.beginPath();
+                    simCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    simCtx.fill();
+                }
+                
+                // Draw retained particles
+                simCtx.fillStyle = 'rgba(255, 50, 50, 0.7)';
+                for (const particle of retainedParticles) {
+                    simCtx.beginPath();
+                    simCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    simCtx.fill();
+                }
+                
+                // Draw permeability indicator
+                const permRatio = currentPermeability / initialPermeability;
+                simCtx.fillStyle = `rgba(255, ${Math.floor(255 * permRatio)}, 0, 0.8)`;
+                simCtx.fillRect(10, 10, 100 * permRatio, 20);
+                simCtx.strokeRect(10, 10, 100, 20);
+                simCtx.fillStyle = 'black';
+                simCtx.font = '12px Arial';
+                simCtx.fillText(`Perm: ${Math.floor(currentPermeability)} mD`, 15, 25);
+            }
+            
+            // Draw permeability chart
+            function drawPermeabilityChart() {
+                permCtx.clearRect(0, 0, permeabilityCanvas.width, permeabilityCanvas.height);
+                
+                // Draw axes
+                permCtx.strokeStyle = 'black';
+                permCtx.lineWidth = 2;
+                permCtx.beginPath();
+                permCtx.moveTo(50, 20);
+                permCtx.lineTo(50, permeabilityCanvas.height - 30);
+                permCtx.lineTo(permeabilityCanvas.width - 20, permeabilityCanvas.height - 30);
+                permCtx.stroke();
+                
+                // Draw labels
+                permCtx.fillStyle = 'black';
+                permCtx.font = '12px Arial';
+                permCtx.fillText('Permeability (mD)', 10, 15);
+                permCtx.fillText('Time', permeabilityCanvas.width - 50, permeabilityCanvas.height - 10);
+                
+                // Draw scale
+                permCtx.fillText('0', 35, permeabilityCanvas.height - 25);
+                permCtx.fillText(initialPermeability.toString(), 25, 30);
+                
+                // Draw permeability history
+                if (permeabilityHistory.length > 1) {
+                    const xScale = (permeabilityCanvas.width - 70) / Math.max(100, permeabilityHistory.length);
+                    const yScale = (permeabilityCanvas.height - 50) / initialPermeability;
+                    
+                    permCtx.strokeStyle = 'blue';
+                    permCtx.lineWidth = 2;
+                    permCtx.beginPath();
+                    permCtx.moveTo(50, permeabilityCanvas.height - 30 - permeabilityHistory[0] * yScale);
+                    
+                    for (let i = 1; i < permeabilityHistory.length; i++) {
+                        permCtx.lineTo(50 + i * xScale, permeabilityCanvas.height - 30 - permeabilityHistory[i] * yScale);
+                    }
+                    
+                    permCtx.stroke();
+                }
+            }
+            
+            // Update simulation
+            function updateSimulation() {
+                const particleConc = parseFloat(particleConcentrationSlider.value);
+                const retentionRate = parseFloat(retentionRateSlider.value);
+                const entrainmentRate = parseFloat(entrainmentRateSlider.value);
+                const flowRate = parseFloat(flowRateSlider.value);
+                
+                // Add new particles based on concentration and flow rate
+                const newParticleCount = Math.floor(particleConc * flowRate / 100);
+                
+                for (let i = 0; i < newParticleCount; i++) {
+                    particles.push({
+                        x: 0,
+                        y: Math.random() * (simulationCanvas.height - 100) + 50,
+                        size: Math.random() * 3 + 2,
+                        speed: flowRate / 10 * (Math.random() * 0.5 + 0.75)
+                    });
+                }
+                
+                // Move particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const particle = particles[i];
+                    particle.x += particle.speed;
+                    
+                    // Check if particle is retained
+                    const retentionProbability = retentionRate * (1 - currentPermeability / initialPermeability);
+                    
+                    if (Math.random() < retentionProbability) {
+                        retainedParticles.push({...particle});
+                        particles.splice(i, 1);
+                        
+                        // Update permeability
+                        currentPermeability *= (1 - 0.001 * retentionRate);
+                    }
+                    
+                    // Remove particles that exit the canvas
+                    if (particle.x > simulationCanvas.width) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                // Release some retained particles
+                for (let i = retainedParticles.length - 1; i >= 0; i--) {
+                    if (Math.random() < entrainmentRate * (flowRate / 20)) {
+                        retainedParticles.splice(i, 1);
+                        
+                        // Update permeability
+                        currentPermeability = Math.min(initialPermeability, currentPermeability * (1 + 0.0005));
+                    }
+                }
+                
+                // Store permeability history
+                if (time % 5 === 0) {
+                    permeabilityHistory.push(currentPermeability);
+                }
+                
+                time++;
+                
+                // Draw
+                drawPorousMedia();
+                drawPermeabilityChart();
+                
+                // Continue animation
+                if (isRunning) {
+                    animationId = requestAnimationFrame(updateSimulation);
+                }
+            }
+            
+            // Start simulation
+            startButton.addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    updateSimulation();
+                    this.textContent = 'Pause Simulation';
+                } else {
+                    isRunning = false;
+                    cancelAnimationFrame(animationId);
+                    this.textContent = 'Resume Simulation';
+                }
+            });
+            
+            // Reset simulation
+            resetButton.addEventListener('click', function() {
+                isRunning = false;
+                cancelAnimationFrame(animationId);
+                startButton.textContent = 'Start Simulation';
+                initSimulation();
+            });
+            
+            // Initialize on load
+            initSimulation();
+        });
+    </script>
+</body>
+</html>

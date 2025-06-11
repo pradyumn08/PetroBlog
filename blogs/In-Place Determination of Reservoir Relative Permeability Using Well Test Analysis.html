@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Relative Permeability from Well Testing: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .highlight {
+            background-color: #ffffd0;
+            padding: 15px;
+            border-left: 4px solid #ffd700;
+            margin: 20px 0;
+        }
+        .simulator {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .slider-container label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        canvas {
+            width: 100%;
+            max-height: 400px;
+        }
+        .two-column {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-left: 4px solid #5bc0de;
+            margin: 15px 0;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+            color: #666;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Relative Permeability from Well Testing: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how oil, gas, and water flow together through the tiny pores of reservoir rocks? The key to understanding this complex dance of fluids lies in a concept called <strong>relative permeability</strong>. Today, we're going to break down a fascinating method for measuring this property directly from the reservoir itself, rather than in a laboratory.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll explore how a simple well test can reveal the complex fluid behavior deep underground. We'll transform an academic paper's mathematics into intuitive understanding, and even provide an interactive simulator to visualize the concept.</p>
+    </div>
+
+    <h2>The Problem with Laboratory Measurements</h2>
+    
+    <p>Before diving into the solution, let's understand why we need a better way to measure relative permeability:</p>
+    
+    <ol>
+        <li><strong>Scale mismatch</strong>: Laboratory tests use tiny core samples (a few inches long), but reservoirs span miles.</li>
+        <li><strong>Altered conditions</strong>: Drilling and recovery change the rock's wettability and fluid composition.</li>
+        <li><strong>Limited data range</strong>: Traditional methods only measure current conditions, requiring extrapolation for future predictions.</li>
+        <li><strong>Heterogeneity</strong>: Small samples can't capture the full range of rock variations across a reservoir.</li>
+    </ol>
+
+    <h2>Understanding Fluid Flow in Porous Media: First Principles</h2>
+    
+    <p>To understand how multiple fluids flow through rock, we need to start with the basic physics. When a single fluid flows through porous media, its behavior is governed by Darcy's Law. But when multiple fluids are present, they compete for the available flow paths.</p>
+
+    <h3>The Concept of Relative Permeability</h3>
+    
+    <p>Imagine a highway system with three types of vehicles: cars (oil), motorcycles (gas), and trucks (water). When only cars are on the road, they can use all lanes efficiently. But when motorcycles and trucks join, they compete for space, and each vehicle type moves less efficiently.</p>
+    
+    <p>In reservoir terms:</p>
+    <ul>
+        <li><strong>Absolute permeability (k)</strong>: How easily a single fluid flows through rock (all lanes open)</li>
+        <li><strong>Effective permeability (k<sub>l</sub>)</strong>: How easily a specific fluid flows when other fluids are present</li>
+        <li><strong>Relative permeability (k<sub>rl</sub>)</strong>: The ratio of effective to absolute permeability (efficiency factor)</li>
+    </ul>
+
+    <div class="equation-box">
+        <p>Mathematically: \(k_{rl} = \frac{k_l}{k}\)</p>
+    </div>
+
+    <h3>The Multiphase Flow Equations</h3>
+    
+    <p>The paper presents three fundamental equations that describe how oil, gas, and water flow simultaneously through porous media. Let's break them down:</p>
+    
+    <p>For oil flow:</p>
+    <div class="equation-box">
+        <p>\(\nabla.\left[\frac{k\:k_{r o}}{\mu_{o}\:B_{o}}\:\nabla p\right]=\frac{\partial}{\partial t}\left[\frac{\phi\:S_{o}}{B_{o}}\right]\)</p>
+    </div>
+    
+    <p>For gas flow:</p>
+    <div class="equation-box">
+        <p>\(\nabla.\left[k\left[\frac{k_{r g}}{\mu_{g}B_{g}}+\frac{R_{s}k_{r o}}{\mu_{o}B_{o}}\right]\nabla p\right]=\frac{\partial}{\partial t}\left[\phi\left[\frac{S_{g}}{B_{g}}+\frac{R_{s}S_{o}}{B_{o}}\right]\right]\)</p>
+    </div>
+    
+    <p>For water flow:</p>
+    <div class="equation-box">
+        <p>\(\nabla.\left[{\frac{k k_{r w}}{\mu_{w}B_{w}}}\nabla p\right]\ =\ {\frac{\partial}{\partial t}}\left[{\frac{\phi S_{w}}{B_{w}}}\right]\)</p>
+    </div>
+
+    <p>These equations look intimidating, but they're just describing how pressure changes cause fluids to move through the rock. The left side represents fluid flow (transmissibility), and the right side represents fluid storage.</p>
+
+    <h3>The Pseudopressure Function: A Key Simplification</h3>
+    
+    <p>A brilliant concept introduced in the paper is the pseudopressure function, which helps linearize these complex equations:</p>
+    
+    <div class="equation-box">
+        <p>\(m(p) = \int_{0}^{p} \frac{k_{r o}}{\mu_{o}\ B_{o}} dp\)</p>
+    </div>
+    
+    <p>This function transforms our complex, nonlinear flow equations into something more manageable, similar to single-phase flow equations.</p>
+
+    <h2>The Innovative Solution: Multiple-Rate Well Testing</h2>
+    
+    <p>Now that we understand the basics, let's explore the paper's innovative approach to measuring relative permeability directly from the reservoir.</p>
+    
+    <h3>The Testing Procedure</h3>
+    
+    <p>The method uses a simple step-rate test:</p>
+    
+    <ol>
+        <li>Produce the well at a series of increasing constant rates</li>
+        <li>Measure pressure changes over time</li>
+        <li>Record stabilized oil, gas, and water production rates for each step</li>
+    </ol>
+    
+    <figure>
+        <img src="https://i.ibb.co/SQZQXVZ/step-rate-test.png" alt="Schematic of a multiple-rate test showing pressure and rate changes" style="max-width:100%">
+        <figcaption>Fig. 1: Schematic of a multiple-rate test showing pressure and rate changes</figcaption>
+    </figure>
+
+    <h3>The Key Insight: Sandface Saturation</h3>
+    
+    <p>The breakthrough realization is that while average reservoir saturation changes slowly over months or years, the saturation at the wellbore (sandface) changes rapidly during a test. This means we can observe fluid behavior at future reservoir conditions today!</p>
+    
+    <p>When the production rate increases, the pressure near the wellbore drops, causing gas to come out of solution and increasing gas saturation at the sandface. Each rate step creates a different saturation condition, allowing us to measure relative permeability across a range of saturations.</p>
+
+    <div class="simulator">
+        <h3>Interactive Simulator: Multiple-Rate Test</h3>
+        <p>Adjust the sliders below to see how different parameters affect sandface saturation and relative permeability measurements during a multiple-rate test.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="initialPressure">Initial Pressure (psi): <span id="pressureValue">5000</span></label>
+                    <input type="range" id="initialPressure" min="3000" max="8000" value="5000" step="100">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="initialGasSat">Initial Gas Saturation (%): <span id="gasSatValue">0</span></label>
+                    <input type="range" id="initialGasSat" min="0" max="30" value="0" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="flowRate1">Rate Step 1 (STB/D): <span id="rate1Value">200</span></label>
+                    <input type="range" id="flowRate1" min="50" max="500" value="200" step="10">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="flowRate4">Rate Step 4 (STB/D): <span id="rate4Value">800</span></label>
+                    <input type="range" id="flowRate4" min="400" max="2000" value="800" step="50">
+                </div>
+            </div>
+        </div>
+        
+        <div class="two-column">
+            <div class="column">
+                <canvas id="saturationChart"></canvas>
+            </div>
+            <div class="column">
+                <canvas id="permeabilityChart"></canvas>
+            </div>
+        </div>
+        
+        <button id="runTest">Run New Test</button>
+        
+        <div class="note">
+            <p><strong>Note:</strong> This simulator demonstrates how sandface saturation changes during a multiple-rate test and how relative permeability measurements can be obtained from each rate step.</p>
+        </div>
+    </div>
+
+    <h2>The Mathematical Framework</h2>
+    
+    <p>Now let's explore the key equations that make this method work.</p>
+    
+    <h3>Relative Permeability Equations</h3>
+    
+    <p>For a multiple-rate test, oil relative permeability at any flowing pressure can be calculated as:</p>
+    
+    <div class="equation-box">
+        <p>\([k_{r o}]_{p_{wf}}=-\ \frac{162.6}{k h}\ \frac{[\mu_{o}B_{o}]_{p_{wf}}}{\partial[\sum_{j=1}^{n}\Delta\ q_{j}\log(t-t_{j-1})]}\)</p>
+    </div>
+    
+    <p>Breaking this down:</p>
+    <ul>
+        <li>\(k\) and \(h\) are the permeability and thickness of the reservoir</li>
+        <li>\(\mu_{o}\) and \(B_{o}\) are oil viscosity and formation volume factor</li>
+        <li>The denominator is the pressure derivative with respect to a time function</li>
+    </ul>
+    
+    <p>Gas relative permeability can be calculated from the producing gas-oil ratio (GOR):</p>
+    
+    <div class="equation-box">
+        <p>\([k_{r g}]_{p_{wf}}=[GOR-R_{s}]_{p_{wf}}[\frac{\mu_{g}B_{g}}{\mu_{o}B_{o}}]_{p_{wf}}[k_{r o}]_{p_{wf}}\)</p>
+    </div>
+    
+    <p>Similarly, water relative permeability can be calculated from the water-oil ratio (WOR):</p>
+    
+    <div class="equation-box">
+        <p>\(k_{rw} = (WOR)_{p_{wf}}(\frac{\mu_{w}B_{w}}{\mu_{o}B_{o}})_{p_{wf}}(k_{ro})_{p_{wf}}\)</p>
+    </div>
+
+    <h3>Saturation Equations</h3>
+    
+    <p>The paper derives complex equations to relate pressure changes to saturation changes. For early flow times, these simplify to more manageable forms. For example, in a two-phase system:</p>
+    
+    <div class="equation-box">
+        <p>\(\frac{dS_{o}}{dp}=\frac{\alpha b^{'}-a\beta^{'}}{a\dot{\beta}-\alpha\dot{b}}\)</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\alpha = \frac{k_{ro}}{\mu_o B_o}\)</li>
+        <li>\(a = \frac{k_{rg}}{\mu_g B_g} + \frac{R_s k_{ro}}{\mu_o B_o}\)</li>
+        <li>\(\beta = \frac{S_o}{B_o}\)</li>
+        <li>\(b = \frac{S_g}{B_g} + \frac{R_s S_o}{B_o}\)</li>
+    </ul>
+    
+    <p>The derivatives (denoted by dots and primes) represent how these parameters change with respect to saturation and pressure.</p>
+
+    <h2>From Theory to Practice: How It Works</h2>
+    
+    <p>Let's walk through how this method works in practice:</p>
+    
+    <ol>
+        <li><strong>Run the test</strong>: Produce the well at a series of increasing rates, measuring pressure and production data</li>
+        <li><strong>For each rate step</strong>:
+            <ul>
+                <li>Calculate oil relative permeability using the pressure-rate relationship</li>
+                <li>Calculate gas relative permeability using the GOR</li>
+                <li>Calculate water relative permeability using the WOR</li>
+                <li>Estimate the corresponding saturations using the saturation equations</li>
+            </ul>
+        </li>
+        <li><strong>Plot the results</strong>: Create relative permeability curves from the calculated points</li>
+    </ol>
+    
+    <p>The beauty of this approach is that it gives us relative permeability values that:</p>
+    <ul>
+        <li>Reflect actual reservoir conditions (not laboratory conditions)</li>
+        <li>Account for heterogeneities across the drainage area</li>
+        <li>Include the effects of in-situ wettability and fluid composition</li>
+        <li>Cover future saturation conditions (not just current ones)</li>
+    </ul>
+
+    <h2>Real-World Applications and Limitations</h2>
+    
+    <p>This method has several practical applications:</p>
+    
+    <ul>
+        <li><strong>Improved reservoir modeling</strong>: More accurate relative permeability curves lead to better production forecasts</li>
+        <li><strong>Enhanced oil recovery planning</strong>: Understanding fluid flow behavior helps optimize recovery strategies</li>
+        <li><strong>Heterogeneity characterization</strong>: The method captures large-scale variations in relative permeability</li>
+        <li><strong>Future performance prediction</strong>: By measuring relative permeability at future saturation conditions today</li>
+    </ul>
+    
+    <p>However, there are limitations:</p>
+    
+    <ul>
+        <li>Assumes uniform initial saturation distribution (not applicable to reservoirs with coning or fingering)</li>
+        <li>Requires accurate pressure and rate measurements</li>
+        <li>Works best for moderate to high permeability reservoirs</li>
+        <li>May be less effective in oil-water systems where saturation changes are minimal</li>
+    </ul>
+
+    <h2>Conclusion: The Power of In-Situ Measurements</h2>
+    
+    <p>The method presented in this paper represents a significant advancement in how we measure relative permeability. By using well testing rather than laboratory experiments, we can obtain values that better represent the actual reservoir behavior.</p>
+    
+    <p>This approach transforms a complex academic concept into a practical tool that can improve reservoir management and production forecasting. It demonstrates how innovative thinking can solve long-standing challenges in the field of reservoir engineering.</p>
+    
+    <p>The next time you're analyzing a reservoir, consider whether traditional laboratory measurements are truly representative, or if an in-situ approach like this might provide more accurate insights into fluid flow behavior.</p>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the charts
+            let saturationChart, permeabilityChart;
+            
+            // Initial values
+            let initialPressure = 5000;
+            let initialGasSat = 0;
+            let flowRate1 = 200;
+            let flowRate4 = 800;
+            
+            // Update display values
+            document.getElementById('pressureValue').textContent = initialPressure;
+            document.getElementById('gasSatValue').textContent = initialGasSat;
+            document.getElementById('rate1Value').textContent = flowRate1;
+            document.getElementById('rate4Value').textContent = flowRate4;
+            
+            // Event listeners for sliders
+            document.getElementById('initialPressure').addEventListener('input', function() {
+                initialPressure = parseInt(this.value);
+                document.getElementById('pressureValue').textContent = initialPressure;
+            });
+            
+            document.getElementById('initialGasSat').addEventListener('input', function() {
+                initialGasSat = parseInt(this.value);
+                document.getElementById('gasSatValue').textContent = initialGasSat;
+            });
+            
+            document.getElementById('flowRate1').addEventListener('input', function() {
+                flowRate1 = parseInt(this.value);
+                document.getElementById('rate1Value').textContent = flowRate1;
+            });
+            
+            document.getElementById('flowRate4').addEventListener('input', function() {
+                flowRate4 = parseInt(this.value);
+                document.getElementById('rate4Value').textContent = flowRate4;
+            });
+            
+            // Run test button
+            document.getElementById('runTest').addEventListener('click', function() {
+                updateCharts();
+            });
+            
+            // Function to calculate gas saturation based on pressure drop
+            function calculateGasSaturation(initialPressure, initialGasSat, pressureDrop) {
+                // Simplified model: gas saturation increases as pressure drops below bubble point
+                const bubblePoint = 4500; // Example bubble point pressure
+                
+                if (initialPressure - pressureDrop > bubblePoint) {
+                    return initialGasSat; // No additional gas comes out of solution
+                } else {
+                    // Simple model: gas saturation increases proportionally to pressure drop below bubble point
+                    const additionalGas = Math.min(40, Math.max(0, (bubblePoint - (initialPressure - pressureDrop)) * 0.1));
+                    return initialGasSat + additionalGas;
+                }
+            }
+            
+            // Function to calculate relative permeability based on saturation
+            function calculateRelativePermeability(gasSaturation) {
+                // Simplified Corey model for demonstration
+                const Sor = 0.2;
+                const So = 1 - gasSaturation/100 - 0.2; // Assuming water saturation is constant at 20%
+                const SoNorm = Math.max(0, (So - Sor) / (1 - Sor));
+                
+                const kro = Math.pow(SoNorm, 3.3);
+                const krg = 0.9 * Math.pow(1 - SoNorm, 2.0);
+                
+                return { kro, krg };
+            }
+            
+            // Function to update charts
+            function updateCharts() {
+                // Calculate flow rates for all steps
+                const flowRate2 = flowRate1 + (flowRate4 - flowRate1) * 0.33;
+                const flowRate3 = flowRate1 + (flowRate4 - flowRate1) * 0.67;
+                const flowRates = [flowRate1, flowRate2, flowRate3, flowRate4];
+                
+                // Calculate pressure drops based on flow rates (simplified)
+                const pressureDrops = flowRates.map(rate => rate * 2.5);
+                
+                // Calculate gas saturations
+                const gasSaturations = pressureDrops.map(drop => 
+                    calculateGasSaturation(initialPressure, initialGasSat, drop));
+                
+                // Calculate relative permeabilities
+                const relativePerms = gasSaturations.map(sat => calculateRelativePermeability(sat));
+                const kro = relativePerms.map(perm => perm.kro);
+                const krg = relativePerms.map(perm => perm.krg);
+                
+                // Update saturation chart
+                if (saturationChart) {
+                    saturationChart.destroy();
+                }
+                
+                const satCtx = document.getElementById('saturationChart').getContext('2d');
+                saturationChart = new Chart(satCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
+                        datasets: [{
+                            label: 'Gas Saturation (%)',
+                            data: gasSaturations,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Sandface Gas Saturation vs. Rate Step'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Gas Saturation (%)'
+                                },
+                                max: 50
+                            }
+                        }
+                    }
+                });
+                
+                // Update permeability chart
+                if (permeabilityChart) {
+                    permeabilityChart.destroy();
+                }
+                
+                const permCtx = document.getElementById('permeabilityChart').getContext('2d');
+                permeabilityChart = new Chart(permCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Oil Relative Permeability',
+                            data: gasSaturations.map((sat, i) => ({
+                                x: sat,
+                                y: kro[i]
+                            })),
+                            backgroundColor: 'rgba(54, 162, 235, 1)'
+                        }, {
+                            label: 'Gas Relative Permeability',
+                            data: gasSaturations.map((sat, i) => ({
+                                x: sat,
+                                y: krg[i]
+                            })),
+                            backgroundColor: 'rgba(255, 159, 64, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Relative Permeability vs. Gas Saturation'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Gas Saturation (%)'
+                                },
+                                min: 0,
+                                max: 50
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Relative Permeability'
+                                },
+                                max: 1
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Initialize charts on page load
+            window.onload = function() {
+                updateCharts();
+            };
+});
+</script>
+</body>
+</html>

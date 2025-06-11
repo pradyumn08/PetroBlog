@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Temperature Transient Analysis in Oil Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .explanation {
+            font-style: italic;
+            color: #555;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        #temperatureChart {
+            width: 100%;
+            height: 400px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Hidden Language of Wells: Understanding Temperature Transient Analysis from First Principles</h1>
+    
+    <p>Imagine you're a doctor trying to understand what's happening inside a patient's body. You could take a blood sample, but what if you could also measure the patient's temperature changes over time to gain additional insights? This is similar to what petroleum engineers face when analyzing oil wells. They traditionally rely on pressure measurements, but temperature data offers a complementary diagnostic tool that can reveal hidden reservoir characteristics.</p>
+    
+    <p>In this post, I'll break down a fascinating analytical approach to interpreting temperature changes in oil wells during production and shut-in periods. We'll explore how these temperature signals contain valuable information about the reservoir that pressure data alone can't reveal.</p>
+
+    <div class="note">
+        <strong>Key Insight:</strong> Temperature changes in oil wells aren't just noise—they're meaningful signals that can help us "see" what's happening deep underground in ways pressure data alone cannot.
+    </div>
+
+    <h2>The Fundamental Problem: What's Happening Underground?</h2>
+    
+    <p>When engineers test an oil well, they typically measure pressure changes as oil is produced (drawdown) and when the well is shut-in (buildup). But modern sensors can also detect subtle temperature changes—sometimes less than 0.01°C—that occur during these tests.</p>
+    
+    <p>The key question is: what causes these temperature changes, and what can they tell us about the reservoir?</p>
+
+    <div class="analogy">
+        <strong>Everyday Analogy:</strong> Think about a bicycle pump. When you compress air quickly, it gets hot (adiabatic compression). When you let air escape, it cools (adiabatic expansion). Similarly, when oil expands or compresses in a reservoir, temperature changes occur. Additionally, when gas escapes from a pressurized can, it cools (Joule-Thomson effect). These same physical principles operate in oil reservoirs.
+    </div>
+
+    <h2>The Physics Behind Temperature Changes in Oil Reservoirs</h2>
+    
+    <p>Temperature changes in oil reservoirs during production and shut-in periods are governed by four main physical mechanisms:</p>
+    
+    <ol>
+        <li><strong>Joule-Thomson effect:</strong> Temperature changes when a fluid expands through a porous medium under pressure differential</li>
+        <li><strong>Adiabatic expansion/compression:</strong> Temperature changes due to volume changes without heat transfer</li>
+        <li><strong>Conduction:</strong> Heat transfer through the rock and fluid</li>
+        <li><strong>Convection:</strong> Heat transfer due to fluid movement</li>
+    </ol>
+
+    <p>Let's examine the mathematical model that captures these phenomena.</p>
+
+    <h2>The Mathematical Model: From Complex to Simple</h2>
+    
+    <p>The full model for temperature behavior in a reservoir involves coupled differential equations for mass, momentum, and energy conservation. However, we can simplify this by recognizing that temperature changes have minimal effect on pressure behavior, allowing us to "decouple" the equations.</p>
+
+    <div class="equation-box">
+        <p>The energy balance equation that governs temperature changes can be written as:</p>
+        <p>\begin{align}
+        \frac{\partial T}{\partial t}+u_{co}(r,t)\frac{\partial T}{\partial r}-\frac{\alpha_{t}}{r}\frac{\partial}{\partial r}\left(r\frac{\partial T}{\partial r}\right)=\varphi_{t}^{*}\frac{\partial p}{\partial t}+\varepsilon_{JTo}u_{co}(r,t)\frac{\partial p}{\partial r}
+        \end{align}</p>
+    </div>
+
+    <p>This intimidating equation actually tells a simple story:</p>
+    
+    <ul>
+        <li>The left side describes how temperature changes over time and space, including conduction effects</li>
+        <li>The right side captures temperature changes due to adiabatic effects (first term) and Joule-Thomson effects (second term)</li>
+    </ul>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(T\) is temperature</li>
+        <li>\(t\) is time</li>
+        <li>\(r\) is radial distance from the well</li>
+        <li>\(u_{co}\) is convective heat transfer velocity</li>
+        <li>\(\alpha_t\) is thermal diffusivity</li>
+        <li>\(\varphi_t^*\) is the adiabatic expansion coefficient</li>
+        <li>\(\varepsilon_{JTo}\) is the Joule-Thomson coefficient</li>
+        <li>\(p\) is pressure</li>
+    </ul>
+
+    <h2>Breaking Down Temperature Behavior During Production</h2>
+    
+    <p>When a well starts producing oil, the temperature at the wellbore (sandface) undergoes distinct phases:</p>
+
+    <h3>Early-Time Behavior: Cooling Due to Adiabatic Expansion</h3>
+    
+    <div class="equation-box">
+        <p>During early production, temperature decreases according to:</p>
+        <p>\begin{align}
+        T_{wf} = T^0 - m_{TeDD}\left[\log(t) + \log\left(\frac{4\eta_o}{e^\gamma r_w^2}\right)\right]
+        \end{align}</p>
+        
+        <p>Where the slope \(m_{TeDD}\) is given by:</p>
+        <p>\begin{align}
+        m_{TeDD} = 0.183234\frac{q_{sco}B_o\varphi_t^*}{(k_o/\mu_o)h}
+        \end{align}</p>
+    </div>
+
+    <p>This equation tells us that initially, the wellbore temperature decreases logarithmically with time due to adiabatic expansion of the fluid.</p>
+
+    <h3>Late-Time Behavior: Heating Due to Joule-Thomson Effect</h3>
+    
+    <div class="equation-box">
+        <p>After some time, temperature increases according to:</p>
+        <p>\begin{align}
+        T_{wf} = T^0 + m_{TlDD}\left[\log(t) + \log\left(\frac{4\eta_o}{e^\gamma r_w^2}\right) + 0.869S - \left(\frac{\varphi_t^*}{\varepsilon_{JTo}} - 1\right)\log\left(e^\gamma\frac{c_{pRo}q_{sco}B_o}{4\pi\eta_o h}\right)\right]
+        \end{align}</p>
+        
+        <p>Where the slope \(m_{TlDD}\) is given by:</p>
+        <p>\begin{align}
+        m_{TlDD} = -0.183234\frac{q_{sco}B_o\mu_o\varepsilon_{JTo}}{k_o h}
+        \end{align}</p>
+    </div>
+
+    <p>This equation shows that eventually, the wellbore temperature increases logarithmically with time due to the Joule-Thomson effect as oil flows through the porous medium.</p>
+
+    <h2>Breaking Down Temperature Behavior During Shut-in</h2>
+    
+    <p>When the well is shut-in (stopped), temperature behavior also follows distinct phases:</p>
+
+    <h3>Early Shut-in: Heating Due to Adiabatic Compression</h3>
+    
+    <div class="equation-box">
+        <p>\begin{align}
+        T_{ws} = T_{wfs} + m_{TeBU}\log\left(\frac{4\eta_o\Delta t}{e^\gamma r_w^2}\right)
+        \end{align}</p>
+    </div>
+
+    <p>Initially, temperature increases logarithmically with shut-in time due to adiabatic compression.</p>
+
+    <h3>Late Shut-in: Cooling Due to Joule-Thomson Effect and Conduction</h3>
+    
+    <div class="equation-box">
+        <p>\begin{align}
+        T_{ws} = T_{wfs} - m_{TlBU}\log\left(\frac{4\alpha_t\Delta t}{e^\gamma r_w^2}\right)
+        \end{align}</p>
+    </div>
+
+    <p>Eventually, temperature decreases logarithmically with shut-in time due to Joule-Thomson cooling and conduction effects.</p>
+
+    <h2>The Impact of Near-Wellbore Damage (Skin)</h2>
+    
+    <p>One of the most valuable insights from temperature analysis is the ability to characterize the "skin zone"—a region of altered permeability around the wellbore caused by drilling damage or stimulation treatments.</p>
+    
+    <p>While pressure data can only give us a single "skin factor" value, temperature data can help determine:</p>
+    <ul>
+        <li>The permeability of the skin zone (\(k_s\))</li>
+        <li>The radius of the skin zone (\(r_s\))</li>
+    </ul>
+
+    <p>This is possible because temperature transients propagate differently through zones with different permeabilities, creating distinct signatures in the temperature data.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Temperature Transient Simulator</h3>
+        
+        <p>Adjust the parameters below to see how they affect temperature behavior during production and shut-in periods:</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability (mD):</span>
+            <input type="range" id="permeability" min="1" max="1000" value="100" step="1">
+            <span id="permeabilityValue">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Skin Factor:</span>
+            <input type="range" id="skinFactor" min="-5" max="20" value="0" step="0.5">
+            <span id="skinFactorValue">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Skin Zone Radius (m):</span>
+            <input type="range" id="skinRadius" min="0.1" max="5" value="0.5" step="0.1">
+            <span id="skinRadiusValue">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Flow Rate (m³/day):</span>
+            <input type="range" id="flowRate" min="10" max="500" value="100" step="10">
+            <span id="flowRateValue">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Production Time (hrs):</span>
+            <input type="range" id="prodTime" min="1" max="72" value="24" step="1">
+            <span id="prodTimeValue">24</span>
+        </div>
+        
+        <canvas id="temperatureChart"></canvas>
+        
+        <div>
+            <p><strong>Test Type:</strong>
+            <select id="testType">
+                <option value="drawdown">Drawdown</option>
+                <option value="buildup">Buildup</option>
+                <option value="both">Drawdown + Buildup</option>
+            </select>
+            </p>
+        </div>
+        
+        <div>
+            <button id="runSimulation">Run Simulation</button>
+        </div>
+    </div>
+
+    <h2>Practical Applications: What Can We Learn?</h2>
+    
+    <p>Temperature transient analysis can provide valuable information about:</p>
+    
+    <ol>
+        <li><strong>Reservoir permeability:</strong> How easily fluid flows through the formation</li>
+        <li><strong>Near-wellbore damage:</strong> The extent and severity of skin damage</li>
+        <li><strong>Thermal properties:</strong> Joule-Thomson coefficient and thermal conductivity</li>
+        <li><strong>Flow profiling:</strong> Identifying which zones are contributing to production</li>
+    </ol>
+
+    <p>This information can help engineers make better decisions about well stimulation treatments, production optimization, and reservoir management.</p>
+
+    <h2>Limitations and Challenges</h2>
+    
+    <p>While temperature transient analysis is powerful, it has limitations:</p>
+    
+    <ul>
+        <li>Temperature changes are small (often less than 1°C), requiring high-resolution sensors</li>
+        <li>Wellbore effects can mask reservoir temperature signals</li>
+        <li>Early-time adiabatic effects are short-lived and difficult to capture</li>
+        <li>Analysis requires knowledge of fluid and rock thermal properties</li>
+    </ul>
+
+    <h2>Conclusion: The Untapped Potential of Temperature Data</h2>
+    
+    <p>Temperature transient analysis represents an untapped resource in reservoir characterization. By understanding the physical mechanisms that drive temperature changes and applying appropriate analytical techniques, engineers can extract valuable information about reservoir and near-wellbore properties that complement traditional pressure analysis.</p>
+    
+    <p>As sensor technology continues to improve, temperature measurements will become increasingly important in the toolkit of reservoir engineers, offering new insights into the complex behavior of oil and gas reservoirs.</p>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables for the simulation
+            let permeability = 100;  // mD
+            let skinFactor = 0;
+            let skinRadius = 0.5;  // meters
+            let flowRate = 100;    // m³/day
+            let prodTime = 24;     // hours
+            let testType = "drawdown";
+            
+            // Constants for the simulation
+            const initialTemp = 100;  // °C
+            const wellboreRadius = 0.1;  // meters
+            const reservoirThickness = 10;  // meters
+            const oilViscosity = 1;  // cp
+            const formationVolumeFactor = 1.2;  // rb/stb
+            const porosity = 0.2;
+            const totalCompressibility = 1e-5;  // 1/psi
+            const JTCoefficient = -0.4;  // K/MPa
+            const adiabaticCoefficient = 0.1;  // K/MPa
+            
+            // Canvas and context
+            let canvas;
+            let ctx;
+            
+            // Update display values when sliders change
+            document.getElementById('permeability').addEventListener('input', function() {
+                permeability = parseFloat(this.value);
+                document.getElementById('permeabilityValue').textContent = permeability;
+            });
+            
+            document.getElementById('skinFactor').addEventListener('input', function() {
+                skinFactor = parseFloat(this.value);
+                document.getElementById('skinFactorValue').textContent = skinFactor;
+            });
+            
+            document.getElementById('skinRadius').addEventListener('input', function() {
+                skinRadius = parseFloat(this.value);
+                document.getElementById('skinRadiusValue').textContent = skinRadius;
+            });
+            
+            document.getElementById('flowRate').addEventListener('input', function() {
+                flowRate = parseFloat(this.value);
+                document.getElementById('flowRateValue').textContent = flowRate;
+            });
+            
+            document.getElementById('prodTime').addEventListener('input', function() {
+                prodTime = parseFloat(this.value);
+                document.getElementById('prodTimeValue').textContent = prodTime;
+            });
+            
+            document.getElementById('testType').addEventListener('change', function() {
+                testType = this.value;
+            });
+            
+            document.getElementById('runSimulation').addEventListener('click', runSimulation);
+            
+            // Initialize the canvas when the page loads
+            window.onload = function() {
+                canvas = document.getElementById('temperatureChart');
+                ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Initial simulation
+                runSimulation();
+            };
+            
+            function runSimulation() {
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw axes
+                drawAxes();
+                
+                // Calculate and draw temperature curves
+                if (testType === "drawdown" || testType === "both") {
+                    drawDrawdownCurve();
+                }
+                
+                if (testType === "buildup" || testType === "both") {
+                    drawBuildupCurve();
+                }
+                
+                // Draw legend
+                drawLegend();
+            }
+            
+            function drawAxes() {
+                const margin = 50;
+                const width = canvas.width - 2 * margin;
+                const height = canvas.height - 2 * margin;
+                
+                ctx.beginPath();
+                ctx.moveTo(margin, margin);
+                ctx.lineTo(margin, margin + height);
+                ctx.lineTo(margin + width, margin + height);
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // X-axis label
+                ctx.fillStyle = "#000";
+                ctx.font = "14px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("Time (hours)", margin + width / 2, margin + height + 30);
+                
+                // Y-axis label
+                ctx.save();
+                ctx.translate(margin - 30, margin + height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = "center";
+                ctx.fillText("Temperature Change (°C)", 0, 0);
+                ctx.restore();
+                
+                // X-axis ticks
+                const xTicks = testType === "buildup" ? [0, 6, 12, 24, 36, 48] : [0, 6, 12, 24, 36, 48];
+                const maxTime = testType === "both" ? prodTime + 48 : (testType === "drawdown" ? prodTime : 48);
+                
+                for (let tick of xTicks) {
+                    if (tick <= maxTime) {
+                        const x = margin + (tick / maxTime) * width;
+                        ctx.beginPath();
+                        ctx.moveTo(x, margin + height);
+                        ctx.lineTo(x, margin + height + 5);
+                        ctx.stroke();
+                        ctx.fillText(tick.toString(), x, margin + height + 20);
+                    }
+                }
+                
+                // Y-axis ticks
+                const yTicks = [-2, -1, 0, 1, 2, 3, 4];
+                for (let tick of yTicks) {
+                    const y = margin + height / 2 - (tick * height / 8);
+                    ctx.beginPath();
+                    ctx.moveTo(margin, y);
+                    ctx.lineTo(margin - 5, y);
+                    ctx.stroke();
+                    ctx.textAlign = "right";
+                    ctx.fillText(tick.toString(), margin - 10, y + 5);
+                }
+            }
+            
+            function drawDrawdownCurve() {
+                const margin = 50;
+                const width = canvas.width - 2 * margin;
+                const height = canvas.height - 2 * margin;
+                const maxTime = testType === "both" ? prodTime + 48 : prodTime;
+                
+                // Calculate hydraulic diffusivity
+                const etaO = 0.006328 * permeability / (porosity * totalCompressibility * oilViscosity);
+                
+                // Calculate early-time slope
+                const mTeDD = 0.183234 * flowRate * formationVolumeFactor * adiabaticCoefficient / (0.001127 * permeability * reservoirThickness);
+                
+                // Calculate late-time slope
+                const mTlDD = -0.183234 * flowRate * formationVolumeFactor * oilViscosity * JTCoefficient / (0.001127 * permeability * reservoirThickness);
+                
+                // Calculate time for transition from early to late behavior
+                const transitionTime = (Math.PI * reservoirThickness * wellboreRadius * wellboreRadius) / (20 * 0.2 * flowRate * formationVolumeFactor);
+                
+                ctx.beginPath();
+                
+                // Early-time behavior (adiabatic expansion)
+                for (let t = 0.01; t <= Math.min(transitionTime, prodTime); t *= 1.1) {
+                    const deltaT = -mTeDD * Math.log10(t);
+                    const x = margin + (t / maxTime) * width;
+                    const y = margin + height / 2 - (deltaT * height / 8);
+                    
+                    if (t === 0.01) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                // Transition period
+                const transPoints = 20;
+                const transDuration = 0.5;
+                for (let i = 0; i <= transPoints; i++) {
+                    const t = transitionTime + i * transDuration / transPoints;
+                    if (t <= prodTime) {
+                        const earlyDeltaT = -mTeDD * Math.log10(t);
+                        const lateDeltaT = mTlDD * Math.log10(t) + mTlDD * 0.869 * skinFactor;
+                        const weight = i / transPoints;
+                        const deltaT = earlyDeltaT * (1 - weight) + lateDeltaT * weight;
+                        
+                        const x = margin + (t / maxTime) * width;
+                        const y = margin + height / 2 - (deltaT * height / 8);
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                // Late-time behavior (Joule-Thomson heating)
+                for (let t = transitionTime + transDuration; t <= prodTime; t *= 1.1) {
+                    const deltaT = mTlDD * Math.log10(t) + mTlDD * 0.869 * skinFactor;
+                    const x = margin + (t / maxTime) * width;
+                    const y = margin + height / 2 - (deltaT * height / 8);
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.strokeStyle = "#3498db";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            
+            function drawBuildupCurve() {
+                const margin = 50;
+                const width = canvas.width - 2 * margin;
+                const height = canvas.height - 2 * margin;
+                const maxTime = testType === "both" ? prodTime + 48 : 48;
+                const startX = testType === "both" ? margin + (prodTime / maxTime) * width : margin;
+                
+                // Calculate hydraulic diffusivity
+                const etaO = 0.006328 * permeability / (porosity * totalCompressibility * oilViscosity);
+                
+                // Calculate thermal diffusivity
+                const alphaT = 0.0006; // m²/hr
+                
+                // Calculate early-time slope (adiabatic compression)
+                const mTeBU = 0.183234 * flowRate * formationVolumeFactor * adiabaticCoefficient / (0.001127 * permeability * reservoirThickness);
+                
+                // Calculate late-time slope (Joule-Thomson cooling)
+                const mTlBU = -0.183234 * flowRate * formationVolumeFactor * oilViscosity * JTCoefficient / (0.001127 * permeability * reservoirThickness);
+                
+                // Calculate time for transition from early to late behavior
+                const transitionTime = 1; // hour
+                
+                // Calculate final drawdown temperature (initial temperature for buildup)
+                let initialBuildupDeltaT = 0;
+                if (testType === "both") {
+                    const lateDeltaT = mTlBU * Math.log10(prodTime) + mTlBU * 0.869 * skinFactor;
+                    initialBuildupDeltaT = lateDeltaT;
+                }
+                
+                ctx.beginPath();
+                
+                // Starting point
+                ctx.moveTo(startX, margin + height / 2 - (initialBuildupDeltaT * height / 8));
+                
+                // Initial adiabatic compression spike
+                const spikeTime = 0.01;
+                const spikeDeltaT = initialBuildupDeltaT + 0.5;
+                const spikeX = startX + (spikeTime / maxTime) * width;
+                const spikeY = margin + height / 2 - (spikeDeltaT * height / 8);
+                ctx.lineTo(spikeX, spikeY);
+                
+                // Early-time behavior (adiabatic compression)
+                for (let dt = 0.01; dt <= transitionTime; dt *= 1.1) {
+                    const deltaT = spikeDeltaT + mTeBU * Math.log10(dt);
+                    const x = startX + (dt / maxTime) * width;
+                    const y = margin + height / 2 - (deltaT * height / 8);
+                    ctx.lineTo(x, y);
+                }
+                
+                // Transition period
+                const transPoints = 20;
+                const transDuration = 2;
+                for (let i = 0; i <= transPoints; i++) {
+                    const dt = transitionTime + i * transDuration / transPoints;
+                    const earlyDeltaT = spikeDeltaT + mTeBU * Math.log10(dt);
+                    const lateDeltaT = spikeDeltaT - mTlBU * Math.log10(dt / 2);
+                    const weight = i / transPoints;
+                    const deltaT = earlyDeltaT * (1 - weight) + lateDeltaT * weight;
+                    
+                    const x = startX + (dt / maxTime) * width;
+                    const y = margin + height / 2 - (deltaT * height / 8);
+                    ctx.lineTo(x, y);
+                }
+                
+                // Late-time behavior (Joule-Thomson cooling)
+                for (let dt = transitionTime + transDuration; dt <= 48; dt *= 1.1) {
+                    const deltaT = spikeDeltaT - mTlBU * Math.log10(dt / 2);
+                    const x = startX + (dt / maxTime) * width;
+                    const y = margin + height / 2 - (deltaT * height / 8);
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.strokeStyle = "#e74c3c";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            
+            function drawLegend() {
+                const margin = 50;
+                
+                ctx.font = "14px Arial";
+                ctx.textAlign = "left";
+                
+                if (testType === "drawdown" || testType === "both") {
+                    ctx.beginPath();
+                    ctx.moveTo(margin + 20, margin + 20);
+                    ctx.lineTo(margin + 50, margin + 20);
+                    ctx.strokeStyle = "#3498db";
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.fillStyle = "#000";
+                    ctx.fillText("Drawdown", margin + 60, margin + 25);
+                }
+                
+                if (testType === "buildup" || testType === "both") {
+                    ctx.beginPath();
+                    ctx.moveTo(margin + 20, margin + 45);
+                    ctx.lineTo(margin + 50, margin + 45);
+                    ctx.strokeStyle = "#e74c3c";
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.fillStyle = "#000";
+                    ctx.fillText("Buildup", margin + 60, margin + 50);
+                }
+                
+                // Display parameters
+                ctx.fillText(`k = ${permeability} mD, S = ${skinFactor}, rs = ${skinRadius} m`, margin + 200, margin + 25);
+                ctx.fillText(`q = ${flowRate} m³/day, tp = ${prodTime} hrs`, margin + 200, margin + 50);
+            }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Horner Plot Analysis Tool</title>
+    <!-- The base href must point to the directory containing the _framework folder -->
+    <base href="/PetroBlog/tools/PTAWasm/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="HornerPlotBlazorApp.styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/PetroBlog/favicon.png" />
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <!-- Let the default Blazor script handle loading -->
+    <script src="_framework/blazor.webassembly.js"></script>
+
+    <!-- Chart.js Library (must be before ChartJs interop) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <!-- ChartJS Blazor Interop -->
+    <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+
+    <!-- Custom Chart.js Interop Helper -->
+    <script src="js/chartJsInterop.js"></script>
+</body>
+</html>

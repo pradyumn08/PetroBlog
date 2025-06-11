@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Viscosity and Gravity-Induced Instability in Miscible Displacement</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .example {
+            background-color: #f0f8ff;
+            border: 1px solid #d1e6fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+            color: #666;
+        }
+        .interactive {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        #simulator {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            position: relative;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .slider {
+            width: 300px;
+        }
+        .value-display {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .analogies {
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Viscosity and Gravity-Induced Instability in Miscible Displacement</h1>
+    
+    <p>When two fluids mix together in porous media like oil reservoirs, fascinating and complex physical phenomena occur. One of the most important is "fingering" - where the displacing fluid develops finger-like intrusions into the displaced fluid rather than moving as a uniform front. This phenomenon significantly impacts oil recovery efficiency and has been a subject of extensive research for decades.</p>
+    
+    <p>Today, we'll break down a complex academic paper that develops a mathematical framework for understanding when and why these instabilities occur. By the end, you'll have an intuitive grasp of the physics involved and be able to predict whether a displacement process will be stable or not.</p>
+
+    <div class="highlight">
+        <h3>Key Concepts We'll Explore:</h3>
+        <ul>
+            <li>What causes fingering in miscible displacement processes</li>
+            <li>How to mathematically predict when a displacement will be stable or unstable</li>
+            <li>The critical role of dispersion in stabilizing displacement</li>
+            <li>Why laboratory experiments don't always scale to field conditions</li>
+        </ul>
+    </div>
+
+    <h2>First Principles: What is Miscible Displacement?</h2>
+    
+    <p>Before diving into the mathematics, let's understand the basic process. Miscible displacement refers to a process where one fluid (like a solvent) displaces another fluid (like oil) in a porous medium (like rock), and the two fluids can mix completely - they're "miscible" with each other.</p>
+
+    <div class="analogies">
+        <h3>Everyday Analogy</h3>
+        <p>Think of pouring honey into a cup of tea. The honey doesn't stay as a separate layer - it eventually mixes completely with the tea. But if you watch carefully, you'll see that the mixing isn't uniform. The honey creates swirling patterns as it moves through the tea. This is similar to what happens in miscible displacement, except it occurs in the tiny pores of rock rather than in a cup.</p>
+    </div>
+
+    <h2>The Problem of Fingering</h2>
+    
+    <p>In an ideal world, when we inject a solvent to push oil through a reservoir, we'd want a nice, flat front moving uniformly. But in reality, what often happens is that the solvent creates "fingers" that push through the oil, bypassing much of it and leading to poor recovery.</p>
+
+    <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Viscous_fingering_in_a_Hele-Shaw_cell.jpg/640px-Viscous_fingering_in_a_Hele-Shaw_cell.jpg" alt="Viscous fingering illustration">
+        <figcaption>Viscous fingering pattern (similar to what happens in porous media)</figcaption>
+    </figure>
+
+    <p>The key question is: Under what conditions will fingering occur, and when can we achieve stable displacement?</p>
+
+    <h2>The Mathematical Framework</h2>
+
+    <p>The paper develops a linear perturbation analysis to answer this question. Let's break down what this means in simple terms:</p>
+
+    <ol>
+        <li>We start with equations describing how fluids move through porous media</li>
+        <li>We introduce small disturbances (perturbations) to the system</li>
+        <li>We analyze whether these disturbances grow (unstable) or decay (stable) over time</li>
+    </ol>
+
+    <h3>The Governing Equations</h3>
+
+    <p>The movement of fluids through porous media is governed by several key equations:</p>
+
+    <div class="note">
+        <p>The concentration equation (conservation of mass):</p>
+        <p>\[ \mathsf{c}_{\mathsf{t}}{^{-}\mathsf{D}}_{1}\mathsf{c}_{\mathsf{x}\mathsf{x}}{^{-}\mathsf{D}}_{3}\mathsf{c}_{\mathsf{y}\mathsf{y}}{^{-}\mathsf{D}}_{3}\mathsf{c}_{{^{\mathsf{z}}\mathsf{z}}}{^{+}\textsf{u}}\mathsf{c}_{\mathsf{x}}+\mathsf{v}\mathsf{c}_{\mathsf{y}}+\mathsf{w}\mathsf{c}_{\mathsf{z}}=0 \]</p>
+        
+        <p>The continuity equation (conservation of volume):</p>
+        <p>\[ u_{x}+v_{y}+w_{z}=0 \]</p>
+        
+        <p>Darcy's law (relating pressure gradients to flow):</p>
+        <p>\[ u+\frac{u}{u}p_{x}+\frac{k\rho g\sin\theta}{u_{0}^{\mu}\phi}=0 \]</p>
+        <p>\[ v+\frac{\mu}{\mu}p_{y}=0 \]</p>
+        <p>\[ {\sf w}+\frac{\sf u}{\sf u}\mathrm{~\sfp}_{\sf z}+\frac{{\sf k}\rho{\sf g}\cos\theta}{\sf u_0{\sf\mu}{\sf\phi}}=0 \]</p>
+    </div>
+
+    <p>These equations look intimidating, but they're based on fundamental physical principles:</p>
+    <ul>
+        <li>Conservation of mass (what goes in must come out)</li>
+        <li>Conservation of momentum (forces must balance)</li>
+        <li>Darcy's law (flow is proportional to pressure gradient)</li>
+    </ul>
+
+    <h3>Dimensionless Variables</h3>
+
+    <p>To simplify the analysis, the paper uses dimensionless variables:</p>
+
+    <p>\[ \begin{array}{r l}{\mathbf{t}\quad}&{=\quad\mathbf{t}^{*}\mathsf{u}_{0}/\mathsf{M},}\\ {\mathbf{x}\quad}&{=\quad\mathbf{x}^{*}/\mathsf{M},\quad\mathsf{y}=\mathsf{y}^{*}/\mathsf{M},\quad\mathsf{z}=\mathsf{z}^{*}/\mathsf{M},}\\ {\mathsf{D}_{\mathbf{j}}\quad}&{=\quad\mathsf{D}_{\mathbf{j}}^{*}/(\mathsf{u}_{0}\mathsf{M}),\quad\mathsf{i}=1,3,}\\ {\mathbf{u}\quad}&{=\quad\mathbf{u}^{*}/\mathsf{u}_{0},\textsf{v}=\mathsf{v}^{*}/\mathsf{u}_{0},\textsf{w}=\mathsf{w}^{*}/\mathsf{u}_{0},\mathrm{and}}\\ {\mathsf{p}\quad}&{=\quad\mathbf{k}\mathsf{p}^{*}/(\mathsf{u}_{0}\mathsf{u}\mathsf{M}),}\end{array} \]</p>
+
+    <p>This approach is similar to how engineers might convert meters to feet - it makes the equations easier to work with by removing physical units and focusing on the relative magnitudes.</p>
+
+    <h2>Perturbation Analysis: The Key to Understanding Stability</h2>
+
+    <p>The heart of the paper's approach is perturbation analysis. Here's how it works:</p>
+
+    <ol>
+        <li>We assume the system has a basic solution (the undisturbed state)</li>
+        <li>We introduce small disturbances to this state</li>
+        <li>We analyze whether these disturbances grow or decay</li>
+    </ol>
+
+    <p>Mathematically, we express any variable \(n\) (like concentration or velocity) as:</p>
+
+    <p>\[ n=\overline{n}+\epsilon\tilde{n}+\epsilon^{2}\tilde{\tilde{n}}+O(\epsilon^{3}) \]</p>
+
+    <p>Where \(\overline{n}\) is the basic solution and \(\tilde{n}\) represents the perturbation.</p>
+
+    <h3>The Basic Solution</h3>
+
+    <p>For the undisturbed state, the solvent concentration follows an error function solution:</p>
+
+    <p>\[ \begin{array}{r l}&{\overline{{\mathsf{c}}}({\mathsf{t}},{\mathsf{x}})\ =\frac{1}{2}\ {\mathsf{erfc}}\ \big[\frac{\mathsf{x}-{\mathsf{t}}}{2(\overline{{\mathsf{D}}}_{1}{\mathsf{t}})^{1/2}}\big]}\\ &{+\ \frac{1}{2}\ \exp\ \frac{{\mathsf{x}}}{\overline{{\mathsf{D}}}_{1}}\ {\mathsf{erfc}}\ \big[\frac{{\mathsf{x}}+{\mathsf{t}}}{2(\overline{{\mathsf{D}}}_{1}{\mathsf{t}})^{1/2}}\big]\ ,}\end{array} \]</p>
+
+    <div class="analogies">
+        <h3>What is this equation telling us?</h3>
+        <p>This equation describes how the concentration of solvent changes with position and time. Instead of a sharp boundary between solvent and oil, there's a gradual transition zone where mixing occurs. The width of this zone increases with time due to dispersion (mixing).</p>
+        <p>Think of it like putting a drop of food coloring in water - over time, it spreads out from a sharp boundary to a diffuse cloud.</p>
+    </div>
+
+    <h3>The Perturbation Equations</h3>
+
+    <p>After substituting the perturbed variables into the governing equations and collecting terms, we get a set of linearized equations for the perturbations:</p>
+
+    <p>\[ \hat{\mathsf{c}}_{\dagger}-\overline{{\mathsf{D}}}_{1}\hat{\mathsf{c}}_{\mathrm{xX}}-\overline{{\mathsf{D}}}_{3}(\hat{\mathsf{c}}_{\mathrm{yy}}+\hat{\mathsf{c}}_{\mathrm{zz}})+\overline{{\mathsf{u}}}\hat{\mathsf{c}}_{\mathrm{x}}+(\overline{{\mathsf{c}}}_{\mathrm{x}}+\mathfrak{a}_{\boldsymbol{z}}\overline{{\mathsf{c}}}_{\mathrm{xX}})\hat{\mathsf{u}}=0 \]</p>
+
+    <p>These equations are eventually combined to form a single fourth-order partial differential equation for the concentration perturbation.</p>
+
+    <h2>The Critical Insight: Necessary and Sufficient Conditions for Instability</h2>
+
+    <p>After solving the perturbation equations, the paper derives the conditions under which instability (fingering) will occur:</p>
+
+    <div class="highlight">
+        <h3>Necessary Condition for Instability:</h3>
+        <p>\[ u_0 > u_D \]</p>
+        <p>Where \(u_D\) is the Dumore velocity:</p>
+        <p>\[ u_D = \frac{kg|\sin\theta|}{\phi}\frac{|d\overline{{\rho}}/d\overline{{c}}|}{|d\overline{{\mu}}/d\overline{{c}}|} \]</p>
+        
+        <h3>Sufficient Condition for Instability:</h3>
+        <p>\[ \lambda_{\zeta} > \lambda_{\zeta C} \]</p>
+        <p>Where \(\lambda_{\zeta C}\) is the critical wavelength:</p>
+        <p>\[ \lambda_{\zeta C}=\frac{2\pi{\mathsf{M}}}{[\frac{\mathsf{g}_{1}(\overline{{\mathsf{c}}}_{\mathsf{x}}+\mathsf{a}_{g}\overline{{\mathsf{c}}}_{\mathsf{x}\times})}{\overline{{\mathsf{D}}}_{3}}]^{1/2}} \]</p>
+    </div>
+
+    <p>In simpler terms:</p>
+    <ol>
+        <li>Instability requires that the displacement velocity exceeds a critical value (the Dumore velocity)</li>
+        <li>The wavelength of the disturbance must be larger than a critical wavelength</li>
+    </ol>
+
+    <h3>Physical Meaning of These Conditions</h3>
+
+    <p>The Dumore velocity represents a balance between destabilizing viscous forces and stabilizing gravitational forces. When:</p>
+    <ul>
+        <li>The mobility ratio is unfavorable (solvent less viscous than oil): Viscous forces are destabilizing</li>
+        <li>The reservoir is tilted and the less dense fluid is on top: Gravitational forces are stabilizing</li>
+    </ul>
+
+    <p>The critical wavelength represents the size below which perturbations will be damped out by dispersion. Smaller disturbances get smoothed out, while larger ones can grow into fingers.</p>
+
+    <div class="interactive">
+        <h3>Interactive Simulator: Stability of Miscible Displacement</h3>
+        
+        <div id="simulator">
+            <canvas id="simulationCanvas" width="800" height="400"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="slider-container">
+                <label for="mobilityRatio">Mobility Ratio (M):</label>
+                <input type="range" id="mobilityRatio" class="slider" min="0.1" max="10" step="0.1" value="2">
+                <span id="mobilityRatioValue" class="value-display">2</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="dipAngle">Dip Angle (degrees):</label>
+                <input type="range" id="dipAngle" class="slider" min="-90" max="0" step="1" value="-30">
+                <span id="dipAngleValue" class="value-display">-30</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="injectionRate">Injection Rate:</label>
+                <input type="range" id="injectionRate" class="slider" min="0.1" max="2" step="0.1" value="0.5">
+                <span id="injectionRateValue" class="value-display">0.5</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="transverseDispersion">Transverse Dispersion:</label>
+                <input type="range" id="transverseDispersion" class="slider" min="0.001" max="0.1" step="0.001" value="0.01">
+                <span id="transverseDispersionValue" class="value-display">0.01</span>
+            </div>
+            
+            <button id="startButton">Start Simulation</button>
+            <button id="resetButton">Reset</button>
+        </div>
+        
+        <div id="stabilityResult" class="note">
+            <p>Adjust the parameters and click "Start Simulation" to see whether the displacement is stable or unstable.</p>
+        </div>
+    </div>
+
+    <h2>Key Findings from the Paper</h2>
+
+    <h3>1. Time-Dependent Stability</h3>
+    <p>One of the most important insights is that stability conditions change with time. As the displacement progresses:</p>
+    <ul>
+        <li>The mixing zone widens due to dispersion</li>
+        <li>The critical injection rate for stability increases</li>
+        <li>For some cases, a threshold time can be reached after which the process becomes unconditionally stable</li>
+    </ul>
+
+    <h3>2. The Role of Dispersion</h3>
+    <p>Dispersion (mixing) plays a crucial role in stabilizing the displacement:</p>
+    <ul>
+        <li>Transverse dispersion (perpendicular to flow) is more effective at stabilizing than longitudinal dispersion</li>
+        <li>However, a longitudinal mixing zone must exist for transverse dispersion to be effective</li>
+        <li>In highly stratified reservoirs, dispersion can completely stabilize the process</li>
+    </ul>
+
+    <h3>3. Oscillatory Instability</h3>
+    <p>The paper identifies a type of instability where fingers grow or decay in an oscillatory manner. This occurs when there's a longitudinal wave component to the perturbation.</p>
+
+    <h3>4. Scale Dependence</h3>
+    <p>A critical finding is that stability conditions depend on the physical scale of the system:</p>
+    <ul>
+        <li>In laboratory cores, dispersion can effectively stabilize displacement even with unfavorable mobility ratios</li>
+        <li>In field-scale horizontal reservoirs, dispersion alone cannot stabilize displacement with unfavorable mobility ratios</li>
+        <li>This explains why laboratory results often don't scale to field conditions</li>
+    </ul>
+
+    <h2>The Mathematics Behind the Critical Wavelength</h2>
+
+    <p>Let's explore the critical wavelength equation in more detail:</p>
+
+    <p>\[ \lambda_{\zeta C}=\frac{2\pi{\mathsf{M}}}{[\frac{\mathsf{g}_{1}(\overline{{\mathsf{c}}}_{\mathsf{x}}+\mathsf{a}_{g}\overline{{\mathsf{c}}}_{\mathsf{x}\times})}{\overline{{\mathsf{D}}}_{3}}]^{1/2}} \]</p>
+
+    <p>Breaking this down:</p>
+    <ul>
+        <li>\(\mathsf{g}_{1}\) represents the destabilizing viscous forces and stabilizing gravitational forces</li>
+        <li>\(\overline{{\mathsf{c}}}_{\mathsf{x}}+\mathsf{a}_{g}\overline{{\mathsf{c}}}_{\mathsf{x}\times}\) represents the concentration gradient in the mixing zone</li>
+        <li>\(\overline{{\mathsf{D}}}_{3}\) is the transverse dispersion coefficient</li>
+    </ul>
+
+    <p>For a horizontal reservoir with adverse mobility ratio, the critical wavelength simplifies to:</p>
+
+    <p>\[ \lambda_{\zeta C} \approx \frac{2\pi{\mathsf{M}}}{[\frac{-\frac{d\ln\overline{{\mu}}}{d\overline{c}}\frac{1}{2(\pi\overline{D}_1 t)^{1/2}}}{\overline{D}_3}]^{1/2}} \]</p>
+
+    <p>This shows that the critical wavelength:</p>
+    <ul>
+        <li>Increases with time (as \(t^{1/4}\))</li>
+        <li>Increases with transverse dispersion</li>
+        <li>Decreases with higher mobility ratio (more unfavorable)</li>
+    </ul>
+
+    <h2>Practical Implications</h2>
+
+    <h3>For Field-Scale Miscible Displacement</h3>
+    <p>The paper's findings have several practical implications for field operations:</p>
+
+    <ol>
+        <li><strong>Dipping Reservoirs:</strong> Gravity can be used to stabilize displacement - injecting from the down-dip direction allows gravity to help</li>
+        <li><strong>Injection Rate Management:</strong> Injection rates can be gradually increased as the process proceeds</li>
+        <li><strong>Horizontal Reservoirs:</strong> With adverse mobility ratios, achieving stable displacement is extremely difficult without other mechanisms</li>
+        <li><strong>Reservoir Characterization:</strong> Understanding transverse dispersion (related to reservoir heterogeneity) is crucial for predicting stability</li>
+    </ol>
+
+    <h3>For Laboratory Experiments</h3>
+    <p>The paper explains why laboratory experiments often show stable displacement even with adverse mobility ratios:</p>
+    <ul>
+        <li>The small transverse dimension allows dispersion to effectively dampen perturbations</li>
+        <li>This effect doesn't scale to field dimensions</li>
+        <li>Laboratory results must be carefully interpreted when applying to field conditions</li>
+    </ul>
+
+    <h2>Conclusion</h2>
+
+    <p>The paper provides a comprehensive mathematical framework for understanding stability in miscible displacement processes. By deriving necessary and sufficient conditions for instability, it connects fundamental physical processes to practical field operations.</p>
+
+    <p>Key takeaways:</p>
+    <ol>
+        <li>Stability depends on a balance between viscous forces (destabilizing with adverse mobility ratio), gravitational forces (stabilizing with proper orientation), and dispersive mixing (stabilizing)</li>
+        <li>The critical parameters are the Dumore velocity and the critical wavelength</li>
+        <li>Stability conditions change with time as the mixing zone widens</li>
+        <li>Transverse dispersion is crucial for stabilizing displacement</li>
+        <li>Scale matters - what's stable in a laboratory may be unstable in the field</li>
+    </ol>
+
+    <p>This understanding allows engineers to better design and manage miscible displacement processes, potentially improving oil recovery efficiency and economics.</p>
+
+    <script>
+        // JavaScript for the interactive simulator
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Parameters
+            let mobilityRatio = parseFloat(document.getElementById('mobilityRatio').value);
+            let dipAngle = parseFloat(document.getElementById('dipAngle').value);
+            let injectionRate = parseFloat(document.getElementById('injectionRate').value);
+            let transverseDispersion = parseFloat(document.getElementById('transverseDispersion').value);
+            
+            // Display values
+            document.getElementById('mobilityRatioValue').textContent = mobilityRatio.toFixed(1);
+            document.getElementById('dipAngleValue').textContent = dipAngle.toFixed(0);
+            document.getElementById('injectionRateValue').textContent = injectionRate.toFixed(1);
+            document.getElementById('transverseDispersionValue').textContent = transverseDispersion.toFixed(3);
+            
+            // Update values when sliders change
+            document.getElementById('mobilityRatio').addEventListener('input', function() {
+                mobilityRatio = parseFloat(this.value);
+                document.getElementById('mobilityRatioValue').textContent = mobilityRatio.toFixed(1);
+            });
+            
+            document.getElementById('dipAngle').addEventListener('input', function() {
+                dipAngle = parseFloat(this.value);
+                document.getElementById('dipAngleValue').textContent = dipAngle.toFixed(0);
+            });
+            
+            document.getElementById('injectionRate').addEventListener('input', function() {
+                injectionRate = parseFloat(this.value);
+                document.getElementById('injectionRateValue').textContent = injectionRate.toFixed(1);
+            });
+            
+            document.getElementById('transverseDispersion').addEventListener('input', function() {
+                transverseDispersion = parseFloat(this.value);
+                document.getElementById('transverseDispersionValue').textContent = transverseDispersion.toFixed(3);
+            });
+            
+            // Simulation variables
+            let isRunning = false;
+            let time = 0;
+            let particles = [];
+            let fingers = [];
+            
+            // Calculate Dumore velocity
+            function calculateDumoreVelocity() {
+                // Simplified calculation for demonstration
+                return 0.5 * Math.abs(Math.sin(dipAngle * Math.PI / 180)) / mobilityRatio;
+            }
+            
+            // Calculate critical wavelength
+            function calculateCriticalWavelength() {
+                // Simplified calculation for demonstration
+                const g1 = -Math.log(mobilityRatio) + 0.2 * Math.sin(dipAngle * Math.PI / 180);
+                return 2 * Math.PI * height / Math.sqrt(Math.abs(g1) / transverseDispersion);
+            }
+            
+            // Determine if displacement is stable
+            function isStable() {
+                const dumoreVelocity = calculateDumoreVelocity();
+                const criticalWavelength = calculateCriticalWavelength();
+                
+                // Necessary condition: injection rate < Dumore velocity
+                const necessaryCondition = injectionRate < dumoreVelocity;
+                
+                // Sufficient condition: wavelength of perturbation < critical wavelength
+                // For simulation purposes, we'll assume the perturbation wavelength is height/2
+                const perturbationWavelength = height / 2;
+                const sufficientCondition = perturbationWavelength < criticalWavelength;
+                
+                return necessaryCondition || (injectionRate > dumoreVelocity && sufficientCondition);
+            }
+            
+            // Initialize simulation
+            function initSimulation() {
+                // Clear canvas
+                ctx.fillStyle = '#f5f5f5';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw reservoir with dip angle
+                ctx.save();
+                ctx.translate(width/2, height/2);
+                ctx.rotate(dipAngle * Math.PI / 180);
+                ctx.fillStyle = '#e6f7ff';
+                ctx.fillRect(-width/2, -height/2, width, height);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-width/2, -height/2, width, height);
+                ctx.restore();
+                
+                // Initialize particles
+                particles = [];
+                for (let i = 0; i < 20; i++) {
+                    particles.push({
+                        x: 50,
+                        y: 20 + i * (height - 40) / 20,
+                        color: 'rgba(0, 128, 255, 0.7)'
+                    });
+                }
+                
+                // Initialize fingers
+                fingers = [];
+                if (!isStable()) {
+                    const numFingers = Math.floor(3 + Math.random() * 3);
+                    const fingerSpacing = height / (numFingers + 1);
+                    for (let i = 1; i <= numFingers; i++) {
+                        fingers.push({
+                            x: 50,
+                            y: i * fingerSpacing,
+                            speed: injectionRate * (1 + 0.5 * Math.random()),
+                            width: 10 + Math.random() * 20
+                        });
+                    }
+                }
+                
+                // Update stability result
+                const stable = isStable();
+                const resultElement = document.getElementById('stabilityResult');
+                resultElement.innerHTML = `<p><strong>Stability Analysis:</strong> ${stable ? 'STABLE' : 'UNSTABLE'}</p>`;
+                resultElement.innerHTML += `<p>Dumore Velocity: ${calculateDumoreVelocity().toFixed(3)}</p>`;
+                resultElement.innerHTML += `<p>Critical Wavelength: ${calculateCriticalWavelength().toFixed(1)}</p>`;
+                resultElement.className = stable ? 'note' : 'warning';
+                
+                // Reset time
+                time = 0;
+            }
+            
+            // Animation loop
+            function animate() {
+                if (!isRunning) return;
+                
+                // Clear canvas
+                ctx.fillStyle = '#f5f5f5';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw reservoir
+                ctx.save();
+                ctx.translate(width/2, height/2);
+                ctx.rotate(dipAngle * Math.PI / 180);
+                ctx.fillStyle = '#e6f7ff';
+                ctx.fillRect(-width/2, -height/2, width, height);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-width/2, -height/2, width, height);
+                ctx.restore();
+                
+                // Update and draw particles
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    
+                    // Update position - account for dip angle
+                    const baseSpeed = injectionRate * 2;
+                    p.x += baseSpeed;
+                    
+                    // Add some dispersion effect
+                    p.y += transverseDispersion * 50 * (Math.random() - 0.5);
+                    
+                    // Keep within bounds
+                    p.y = Math.max(20, Math.min(height - 20, p.y));
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    
+                    // Create new particle if this one moves off screen
+                    if (p.x > width) {
+                        p.x = 50;
+                        p.y = 20 + i * (height - 40) / 20;
+                    }
+                }
+                
+                // Update and draw fingers if unstable
+                if (!isStable()) {
+                    // Draw mixing zone
+                    const mixingZoneWidth = 100 * Math.sqrt(time * transverseDispersion);
+                    const mixingZoneX = 50 + injectionRate * 2 * time;
+                    
+                    ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+                    ctx.fillRect(mixingZoneX - mixingZoneWidth/2, 0, mixingZoneWidth, height);
+                    
+                    // Draw fingers
+                    for (const finger of fingers) {
+                        finger.x += finger.speed;
+                        
+                        // Draw finger
+                        ctx.beginPath();
+                        ctx.moveTo(50, finger.y);
+                        ctx.lineTo(finger.x, finger.y);
+                        ctx.lineWidth = finger.width;
+                        ctx.strokeStyle = 'rgba(0, 0, 255, 0.6)';
+                        ctx.stroke();
+                        
+                        // Reset finger if it goes off screen
+                        if (finger.x > width) {
+                            finger.x = 50;
+                            finger.y = 20 + Math.random() * (height - 40);
+                            finger.speed = injectionRate * (1 + 0.5 * Math.random());
+                            finger.width = 10 + Math.random() * 20;
+                        }
+                    }
+                } else {
+                    // Draw stable displacement front
+                    const frontX = 50 + injectionRate * 2 * time;
+                    const dispersionWidth = 20 + 50 * Math.sqrt(time * transverseDispersion);
+                    
+                    // Draw mixing zone
+                    const gradient = ctx.createLinearGradient(frontX - dispersionWidth, 0, frontX + dispersionWidth, 0);
+                    gradient.addColorStop(0, 'rgba(0, 0, 255, 0.8)');
+                    gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(frontX - dispersionWidth, 0, dispersionWidth * 2, height);
+                    
+                    // Draw front line
+                    ctx.beginPath();
+                    ctx.moveTo(frontX, 0);
+                    ctx.lineTo(frontX, height);
+                    ctx.strokeStyle = 'rgba(0, 0, 255, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // Increment time
+                time += 0.1;
+                
+                // Continue animation
+                requestAnimationFrame(animate);
+            }
+            
+            // Start button
+            document.getElementById('startButton').addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    initSimulation();
+                    animate();
+                    this.textContent = 'Pause Simulation';
+                } else {
+                    isRunning = false;
+                    this.textContent = 'Start Simulation';
+                }
+            });
+            
+            // Reset button
+            document.getElementById('resetButton').addEventListener('click', function() {
+                isRunning = false;
+                document.getElementById('startButton').textContent = 'Start Simulation';
+                initSimulation();
+            });
+            
+            // Initialize on load
+            initSimulation();
+        });
+    </script>
+</body>
+</html>

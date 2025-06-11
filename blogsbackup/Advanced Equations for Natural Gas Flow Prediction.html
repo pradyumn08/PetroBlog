@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Gas Flow Prediction: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #ffffd0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 5px solid #2980b9;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+        .interactive-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .equation-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .equation-explanation {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+        .real-world {
+            background-color: #e8f8e8;
+            padding: 15px;
+            border-left: 5px solid #27ae60;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Natural Gas Flow: From Equations to Pipelines</h1>
+    
+    <p>In today's post, I'm breaking down a complex but fascinating topic from fluid dynamics: how natural gas flows through pipelines. While most of us take for granted that natural gas simply appears when we turn on our stoves or heaters, the physics and mathematics behind its journey are remarkably intricate.</p>
+    
+    <p>We'll explore the core principles from M.A. Francis's academic paper on "Advanced Equations for Natural Gas Flow Prediction" and make them accessible, interactive, and applicable to real-world scenarios.</p>
+    
+    <div class="note">
+        <strong>Why this matters:</strong> Understanding gas flow prediction isn't just academic—it directly impacts energy efficiency, safety, and the economics of natural gas delivery. The equations we'll explore help engineers design pipeline systems that can reliably deliver natural gas across thousands of miles while accounting for pressure changes, temperature variations, and other physical phenomena.
+    </div>
+    
+    <h2>The Fundamental Problem: Predicting Gas Flow</h2>
+    
+    <p>When natural gas flows through a pipeline, its behavior is governed by physics. Engineers need to predict:</p>
+    
+    <ul>
+        <li>How pressure changes along the pipeline</li>
+        <li>How volume flow rates vary</li>
+        <li>How temperature fluctuates</li>
+        <li>How much gas is stored in the pipeline (linepack)</li>
+    </ul>
+    
+    <p>These predictions are crucial for operating pipelines safely and efficiently. Let's start with the core equation that describes this behavior.</p>
+    
+    <h2>The Momentum Balance Equation: The Foundation</h2>
+    
+    <p>At the heart of gas flow prediction is the <strong>momentum balance equation</strong>. This equation is essentially Newton's Second Law (F = ma) applied to fluid flow in a pipe.</p>
+    
+    <div class="equation-box">
+        <p>\[\frac{\partial P}{\partial L}+F_{3}P=-\frac{F_{4}}{P}Q^{2}-\frac{F_{1}Q}{P}\frac{\partial Q}{\partial L}-F_{2}\frac{\partial Q}{\partial t}\]</p>
+        <div class="equation-explanation">
+            Equation 24: The momentum balance equation in gas flow units
+        </div>
+    </div>
+    
+    <p>This intimidating equation can be broken down into more digestible parts:</p>
+    
+    <ul>
+        <li>\(\frac{\partial P}{\partial L}\) - How pressure changes with distance</li>
+        <li>\(F_{3}P\) - The elevation term (effect of height changes)</li>
+        <li>\(\frac{F_{4}}{P}Q^{2}\) - The friction term (resistance to flow)</li>
+        <li>\(\frac{F_{1}Q}{P}\frac{\partial Q}{\partial L}\) and \(F_{2}\frac{\partial Q}{\partial t}\) - Inertia terms (changes in flow)</li>
+    </ul>
+    
+    <p>Let's simplify this by focusing on the most common scenario in pipeline analysis: steady-state flow without significant elevation changes.</p>
+    
+    <h3>Simplified Flow Equation</h3>
+    
+    <p>For steady-state flow without elevation changes, the momentum balance equation simplifies to:</p>
+    
+    <div class="equation-box">
+        <p>\[\frac{\partial P}{\partial L} = -\frac{F_4}{P}Q^2\]</p>
+        <div class="equation-explanation">
+            Equation 29: Simplified momentum balance for steady-state flow
+        </div>
+    </div>
+    
+    <p>This equation tells us that pressure decreases along the pipeline due to friction, and this decrease is proportional to the square of the flow rate. The coefficient \(F_4\) accounts for factors like pipe diameter, gas properties, and friction.</p>
+    
+    <div class="real-world">
+        <strong>Real-world application:</strong> This equation helps engineers determine how much pressure is lost over a given distance in a pipeline. For example, if a pipeline needs to deliver gas at a minimum pressure of 500 psi to a city 100 miles away, engineers can use this equation to calculate the required pressure at the starting point.
+    </div>
+    
+    <h2>From Point to Line: Integrating the Flow Equation</h2>
+    
+    <p>The simplified equation gives us the rate of pressure change at a single point. To understand pressure behavior along the entire pipeline, we need to integrate this equation.</p>
+    
+    <p>The paper introduces an innovative approach by considering how gas volume changes along the pipeline. Let's explore the linear volume distribution case:</p>
+    
+    <div class="equation-box">
+        <p>\[Q_2 = Q_1 + mL\]</p>
+        <div class="equation-explanation">
+            Equation 30: Linear volume distribution along pipeline length
+        </div>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(Q_1\) is the volume flow rate at the beginning of the pipe section</li>
+        <li>\(Q_2\) is the volume flow rate at the end of the pipe section</li>
+        <li>\(m\) is the rate of change of volume with distance</li>
+        <li>\(L\) is the length of the pipe section</li>
+    </ul>
+    
+    <p>When we integrate the simplified momentum equation using this linear volume distribution, we get:</p>
+    
+    <div class="equation-box">
+        <p>\[P_1^2 - P_2^2 = 2F_4(Q_1^2L + mQ_1L^2 + \frac{1}{3}m^2L^3)\]</p>
+        <div class="equation-explanation">
+            Equation 32: Pressure-distance relationship for linear volume distribution
+        </div>
+    </div>
+    
+    <p>This cubic equation gives us a powerful tool to predict pressure at any point along the pipeline when gas volume changes linearly with distance.</p>
+    
+    <h3>Understanding the Cubic Equation</h3>
+    
+    <p>The cubic equation may look complicated, but it's actually quite elegant. It tells us that:</p>
+    
+    <ul>
+        <li>When \(m = 0\) (steady-state flow), the equation simplifies to a linear relationship between \(P^2\) and distance</li>
+        <li>When \(m < 0\) (decreasing flow), the pressure profile becomes concave upward</li>
+        <li>When \(m > 0\) (increasing flow), the pressure profile becomes concave downward</li>
+    </ul>
+    
+    <div class="interactive-container">
+        <h3>Interactive Pressure Profile Simulator</h3>
+        <p>Adjust the parameters below to see how pressure changes along a pipeline under different flow conditions:</p>
+        
+        <div class="slider-container">
+            <label for="initial-pressure">Initial Pressure (psi):</label>
+            <input type="range" id="initial-pressure" min="500" max="1500" value="1000" step="10">
+            <span id="initial-pressure-value" class="output">1000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="initial-flow">Initial Flow Rate (MMSCFD):</label>
+            <input type="range" id="initial-flow" min="100" max="500" value="300" step="10">
+            <span id="initial-flow-value" class="output">300</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="m-value">Flow Change Rate (m):</label>
+            <input type="range" id="m-value" min="-5" max="5" value="0" step="0.5">
+            <span id="m-value-value" class="output">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="pipe-length">Pipe Length (miles):</label>
+            <input type="range" id="pipe-length" min="10" max="100" value="50" step="5">
+            <span id="pipe-length-value" class="output">50</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="pipe-diameter">Pipe Diameter (inches):</label>
+            <input type="range" id="pipe-diameter" min="12" max="48" value="24" step="2">
+            <span id="pipe-diameter-value" class="output">24</span>
+        </div>
+        
+        <canvas id="pressure-profile" width="700" height="400"></canvas>
+        
+        <button id="reset-button">Reset</button>
+        <button id="compare-button">Compare Profiles</button>
+        
+        <div id="explanation" style="margin-top: 15px;">
+            <p><strong>What you're seeing:</strong> This graph shows how pressure (y-axis) changes along the pipeline distance (x-axis) based on your selected parameters. The cubic equation from the paper is used to calculate the pressure at each point.</p>
+        </div>
+    </div>
+    
+    <h2>Linepack: The Pipeline's Energy Storage</h2>
+    
+    <p>One of the most important concepts in pipeline operations is <strong>linepack</strong> – the amount of gas stored in the pipeline itself. Linepack acts as a buffer that helps manage fluctuations in supply and demand.</p>
+    
+    <p>The paper provides equations to calculate linepack based on mean pressure:</p>
+    
+    <div class="equation-box">
+        <p>\[V_b = F_6 L_2 P_m\]</p>
+        <div class="equation-explanation">
+            Equation 65: Relationship between linepack and mean pressure
+        </div>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(V_b\) is the linepack (volume of gas stored in the pipeline)</li>
+        <li>\(F_6\) is a constant that depends on pipe diameter and gas properties</li>
+        <li>\(L_2\) is the pipe section length</li>
+        <li>\(P_m\) is the mean pressure in the pipe section</li>
+    </ul>
+    
+    <p>During unsteady flow conditions, linepack changes according to:</p>
+    
+    <div class="equation-box">
+        <p>\[\frac{\partial V_b}{\partial t} = \frac{1}{24}(Q_1 - Q_2)\]</p>
+        <div class="equation-explanation">
+            Equation 57: Rate of change of linepack with time
+        </div>
+    </div>
+    
+    <p>This equation tells us that linepack increases when more gas flows in than out (\(Q_1 > Q_2\)) and decreases in the opposite case.</p>
+    
+    <div class="real-world">
+        <strong>Real-world application:</strong> Linepack management is crucial for gas utilities. During the night when demand is low, they can "pack" the pipeline by increasing pressure. Then during peak morning hours, they can use this stored gas to meet high demand without increasing supply from production facilities.
+    </div>
+    
+    <h2>Temperature Effects: Beyond Isothermal Flow</h2>
+    
+    <p>So far, we've assumed isothermal flow (constant temperature), but in reality, gas temperature changes along the pipeline due to:</p>
+    
+    <ul>
+        <li>Heat exchange with the surrounding environment</li>
+        <li>The Joule-Thomson effect (gas cooling as pressure decreases)</li>
+        <li>Frictional heating</li>
+    </ul>
+    
+    <p>The paper provides equations to model temperature changes. For a buried pipeline with initial temperature higher than ambient:</p>
+    
+    <div class="equation-box">
+        <p>\[T = T_r + (T_1 - T_r)\exp(-CL)\]</p>
+        <div class="equation-explanation">
+            Equation 182: Temperature profile for buried pipeline
+        </div>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(T\) is the temperature at distance \(L\)</li>
+        <li>\(T_r\) is the reference (ambient) temperature</li>
+        <li>\(T_1\) is the initial temperature</li>
+        <li>\(C\) is the temperature change constant</li>
+        <li>\(L\) is the distance from the beginning of the pipe section</li>
+    </ul>
+    
+    <p>The Joule-Thomson effect is modeled through:</p>
+    
+    <div class="equation-box">
+        <p>\[J = \frac{R_k T^2 \phi}{C_m P}\]</p>
+        <div class="equation-explanation">
+            Equation 198: Joule-Thomson coefficient
+        </div>
+    </div>
+    
+    <p>Where \(\phi\) is the derivative of compressibility with respect to temperature at constant pressure.</p>
+    
+    <h2>Putting It All Together: The Gas Flow Simulator</h2>
+    
+    <div class="interactive-container">
+        <h3>Pipeline Simulator: Level-Off Process</h3>
+        <p>This simulation demonstrates a "level-off" process - what happens when pipeline conditions change and the system moves toward a new steady state.</p>
+        
+        <div class="slider-container">
+            <label for="initial-linepack">Initial Linepack (MMSCF):</label>
+            <input type="range" id="initial-linepack" min="50" max="200" value="100" step="5">
+            <span id="initial-linepack-value" class="output">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="final-linepack">Target Linepack (MMSCF):</label>
+            <input type="range" id="final-linepack" min="50" max="200" value="150" step="5">
+            <span id="final-linepack-value" class="output">150</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="level-off-time">Level-Off Time (hours):</label>
+            <input type="range" id="level-off-time" min="1" max="12" value="6" step="0.5">
+            <span id="level-off-time-value" class="output">6</span>
+        </div>
+        
+        <button id="start-simulation">Start Simulation</button>
+        <button id="reset-simulation">Reset</button>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <canvas id="linepack-chart" width="340" height="300"></canvas>
+            <canvas id="pressure-chart" width="340" height="300"></canvas>
+        </div>
+        
+        <div id="simulation-explanation" style="margin-top: 15px;">
+            <p><strong>What you're seeing:</strong> The left chart shows linepack changes over time. The right chart shows how inlet and outlet pressures change during the level-off process. This simulation uses Equations 87-98 from the paper.</p>
+        </div>
+    </div>
+    
+    <h2>Real-World Applications and Implications</h2>
+    
+    <p>The equations and concepts we've explored have numerous practical applications:</p>
+    
+    <ol>
+        <li><strong>Pipeline Design:</strong> Engineers use these equations to determine optimal pipe diameters, compressor station spacing, and operating pressures.</li>
+        <li><strong>Capacity Planning:</strong> Gas utilities can calculate how much gas their pipeline network can deliver during peak demand periods.</li>
+        <li><strong>Operational Control:</strong> Pipeline operators use these principles to manage linepack, control pressures, and ensure reliable delivery.</li>
+        <li><strong>Leak Detection:</strong> Deviations from expected pressure profiles can indicate leaks or other anomalies.</li>
+        <li><strong>Economic Optimization:</strong> Companies can minimize energy consumption for compression while meeting delivery requirements.</li>
+    </ol>
+    
+    <h2>Conclusion: From Equations to Energy</h2>
+    
+    <p>The journey of natural gas from wellhead to burner tip involves sophisticated physics and mathematics. M.A. Francis's paper provides a comprehensive framework for understanding and predicting gas flow behavior in pipelines.</p>
+    
+    <p>By breaking down these complex equations to their first principles, we can appreciate the elegant way they describe physical reality. The cubic pressure-distance relationship, linepack dynamics, and temperature effects all combine to create a complete picture of pipeline flow.</p>
+    
+    <p>Next time you use natural gas, remember that its delivery is governed by these equations – a triumph of engineering that makes modern energy systems possible.</p>
+    
+    <div class="note">
+        <strong>Further exploration:</strong> If you're interested in diving deeper into this topic, consider exploring how these equations are implemented in modern pipeline simulation software, or how they're being adapted for renewable gas transportation like hydrogen and biogas.
+    </div>
+    
+    <script>
+        // Pressure Profile Simulator
+        const initialPressureSlider = document.getElementById('initial-pressure');
+        const initialPressureValue = document.getElementById('initial-pressure-value');
+        const initialFlowSlider = document.getElementById('initial-flow');
+        const initialFlowValue = document.getElementById('initial-flow-value');
+        const mValueSlider = document.getElementById('m-value');
+        const mValueValue = document.getElementById('m-value-value');
+        const pipeLengthSlider = document.getElementById('pipe-length');
+        const pipeLengthValue = document.getElementById('pipe-length-value');
+        const pipeDiameterSlider = document.getElementById('pipe-diameter');
+        const pipeDiameterValue = document.getElementById('pipe-diameter-value');
+        const canvas = document.getElementById('pressure-profile');
+        const ctx = canvas.getContext('2d');
+        const resetButton = document.getElementById('reset-button');
+        const compareButton = document.getElementById('compare-button');
+        
+        // Update display values
+        initialPressureSlider.addEventListener('input', () => {
+            initialPressureValue.textContent = initialPressureSlider.value;
+            drawPressureProfile();
+        });
+        
+        initialFlowSlider.addEventListener('input', () => {
+            initialFlowValue.textContent = initialFlowSlider.value;
+            drawPressureProfile();
+        });
+        
+        mValueSlider.addEventListener('input', () => {
+            mValueValue.textContent = mValueSlider.value;
+            drawPressureProfile();
+        });
+        
+        pipeLengthSlider.addEventListener('input', () => {
+            pipeLengthValue.textContent = pipeLengthSlider.value;
+            drawPressureProfile();
+        });
+        
+        pipeDiameterSlider.addEventListener('input', () => {
+            pipeDiameterValue.textContent = pipeDiameterSlider.value;
+            drawPressureProfile();
+        });
+        
+        resetButton.addEventListener('click', () => {
+            initialPressureSlider.value = 1000;
+            initialPressureValue.textContent = '1000';
+            initialFlowSlider.value = 300;
+            initialFlowValue.textContent = '300';
+            mValueSlider.value = 0;
+            mValueValue.textContent = '0';
+            pipeLengthSlider.value = 50;
+            pipeLengthValue.textContent = '50';
+            pipeDiameterSlider.value = 24;
+            pipeDiameterValue.textContent = '24';
+            compareProfiles = false;
+            drawPressureProfile();
+        });
+        
+        let compareProfiles = false;
+        let savedProfile = null;
+        
+        compareButton.addEventListener('click', () => {
+            if (!compareProfiles) {
+                // Save current profile
+                savedProfile = {
+                    initialPressure: parseFloat(initialPressureSlider.value),
+                    initialFlow: parseFloat(initialFlowSlider.value),
+                    mValue: parseFloat(mValueSlider.value),
+                    pipeLength: parseFloat(pipeLengthSlider.value),
+                    pipeDiameter: parseFloat(pipeDiameterSlider.value)
+                };
+                compareProfiles = true;
+                compareButton.textContent = "Hide Comparison";
+            } else {
+                compareProfiles = false;
+                compareButton.textContent = "Compare Profiles";
+            }
+            drawPressureProfile();
+        });
+        
+        function calculatePressure(initialPressure, initialFlow, mValue, distance, pipeLength, pipeDiameter) {
+            // Simplified version of Equation 32
+            // P₁² - P₂² = 2F₄(Q₁²L + mQ₁L² + (1/3)m²L³)
+            
+            // Calculate F4 (simplified version)
+            const F4 = 0.01 * Math.pow(pipeDiameter, -5);
+            
+            // Convert flow from MMSCFD to more convenient units for our calculation
+            const Q1 = initialFlow / 100;
+            
+            // Calculate pressure at distance
+            const term1 = Q1 * Q1 * distance;
+            const term2 = mValue * Q1 * Math.pow(distance, 2);
+            const term3 = (1/3) * Math.pow(mValue, 2) * Math.pow(distance, 3);
+            
+            const pressureDrop = 2 * F4 * (term1 + term2 + term3);
+            const pressureSquared = Math.pow(initialPressure, 2) - pressureDrop;
+            
+            // Ensure we don't return negative square roots
+            return pressureSquared > 0 ? Math.sqrt(pressureSquared) : 0;
+        }
+        
+        function drawPressureProfile() {
+            const initialPressure = parseFloat(initialPressureSlider.value);
+            const initialFlow = parseFloat(initialFlowSlider.value);
+            const mValue = parseFloat(mValueSlider.value);
+            const pipeLength = parseFloat(pipeLengthSlider.value);
+            const pipeDiameter = parseFloat(pipeDiameterSlider.value);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 350);
+            ctx.lineTo(650, 350);
+            ctx.stroke();
+            
+            // Label axes
+            ctx.font = '14px Arial';
+            ctx.fillText('Distance (miles)', 320, 380);
+            ctx.save();
+            ctx.translate(20, 200);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Pressure (psi)', 0, 0);
+            ctx.restore();
+            
+            // Draw tick marks and labels for x-axis
+            for (let i = 0; i <= pipeLength; i += pipeLength/5) {
+                const x = 50 + (i/pipeLength) * 600;
+                ctx.beginPath();
+                ctx.moveTo(x, 350);
+                ctx.lineTo(x, 355);
+                ctx.stroke();
+                ctx.fillText(i.toFixed(0), x - 10, 370);
+            }
+            
+            // Calculate pressure range for y-axis scaling
+            let minPressure = initialPressure;
+            let maxPressure = initialPressure;
+            
+            for (let dist = 0; dist <= pipeLength; dist += pipeLength/100) {
+                const pressure = calculatePressure(initialPressure, initialFlow, mValue, dist, pipeLength, pipeDiameter);
+                minPressure = Math.min(minPressure, pressure);
+                maxPressure = Math.max(maxPressure, pressure);
+            }
+            
+            // Add 10% padding to pressure range
+            const pressureRange = maxPressure - minPressure;
+            minPressure = Math.max(0, minPressure - pressureRange * 0.1);
+            maxPressure = maxPressure + pressureRange * 0.1;
+            
+            // Draw tick marks and labels for y-axis
+            for (let p = Math.floor(minPressure/100)*100; p <= maxPressure; p += 100) {
+                const y = 350 - ((p - minPressure) / (maxPressure - minPressure)) * 300;
+                ctx.beginPath();
+                ctx.moveTo(45, y);
+                ctx.lineTo(50, y);
+                ctx.stroke();
+                ctx.fillText(p.toFixed(0), 10, y + 5);
+            }
+            
+            // Draw current profile
+            ctx.beginPath();
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+            
+            for (let dist = 0; dist <= pipeLength; dist += pipeLength/100) {
+                const pressure = calculatePressure(initialPressure, initialFlow, mValue, dist, pipeLength, pipeDiameter);
+                const x = 50 + (dist/pipeLength) * 600;
+                const y = 350 - ((pressure - minPressure) / (maxPressure - minPressure)) * 300;
+                
+                if (dist === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw saved profile for comparison if enabled
+            if (compareProfiles && savedProfile) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                for (let dist = 0; dist <= pipeLength; dist += pipeLength/100) {
+                    const pressure = calculatePressure(
+                        savedProfile.initialPressure, 
+                        savedProfile.initialFlow, 
+                        savedProfile.mValue, 
+                        dist, 
+                        savedProfile.pipeLength, 
+                        savedProfile.pipeDiameter
+                    );
+                    const x = 50 + (dist/pipeLength) * 600;
+                    const y = 350 - ((pressure - minPressure) / (maxPressure - minPressure)) * 300;
+                    
+                    if (dist === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Add legend
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'blue';
+                ctx.fillText('Current Profile', 550, 70);
+                ctx.fillStyle = 'red';
+                ctx.fillText('Saved Profile', 550, 90);
+                ctx.fillStyle = 'black';
+            }
+        }
+        
+        // Level-Off Process Simulator
+        const initialLinepackSlider = document.getElementById('initial-linepack');
+        const initialLinepackValue = document.getElementById('initial-linepack-value');
+        const finalLinepackSlider = document.getElementById('final-linepack');
+        const finalLinepackValue = document.getElementById('final-linepack-value');
+        const levelOffTimeSlider = document.getElementById('level-off-time');
+        const levelOffTimeValue = document.getElementById('level-off-time-value');
+        const startSimulationButton = document.getElementById('start-simulation');
+        const resetSimulationButton = document.getElementById('reset-simulation');
+        const linepackChart = document.getElementById('linepack-chart');
+        const linepackCtx = linepackChart.getContext('2d');
+        const pressureChart = document.getElementById('pressure-chart');
+        const pressureCtx = pressureChart.getContext('2d');
+        
+        initialLinepackSlider.addEventListener('input', () => {
+            initialLinepackValue.textContent = initialLinepackSlider.value;
+        });
+        
+        finalLinepackSlider.addEventListener('input', () => {
+            finalLinepackValue.textContent = finalLinepackSlider.value;
+        });
+        
+        levelOffTimeSlider.addEventListener('input', () => {
+            levelOffTimeValue.textContent = levelOffTimeSlider.value;
+        });
+        
+        let simulationInterval;
+        let simulationTime = 0;
+        const maxSimulationTime = 24; // hours
+        
+        startSimulationButton.addEventListener('click', () => {
+            // Clear any existing simulation
+            clearInterval(simulationInterval);
+            simulationTime = 0;
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Start simulation
+            simulationInterval = setInterval(updateSimulation, 100);
+            startSimulationButton.disabled = true;
+        });
+        
+        resetSimulationButton.addEventListener('click', () => {
+            clearInterval(simulationInterval);
+            simulationTime = 0;
+            initializeCharts();
+            startSimulationButton.disabled = false;
+        });
+        
+        function initializeCharts() {
+            // Initialize linepack chart
+            linepackCtx.clearRect(0, 0, linepackChart.width, linepackChart.height);
+            linepackCtx.beginPath();
+            linepackCtx.moveTo(40, 40);
+            linepackCtx.lineTo(40, 260);
+            linepackCtx.lineTo(320, 260);
+            linepackCtx.stroke();
+            
+            linepackCtx.font = '12px Arial';
+            linepackCtx.fillText('Time (hours)', 150, 280);
+            linepackCtx.save();
+            linepackCtx.translate(15, 150);
+            linepackCtx.rotate(-Math.PI/2);
+            linepackCtx.fillText('Linepack (MMSCF)', 0, 0);
+            linepackCtx.restore();
+            
+            // Initialize pressure chart
+            pressureCtx.clearRect(0, 0, pressureChart.width, pressureChart.height);
+            pressureCtx.beginPath();
+            pressureCtx.moveTo(40, 40);
+            pressureCtx.lineTo(40, 260);
+            pressureCtx.lineTo(320, 260);
+            pressureCtx.stroke();
+            
+            pressureCtx.font = '12px Arial';
+            pressureCtx.fillText('Time (hours)', 150, 280);
+            pressureCtx.save();
+            pressureCtx.translate(15, 150);
+            pressureCtx.rotate(-Math.PI/2);
+            pressureCtx.fillText('Pressure (psi)', 0, 0);
+            pressureCtx.restore();
+            
+            // Draw target line on linepack chart
+            const initialLinepack = parseFloat(initialLinepackSlider.value);
+            const finalLinepack = parseFloat(finalLinepackSlider.value);
+            const levelOffTime = parseFloat(levelOffTimeSlider.value);
+            
+            const yScale = 200 / Math.max(initialLinepack, finalLinepack);
+            
+            linepackCtx.beginPath();
+            linepackCtx.setLineDash([5, 5]);
+            linepackCtx.strokeStyle = 'gray';
+            const targetY = 260 - finalLinepack * yScale;
+            linepackCtx.moveTo(40, targetY);
+            linepackCtx.lineTo(320, targetY);
+            linepackCtx.stroke();
+            linepackCtx.setLineDash([]);
+            linepackCtx.fillText(`Target: ${finalLinepack} MMSCF`, 200, targetY - 5);
+        }
+        
+        function updateSimulation() {
+            const initialLinepack = parseFloat(initialLinepackSlider.value);
+            const finalLinepack = parseFloat(finalLinepackSlider.value);
+            const levelOffTime = parseFloat(levelOffTimeSlider.value);
+            
+            simulationTime += 0.1; // Increment by 0.1 hours
+            
+            if (simulationTime > maxSimulationTime) {
+                clearInterval(simulationInterval);
+                startSimulationButton.disabled = false;
+                return;
+            }
+            
+            // Calculate current linepack using equation similar to Eq. 94
+            // For pack: Vb = Vb1 + a1*t^2 (first phase)
+            // For unpack: Vb = Vb1 - a1*t^2 (first phase)
+            let currentLinepack;
+            let inletPressure, outletPressure;
+            
+            const isPacking = finalLinepack > initialLinepack;
+            const a1 = (finalLinepack - initialLinepack) / Math.pow(levelOffTime, 2);
+            
+            if (simulationTime <= levelOffTime) {
+                // First phase
+                if (isPacking) {
+                    currentLinepack = initialLinepack + a1 * Math.pow(simulationTime, 2);
+                } else {
+                    currentLinepack = initialLinepack - a1 * Math.pow(simulationTime, 2);
+                }
+            } else {
+                // Second phase - maintain final linepack
+                currentLinepack = finalLinepack;
+            }
+            
+            // Calculate pressures based on linepack
+            // Using simplified relationship where P ∝ √Vb
+            const baselinePressure = 500;
+            const pressureFactor = 50;
+            
+            inletPressure = baselinePressure + pressureFactor * Math.sqrt(currentLinepack);
+            
+            // Outlet pressure lags inlet pressure during level-off
+            if (simulationTime < levelOffTime) {
+                if (isPacking) {
+                    // During packing, outlet pressure rises more slowly
+                    outletPressure = baselinePressure + pressureFactor * Math.sqrt(
+                        initialLinepack + a1 * Math.pow(Math.max(0, simulationTime - 1), 2)
+                    );
+                } else {
+                    // During unpacking, outlet pressure falls more quickly
+                    outletPressure = baselinePressure + pressureFactor * Math.sqrt(
+                        initialLinepack - a1 * Math.pow(Math.min(levelOffTime, simulationTime + 1), 2)
+                    );
+                }
+            } else {
+                // After level-off, pressures equalize
+                outletPressure = inletPressure - 20; // Small steady-state difference
+            }
+            
+            // Plot on linepack chart
+            const xScale = 280 / maxSimulationTime;
+            const yScale = 200 / Math.max(initialLinepack, finalLinepack, currentLinepack);
+            
+            const x = 40 + simulationTime * xScale;
+            const y = 260 - currentLinepack * yScale;
+            
+            linepackCtx.fillStyle = 'blue';
+            linepackCtx.beginPath();
+            linepackCtx.arc(x, y, 2, 0, Math.PI * 2);
+            linepackCtx.fill();
+            
+            // Plot on pressure chart
+            const pressureYScale = 200 / Math.max(inletPressure, outletPressure);
+            
+            const inletY = 260 - inletPressure * pressureYScale;
+            const outletY = 260 - outletPressure * pressureYScale;
+            
+            pressureCtx.fillStyle = 'red';
+            pressureCtx.beginPath();
+            pressureCtx.arc(x, inletY, 2, 0, Math.PI * 2);
+            pressureCtx.fill();
+            
+            pressureCtx.fillStyle = 'green';
+            pressureCtx.beginPath();
+            pressureCtx.arc(x, outletY, 2, 0, Math.PI * 2);
+            pressureCtx.fill();
+            
+            // Add legend to pressure chart if this is the first point
+            if (simulationTime <= 0.1) {
+                pressureCtx.fillStyle = 'red';
+                pressureCtx.fillText('Inlet Pressure', 230, 60);
+                pressureCtx.fillStyle = 'green';
+                pressureCtx.fillText('Outlet Pressure', 230, 80);
+                pressureCtx.fillStyle = 'black';
+            }
+        }
+        
+        // Initialize everything
+        drawPressureProfile();
+        initializeCharts();
+    </script>
+</body>
+</html>

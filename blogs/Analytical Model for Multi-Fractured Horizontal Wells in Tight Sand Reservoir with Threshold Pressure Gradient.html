@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Fluid Flow in Tight Sand Reservoirs with Threshold Pressure Gradients</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .canvas-container {
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .equation {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .real-world {
+            background-color: #e8f8e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Breaking Down Fluid Flow in Tight Sand Reservoirs: Understanding Threshold Pressure Gradients</h1>
+    
+    <p>Welcome to another deep dive where we break down complex concepts using first principles thinking. Today, we're exploring a fascinating phenomenon in petroleum engineering: fluid flow in tight sand reservoirs and the critical concept of threshold pressure gradients (TPG).</p>
+    
+    <div class="highlight">
+        <p><strong>Key Takeaway:</strong> Unlike conventional reservoirs where Darcy's law perfectly describes fluid flow, tight sand reservoirs exhibit a minimum pressure threshold that must be overcome before flow begins. This fundamentally changes how we model, predict, and optimize production from these challenging but increasingly important energy resources.</p>
+    </div>
+    
+    <h2>1. The Challenge of Tight Sand Reservoirs</h2>
+    
+    <p>Imagine trying to drink a thick milkshake through a coffee stirrer versus a normal straw. That's roughly the difference between extracting oil from tight sand formations versus conventional reservoirs. Tight sands have extremely small pore throats, often measured in nanometers, creating significant resistance to fluid flow.</p>
+    
+    <p>The academic paper we're examining today presents an analytical model for multi-stage fractured horizontal wells (MFHWs) in these challenging formations. But before diving into their model, let's understand the fundamental physics that makes tight sands different.</p>
+    
+    <h3>The Conventional View: Darcy's Law</h3>
+    
+    <p>In traditional reservoirs, fluid flow follows Darcy's law, which states that flow velocity is directly proportional to pressure gradient:</p>
+    
+    <div class="equation">
+        $$v = -\frac{k}{\mu}\nabla p$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(v\) is fluid velocity</li>
+        <li>\(k\) is permeability</li>
+        <li>\(\mu\) is fluid viscosity</li>
+        <li>\(\nabla p\) is pressure gradient</li>
+    </ul>
+    
+    <p>This equation implies that any pressure gradient, no matter how small, will cause fluid to flow. A key feature of this relationship is that it passes through the origin on a velocity vs. pressure gradient plot.</p>
+    
+    <h3>The Reality in Tight Sands: Non-Darcy Flow with Threshold</h3>
+    
+    <p>In tight sand reservoirs, experiments show that fluid flow behaves differently. Below a certain pressure gradient threshold, little to no flow occurs. The paper identifies this as "threshold pressure gradient" or TPG.</p>
+    
+    <p>The relationship between velocity and pressure gradient in tight sands looks like this:</p>
+    
+    <div class="equation">
+        $$v=\left\{\begin{array}{l l}
+        -\frac{k}{\mu}\big(\mathrm{grad}\big(p\big)-G_{p}\big)\quad&{\mathrm{grad}\big(p\big)>G_{p}}\\
+        -\frac{k}{\mu}\big(\mathrm{grad}\big(p\big)-G_{\mathrm{min}}\big)^{n}\quad&{G_{\mathrm{min}}<\mathrm{grad}\big(p\big)\leq G_{p}}\\
+        0\quad&{\mathrm{grad}\big(p\big)\leq G_{\mathrm{min}}}
+        \end{array}\right.$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(G_p\) is the Pseudo TPG (where the linear portion of the curve would intersect the x-axis)</li>
+        <li>\(G_{min}\) is the Minimum TPG (below which absolutely no flow occurs)</li>
+        <li>\(n\) is a power-law exponent for the transition region</li>
+    </ul>
+    
+    <div class="interactive-container">
+        <h3>Interactive Visualization: Darcy vs. Non-Darcy Flow</h3>
+        <div class="slider-container">
+            <label for="tpg-slider">Pseudo TPG (psi/ft): <span id="tpg-value">0.5</span></label>
+            <input type="range" id="tpg-slider" min="0" max="2" step="0.1" value="0.5">
+        </div>
+        <div class="slider-container">
+            <label for="min-tpg-slider">Min TPG (psi/ft): <span id="min-tpg-value">0.2</span></label>
+            <input type="range" id="min-tpg-slider" min="0" max="1" step="0.1" value="0.2">
+        </div>
+        <div class="slider-container">
+            <label for="n-slider">Power exponent (n): <span id="n-value">2</span></label>
+            <input type="range" id="n-slider" min="1" max="5" step="0.5" value="2">
+        </div>
+        <div class="slider-container">
+            <label for="perm-slider">Permeability (md): <span id="perm-value">0.1</span></label>
+            <input type="range" id="perm-slider" min="0.01" max="1" step="0.01" value="0.1">
+        </div>
+        <div class="canvas-container">
+            <canvas id="flowChart" width="800" height="400"></canvas>
+        </div>
+        <p>This visualization shows how fluid velocity responds to pressure gradient in both conventional (Darcy) and tight sand (non-Darcy) reservoirs. Try adjusting the sliders to see how different parameters affect the flow behavior.</p>
+    </div>
+    
+    <h2>2. The Seven-Region Flow Model: Breaking Down Complexity</h2>
+    
+    <p>The paper presents a sophisticated model that divides the reservoir into seven distinct flow regions around a hydraulic fracture. This might seem overwhelming, but we can understand it by building up from first principles.</p>
+    
+    <h3>Why Seven Regions?</h3>
+    
+    <p>The key insight is that fluid flows differently in different parts of the reservoir based on:</p>
+    <ul>
+        <li>Distance from the fracture</li>
+        <li>Direction of flow (horizontal vs. vertical)</li>
+        <li>Position relative to the fracture (above/below vs. alongside)</li>
+    </ul>
+    
+    <p>Here's how the seven regions are organized:</p>
+    <ol>
+        <li>Inner region 1 (next to fracture)</li>
+        <li>Inner region 2 (next to fracture)</li>
+        <li>Outer region 3 (beyond fracture tip)</li>
+        <li>Outer region 4 (beyond fracture tip)</li>
+        <li>Upper region 5 (above fracture)</li>
+        <li>Lower region 6 (below fracture)</li>
+        <li>Hydraulic fracture itself</li>
+    </ol>
+    
+    <div class="interactive-container">
+        <h3>Interactive Visualization: Seven-Region Flow Model</h3>
+        <div class="canvas-container">
+            <canvas id="regionChart" width="800" height="500"></canvas>
+        </div>
+        <div class="slider-container">
+            <label for="fracture-height-slider">Fracture Height Penetration Ratio: <span id="fracture-height-value">0.6</span></label>
+            <input type="range" id="fracture-height-slider" min="0.1" max="1.0" step="0.1" value="0.6">
+        </div>
+        <p>This visualization shows a cross-section of the seven flow regions around a hydraulic fracture. The colors represent different flow patterns, and the arrows indicate flow direction. Adjust the fracture height to see how partial penetration affects the flow patterns.</p>
+    </div>
+    
+    <h2>3. Mathematical Foundation: The Diffusivity Equation</h2>
+    
+    <p>At the heart of the model is the diffusivity equation, which describes how pressure changes over time in porous media. For each region, the authors modify this equation to account for TPG.</p>
+    
+    <p>The standard diffusivity equation (without TPG) is:</p>
+    
+    <div class="equation">
+        $$\nabla^2 p = \frac{\phi\mu c_t}{k}\frac{\partial p}{\partial t}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\nabla^2 p\) is the Laplacian of pressure (second spatial derivative)</li>
+        <li>\(\phi\) is porosity</li>
+        <li>\(\mu\) is viscosity</li>
+        <li>\(c_t\) is total compressibility</li>
+        <li>\(k\) is permeability</li>
+        <li>\(\frac{\partial p}{\partial t}\) is the time derivative of pressure</li>
+    </ul>
+    
+    <p>When TPG is included, the equation becomes more complex. For example, in the Laplace domain for Region 6 (lower region):</p>
+    
+    <div class="equation">
+        $$\frac{\partial^2 \overline{p}_{6D}}{\partial z_D^2} - G_D \frac{\partial \overline{p}_{6D}}{\partial z_D} - \frac{s}{\eta_{6D}} \overline{p}_{6D} = 0$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\overline{p}_{6D}\) is dimensionless pressure in region 6 in Laplace domain</li>
+        <li>\(z_D\) is dimensionless vertical coordinate</li>
+        <li>\(G_D\) is dimensionless TPG</li>
+        <li>\(s\) is the Laplace transform variable</li>
+        <li>\(\eta_{6D}\) is dimensionless diffusivity in region 6</li>
+    </ul>
+    
+    <p>The term \(G_D \frac{\partial \overline{p}_{6D}}{\partial z_D}\) is the critical addition that accounts for TPG.</p>
+    
+    <div class="note">
+        <p><strong>Note:</strong> The paper uses dimensionless variables throughout to make the equations more general. For example, dimensionless pressure is defined as:</p>
+        <div class="equation">
+            $$p_D = \frac{k_{ref}h_{ref}}{141.2q_{Ft}B\mu}(p_{ini} - p)$$
+        </div>
+        <p>This allows the results to be applied to different reservoir and fracture configurations.</p>
+    </div>
+    
+    <h2>4. Solving the System: Boundary Conditions</h2>
+    
+    <p>To solve these equations, we need boundary conditions that describe how the regions interact with each other. The key conditions include:</p>
+    
+    <ol>
+        <li><strong>No-flow boundaries</strong> at the outer edges of the reservoir</li>
+        <li><strong>Pressure continuity</strong> at the interfaces between regions</li>
+        <li><strong>Flux continuity</strong> at interfaces (accounting for TPG differences)</li>
+        <li><strong>Specified pressure or flow rate</strong> at the wellbore</li>
+    </ol>
+    
+    <p>For example, at the interface between regions 1 and 2, we have:</p>
+    
+    <div class="equation">
+        $$\left.\overline{p}_{2D}\right|_{y_{1D}} = \left.\overline{p}_{1D}\right|_{y_{1D}}$$
+    </div>
+    
+    <p>And the flux continuity condition, which accounts for TPG:</p>
+    
+    <div class="equation">
+        $$\left.{\frac{\partial\overline{p}_{1D}}{\partial y_{D}}}\right|_{y_{1D}} = \frac{k_{2}}{k_{1}}\frac{\partial\overline{p}_{2D}}{\partial y_{D}}\Biggr|_{y_{1D}} + \frac{k_{2}k_{ref}h d_{ref}}{141.2k_{1}q_{rt}B\mu}\frac{G_{p}}{s} - \frac{k_{ref}h d_{ref}}{141.2q_{rt}B\mu}\frac{G_{p}}{s}$$
+    </div>
+    
+    <p>The complete solution involves solving all seven diffusivity equations with their boundary conditions simultaneously, which the paper does using Laplace transforms.</p>
+    
+    <h2>5. Real-World Implications: What This Means for Production</h2>
+    
+    <p>Now that we understand the model, let's examine what it tells us about real-world production from tight sand reservoirs.</p>
+    
+    <h3>Effect of TPG on Production</h3>
+    
+    <p>The paper shows that TPG has several critical effects:</p>
+    
+    <ol>
+        <li>Small TPG values (&lt;0.4 psi/ft) have minimal impact on production</li>
+        <li>Larger TPG values significantly reduce long-term production</li>
+        <li>TPG can reduce ultimate recovery by over 37% in extreme cases</li>
+        <li>TPG affects middle-to-late time production more than early production</li>
+    </ol>
+    
+    <div class="interactive-container">
+        <h3>Interactive Simulation: Effect of TPG on Production Decline</h3>
+        <div class="slider-container">
+            <label for="tpg-prod-slider">TPG (psi/ft): <span id="tpg-prod-value">0.5</span></label>
+            <input type="range" id="tpg-prod-slider" min="0" max="10" step="0.5" value="0.5">
+        </div>
+        <div class="slider-container">
+            <label for="perm-prod-slider">Permeability (md): <span id="perm-prod-value">0.1</span></label>
+            <input type="range" id="perm-prod-slider" min="0.01" max="1" step="0.01" value="0.1">
+        </div>
+        <div class="canvas-container">
+            <canvas id="productionChart" width="800" height="400"></canvas>
+        </div>
+        <p>This simulation shows how production rate declines over time with different TPG values. Notice how higher TPG leads to faster decline in the middle and late production periods.</p>
+    </div>
+    
+    <h3>Fracture Design Implications</h3>
+    
+    <p>The model also provides insights for optimizing hydraulic fracture design:</p>
+    
+    <ol>
+        <li><strong>Fracture height penetration</strong> - Partial penetration creates an "infinite acting regime" that affects production</li>
+        <li><strong>Fracture conductivity</strong> - Higher conductivity improves early production but has diminishing returns</li>
+        <li><strong>Fracture length</strong> - Longer fractures improve production, but there's an economic optimum</li>
+        <li><strong>Fracture placement</strong> - In heterogeneous reservoirs, placing fractures in high-permeability zones is more effective</li>
+    </ol>
+    
+    <div class="real-world">
+        <h4>Real-World Application: Fracture Pattern Optimization</h4>
+        <p>The paper analyzed a heterogeneous reservoir with varying permeability and found that:</p>
+        <ol>
+            <li>Fractures are most effective when placed in high-permeability zones</li>
+            <li>Low-permeability zones surrounded by high-permeability zones don't need additional fractures</li>
+            <li>Isolated low-permeability zones benefit from wider fracture spacing</li>
+        </ol>
+        <p>This challenges the conventional wisdom of evenly spaced fractures and shows how the model can optimize real-world completion designs.</p>
+    </div>
+    
+    <h2>6. Let's Play: Fracture Design Optimization Game</h2>
+    
+    <div class="interactive-container">
+        <h3>Interactive Game: Optimize Your Fracture Design</h3>
+        <p>You're an engineer tasked with designing a hydraulic fracturing treatment for a tight sand reservoir. Your goal is to maximize 8-year cumulative production while minimizing costs.</p>
+        
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+        </div>
+        
+        <div class="game-controls">
+            <div class="slider-container">
+                <label for="num-fractures">Number of Fractures: <span id="num-fractures-value">5</span></label>
+                <input type="range" id="num-fractures" min="3" max="10" step="1" value="5">
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracture-length">Fracture Half-Length (ft): <span id="fracture-length-value">300</span></label>
+                <input type="range" id="fracture-length" min="100" max="500" step="50" value="300">
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracture-conductivity">Fracture Conductivity (md-ft): <span id="fracture-conductivity-value">100</span></label>
+                <input type="range" id="fracture-conductivity" min="20" max="200" step="20" value="100">
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracture-height">Fracture Height Penetration Ratio: <span id="fracture-height-ratio-value">0.6</span></label>
+                <input type="range" id="fracture-height" min="0.2" max="1.0" step="0.1" value="0.6">
+            </div>
+            
+            <button id="run-simulation" class="btn">Run Simulation</button>
+        </div>
+        
+        <div id="simulation-results" style="margin-top: 20px;">
+            <h4>Simulation Results:</h4>
+            <p>Click "Run Simulation" to see your results.</p>
+        </div>
+    </div>
+    
+    <h2>7. Conclusion: The Power of Analytical Models</h2>
+    
+    <p>The paper presents a powerful analytical model that captures the complex physics of fluid flow in tight sand reservoirs with TPG. By breaking the problem down into manageable regions and accounting for the non-Darcy behavior, the authors create a tool that can quickly evaluate different fracture designs without the computational expense of numerical simulation.</p>
+    
+    <p>Key takeaways for practicing engineers:</p>
+    
+    <ol>
+        <li>TPG is a critical parameter in tight sand reservoirs that can significantly impact production forecasts</li>
+        <li>Fracture height penetration ratio affects both early production rates and long-term recovery</li>
+        <li>Fracture conductivity has diminishing returns beyond a certain point</li>
+        <li>In heterogeneous reservoirs, fracture placement is as important as fracture number</li>
+        <li>Analytical models provide fast, practical tools for optimizing fracture design</li>
+    </ol>
+    
+    <p>The next time you're evaluating a tight sand reservoir, remember that conventional Darcy flow assumptions may lead to overly optimistic production forecasts. Accounting for TPG, as this model does, provides a more realistic picture of what to expect from these challenging but increasingly important resources.</p>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Flow Chart Visualization
+            const flowChartCtx = document.getElementById('flowChart').getContext('2d');
+            let flowChart = new Chart(flowChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Darcy Flow',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            data: [],
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: 'Non-Darcy Flow (with TPG)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            data: [],
+                            borderWidth: 2,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Fluid Velocity vs. Pressure Gradient'
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Pressure Gradient (psi/ft)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Fluid Velocity (ft/day)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            function updateFlowChart() {
+                const tpg = parseFloat(document.getElementById('tpg-slider').value);
+                const minTpg = parseFloat(document.getElementById('min-tpg-slider').value);
+                const n = parseFloat(document.getElementById('n-slider').value);
+                const k = parseFloat(document.getElementById('perm-slider').value);
+                
+                document.getElementById('tpg-value').textContent = tpg;
+                document.getElementById('min-tpg-value').textContent = minTpg;
+                document.getElementById('n-value').textContent = n;
+                document.getElementById('perm-value').textContent = k;
+                
+                // Generate data points
+                const gradients = [];
+                const darcyVelocities = [];
+                const nonDarcyVelocities = [];
+                
+                // Assuming viscosity = 1 cp for simplicity
+                const mu = 1;
+                const factor = k / mu;
+                
+                for (let grad = 0; grad <= 3; grad += 0.1) {
+                    gradients.push(grad);
+                    darcyVelocities.push(factor * grad);
+                    
+                    // Non-Darcy flow with TPG
+                    let nonDarcyVel;
+                    if (grad <= minTpg) {
+                        nonDarcyVel = 0;
+                    } else if (grad <= tpg) {
+                        nonDarcyVel = factor * Math.pow(grad - minTpg, n);
+                    } else {
+                        nonDarcyVel = factor * (grad - tpg);
+                    }
+                    nonDarcyVelocities.push(nonDarcyVel);
+                }
+                
+                flowChart.data.labels = gradients;
+                flowChart.data.datasets[0].data = darcyVelocities;
+                flowChart.data.datasets[1].data = nonDarcyVelocities;
+                flowChart.update();
+            }
+            
+            document.getElementById('tpg-slider').addEventListener('input', updateFlowChart);
+            document.getElementById('min-tpg-slider').addEventListener('input', updateFlowChart);
+            document.getElementById('n-slider').addEventListener('input', updateFlowChart);
+            document.getElementById('perm-slider').addEventListener('input', updateFlowChart);
+            
+            // Initialize flow chart
+            updateFlowChart();
+            
+            // Region Chart Visualization
+            const regionChartCtx = document.getElementById('regionChart').getContext('2d');
+            
+            function drawRegionChart() {
+                const canvas = document.getElementById('regionChart');
+                const ctx = regionChartCtx;
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Get fracture height ratio
+                const fracHeightRatio = parseFloat(document.getElementById('fracture-height-slider').value);
+                document.getElementById('fracture-height-value').textContent = fracHeightRatio;
+                
+                // Set dimensions
+                const reservoirHeight = height * 0.8;
+                const reservoirTop = (height - reservoirHeight) / 2;
+                const reservoirBottom = reservoirTop + reservoirHeight;
+                const reservoirWidth = width * 0.8;
+                const reservoirLeft = (width - reservoirWidth) / 2;
+                const reservoirRight = reservoirLeft + reservoirWidth;
+                
+                const fractureHeight = reservoirHeight * fracHeightRatio;
+                const fractureTop = reservoirTop + (reservoirHeight - fractureHeight) / 2;
+                const fractureBottom = fractureTop + fractureHeight;
+                const fractureWidth = 10;
+                const fractureLength = reservoirWidth * 0.6;
+                const wellboreY = reservoirTop + reservoirHeight / 2;
+                
+                // Draw reservoir outline
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(reservoirLeft, reservoirTop, reservoirWidth, reservoirHeight);
+                
+                // Draw regions
+                // Region 6 (Lower)
+                ctx.fillStyle = 'rgba(255, 200, 200, 0.5)';
+                ctx.fillRect(reservoirLeft, fractureBottom, reservoirWidth, reservoirBottom - fractureBottom);
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText('Region 6 (Lower)', reservoirLeft + 20, fractureBottom + 20);
+                
+                // Region 5 (Upper)
+                ctx.fillStyle = 'rgba(200, 200, 255, 0.5)';
+                ctx.fillRect(reservoirLeft, reservoirTop, reservoirWidth, fractureTop - reservoirTop);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Region 5 (Upper)', reservoirLeft + 20, reservoirTop + 20);
+                
+                // Region 3 (Outer Left)
+                ctx.fillStyle = 'rgba(200, 255, 200, 0.5)';
+                ctx.fillRect(reservoirLeft, fractureTop, reservoirLeft + (reservoirWidth - fractureLength) / 2, fractureBottom - fractureTop);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Region 3', reservoirLeft + 10, wellboreY);
+                
+                // Region 4 (Outer Right)
+                ctx.fillStyle = 'rgba(255, 255, 200, 0.5)';
+                ctx.fillRect(reservoirLeft + (reservoirWidth + fractureLength) / 2, fractureTop, (reservoirWidth - fractureLength) / 2, fractureBottom - fractureTop);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Region 4', reservoirRight - 70, wellboreY);
+                
+                // Region 1 (Inner Left)
+                ctx.fillStyle = 'rgba(255, 200, 255, 0.5)';
+                ctx.fillRect(reservoirLeft + (reservoirWidth - fractureLength) / 2, fractureTop, fractureLength / 2, fractureBottom - fractureTop);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Region 1', reservoirLeft + (reservoirWidth - fractureLength) / 2 + 10, wellboreY);
+                
+                // Region 2 (Inner Right)
+                ctx.fillStyle = 'rgba(200, 255, 255, 0.5)';
+                ctx.fillRect(reservoirLeft + reservoirWidth / 2, fractureTop, fractureLength / 2, fractureBottom - fractureTop);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Region 2', reservoirLeft + reservoirWidth / 2 + 10, wellboreY);
+                
+                // Draw fracture (Region 7)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(reservoirLeft + reservoirWidth / 2 - fractureWidth / 2, fractureTop, fractureWidth, fractureBottom - fractureTop);
+                ctx.fillStyle = '#fff';
+                ctx.fillText('Fracture', reservoirLeft + reservoirWidth / 2 - 20, wellboreY);
+                
+                // Draw wellbore
+                ctx.fillStyle = '#000';
+                ctx.fillRect(reservoirLeft, wellboreY - 5, reservoirWidth, 10);
+                ctx.fillStyle = '#fff';
+                ctx.fillText('Wellbore', reservoirLeft + reservoirWidth / 2 - 30, wellboreY + 20);
+                
+                // Draw arrows to show flow direction
+                drawArrow(ctx, reservoirLeft + 50, reservoirTop + 30, 0, -10, 'blue'); // Region 5 flow
+                drawArrow(ctx, reservoirLeft + 50, fractureBottom + 30, 0, 10, 'red'); // Region 6 flow
+                
+                drawArrow(ctx, reservoirLeft + (reservoirWidth - fractureLength) / 4, wellboreY - 20, 20, 0, 'green'); // Region 3 flow
+                drawArrow(ctx, reservoirRight - (reservoirWidth - fractureLength) / 4, wellboreY - 20, -20, 0, 'yellow'); // Region 4 flow
+                
+                drawArrow(ctx, reservoirLeft + (reservoirWidth - fractureLength) / 2 + fractureLength / 4, wellboreY - 20, 20, 0, 'purple'); // Region 1 flow
+                drawArrow(ctx, reservoirLeft + reservoirWidth / 2 + fractureLength / 4, wellboreY - 20, -20, 0, 'cyan'); // Region 2 flow
+            }
+            
+            function drawArrow(ctx, x, y, dx, dy, color) {
+                const headLength = 10;
+                const headAngle = Math.PI / 6;
+                
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = 2;
+                
+                // Draw line
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + dx, y + dy);
+                ctx.stroke();
+                
+                // Draw arrowhead
+                const angle = Math.atan2(dy, dx);
+                ctx.beginPath();
+                ctx.moveTo(x + dx, y + dy);
+                ctx.lineTo(x + dx - headLength * Math.cos(angle - headAngle), y + dy - headLength * Math.sin(angle - headAngle));
+                ctx.lineTo(x + dx - headLength * Math.cos(angle + headAngle), y + dy - headLength * Math.sin(angle + headAngle));
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            document.getElementById('fracture-height-slider').addEventListener('input', drawRegionChart);
+            
+            // Initialize region chart
+            drawRegionChart();
+            
+            // Production Chart
+            const productionChartCtx = document.getElementById('productionChart').getContext('2d');
+            let productionChart = new Chart(productionChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Production Rate',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        data: [],
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Production Rate Decline'
+                    },
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time (days)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Dimensionless Rate'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            function updateProductionChart() {
+                const tpg = parseFloat(document.getElementById('tpg-prod-slider').value);
+                const perm = parseFloat(document.getElementById('perm-prod-slider').value);
+                
+                document.getElementById('tpg-prod-value').textContent = tpg;
+                document.getElementById('perm-prod-value').textContent = perm;
+                
+                // Generate time points (logarithmic scale)
+                const times = [];
+                const rates = [];
+                
+                for (let i = 0; i <= 100; i++) {
+                    const time = Math.pow(10, i / 20); // From 1 to 10^5 days
+                    times.push(time);
+                    
+                    // Simplified production decline model with TPG effect
+                    // q_D = (1 + 0.5*sqrt(t))^(-1) * exp(-tpg*t/perm)
+                    const rate = Math.pow(1 + 0.5 * Math.sqrt(time), -1) * Math.exp(-tpg * time / (perm * 1000));
+                    rates.push(rate);
+                }
+                
+                productionChart.data.labels = times;
+                productionChart.data.datasets[0].data = rates;
+                productionChart.update();
+            }
+            
+            document.getElementById('tpg-prod-slider').addEventListener('input', updateProductionChart);
+            document.getElementById('perm-prod-slider').addEventListener('input', updateProductionChart);
+            
+            // Initialize production chart
+            updateProductionChart();
+            
+            // Fracture Design Game
+            const gameCanvas = document.getElementById('gameCanvas');
+            const gameCtx = gameCanvas.getContext('2d');
+            
+            // Define reservoir properties
+            const reservoir = {
+                width: 800,
+                height: 300,
+                blocks: [
+                    { x: 0, width: 200, perm: 0.05, color: '#ffcccc' },
+                    { x: 200, width: 200, perm: 0.2, color: '#ccffcc' },
+                    { x: 400, width: 200, perm: 0.05, color: '#ffcccc' },
+                    { x: 600, width: 200, perm: 0.2, color: '#ccffcc' }
+                ],
+                top: 50,
+                thickness: 200
+            };
+            
+            function drawGame() {
+                // Clear canvas
+                gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Draw reservoir blocks
+                for (const block of reservoir.blocks) {
+                    gameCtx.fillStyle = block.color;
+                    gameCtx.fillRect(block.x, reservoir.top, block.width, reservoir.thickness);
+                    gameCtx.strokeRect(block.x, reservoir.top, block.width, reservoir.thickness);
+                    gameCtx.fillStyle = '#000';
+                    gameCtx.font = '14px Arial';
+                    gameCtx.fillText(`k = ${block.perm} md`, block.x + 10, reservoir.top + 20);
+                }
+                
+                // Draw wellbore
+                const wellboreY = reservoir.top + reservoir.thickness / 2;
+                gameCtx.fillStyle = '#000';
+                gameCtx.fillRect(0, wellboreY - 3, reservoir.width, 6);
+                
+                // Get fracture parameters
+                const numFractures = parseInt(document.getElementById('num-fractures').value);
+                const fracLength = parseInt(document.getElementById('fracture-length').value);
+                const fracHeight = parseFloat(document.getElementById('fracture-height').value) * reservoir.thickness;
+                
+                // Calculate fracture spacing
+                const spacing = reservoir.width / (numFractures + 1);
+                
+                // Draw fractures
+                for (let i = 1; i <= numFractures; i++) {
+                    const fracX = i * spacing;
+                    const fracTop = wellboreY - fracHeight / 2;
+                    
+                    gameCtx.fillStyle = '#0066cc';
+                    gameCtx.fillRect(fracX - 2, fracTop, 4, fracHeight);
+                    
+                    // Draw fracture half-length lines
+                    gameCtx.strokeStyle = '#0066cc';
+                    gameCtx.lineWidth = 1;
+                    gameCtx.beginPath();
+                    gameCtx.moveTo(fracX, wellboreY);
+                    gameCtx.lineTo(fracX, wellboreY - fracLength / 5); // Scale down for visualization
+                    gameCtx.stroke();
+                    
+                    gameCtx.fillStyle = '#000';
+                    gameCtx.font = '12px Arial';
+                    gameCtx.fillText(`F${i}`, fracX - 5, wellboreY + 15);
+                }
+            }
+            
+            document.getElementById('num-fractures').addEventListener('input', function() {
+                document.getElementById('num-fractures-value').textContent = this.value;
+                drawGame();
+            });
+            
+            document.getElementById('fracture-length').addEventListener('input', function() {
+                document.getElementById('fracture-length-value').textContent = this.value;
+                drawGame();
+            });
+            
+            document.getElementById('fracture-conductivity').addEventListener('input', function() {
+                document.getElementById('fracture-conductivity-value').textContent = this.value;
+            });
+            
+            document.getElementById('fracture-height').addEventListener('input', function() {
+                document.getElementById('fracture-height-ratio-value').textContent = this.value;
+                drawGame();
+            });
+            
+            document.getElementById('run-simulation').addEventListener('click', function() {
+                const numFractures = parseInt(document.getElementById('num-fractures').value);
+                const fracLength = parseInt(document.getElementById('fracture-length').value);
+                const fracConductivity = parseInt(document.getElementById('fracture-conductivity').value);
+                const fracHeight = parseFloat(document.getElementById('fracture-height').value);
+                
+                // Calculate a simulated 8-year cumulative production
+                // This is a simplified model based on the paper's findings
+                let baseProd = 100000; // Base production in barrels
+                
+                // Adjust for number of fractures (diminishing returns)
+                const fracFactor = Math.pow(numFractures, 0.8) / Math.pow(5, 0.8);
+                
+                // Adjust for fracture length (diminishing returns)
+                const lengthFactor = Math.pow(fracLength, 0.7) / Math.pow(300, 0.7);
+                
+                // Adjust for fracture conductivity (diminishing returns, plateaus)
+                const condFactor = 0.5 + 0.5 * (1 - Math.exp(-fracConductivity / 50));
+                
+                // Adjust for fracture height (optimal around 0.7-0.8)
+                const heightFactor = 1 - 0.5 * Math.pow(fracHeight - 0.75, 2);
+                
+                // Calculate cost
+                const fracCost = numFractures * (50000 + fracLength * 100 + fracConductivity * 200);
+                
+                // Calculate production
+                const production = baseProd * fracFactor * lengthFactor * condFactor * heightFactor;
+                
+                // Calculate NPV (simplified)
+                const oilPrice = 50; // $/bbl
+                const npv = production * oilPrice - fracCost;
+                
+                // Display results
+                const resultsDiv = document.getElementById('simulation-results');
+                resultsDiv.innerHTML = `
+                    <h4>Simulation Results:</h4>
+                    <table>
+                        <tr><th>Metric</th><th>Value</th></tr>
+                        <tr><td>8-Year Cumulative Production</td><td>${Math.round(production).toLocaleString()} barrels</td></tr>
+                        <tr><td>Fracturing Cost</td><td>$${Math.round(fracCost).toLocaleString()}</td></tr>
+                        <tr><td>Net Present Value</td><td>$${Math.round(npv).toLocaleString()}</td></tr>
+                    </table>
+                    <p><strong>Analysis:</strong> ${getAnalysis(numFractures, fracLength, fracConductivity, fracHeight)}</p>
+                `;
+            });
+            
+            function getAnalysis(numFracs, length, conductivity, height) {
+                let analysis = "";
+                
+                if (numFracs < 5) {
+                    analysis += "Consider adding more fractures to improve production. ";
+                } else if (numFracs > 8) {
+                    analysis += "You may have too many fractures, leading to interference and higher costs. ";
+                }
+                
+                if (length < 200) {
+                    analysis += "Fracture length is quite short for a tight sand reservoir. ";
+                } else if (length > 400) {
+                    analysis += "Very long fractures may not be cost-effective. ";
+                }
+                
+                if (conductivity < 60) {
+                    analysis += "Low fracture conductivity could be limiting production. ";
+                } else if (conductivity > 160) {
+                    analysis += "Very high conductivity offers diminishing returns. ";
+                }
+                
+                if (height < 0.5) {
+                    analysis += "Low height penetration ratio limits access to the reservoir. ";
+                } else if (height > 0.9) {
+                    analysis += "Full height penetration may accelerate production decline. ";
+                }
+                
+                if (analysis === "") {
+                    analysis = "Your design appears well-balanced for this reservoir.";
+                }
+                
+                return analysis;
+            }
+            
+            // Initialize game
+            drawGame();
+});
+</script>
+</body>
+</html>

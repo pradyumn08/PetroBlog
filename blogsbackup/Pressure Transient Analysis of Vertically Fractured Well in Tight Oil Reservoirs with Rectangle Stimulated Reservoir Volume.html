@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Vertically Fractured Wells with Rectangle SRV: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+        }
+        .caption {
+            font-style: italic;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Vertically Fractured Wells with Rectangle SRV: A First Principles Approach</h1>
+    
+    <div class="highlight">
+        <p>In this blog post, we'll break down a complex concept from petroleum engineering: the pressure transient analysis of vertically fractured wells (VFW) with rectangle stimulated reservoir volume (SRV). We'll explain how these wells behave in tight oil reservoirs, starting from first principles and building up to a comprehensive understanding that even beginners can grasp.</p>
+    </div>
+    
+    <h2>The Problem We're Solving</h2>
+    
+    <p>Imagine you have an oil reservoir deep underground, but the rock is so tight (low permeability) that oil barely flows through it. This is what engineers call a "tight oil reservoir." To extract oil efficiently, engineers create fractures in the rock to increase the flow paths. The region where these fractures are created is called the Stimulated Reservoir Volume (SRV).</p>
+    
+    <p>But here's the challenge: How do we model and predict the pressure behavior in these wells over time? Understanding this is crucial for:</p>
+    
+    <ul>
+        <li>Estimating how much oil we can recover</li>
+        <li>Optimizing fracturing operations</li>
+        <li>Planning well spacing and development strategies</li>
+    </ul>
+    
+    <div class="image-container">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjVmNWY1Ii8+CiAgICA8dGV4dCB4PSIzMDAiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WaXN1YWxpemF0aW9uIG9mIGEgVmVydGljYWxseSBGcmFjdHVyZWQgV2VsbCB3aXRoIFJlY3RhbmdsZSBTUlY8L3RleHQ+CiAgICA8cmVjdCB4PSIyNTAiIHk9IjEwMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8bGluZSB4MT0iMzAwIiB5MT0iMTAwIiB4Mj0iMzAwIiB5Mj0iMzAwIiBzdHJva2U9IiMzMzMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPGxpbmUgeDE9IjE1MCIgeTE9IjIwMCIgeDI9IjQ1MCIgeTI9IjIwMCIgc3Ryb2tlPSIjMzM4OGZmIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDx0ZXh0IHg9IjMwMCIgeT0iODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+V2VsbGJvcmU8L3RleHQ+CiAgICA8dGV4dCB4PSIzMDAiIHk9IjM0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SZWN0YW5nbGUgU1JWPC90ZXh0PgogICAgPHRleHQgeD0iNDgwIiB5PSIyMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9InN0YXJ0Ij5CaS13aW5nIEZyYWN0dXJlPC90ZXh0Pgo8L3N2Zz4=" alt="Conceptual diagram of a vertically fractured well with rectangle SRV">
+        <p class="caption">Fig. 1: Conceptual diagram of a vertically fractured well with rectangle SRV</p>
+    </div>
+    
+    <h2>Traditional Approaches vs. The New Model</h2>
+    
+    <p>Most existing models assume that the SRV is circular, but real-world micro-seismic monitoring shows that the SRV is actually more rectangular. This mismatch can lead to inaccurate predictions.</p>
+    
+    <p>The paper we're exploring proposes a new analytical model that:</p>
+    <ol>
+        <li>Models the SRV as a rectangle (more accurate to reality)</li>
+        <li>Accounts for a bi-wing fracture (the main fracture created during stimulation)</li>
+        <li>Considers stress-sensitivity of the rock (how permeability changes with pressure)</li>
+        <li>Models the unsteady flow between the rock matrix and fractures</li>
+    </ol>
+    
+    <h2>Building the Model from First Principles</h2>
+    
+    <h3>1. The Physical Model</h3>
+    
+    <p>Let's start by understanding what we're modeling physically:</p>
+    
+    <div class="image-container">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjVmNWY1Ii8+CiAgICA8IS0tIE91dGVyIFJlZ2lvbiAtLT4KICAgIDxyZWN0IHg9IjEwMCIgeT0iNTAiIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODg4ODgiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHRleHQgeD0iMzAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PdXRlciBSZWdpb24gKFNpbmdsZSBQb3Jvc2l0eSk8L3RleHQ+CiAgICAKICAgIDwhLS0gSW5uZXIgUmVnaW9uIC0tPgogICAgPHJlY3QgeD0iMTgwIiB5PSIxMDAiIHdpZHRoPSIyNDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZTZmMmZmIiBzdHJva2U9IiMzMzg4ZmYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHRleHQgeD0iMzAwIiB5PSI5MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Jbm5lciBSZWdpb24gKER1YWwgUG9yb3NpdHkpPC90ZXh0PgogICAgCiAgICA8IS0tIEJpLXdpbmcgRnJhY3R1cmUgLS0+CiAgICA8bGluZSB4MT0iMTUwIiB5MT0iMjAwIiB4Mj0iNDUwIiB5Mj0iMjAwIiBzdHJva2U9IiNmZjMzMzMiIHN0cm9rZS13aWR0aD0iMyIvPgogICAgPHRleHQgeD0iMzAwIiB5PSIyMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Qmktd2luZyBGcmFjdHVyZTwvdGV4dD4KICAgIAogICAgPCEtLSBXZWxsYm9yZSAtLT4KICAgIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjIwMCIgcj0iNSIgZmlsbD0iIzMzMzMzMyIvPgogICAgPHRleHQgeD0iMzAwIiB5PSIxODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+V2VsbGJvcmU8L3RleHQ+CiAgICAKICAgIDwhLS0gTGFiZWxzIC0tPgogICAgPHRleHQgeD0iNTAiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj55PC90ZXh0PgogICAgPHRleHQgeD0iMzAwIiB5PSIzODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+eDwvdGV4dD4KPC9zdmc+" alt="Five-region model for a vertically fractured well">
+        <p class="caption">Fig. 2: Five-region model for a vertically fractured well with rectangle SRV</p>
+    </div>
+    
+    <p>The model divides the reservoir into two main regions:</p>
+    
+    <ol>
+        <li><strong>Inner Region (SRV)</strong>: This is the stimulated part with higher permeability. It's modeled as a dual-porosity system, meaning we consider both the rock matrix and the fracture network separately.</li>
+        <li><strong>Outer Region</strong>: This is the unstimulated part with very low permeability. It's modeled as a single-porosity system.</li>
+    </ol>
+    
+    <p>A vertical bi-wing fracture runs through the center of the SRV, connecting to the wellbore. This is the main conduit for oil flow.</p>
+    
+    <h3>2. The Five-Linear-Flow Model</h3>
+    
+    <p>To simplify the complex flow patterns, the model divides the system into five regions with linear flow:</p>
+    
+    <ul>
+        <li><strong>Hydraulic Fracture</strong>: The main bi-wing fracture</li>
+        <li><strong>Inner Region f</strong>: The fractured region parallel to the hydraulic fracture</li>
+        <li><strong>Outer Region 1</strong>: Unstimulated region beyond the inner region, parallel to the hydraulic fracture</li>
+        <li><strong>Outer Region 2</strong>: Unstimulated region perpendicular to the hydraulic fracture</li>
+        <li><strong>Outer Region 3</strong>: Unstimulated region diagonal to the hydraulic fracture</li>
+    </ul>
+    
+    <h3>3. Key Mathematical Concepts</h3>
+    
+    <p>Before diving into the equations, let's understand some key concepts:</p>
+    
+    <div class="note">
+        <h4>Permeability Stress-Sensitivity</h4>
+        <p>As pressure decreases during production, the effective stress on the rock increases, which can reduce permeability. This is modeled using an exponential relationship:</p>
+        <div class="equation-box">
+            \[ k = k_i e^{-\alpha(p_i - p)} \]
+        </div>
+        <p>Where:</p>
+        <ul>
+            <li>\(k\) is the current permeability</li>
+            <li>\(k_i\) is the initial permeability</li>
+            <li>\(\alpha\) is the stress-sensitivity coefficient</li>
+            <li>\(p_i\) is the initial pressure</li>
+            <li>\(p\) is the current pressure</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <h4>Dual-Porosity Model</h4>
+        <p>In the SRV region, we consider two interacting continua:</p>
+        <ul>
+            <li>The <strong>matrix</strong>: Contains most of the oil but has low permeability</li>
+            <li>The <strong>fracture network</strong>: Has high permeability but low storage capacity</li>
+        </ul>
+        <p>Oil flows from the matrix to the fracture network, and then to the wellbore.</p>
+    </div>
+    
+    <h2>The Mathematical Model</h2>
+    
+    <p>Now let's build the mathematical model step by step:</p>
+    
+    <h3>1. Governing Equations for Each Region</h3>
+    
+    <p>For each region, we need to establish:</p>
+    <ul>
+        <li>Mass balance equations (continuity equations)</li>
+        <li>Flow equations (Darcy's law)</li>
+        <li>Boundary conditions</li>
+    </ul>
+    
+    <p>Let's start with the outer region (Region 3) as an example:</p>
+    
+    <div class="equation-box">
+        \[ e^{-\alpha_{D}P_{3D}}\left[{\frac{\partial^{2}P_{_{3D}}}{\partial x_{_{D}}^{2}}}-\alpha_{\mathrm{D}}({\frac{\partial P_{_{3D}}}{\partial x_{_{D}}}})^{2}\right]={\frac{1}{n_{_{m D}}}}{\frac{\partial P_{_{3D}}}{\partial t_{_{D}}}} \]
+    </div>
+    
+    <p>This equation looks complex, but it's essentially saying:</p>
+    
+    <p><em>"The rate of pressure change over time (right side) equals the spatial variation of pressure (left side), adjusted for how permeability changes with pressure (the exponential term)."</em></p>
+    
+    <p>The boundary conditions for Region 3 are:</p>
+    
+    <div class="equation-box">
+        \[ \left.\frac{\partial P_{3D}}{\partial x_{D}}\right|_{x_{D}=x_{O D}}=0 \]
+        \[ \left.P_{3D}\right|_{x_{D}=x_{I D}}=\left.P_{2D}\right|_{x_{D}=x_{I D}} \]
+    </div>
+    
+    <p>These conditions mean:</p>
+    <ul>
+        <li>No flow across the outer boundary (first equation)</li>
+        <li>Pressure continuity at the interface with Region 2 (second equation)</li>
+    </ul>
+    
+    <h3>2. Solving the Non-Linear Equations</h3>
+    
+    <p>The stress-sensitivity term makes these equations non-linear and difficult to solve directly. The paper uses Pedrosa's substitution to linearize them:</p>
+    
+    <div class="equation-box">
+        \[ P_{D} = -\frac{1}{\alpha_{D}} \ln(1 - \alpha_{D} \xi_{D}) \]
+    </div>
+    
+    <p>After this substitution and applying Laplace transformation, the equations become more manageable. For Region 3, we get:</p>
+    
+    <div class="equation-box">
+        \[ \overline{{\xi}}_{_{3D}}=\overline{{\xi}}_{_{2D}}\Big\vert_{x_{D}=x_{I D}}\frac{\cosh[\sqrt{s/n_{m D}}(x_{O D}-x_{D})]}{\cosh[\sqrt{s/n_{m D}}(x_{O D}-x_{I D})]} \]
+    </div>
+    
+    <p>This solution represents the pressure behavior in Region 3 in the Laplace domain.</p>
+    
+    <h3>3. Connecting All Regions</h3>
+    
+    <p>By solving similar equations for all regions and applying appropriate boundary conditions at the interfaces, we can connect the solutions to get the complete pressure response of the system.</p>
+    
+    <p>The final bottom hole pressure expression in the Laplace domain is:</p>
+    
+    <div class="equation-box">
+        \[ \overline{{\xi}}_{\mathrm{w}D}=\frac{\pi}{C_{F D}\cdot s\cdot\sqrt{\gamma_{6}}\tanh[\sqrt{\gamma_{6}}y_{I D}]} \]
+    </div>
+    
+    <p>Where \(\gamma_6\) is a complex function of various parameters that captures the interactions between all regions.</p>
+    
+    <p>To get the pressure in the real time domain, we need to perform numerical inversion of the Laplace transform:</p>
+    
+    <div class="equation-box">
+        \[ P_{w D}(t_{D})=-\frac{1}{\alpha_{D}}\ln[1-\alpha_{D}\xi_{w D}(t_{D})] \]
+    </div>
+    
+    <h2>Flow Regimes: Understanding the Pressure Behavior</h2>
+    
+    <p>One of the most valuable insights from this model is identifying distinct flow regimes that occur during production:</p>
+    
+    <ol>
+        <li><strong>Wellbore storage effect flow</strong>: Early-time behavior dominated by wellbore storage</li>
+        <li><strong>Skin and hydraulic fracture conductivity effect flow</strong>: Shows as a "hump" in the derivative curve</li>
+        <li><strong>SRV width effect flow</strong>: Linear flow in the SRV, appearing as a "concave" in the derivative curve</li>
+        <li><strong>Inner boundary dominated flow</strong>: When pressure depletion reaches the boundaries of the SRV</li>
+        <li><strong>Outer tight oil reservoir effect flow</strong>: Flow from the unstimulated region</li>
+        <li><strong>Outer boundary dominated flow</strong>: When pressure depletion reaches the outer boundaries</li>
+    </ol>
+    
+    <div class="image-container">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjVmNWY1Ii8+CiAgICA8IS0tIEdyaWQgbGluZXMgLS0+CiAgICA8ZyBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMSI+CiAgICAgICAgPGxpbmUgeDE9IjUwIiB5MT0iNTAiIHgyPSI1MCIgeTI9IjM1MCIvPgogICAgICAgIDxsaW5lIHgxPSI1MCIgeTE9IjM1MCIgeDI9IjU1MCIgeTI9IjM1MCIvPgogICAgPC9nPgogICAgCiAgICA8IS0tIEF4ZXMgbGFiZWxzIC0tPgogICAgPHRleHQgeD0iMzAwIiB5PSIzODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TG9nKHRpbWUpPC90ZXh0PgogICAgPHRleHQgeD0iMzAiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAgMzAgMjAwKSI+UHJlc3N1cmUgYW5kIERlcml2YXRpdmU8L3RleHQ+CiAgICAKICAgIDwhLS0gUHJlc3N1cmUgY3VydmUgLS0+CiAgICA8cGF0aCBkPSJNIDUwLDM1MCBMIDgwLDM0MCAxMjAsMzIwIDE2MCwzMDAgMjAwLDI4MCAyNDAsMjYwIDI4MCwyNDAgMzIwLDIyMCAzNjAsMjAwIDQwMCwxODAgNDQwLDE2MCA0ODAsMTQwIDUyMCwxMjAgNTUwLDExMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM4OGZmIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIAogICAgPCEtLSBEZXJpdmF0aXZlIGN1cnZlIC0tPgogICAgPHBhdGggZD0iTSA1MCwzNTAgTCA4MCwzMzAgMTIwLDMxMCAxNjAsMzEwIDE4MCwyOTAgMjAwLDI5MCAyMjAsMjkwIDI0MCwzMTAgMjYwLDMxMCAyODAsMjgwIDMwMCwyODAgMzIwLDI2MCAzNDAsMjYwIDM2MCwyNDAgMzgwLDI0MCA0MDAsMjIwIDQyMCwyMjAgNDQwLDIwMCA0NjAsMjAwIDQ4MCwxODAgNTAwLDE4MCA1MjAsMTcwIDU1MCwxNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICAKICAgIDwhLS0gRmxvdyByZWdpbWVzIC0tPgogICAgPHRleHQgeD0iODAiIHk9IjI3MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xPC90ZXh0PgogICAgPHRleHQgeD0iMTYwIiB5PSIyNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Mjwvc3BhbT4KICAgIDx0ZXh0IHg9IjI0MCIgeT0iMjcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjM8L3RleHQ+CiAgICA8dGV4dCB4PSIzMjAiIHk9IjI3MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj40PC90ZXh0PgogICAgPHRleHQgeD0iNDAwIiB5PSIyNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+NTwvdGV4dD4KICAgIDx0ZXh0IHg9IjQ4MCIgeT0iMjcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjY8L3RleHQ+CiAgICAKICAgIDwhLS0gTGVnZW5kIC0tPgogICAgPGxpbmUgeDE9IjQ1MCIgeTE9IjUwIiB4Mj0iNDcwIiB5Mj0iNTAiIHN0cm9rZT0iIzMzODhmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8dGV4dCB4PSI0NzUiIHk9IjU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkJIUDwvdGV4dD4KICAgIDxsaW5lIHgxPSI0NTAiIHkxPSI3MCIgeDI9IjQ3MCIgeTI9IjcwIiBzdHJva2U9IiNmZjMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHRleHQgeD0iNDc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIj5EZXJpdmF0aXZlPC90ZXh0PgogICAgCiAgICA8IS0tIEZsb3cgcmVnaW1lcyBsYWJlbHMgLS0+CiAgICA8dGV4dCB4PSI4MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5XZWxsYm9yZSBzdG9yYWdlPC90ZXh0PgogICAgPHRleHQgeD0iMTYwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNraW4gJiBmcmFjdHVyZTwvdGV4dD4KICAgIDx0ZXh0IHg9IjI0MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TUlYgd2lkdGggZWZmZWN0PC90ZXh0PgogICAgPHRleHQgeD0iMzIwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPklubmVyIGJvdW5kYXJ5PC90ZXh0PgogICAgPHRleHQgeD0iNDAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk91dGVyIHJlc2Vydm9pcjwvdGV4dD4KICAgIDx0ZXh0IHg9IjQ4MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PdXRlciBib3VuZGFyeTwvdGV4dD4KPC9zdmc+" alt="Pressure and derivative curves showing different flow regimes">
+        <p class="caption">Fig. 3: Typical pressure and derivative curves showing different flow regimes</p>
+    </div>
+    
+    <h2>Interactive Simulator: Explore the Model Yourself</h2>
+    
+    <p>Let's put theory into practice with an interactive simulator that lets you see how different parameters affect the pressure behavior of a vertically fractured well.</p>
+    
+    <div class="interactive-container">
+        <h3>VFW Pressure Transient Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="fracture-length">Hydraulic Fracture Half-Length (m):</label>
+            <input type="range" id="fracture-length" min="50" max="300" value="150" step="10">
+            <span id="fracture-length-value">150</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="fracture-conductivity">Fracture Conductivity:</label>
+            <input type="range" id="fracture-conductivity" min="1" max="30" value="10" step="1">
+            <span id="fracture-conductivity-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="srv-width">SRV Width (m):</label>
+            <input type="range" id="srv-width" min="50" max="200" value="100" step="10">
+            <span id="srv-width-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="stress-sensitivity">Stress-Sensitivity Coefficient:</label>
+            <input type="range" id="stress-sensitivity" min="0" max="0.1" value="0.05" step="0.01">
+            <span id="stress-sensitivity-value">0.05</span>
+        </div>
+        
+        <button id="simulate-btn" class="btn">Run Simulation</button>
+        
+        <div>
+            <canvas id="pressure-chart" width="700" height="400"></canvas>
+        </div>
+        
+        <div class="note">
+            <p><strong>How to use:</strong> Adjust the sliders to change well and reservoir parameters, then click "Run Simulation" to see how they affect the pressure response over time.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize values display
+        document.getElementById('fracture-length-value').textContent = document.getElementById('fracture-length').value;
+        document.getElementById('fracture-conductivity-value').textContent = document.getElementById('fracture-conductivity').value;
+        document.getElementById('srv-width-value').textContent = document.getElementById('srv-width').value;
+        document.getElementById('stress-sensitivity-value').textContent = document.getElementById('stress-sensitivity').value;
+        
+        // Update values display when sliders change
+        document.getElementById('fracture-length').addEventListener('input', function() {
+            document.getElementById('fracture-length-value').textContent = this.value;
+        });
+        
+        document.getElementById('fracture-conductivity').addEventListener('input', function() {
+            document.getElementById('fracture-conductivity-value').textContent = this.value;
+        });
+        
+        document.getElementById('srv-width').addEventListener('input', function() {
+            document.getElementById('srv-width-value').textContent = this.value;
+        });
+        
+        document.getElementById('stress-sensitivity').addEventListener('input', function() {
+            document.getElementById('stress-sensitivity-value').textContent = this.value;
+        });
+        
+        // Initialize the chart
+        let pressureChart;
+        
+        // Function to create the chart
+        function createChart() {
+            const ctx = document.getElementById('pressure-chart').getContext('2d');
+            
+            pressureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Pressure',
+                            data: [],
+                            borderColor: '#3388ff',
+                            backgroundColor: 'rgba(51, 136, 255, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Pressure Derivative',
+                            data: [],
+                            borderColor: '#ff3333',
+                            backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Log(Time)'
+                            },
+                            type: 'logarithmic'
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Pressure and Derivative'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Pressure Transient Response of VFW'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create the chart initially
+        createChart();
+        
+        // Function to simulate pressure response based on parameters
+        function simulatePressureResponse(fracLength, fracConductivity, srvWidth, stressSensitivity) {
+            // Generate time points (logarithmically spaced)
+            const timePoints = [];
+            const pressurePoints = [];
+            const derivativePoints = [];
+            
+            // Generate 50 logarithmically spaced time points from 0.01 to 1000
+            for (let i = 0; i < 50; i++) {
+                const time = Math.pow(10, -2 + i * 4 / 49);
+                timePoints.push(time);
+                
+                // Early wellbore storage (slope = 1 on log-log)
+                let pressure = 0;
+                let derivative = 0;
+                
+                if (time < 0.1) {
+                    // Wellbore storage effect
+                    pressure = 2 * time;
+                    derivative = 1;
+                } else if (time < 0.5) {
+                    // Skin and hydraulic fracture conductivity effect
+                    // Higher conductivity reduces the "hump"
+                    const humpFactor = Math.max(0.1, 1 - fracConductivity / 30);
+                    pressure = 2 + 0.5 * Math.log10(time) + humpFactor * Math.sin(Math.PI * (time - 0.1) / 0.4);
+                    derivative = 0.5 + humpFactor * Math.PI / 0.4 * Math.cos(Math.PI * (time - 0.1) / 0.4);
+                } else if (time < 5) {
+                    // SRV width effect flow - linear flow in SRV
+                    // Wider SRV makes this regime more pronounced
+                    const srvFactor = srvWidth / 100;
+                    pressure = 3 + 0.5 * Math.log10(time / 0.5) - srvFactor * 0.2 * Math.log10(time / 0.5);
+                    derivative = 0.5 - srvFactor * 0.2;
+                } else if (time < 20) {
+                    // Inner boundary dominated flow
+                    // Longer fractures delay this regime
+                    const fracFactor = fracLength / 150;
+                    pressure = 4 + 0.5 * Math.log10(time / 5) + (1 - fracFactor * 0.5) * 0.5 * Math.log10(time / 5);
+                    derivative = 0.5 + (1 - fracFactor * 0.5) * 0.5;
+                } else if (time < 100) {
+                    // Outer reservoir effect flow
+                    pressure = 5 + Math.log10(time / 20);
+                    derivative = 1;
+                } else {
+                    // Outer boundary dominated flow
+                    // Stress sensitivity increases the slope
+                    const stressFactor = 1 + stressSensitivity * 10;
+                    pressure = 6 + stressFactor * Math.log10(time / 100);
+                    derivative = stressFactor;
+                }
+                
+                pressurePoints.push(pressure);
+                derivativePoints.push(derivative);
+            }
+            
+            return {
+                times: timePoints,
+                pressures: pressurePoints,
+                derivatives: derivativePoints
+            };
+        }
+        
+        // Function to update the chart with new simulation results
+        function updateChart(simResults) {
+            pressureChart.data.labels = simResults.times;
+            pressureChart.data.datasets[0].data = simResults.pressures;
+            pressureChart.data.datasets[1].data = simResults.derivatives;
+            pressureChart.update();
+        }
+        
+        // Run simulation button click handler
+        document.getElementById('simulate-btn').addEventListener('click', function() {
+            const fracLength = parseFloat(document.getElementById('fracture-length').value);
+            const fracConductivity = parseFloat(document.getElementById('fracture-conductivity').value);
+            const srvWidth = parseFloat(document.getElementById('srv-width').value);
+            const stressSensitivity = parseFloat(document.getElementById('stress-sensitivity').value);
+            
+            const simResults = simulatePressureResponse(fracLength, fracConductivity, srvWidth, stressSensitivity);
+            updateChart(simResults);
+        });
+        
+        // Run initial simulation
+        const initialSimResults = simulatePressureResponse(150, 10, 100, 0.05);
+        updateChart(initialSimResults);
+    </script>
+    
+    <h2>Key Insights and Practical Applications</h2>
+    
+    <h3>What We've Learned</h3>
+    
+    <p>From the model and simulations, we can draw several important conclusions:</p>
+    
+    <ol>
+        <li><strong>Hydraulic Fracture Conductivity</strong>: Higher conductivity reduces the "hump" in the pressure derivative curve and weakens the SRV width effect. This means better fracture conductivity improves early-time flow performance.</li>
+        
+        <li><strong>SRV Width</strong>: Larger SRV width extends the duration of the second flow regime and weakens the inner boundary dominated flow. This confirms that creating a larger stimulated volume improves production.</li>
+        
+        <li><strong>Stress Sensitivity</strong>: Higher stress sensitivity accelerates the appearance of outer boundary dominated flow and reduces the duration of outer reservoir effect flow. This highlights the importance of accounting for stress sensitivity in tight reservoirs.</li>
+        
+        <li><strong>Outer Region Dimensions</strong>: The dimensions of the outer unstimulated region affect the timing of boundary-dominated flow, which helps in determining optimal well spacing.</li>
+    </ol>
+    
+    <h3>Real-World Applications</h3>
+    
+    <p>This model provides several practical benefits for reservoir engineers:</p>
+    
+    <ul>
+        <li><strong>Fracture Design Optimization</strong>: By understanding how fracture conductivity and SRV dimensions affect flow behavior, engineers can design better fracturing operations.</li>
+        
+        <li><strong>Well Spacing Determination</strong>: The model helps predict when interference between wells might occur, allowing for optimal well spacing.</li>
+        
+        <li><strong>Reservoir Characterization</strong>: By matching actual pressure data with the model, engineers can estimate reservoir properties like permeability and stress sensitivity.</li>
+        
+        <li><strong>Production Forecasting</strong>: Understanding the different flow regimes allows for more accurate production forecasts.</li>
+    </ul>
+    
+    <div class="note">
+        <h4>Example: Analyzing a Real Well</h4>
+        <p>In the paper, the model was applied to a real well from the Ordos Basin in China. By matching the pressure data, they were able to determine:</p>
+        <ul>
+            <li>The actual dimensions of the SRV (64m width × 160m length)</li>
+            <li>The fracture conductivity</li>
+            <li>The permeability contrast between the SRV and unstimulated rock</li>
+        </ul>
+        <p>These parameters were slightly different from what was estimated from micro-seismic monitoring, highlighting the value of pressure transient analysis for validation.</p>
+    </div>
+    
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>The rectangle SRV model with bi-wing fracture provides a more accurate representation of vertically fractured wells in tight oil reservoirs compared to traditional circular models. By accounting for stress sensitivity and unsteady cross-flow, it captures the complex physics of these systems while remaining computationally efficient.</p>
+    
+    <p>For reservoir engineers, this model offers a powerful tool for:</p>
+    <ul>
+        <li>Interpreting pressure transient tests</li>
+        <li>Evaluating fracturing effectiveness</li>
+        <li>Optimizing well spacing and field development</li>
+        <li>Forecasting production more accurately</li>
+    </ul>
+    
+    <p>As tight oil continues to be an important resource globally, models like this will play a crucial role in maximizing recovery while minimizing development costs.</p>
+    
+    <div class="highlight">
+        <p>This blog post has broken down a complex petroleum engineering concept into understandable components, starting from first principles. We've seen how mathematical models can capture physical phenomena, and how these models can be applied to solve real-world engineering problems. The interactive simulator provides hands-on experience with the concepts, allowing you to develop intuition about how different parameters affect well performance.</p>
+    </div>
+    
+</body>
+</html>

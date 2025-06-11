@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecting Faults Near Wells: First Principles of Pressure Transient Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .simulation-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .result {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .canvas-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .analogy {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #9b59b6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detecting Faults Near Wells: First Principles of Pressure Transient Analysis</h1>
+    
+    <p class="highlight">How can we detect invisible barriers underground? When drilling for oil or water, understanding what lies beneath is crucial. This post breaks down a complex but powerful technique from petroleum engineering that lets us "see" underground barriers using nothing but pressure measurements.</p>
+    
+    <h2>The Hidden World Below Our Feet</h2>
+    
+    <p>Imagine you're trying to navigate a maze while blindfolded. You can't see the walls, but you can feel them when you touch them. Similarly, when drilling wells, engineers can't directly see underground barriers (faults) but can detect them through clever analysis of how pressure changes over time.</p>
+    
+    <p class="analogy"><strong>Everyday Analogy:</strong> Think of a straw in a glass of water versus a straw near the edge of the glass. When you suck through the straw, the water flows differently when the straw is near the glass wall (a barrier) compared to when it's in the middle of the glass. By measuring how easily the water flows, you could determine how far the straw is from the wall—without seeing it!</p>
+    
+    <h2>The Core Problem</h2>
+    
+    <p>When a well is drilled near a fault (an underground barrier that fluids can't flow through), the pressure behavior during production or shut-in follows distinct patterns. The challenge is accurately determining the distance to this fault, especially when the data is affected by:</p>
+    
+    <ul>
+        <li>Wellbore storage (initial fluid expansion in the wellbore)</li>
+        <li>Short production times (not enough data)</li>
+        <li>Variable flow rates (complicating the analysis)</li>
+    </ul>
+    
+    <h2>Breaking Down the Physics</h2>
+    
+    <p>Let's start with the fundamental physics. When fluid flows in a porous medium (like rock), the pressure change follows diffusion equations. The basic dimensionless pressure equation for a well near a fault is:</p>
+    
+    <p>\[
+    \mathsf{p}_{\mathrm{wD}}(\mathsf{t}_{\mathrm{D}})=\frac{1}{2}\ln\mathopen{}\mathclose\bgroup\left(\frac{4\mathsf{t}_{\mathrm{D}}}{\mathsf{e}^{\gamma}}\aftergroup\egroup\right)+\mathbf{S}-\frac{1}{2}\mathbf{E}\mathopen{}\mathclose\bgroup\left(-\frac{(2\mathbf{L}_{\mathrm{D}})^{2}}{4\mathsf{t}_{\mathrm{D}}}\aftergroup\egroup\right)
+    \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\( \mathsf{p}_{\mathrm{wD}} \) is dimensionless pressure drop</li>
+        <li>\( \mathsf{t}_{\mathrm{D}} \) is dimensionless time</li>
+        <li>\( \mathbf{S} \) is the skin factor (damage around the wellbore)</li>
+        <li>\( \mathbf{L}_{\mathrm{D}} \) is dimensionless distance to the fault</li>
+        <li>\( \mathbf{E} \) is the exponential integral function</li>
+        <li>\( \gamma \) is Euler's constant (0.5772...)</li>
+    </ul>
+    
+    <h2>The Method of Images: How We "See" the Fault</h2>
+    
+    <p>The mathematical approach uses the "method of images" from physics. Imagine placing a mirror at the fault location. The real well creates a pressure disturbance, and we mathematically add an "image well" on the other side of the fault that creates an equal but opposite effect. This enforces the no-flow boundary condition at the fault.</p>
+    
+    <div class="note">
+        <p>The last term in the equation above represents the contribution from this image well. As time increases, this term becomes more significant, creating a characteristic "doubling of slope" on pressure plots.</p>
+    </div>
+    
+    <h2>Key Insight: The Pressure Derivative Ratio</h2>
+    
+    <p>The breakthrough presented in this paper is using the ratio of pressure to pressure derivative:</p>
+    
+    <p>\[
+    \frac{\Delta\mathfrak{p}}{2\Delta\mathfrak{p}^{\prime}}
+    \]</p>
+    
+    <p>This ratio shows a distinct behavior when a fault is present. It creates two parallel straight lines on a semi-logarithmic plot, making fault identification much clearer than traditional methods.</p>
+    
+    <h3>For early times (before the fault effect):</h3>
+    
+    <p>\[
+    \frac{\Delta{\sf p}}{2\Delta{\sf p}^{\prime}}=1.151\bigg\{\log({\sf t})+\log\left(\frac{\upbeta{\sf k}}{{\sf e}^{\gamma}\phi\upmu{\sf c}_{\sf t}{\sf L}^{2}}\right)\bigg\}+\frac{1}{2}\ln[4({\bf L}/{\sf r_{w}})^{2}\exp(2{\sf S})]
+    \]</p>
+    
+    <h3>For late times (after the fault effect):</h3>
+    
+    <p>\[
+    \frac{\Delta\mathbf{p}}{2\Delta\mathbf{p}^{\prime}}=1.151\Bigg\{\log(\mathbf{t})+\log\left(\frac{\upbeta\mathbf{k}}{\mathbf{e}^{\gamma}\phi\upmu\mathbf{c}_{\mathbf{t}}\mathrm{L}^{2}}\right)\Bigg\}+\frac{1}{4}\ln[4(\mathrm{L}/\uptau_{\mathrm{w}})^{2}\exp(2\mathrm{S})]
+    \]</p>
+    
+    <h2>The Correction Factor: Fixing Previous Methods</h2>
+    
+    <p>Earlier methods for calculating fault distance had limitations. The paper derives a correction factor \(F_C\) that extends the applicability of these methods:</p>
+    
+    <p>\[
+    \mathsf{F}_{\mathtt{C}}=1+0.7\log[\mathsf{r}_{\mathtt{x}}/(\mathsf{r}_{\mathtt{x}}-1)]
+    \]</p>
+    
+    <p>Where \(\mathsf{r}_{\mathtt{x}}\) is the intersection point of the two straight lines on a Horner plot.</p>
+    
+    <p>The corrected fault distance formula becomes:</p>
+    
+    <p>\[
+    \mathbf{L}=\mathbb{F}_{\mathbf{C}}{\sqrt{\frac{\beta\mathbf{k}\mathbf{t}_{\mathrm{p}}}{(1.781)\oplus\mu\mathbf{c}_{\mathrm{t}}\mathbf{r}_{\mathrm{x}}}}}
+    \]</p>
+    
+    <h2>Interactive Simulation: Finding the Fault Distance</h2>
+    
+    <div class="simulation-container">
+        <h3>Fault Distance Calculator</h3>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (k, md):</label>
+            <input type="range" id="permeability" min="1" max="1000" value="100" oninput="updateCalculation()">
+            <span id="permeabilityValue">100</span> md
+        </div>
+        
+        <div class="slider-container">
+            <label for="producingTime">Producing Time (tp, hours):</label>
+            <input type="range" id="producingTime" min="1" max="100" value="24" oninput="updateCalculation()">
+            <span id="producingTimeValue">24</span> hours
+        </div>
+        
+        <div class="slider-container">
+            <label for="intersectionPoint">Intersection Point (rx):</label>
+            <input type="range" id="intersectionPoint" min="2" max="100" value="20" oninput="updateCalculation()">
+            <span id="intersectionPointValue">20</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="porosity">Porosity (φ, fraction):</label>
+            <input type="range" id="porosity" min="1" max="40" value="20" oninput="updateCalculation()">
+            <span id="porosityValue">0.20</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="viscosity">Viscosity (μ, cp):</label>
+            <input type="range" id="viscosity" min="1" max="100" value="1" oninput="updateCalculation()">
+            <span id="viscosityValue">1</span> cp
+        </div>
+        
+        <div class="slider-container">
+            <label for="compressibility">Total Compressibility (ct, 1/psi):</label>
+            <input type="range" id="compressibility" min="1" max="100" value="10" oninput="updateCalculation()">
+            <span id="compressibilityValue">1.0e-5</span> 1/psi
+        </div>
+        
+        <div class="results">
+            <p>Correction Factor (FC): <span id="correctionFactor" class="result">1.0</span></p>
+            <p>Fault Distance (L): <span id="faultDistance" class="result">0</span> ft</p>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="pressureCanvas" width="700" height="300"></canvas>
+        </div>
+        
+        <p>This simulation shows how the pressure behavior changes with different fault distances. The blue curve represents the pressure response, and the red curve shows the pressure derivative. Notice how the derivative "doubles" when the pressure front reaches the fault.</p>
+    </div>
+    
+    <h2>The Pressure to Pressure Derivative Ratio: A Diagnostic Tool</h2>
+    
+    <p>One of the most powerful insights from this work is that the ratio \(\Delta p/(2\Delta p')\) provides a clear diagnostic signature of a fault. This ratio:</p>
+    
+    <ul>
+        <li>Shows two parallel straight lines on a semi-log plot</li>
+        <li>The vertical displacement between these lines directly relates to the fault distance</li>
+        <li>Works even when wellbore storage affects the data</li>
+    </ul>
+    
+    <p>From this ratio, we can calculate the fault distance using:</p>
+    
+    <p>\[
+    \mathbf{L}=\exp{(2\delta-[\Delta\mathbf{p}/2\Delta\mathbf{p}^{\prime}]^{*})}\sqrt{\frac{\beta\mathbf{k}\mathbf{t}^{*}}{(1.781)\phi\upmu\mathbf{c}_{\mathrm{t}}}}
+    \]</p>
+    
+    <p>Where \(\delta\) is the vertical displacement between the two straight lines.</p>
+    
+    <h2>Handling Wellbore Storage: Seeing Through the Noise</h2>
+    
+    <p>Wellbore storage is like noise that masks the early pressure signal. The paper shows that the pressure solution with wellbore storage is controlled by three dimensionless groups:</p>
+    
+    <ul>
+        <li>\(t_D/C_D\) - dimensionless time to wellbore storage ratio</li>
+        <li>\(C_D\exp(2S)\) - combined wellbore storage and skin effect</li>
+        <li>\(C_D/L_D^2\) - ratio of wellbore storage to squared fault distance</li>
+    </ul>
+    
+    <p>For early times, the solution matches that of an infinite reservoir:</p>
+    
+    <p>\[
+    \mathsf{p}_{\mathrm{wD}}(\mathsf{t}_{\mathrm{\tiny~D}}/\mathsf{C}_{\mathrm{\tiny~D}},\mathsf{C}_{\mathrm{\tiny~D}}\exp(2\mathsf{S}),\mathsf{C}_{\mathrm{\tiny~D}}/\mathsf{L}_{\mathrm{\tiny~D}}^{2})=\mathsf{p}_{\mathrm{wD}\infty}(\mathsf{t}_{\mathrm{\tiny~D}}/\mathsf{C}_{\mathrm{\tiny~D}},\mathsf{C}_{\mathrm{\tiny~D}}\exp(2\mathsf{S}))
+    \]</p>
+    
+    <p>For late times, the solution is twice the infinite reservoir solution at half the time:</p>
+    
+    <p>\[
+    \mathtt{p}_{\mathtt{w D}}(\mathfrak{t}_{\mathtt{D}}/\mathbb{C}_{\mathtt{D}},\mathbb{C}_{\mathtt{D}}\exp(2\mathbb{S}),\mathbb{C}_{\mathtt{D}}/\mathbb{L}_{\mathtt{D}}^{2})=2\mathtt{p}_{\mathtt{w D}\infty}(\mathfrak{t}_{\mathtt{D}}/(2\mathbb{C}_{\mathtt{D}}),\mathbb{C}_{\mathtt{D}}\exp(\mathbb{S})/\mathbb{L}_{\mathtt{D}})
+    \]</p>
+    
+    <p>This insight allows us to use standard wellbore storage type curves to analyze data from wells near faults!</p>
+    
+    <h2>Real-World Application: Field Example</h2>
+    
+    <p>Let's examine a real case from an offshore well. The well flowed for 36 hours and was then shut in for 18 hours. The pressure data was analyzed using the pressure derivative ratio method:</p>
+    
+    <ol>
+        <li>The \(\Delta p/(2\Delta p')\) plot showed two clear straight lines with a vertical displacement of 2.65</li>
+        <li>From Horner analysis, permeability was 796 md with a skin factor of -0.67</li>
+        <li>The fault distance was calculated to be 24.7 meters (81 ft)</li>
+        <li>Using the pressure derivative ratio method gave 28.8 meters (94.5 ft)</li>
+        <li>Both results were consistent with each other and with geological data</li>
+    </ol>
+    
+    <h2>Why This Matters</h2>
+    
+    <p>Accurate fault distance determination is crucial for:</p>
+    
+    <ul>
+        <li>Optimal well placement and field development</li>
+        <li>Designing secondary recovery projects (like water flooding)</li>
+        <li>Estimating reservoir size and connectivity</li>
+        <li>Predicting future production performance</li>
+    </ul>
+    
+    <p>The methods presented here provide more reliable results than previous techniques, especially when dealing with complex data affected by wellbore storage and variable rates.</p>
+    
+    <h2>Key Takeaways</h2>
+    
+    <ol>
+        <li>The pressure to pressure derivative ratio is a powerful diagnostic tool for fault detection</li>
+        <li>The correction factor extends the applicability of traditional fault distance formulas</li>
+        <li>Standard wellbore storage type curves can be used to analyze wells near faults</li>
+        <li>Variable rate tests can be analyzed using superposition functions</li>
+        <li>The techniques work even when data is affected by wellbore storage</li>
+    </ol>
+    
+    <p class="highlight">The beauty of this approach is that it allows us to "see" invisible underground barriers using nothing but pressure measurements at the wellbore. It's like having X-ray vision into the earth!</p>
+    
+    <script>
+        // Simulation code
+        function updateCalculation() {
+            // Get values from sliders
+            const k = parseFloat(document.getElementById('permeability').value);
+            document.getElementById('permeabilityValue').textContent = k;
+            
+            const tp = parseFloat(document.getElementById('producingTime').value);
+            document.getElementById('producingTimeValue').textContent = tp;
+            
+            const rx = parseFloat(document.getElementById('intersectionPoint').value);
+            document.getElementById('intersectionPointValue').textContent = rx;
+            
+            const porosity = parseFloat(document.getElementById('porosity').value) / 100;
+            document.getElementById('porosityValue').textContent = porosity.toFixed(2);
+            
+            const viscosity = parseFloat(document.getElementById('viscosity').value);
+            document.getElementById('viscosityValue').textContent = viscosity;
+            
+            const ct = parseFloat(document.getElementById('compressibility').value) * 1e-6;
+            document.getElementById('compressibilityValue').textContent = (ct * 1e6).toFixed(1) + "e-6";
+            
+            // Calculate correction factor
+            const fc = 1 + 0.7 * Math.log10(rx / (rx - 1));
+            document.getElementById('correctionFactor').textContent = fc.toFixed(3);
+            
+            // Calculate fault distance (in feet)
+            const beta = 0.000264; // Conversion constant for field units
+            const L = fc * Math.sqrt((beta * k * tp) / (1.781 * porosity * viscosity * ct * rx));
+            document.getElementById('faultDistance').textContent = L.toFixed(1);
+            
+            // Update canvas visualization
+            drawPressureCurves(L);
+        }
+        
+        function drawPressureCurves(faultDistance) {
+            const canvas = document.getElementById('pressureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set up scales
+            const width = canvas.width;
+            const height = canvas.height;
+            const margin = 40;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, height - margin);
+            ctx.lineTo(width - margin, height - margin);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Label axes
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (log scale)', width / 2, height - 10);
+            
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Pressure / Derivative', 0, 0);
+            ctx.restore();
+            
+            // Draw time ticks (log scale)
+            const logTimes = [0.1, 1, 10, 100];
+            const timeScale = (width - 2 * margin) / (Math.log10(100) - Math.log10(0.1));
+            
+            logTimes.forEach(time => {
+                const x = margin + (Math.log10(time) - Math.log10(0.1)) * timeScale;
+                ctx.beginPath();
+                ctx.moveTo(x, height - margin);
+                ctx.lineTo(x, height - margin + 5);
+                ctx.stroke();
+                ctx.fillText(time.toString(), x, height - margin + 15);
+            });
+            
+            // Generate pressure and derivative curves
+            const points = 100;
+            const pressurePoints = [];
+            const derivativePoints = [];
+            
+            for (let i = 0; i < points; i++) {
+                const logTime = Math.log10(0.1) + (Math.log10(100) - Math.log10(0.1)) * (i / (points - 1));
+                const time = Math.pow(10, logTime);
+                const x = margin + (logTime - Math.log10(0.1)) * timeScale;
+                
+                // Simplified pressure model
+                let pressure = 0.5 * Math.log(time);
+                let derivative = 0.5;
+                
+                // Add fault effect
+                const faultTime = 0.0002 * faultDistance * faultDistance;
+                if (time > faultTime) {
+                    const faultEffect = 0.5 * (1 - Math.exp(-(time - faultTime) / faultTime));
+                    pressure += faultEffect * Math.log(time / faultTime);
+                    derivative += faultEffect * 0.5;
+                }
+                
+                // Scale for display
+                const pressureY = height - margin - (pressure * 30);
+                const derivativeY = height - margin - (derivative * 60);
+                
+                pressurePoints.push({x, y: pressureY});
+                derivativePoints.push({x, y: derivativeY});
+            }
+            
+            // Draw pressure curve
+            ctx.beginPath();
+            ctx.moveTo(pressurePoints[0].x, pressurePoints[0].y);
+            for (let i = 1; i < pressurePoints.length; i++) {
+                ctx.lineTo(pressurePoints[i].x, pressurePoints[i].y);
+            }
+            ctx.strokeStyle = '#2980b9';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw derivative curve
+            ctx.beginPath();
+            ctx.moveTo(derivativePoints[0].x, derivativePoints[0].y);
+            for (let i = 1; i < derivativePoints.length; i++) {
+                ctx.lineTo(derivativePoints[i].x, derivativePoints[i].y);
+            }
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Add legend
+            ctx.fillStyle = '#2980b9';
+            ctx.fillRect(width - 120, 20, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'left';
+            ctx.fillText('Pressure', width - 100, 32);
+            
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(width - 120, 45, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('Derivative', width - 100, 57);
+            
+            // Mark fault effect time
+            const faultTime = 0.0002 * faultDistance * faultDistance;
+            if (faultTime >= 0.1 && faultTime <= 100) {
+                const faultX = margin + (Math.log10(faultTime) - Math.log10(0.1)) * timeScale;
+                ctx.beginPath();
+                ctx.moveTo(faultX, height - margin);
+                ctx.lineTo(faultX, margin);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.fillText('Fault Effect', faultX, margin - 10);
+            }
+        }
+        
+        // Initialize the simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalculation();
+        });
+    </script>
+</body>
+</html>

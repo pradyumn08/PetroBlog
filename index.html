@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBlog - Petroleum Engineering Resources</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a5276;
+            --secondary-color: #2874a6;
+            --accent-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-bg);
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 1.5rem;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .card-text {
+            color: #666;
+        }
+        
+        .blog-card {
+            height: 100%;
+        }
+        
+        .blog-card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .blog-card .card-text {
+            flex-grow: 1;
+        }
+        
+        .tool-card {
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .tool-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .tool-card .btn {
+            font-weight: 500;
+        }
+
+        footer {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        footer h4,
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .blog-sidebar {
+            position: sticky;
+            top: 20px;
+            height: 90vh;
+            padding-right: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 5px; /* For scrollbar spacing */
+        }
+        .blog-list .tile {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .blog-list .tile:hover, .blog-list .tile.active {
+            background-color: #e9ecef;
+            border-color: #007bff;
+        }
+        .tile-title {
+            font-size: 1.1rem;
+            margin-bottom: .5rem;
+        }
+        .blog-viewer-container {
+            height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .placeholder-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        #alphabet-nav .btn.active {
+            background-color: #004085;
+            color: white;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">PetroBlog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#blog-section">Blogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tools">Tools</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="container">
+        <!-- Blog Section -->
+        <section id="blog-section" class="py-5">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <!-- Left Column: Blog List and Filters -->
+                    <div class="col-lg-4" id="blog-sidebar-col">
+                        <div class="blog-sidebar">
+                            <h4 class="text-center">Articles</h4>
+                            <div id="alphabet-nav" class="text-center my-3"></div>
+                            <div id="blog-list" class="blog-list"></div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Blog Content Viewer -->
+                    <div class="col-lg-8" id="blog-viewer-col" style="position: relative;">
+                        <button id="toggle-sidebar-btn" class="btn btn-sm btn-outline-secondary" title="Hide Sidebar" style="position: absolute; top: 0; right: 15px; z-index: 1030;">
+                            <i class="fas fa-compress-alt"></i>
+                        </button>
+                        <div id="blog-viewer" class="blog-viewer-container"> 
+                            <div class="placeholder-content">
+                                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                <h4>Select an article to begin reading</h4>
+                                <p class="text-muted">Choose from the list on the left to display content here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="container my-5" id="tools">
+            <h2 class="section-title text-center">Petroleum Engineering Tools</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-5 mb-4">
+                    <div class="card tool-card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-3"><i class="fas fa-chart-line fa-3x text-primary"></i></div>
+                            <h5 class="card-title">Horner Plot Analysis Tool</h5>
+                            <p class="card-text flex-grow-1">Analyze pressure buildup data using the Horner plot method for well test analysis.</p>
+                            <a href="tools/PTAWasm/" class="btn btn-outline-primary mt-auto">Go to Tool</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5 mb-4">
+                    <div class="card tool-card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-3"><i class="fas fa-robot fa-3x text-primary"></i></div>
+                            <h5 class="card-title">Research Papers RAG</h5>
+                            <p class="card-text flex-grow-1">An AI-powered tool to search and retrieve information from petroleum engineering research papers.</p>
+                            <a href="https://petroblog-rag-dul8cee9gmtuyn5qvhfiqw.streamlit.app/" class="btn btn-outline-primary mt-auto">Go to App</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="container my-5" id="about">
+            <h2 class="section-title">About PetroBlog</h2>
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <p>This blog exists to make complex petroleum engineering topics more approachable. We hand-pick dense research papers and articles, then break them down into easy-to-digest content with interactive visualizations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>PetroBlog</h4>
+                        <p>Hand-picked articles, made approachable.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="social-icons">
+                            <a href="https://github.com/pradyumn08/PetroBlog" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/pradyumn08" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                        <p class="mt-3">© 2025 PetroBlog. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const blogListContainer = document.getElementById('blog-list');
+                const blogViewer = document.getElementById('blog-viewer');
+                const alphabetNav = document.getElementById('alphabet-nav');
+                let allBlogs = [];
+                let currentBlogUrl = null;
+                let addedPageElements = []; // Keep track of styles/scripts to remove them later
+
+                async function loadBlog(url) {
+                    if (currentBlogUrl === url) return;
+                    currentBlogUrl = url;
+
+                    // Cleanup from previous blog
+                    addedPageElements.forEach(el => el.remove());
+                    addedPageElements = [];
+                    document.querySelectorAll('#blog-list .tile').forEach(t => t.classList.remove('active'));
+                    const activeTile = document.querySelector(`#blog-list .tile[data-url='${url}']`);
+                    if (activeTile) activeTile.classList.add('active');
+
+                    blogViewer.innerHTML = '<p class="text-center">Loading...</p>';
+
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        if (doc.querySelector('parsererror')) {
+                            throw new Error('Failed to parse HTML content.');
+                        }
+
+                        const baseUrl = new URL('.', new URL(url, window.location.href)).href;
+
+                        // Handle stylesheets
+                        const links = doc.querySelectorAll('link[rel="stylesheet"]');
+                        links.forEach(link => {
+                            const newLink = document.createElement('link');
+                            newLink.rel = 'stylesheet';
+                            newLink.href = new URL(link.getAttribute('href'), baseUrl).href;
+                            document.head.appendChild(newLink);
+                            addedPageElements.push(newLink);
+                        });
+
+                        // Handle inline styles
+                        const styles = doc.querySelectorAll('style');
+                        styles.forEach(style => {
+                            const newStyle = document.createElement('style');
+                            let cssText = style.textContent;
+                            const scopedCss = cssText.replace(/([^{}]*){/g, function(match, selectors) {
+                                if (selectors.trim().startsWith('@')) return match;
+                                const scopedSelectors = selectors.split(',').map(selector => {
+                                    const trimmedSelector = selector.trim();
+                                    if (trimmedSelector.toLowerCase() === 'body') return '#blog-viewer';
+                                    if (trimmedSelector) return `#blog-viewer ${trimmedSelector}`;
+                                    return '';
+                                }).filter(Boolean).join(', ');
+                                return `${scopedSelectors} {`;
+                            });
+                            newStyle.textContent = scopedCss;
+                            document.head.appendChild(newStyle);
+                            addedPageElements.push(newStyle);
+                        });
+
+                        // --- CORRECT SCRIPT HANDLING LOGIC ---
+                        // 1. Get the list of scripts BEFORE modifying the doc
+                        const scriptsToLoad = Array.from(doc.querySelectorAll('script'));
+                        
+                        // 2. Remove scripts from the doc so they aren't injected as inert text
+                        scriptsToLoad.forEach(script => script.remove());
+
+                        // 3. Inject the clean HTML content
+                        const contentSource = doc.body || doc.documentElement;
+                        blogViewer.innerHTML = '';
+                        blogViewer.append(...contentSource.childNodes);
+
+                        // 4. Execute the scripts sequentially
+                        function executeScriptsSequentially(index) {
+                            if (index >= scriptsToLoad.length) {
+                                // All scripts loaded, re-trigger MathJax
+                                if (window.MathJax && window.MathJax.typesetPromise) {
+                                    console.log('Retriggering MathJax typesetting.');
+                                    window.MathJax.typesetPromise();
+                                }
+                                return;
+                            }
+
+                                                        const script = scriptsToLoad[index];
+                            
+                            // Skip MathJax and polyfill.io scripts
+                            if ((script.id && script.id.includes('MathJax-script')) || (script.src && (script.src.includes('mathjax') || script.src.includes('polyfill.io')))) {
+                                executeScriptsSequentially(index + 1);
+                                return;
+                            }
+
+                            const newScript = document.createElement('script');
+
+                            if (script.src) {
+                                newScript.src = new URL(script.src, baseUrl).href;
+                                newScript.onload = () => executeScriptsSequentially(index + 1);
+                                newScript.onerror = () => {
+                                    console.error(`Failed to load script: ${newScript.src}`);
+                                    executeScriptsSequentially(index + 1); // Continue to next script
+                                };
+                                document.body.appendChild(newScript);
+                                addedPageElements.push(newScript);
+                            } else {
+                                let scriptContent = script.textContent;
+                                // Regex to find and replace the DOMContentLoaded wrapper with its content,
+                                // leaving the rest of the script (like function definitions) intact.
+                                const wrapperRegex = /document\.addEventListener\(\s*['"]DOMContentLoaded['"]\s*,\s*function\s*\(\)\s*\{([\s\S]*?)\}\s*\);?/m;
+                                                                scriptContent = scriptContent.replace(wrapperRegex, '$1');
+                                
+                                newScript.textContent = scriptContent;
+
+                                document.body.appendChild(newScript);
+                                addedPageElements.push(newScript);
+                                // Inline scripts execute synchronously, move to the next one
+                                executeScriptsSequentially(index + 1);
+                            }
+                        }
+
+                        // Use a small timeout to ensure the DOM is fully updated before scripts run
+                        setTimeout(() => executeScriptsSequentially(0), 100);
+
+                    } catch (error) {
+                        blogViewer.innerHTML = `<p class="text-danger text-center">Error loading blog: ${error.message}</p>`;
+                        console.error('Error in loadBlog function:', error);
+                    }
+                }
+                function displayBlogs(blogsToDisplay) {
+                    blogListContainer.innerHTML = '';
+                    if (blogsToDisplay.length === 0) {
+                        blogListContainer.innerHTML = '<p>No articles found.</p>';
+                        return;
+                    }
+                    blogsToDisplay.forEach(blogPath => {
+                        const tile = document.createElement('div');
+                        tile.className = 'tile';
+                        tile.dataset.url = blogPath;
+                        tile.onclick = () => loadBlog(blogPath);
+
+                        const title = document.createElement('h5');
+                        title.className = 'tile-title';
+                        const titleText = blogPath.split('/').pop().replace('.html', '').replace(/-/g, ' ');
+                        title.textContent = titleText.charAt(0).toUpperCase() + titleText.slice(1);
+
+                        tile.appendChild(title);
+                        blogListContainer.appendChild(tile);
+                    });
+                }
+
+                function filterBlogs(letter) {
+                    document.querySelectorAll('#alphabet-nav .btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`#alphabet-nav .btn[data-letter='${letter}']`).classList.add('active');
+                    const filtered = (letter === 'All') 
+                        ? allBlogs 
+                        : allBlogs.filter(blogPath => blogPath.split('/').pop().toUpperCase().startsWith(letter));
+                    displayBlogs(filtered);
+                }
+
+                fetch('blogs.json?v=' + new Date().getTime()) // Cache-busting
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data || !Array.isArray(data.blogs)) {
+                            console.error('Invalid data format received from blogs.json:', data);
+                            throw new Error('Invalid or empty blog list format.');
+                        }
+                        allBlogs = data.blogs;
+                        const uniqueFirstLetters = [...new Set(allBlogs.map(blog => blog.split('/').pop().charAt(0).toUpperCase()))].sort();
+
+                        let buttonsHTML = '<button class="btn btn-outline-secondary m-1 active" data-letter="All">All</button>';
+                        buttonsHTML += uniqueFirstLetters.map(letter =>
+                            `<button class="btn btn-outline-secondary m-1" data-letter="${letter}">${letter}</button>`
+                        ).join('');
+
+                        alphabetNav.innerHTML = buttonsHTML;
+
+                        document.querySelectorAll('#alphabet-nav .btn').forEach(button => {
+                            button.addEventListener('click', () => filterBlogs(button.dataset.letter));
+                        });
+
+                        displayBlogs(allBlogs);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching blog list:', error);
+                        blogListContainer.innerHTML = `<p class="text-danger">Could not load blog list. <br><strong>Error:</strong> ${error.message}</p>`;
+                    });
+            });
+
+            // Sidebar Toggle Functionality
+            const toggleBtn = document.getElementById('toggle-sidebar-btn');
+            if (toggleBtn) {
+                const sidebarCol = document.getElementById('blog-sidebar-col');
+                const viewerCol = document.getElementById('blog-viewer-col');
+                const toggleIcon = toggleBtn.querySelector('i');
+
+                toggleBtn.addEventListener('click', () => {
+                    sidebarCol.classList.toggle('d-none');
+                    viewerCol.classList.toggle('col-lg-8');
+                    viewerCol.classList.toggle('col-lg-12');
+                    
+                    if (sidebarCol.classList.contains('d-none')) {
+                        toggleIcon.classList.remove('fa-compress-alt');
+                        toggleIcon.classList.add('fa-expand-alt');
+                        toggleBtn.title = "Show Sidebar";
+                    } else {
+                        toggleIcon.classList.remove('fa-expand-alt');
+                        toggleIcon.classList.add('fa-compress-alt');
+                        toggleBtn.title = "Hide Sidebar";
+                    }
+                });
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

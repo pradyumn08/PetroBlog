@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Non-Darcy Flow in Dual-Porosity Systems: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 15px;
+            color: #666;
+            margin: 20px 0;
+        }
+        .definition {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .insight {
+            background-color: #f8f4e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .example {
+            background-color: #f0f8e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider {
+            width: 100%;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .note {
+            background-color: #fffde7;
+            padding: 15px;
+            border-left: 4px solid #ffd600;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Non-Darcy Flow in Dual-Porosity Systems: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how oil flows through fractured reservoirs, or why production rates decline over time? The physics behind fluid flow in porous media is fascinating, especially when we move beyond the simplifications of traditional models. Today, we're going to break down a complex academic paper on non-Darcy flow in dual-porosity systems, making it accessible through first principles.</p>
+    
+    <h2>The Problem: Why Traditional Flow Models Fall Short</h2>
+    
+    <p>Most engineering models for oil and gas production make three major assumptions:</p>
+    <ol>
+        <li>Darcy's law applies (flow is laminar and proportional to pressure gradient)</li>
+        <li>Either constant production rate or constant wellbore pressure</li>
+        <li>Homogeneous reservoir properties</li>
+    </ol>
+    
+    <p>But reality is messier. In naturally fractured reservoirs, we often see high initial production rates followed by rapid decline. This behavior can't be explained by simple models, especially when flow becomes turbulent (non-Darcy) in the fractures.</p>
+    
+    <div class="definition">
+        <h3>What is a dual-porosity system?</h3>
+        <p>Imagine a sponge with cracks running through it. The sponge material itself (matrix) can hold fluid but doesn't let it flow easily. The cracks (fractures) hold less fluid but allow it to flow rapidly. This is a dual-porosity system - two interconnected porous media with very different properties working together.</p>
+    </div>
+    
+    <h2>First Principles: The Physics of Fluid Flow</h2>
+    
+    <h3>Darcy vs. Non-Darcy Flow</h3>
+    
+    <p>Let's start with the fundamental difference between these flow regimes:</p>
+    
+    <div class="equation-box">
+        <p><strong>Darcy's Law (Laminar Flow):</strong></p>
+        <p>\[ \frac{\partial p}{\partial r} = \frac{\mu}{k}\nu \]</p>
+        <p>Where pressure gradient is <em>linearly</em> proportional to velocity.</p>
+    </div>
+    
+    <div class="equation-box">
+        <p><strong>Forchheimer's Equation (Non-Darcy Flow):</strong></p>
+        <p>\[ \frac{\partial p}{\partial r} = \frac{\mu}{k}\nu + \beta\rho\nu^2 \]</p>
+        <p>This adds a quadratic term that becomes significant at higher velocities.</p>
+    </div>
+    
+    <p>Think of it like the difference between walking through water (resistance proportional to speed) versus running through water (resistance increases more than proportionally with speed).</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Demonstration: Darcy vs. Non-Darcy Flow</h3>
+        <p>Move the slider to change the flow velocity and see how pressure gradient behaves in both flow regimes.</p>
+        
+        <div class="slider-container">
+            <label for="velocitySlider">Flow Velocity (m/s): <span id="velocityValue">0.1</span></label><br>
+            <input type="range" min="0.01" max="0.5" step="0.01" value="0.1" class="slider" id="velocitySlider">
+        </div>
+        
+        <canvas id="flowCanvas" width="600" height="400"></canvas>
+        
+        <div id="pressureValues">
+            <p>Darcy Pressure Gradient: <span id="darcyPressure">0</span> Pa/m</p>
+            <p>Non-Darcy Pressure Gradient: <span id="nonDarcyPressure">0</span> Pa/m</p>
+            <p>Difference: <span id="pressureDiff">0</span> Pa/m</p>
+        </div>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Flow simulation parameters
+                const permeability = 1e-12; // m²
+                const viscosity = 1e-3; // Pa·s
+                const density = 1000; // kg/m³
+                const betaFactor = 1e7; // m⁻¹
+                
+                // Canvas setup
+                const canvas = document.getElementById('flowCanvas');
+                const ctx = canvas.getContext('2d');
+                const velocitySlider = document.getElementById('velocitySlider');
+                const velocityValue = document.getElementById('velocityValue');
+                const darcyPressureSpan = document.getElementById('darcyPressure');
+                const nonDarcyPressureSpan = document.getElementById('nonDarcyPressure');
+                const pressureDiffSpan = document.getElementById('pressureDiff');
+                
+                // Update values when slider changes
+                velocitySlider.oninput = function() {
+                    velocityValue.textContent = this.value;
+                    drawFlowComparison(parseFloat(this.value));
+                };
+                
+                // Initial draw
+                drawFlowComparison(0.1);
+                
+                function drawFlowComparison(velocity) {
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Calculate pressure gradients
+                    const darcyGradient = (viscosity / permeability) * velocity;
+                    const nonDarcyGradient = darcyGradient + betaFactor * density * velocity * velocity;
+                    const difference = nonDarcyGradient - darcyGradient;
+                    
+                    // Update text values
+                    darcyPressureSpan.textContent = darcyGradient.toExponential(2);
+                    nonDarcyPressureSpan.textContent = nonDarcyGradient.toExponential(2);
+                    pressureDiffSpan.textContent = difference.toExponential(2);
+                    
+                    // Draw axes
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(50, 350);
+                    ctx.lineTo(550, 350); // x-axis
+                    ctx.moveTo(50, 350);
+                    ctx.lineTo(50, 50);   // y-axis
+                    ctx.stroke();
+                    
+                    // Add labels
+                    ctx.fillStyle = '#000';
+                    ctx.font = '14px Arial';
+                    ctx.fillText('Position (m)', 270, 380);
+                    ctx.save();
+                    ctx.translate(20, 200);
+                    ctx.rotate(-Math.PI/2);
+                    ctx.fillText('Pressure (Pa)', 0, 0);
+                    ctx.restore();
+                    
+                    // Draw Darcy pressure line
+                    const maxX = 500;
+                    const scaleY = 300 / Math.max(nonDarcyGradient * 5, 1);
+                    
+                    ctx.strokeStyle = 'blue';
+                    ctx.beginPath();
+                    ctx.moveTo(50, 350);
+                    ctx.lineTo(550, 350 - darcyGradient * 5 * scaleY);
+                    ctx.stroke();
+                    
+                    // Draw non-Darcy pressure curve
+                    ctx.strokeStyle = 'red';
+                    ctx.beginPath();
+                    ctx.moveTo(50, 350);
+                    
+                    for (let x = 0; x <= maxX; x += 10) {
+                        const normalizedX = x / maxX;
+                        const y = 350 - (darcyGradient + betaFactor * density * velocity * velocity * normalizedX * normalizedX) * 5 * scaleY;
+                        ctx.lineTo(50 + x, y);
+                    }
+                    
+                    ctx.stroke();
+                    
+                    // Add legend
+                    ctx.fillStyle = 'blue';
+                    ctx.fillRect(450, 50, 15, 15);
+                    ctx.fillStyle = 'black';
+                    ctx.fillText('Darcy Flow', 470, 63);
+                    
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(450, 75, 15, 15);
+                    ctx.fillStyle = 'black';
+                    ctx.fillText('Non-Darcy Flow', 470, 88);
+                }
+});
+</script>
+    </div>
+    
+    <h2>The Mathematical Framework</h2>
+    
+    <p>Now let's build up the mathematical model step by step. The paper presents a complex system of differential equations, but we can understand them from first principles.</p>
+    
+    <h3>Basic Equations for Dual-Porosity Systems</h3>
+    
+    <p>For a dual-porosity system, we need equations for both the fracture and matrix:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{1}{r_D}\frac{\partial}{\partial r_D}\left(r_D\frac{\partial p_{\mathcal{D}}}{\partial r_D}\right) = (1-\omega)\frac{\partial p_{mD}}{\partial t_D} + \omega\frac{\partial p_{\mathcal{D}}}{\partial t_D} \]</p>
+        <p>\[ (1-\omega)\frac{\partial p_{mD}}{\partial t_D} = \lambda(p_{\mathcal{D}}-p_{mD}) \]</p>
+    </div>
+    
+    <div class="definition">
+        <h3>Key Parameters Explained</h3>
+        <ul>
+            <li>\( \omega \) (omega): Fracture storage coefficient - what fraction of the total storage capacity is in the fractures</li>
+            <li>\( \lambda \) (lambda): Interporosity flow coefficient - how easily fluid moves between matrix and fractures</li>
+            <li>\( r_D \): Dimensionless radius (normalized by wellbore radius)</li>
+            <li>\( t_D \): Dimensionless time</li>
+            <li>\( p_{\mathcal{D}} \), \( p_{mD} \): Dimensionless pressures in fracture and matrix</li>
+        </ul>
+    </div>
+    
+    <p>When we incorporate non-Darcy flow using Forchheimer's equation, these equations become more complex. The authors transform the system to use velocity as the primary variable instead of pressure:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{1}{r_D}\frac{\partial}{\partial r_D}\left(r_D\frac{\partial V_f}{\partial r_D}\right) - \frac{V_f}{r_D^2} = \omega\frac{\partial V_f}{\partial t_D} + \frac{\omega\delta}{2}\frac{\partial V_f^2}{\partial t_D} + (1-\omega)\frac{\partial V_m}{\partial t_D} + \frac{V_f}{r_D^2} \]</p>
+        <p>\[ (1-\omega)\frac{\partial V_m}{\partial t_D} = \lambda V_f + \frac{\lambda\delta}{2}V_f^2 - \lambda V_m \]</p>
+    </div>
+    
+    <p>Where \(V_f = \frac{\nu_f}{k_f}\) and \(V_m = \frac{\nu_m}{k_m}\) are velocities divided by permeability, and \(\delta = \frac{2\beta\rho k_f^2}{\mu}\) is a dimensionless parameter representing the strength of non-Darcy effects.</p>
+    
+    <h3>The Perturbation Method Solution</h3>
+    
+    <p>To solve this complex nonlinear system, the authors use a perturbation method. The basic idea is:</p>
+    
+    <ol>
+        <li>Define a small parameter \(\varepsilon = \frac{\lambda\delta}{2}\) that measures the strength of non-Darcy effects</li>
+        <li>Expand the solution as \(V_f = V_0 + \varepsilon V_1\), where \(V_0\) is the laminar solution</li>
+        <li>Solve for \(V_0\) and \(V_1\) separately</li>
+    </ol>
+    
+    <div class="insight">
+        <h3>Physical Interpretation</h3>
+        <p>This approach is like saying: "Let's first solve the problem assuming laminar flow, then add a correction for the non-Darcy effects." It works when non-Darcy effects are present but not dominant.</p>
+    </div>
+    
+    <h2>Key Solutions and Their Applications</h2>
+    
+    <p>Let's look at some of the most important solutions derived in the paper:</p>
+    
+    <h3>1. Steady-State Solution</h3>
+    
+    <div class="equation-box">
+        <p>\[ q_o = \frac{2\pi h\mu\left[\ln\left(\frac{r_e}{r_w}\right)\right]}{\beta\rho\left[\frac{1}{r_w}-\frac{1}{r_e}\right]} \cdot \left[1+4\frac{(p_i-p_w)k_f\beta\rho\left[\frac{1}{r_w}-\frac{1}{r_e}\right]}{\mu^2\ln^2\left[\frac{r_e}{r_w}\right]^2}-1\right] \]</p>
+    </div>
+    
+    <p>This equation tells us the flow rate when pressure has stabilized throughout the reservoir. It can be used to estimate the non-Darcy coefficient \(k_f\beta\).</p>
+    
+    <h3>2. Early-Time Transient Solution</h3>
+    
+    <div class="equation-box">
+        <p>\[ q_D = \sqrt{\frac{\omega}{\pi t_D}} - \frac{\beta\rho k_f^2}{\mu}\left(\frac{(p_i-p_{wf})}{r_w\mu}\right)\frac{\omega}{\pi\sqrt{\pi t_D}2\tilde{t}_D} \]</p>
+    </div>
+    
+    <p>This solution shows how the flow rate behaves shortly after production starts. The first term is the laminar solution, and the second term is the non-Darcy correction.</p>
+    
+    <h3>3. Late-Time Transient Solution</h3>
+    
+    <div class="equation-box">
+        <p>\[ q_D = -\left[\int_0^{\infty}\frac{\left[\frac{4}{Exp(2\gamma)^{t_D}}t_D\right]^x}{\Gamma(x+1)}dx\right] \cdot \left[1-\frac{4\beta\rho k_f^2}{\mu}\left[\frac{(p_i-p_{wf})}{r_w\mu}\right]\int_0^{\infty}\frac{\left(\frac{4}{Exp(2\gamma)^t}\right)^x x}{\Gamma(x+1)}dx\right] \]</p>
+    </div>
+    
+    <p>This complex expression describes flow behavior during the later transient period.</p>
+    
+    <h3>4. Boundary-Dominated Flow</h3>
+    
+    <p>One of the most interesting findings is that during boundary-dominated flow (when the pressure disturbance has reached all reservoir boundaries), the solution for non-Darcy flow becomes identical to the laminar flow solution:</p>
+    
+    <div class="equation-box">
+        <p>\[ q_D = \frac{\frac{r_{eD}^2-1}{2}}{\left[\frac{r_{eD}^2}{2}\ln r_{eD}-\frac{r_{eD}^2(1-\gamma)}{2}+\frac{1}{4}\right]} \cdot \frac{(a-r_1)Exp(-r_1t_D)-(a-r_2)Exp(-r_2t_D)}{r_2-r_1} \]</p>
+    </div>
+    
+    <div class="insight">
+        <h3>Key Insight</h3>
+        <p>This means that methods developed for estimating reservoir properties during boundary-dominated flow under laminar conditions can still be used even when non-Darcy effects were present earlier!</p>
+    </div>
+    
+    <h2>Practical Applications: Identifying Non-Darcy Flow</h2>
+    
+    <p>How can we tell if non-Darcy effects are present in a reservoir? The paper provides a clever diagnostic method:</p>
+    
+    <div class="example">
+        <h3>Diagnostic Method</h3>
+        <p>Plot the logarithmic derivative \(\frac{d(\log(q_D))}{d(\log(t_D))}\) against \(\log(t_D)\).</p>
+        <ul>
+            <li>If the minimum value is less than -0.5, flow is laminar</li>
+            <li>If the minimum value is greater than -0.5, non-Darcy effects are significant</li>
+        </ul>
+    </div>
+    
+    <div class="interactive-container">
+        <h3>Interactive Tool: Non-Darcy Flow Diagnostics</h3>
+        <p>Adjust the parameters below to see how they affect flow behavior and how to identify non-Darcy effects.</p>
+        
+        <div class="slider-container">
+            <label for="omegaSlider">Fracture Storage Coefficient (ω): <span id="omegaValue">0.01</span></label><br>
+            <input type="range" min="0.001" max="0.1" step="0.001" value="0.01" class="slider" id="omegaSlider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="lambdaSlider">Interporosity Flow Coefficient (λ): <span id="lambdaValue">1.0e-5</span></label><br>
+            <input type="range" min="1e-7" max="1e-3" step="1e-7" value="1e-5" class="slider" id="lambdaSlider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="betaSlider">Non-Darcy Coefficient (β): <span id="betaValue">0</span> ft⁻¹</label><br>
+            <input type="range" min="0" max="1e6" step="1e4" value="0" class="slider" id="betaSlider">
+        </div>
+        
+        <canvas id="diagnosticCanvas" width="600" height="400"></canvas>
+        
+        <div id="diagnosticResult">
+            <p>Flow Regime: <span id="flowRegime">Laminar</span></p>
+            <p>Minimum Derivative Value: <span id="minDerivative">0</span></p>
+        </div>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Diagnostic plot parameters
+                const omegaSlider = document.getElementById('omegaSlider');
+                const lambdaSlider = document.getElementById('lambdaSlider');
+                const betaSlider = document.getElementById('betaSlider');
+                const omegaValue = document.getElementById('omegaValue');
+                const lambdaValue = document.getElementById('lambdaValue');
+                const betaValue = document.getElementById('betaValue');
+                const flowRegimeSpan = document.getElementById('flowRegime');
+                const minDerivativeSpan = document.getElementById('minDerivative');
+                const diagnosticCanvas = document.getElementById('diagnosticCanvas');
+                const diagCtx = diagnosticCanvas.getContext('2d');
+                
+                // Update values when sliders change
+                omegaSlider.oninput = function() {
+                    omegaValue.textContent = parseFloat(this.value).toFixed(3);
+                    updateDiagnosticPlot();
+                };
+                
+                lambdaSlider.oninput = function() {
+                    lambdaValue.textContent = parseFloat(this.value).toExponential(1);
+                    updateDiagnosticPlot();
+                };
+                
+                betaSlider.oninput = function() {
+                    betaValue.textContent = parseInt(this.value).toLocaleString();
+                    updateDiagnosticPlot();
+                };
+                
+                // Initial draw
+                updateDiagnosticPlot();
+                
+                function updateDiagnosticPlot() {
+                    // Get parameter values
+                    const omega = parseFloat(omegaSlider.value);
+                    const lambda = parseFloat(lambdaSlider.value);
+                    const beta = parseFloat(betaSlider.value);
+                    
+                    // Clear canvas
+                    diagCtx.clearRect(0, 0, diagnosticCanvas.width, diagnosticCanvas.height);
+                    
+                    // Draw axes
+                    diagCtx.strokeStyle = '#000';
+                    diagCtx.lineWidth = 2;
+                    diagCtx.beginPath();
+                    diagCtx.moveTo(50, 200);
+                    diagCtx.lineTo(550, 200); // x-axis (zero line)
+                    diagCtx.moveTo(50, 350);
+                    diagCtx.lineTo(550, 350); // x-axis (log time)
+                    diagCtx.moveTo(50, 50);
+                    diagCtx.lineTo(50, 350);   // y-axis
+                    diagCtx.stroke();
+                    
+                    // Add labels
+                    diagCtx.fillStyle = '#000';
+                    diagCtx.font = '14px Arial';
+                    diagCtx.fillText('log(tD)', 270, 380);
+                    diagCtx.save();
+                    diagCtx.translate(20, 200);
+                    diagCtx.rotate(-Math.PI/2);
+                    diagCtx.fillText('d(log(qD))/d(log(tD))', 0, 0);
+                    diagCtx.restore();
+                    
+                    // Draw derivative curves
+                    const timePoints = 100;
+                    const maxLogTime = 6; // 10^6 dimensionless time
+                    let minDerivative = 0;
+                    
+                    // Laminar flow curve
+                    diagCtx.strokeStyle = 'blue';
+                    diagCtx.beginPath();
+                    
+                    let laminarPoints = [];
+                    for (let i = 0; i <= timePoints; i++) {
+                        const logT = i * maxLogTime / timePoints - 1; // Start from 10^-1
+                        const t = Math.pow(10, logT);
+                        
+                        // Simplified derivative model for laminar flow
+                        let derivative;
+                        if (t < 0.1) {
+                            derivative = -0.5; // Early time
+                        } else if (t < 10) {
+                            derivative = -0.5 - 0.3 * Math.exp(-lambda * t); // Transition
+                        } else {
+                            derivative = -1.0; // Late time
+                        }
+                        
+                        laminarPoints.push({logT, derivative});
+                        
+                        const x = 50 + (logT + 1) * 500 / (maxLogTime + 1);
+                        const y = 200 - derivative * 100;
+                        
+                        if (i === 0) {
+                            diagCtx.moveTo(x, y);
+                        } else {
+                            diagCtx.lineTo(x, y);
+                        }
+                    }
+                    
+                    diagCtx.stroke();
+                    
+                    // Non-Darcy flow curve
+                    diagCtx.strokeStyle = 'red';
+                    diagCtx.beginPath();
+                    
+                    let nonDarcyPoints = [];
+                    for (let i = 0; i <= timePoints; i++) {
+                        const logT = i * maxLogTime / timePoints - 1; // Start from 10^-1
+                        const t = Math.pow(10, logT);
+                        
+                        // Simplified derivative model for non-Darcy flow
+                        // Higher beta means more deviation from laminar flow
+                        const betaEffect = beta / 1e6 * 0.5 * Math.exp(-t/10);
+                        let derivative;
+                        if (t < 0.1) {
+                            derivative = -0.5 + betaEffect; // Early time
+                        } else if (t < 10) {
+                            derivative = -0.5 - 0.3 * Math.exp(-lambda * t) + betaEffect; // Transition
+                        } else {
+                            derivative = -1.0; // Late time (converges to laminar)
+                        }
+                        
+                        nonDarcyPoints.push({logT, derivative});
+                        
+                        if (derivative < minDerivative) {
+                            minDerivative = derivative;
+                        }
+                        
+                        const x = 50 + (logT + 1) * 500 / (maxLogTime + 1);
+                        const y = 200 - derivative * 100;
+                        
+                        if (i === 0) {
+                            diagCtx.moveTo(x, y);
+                        } else {
+                            diagCtx.lineTo(x, y);
+                        }
+                    }
+                    
+                    diagCtx.stroke();
+                    
+                    // Draw horizontal line at -0.5
+                    diagCtx.strokeStyle = '#888';
+                    diagCtx.setLineDash([5, 5]);
+                    diagCtx.beginPath();
+                    diagCtx.moveTo(50, 200 + 0.5 * 100);
+                    diagCtx.lineTo(550, 200 + 0.5 * 100);
+                    diagCtx.stroke();
+                    diagCtx.setLineDash([]);
+                    
+                    // Add legend
+                    diagCtx.fillStyle = 'blue';
+                    diagCtx.fillRect(450, 50, 15, 15);
+                    diagCtx.fillStyle = 'black';
+                    diagCtx.fillText('Laminar Flow', 470, 63);
+                    
+                    diagCtx.fillStyle = 'red';
+                    diagCtx.fillRect(450, 75, 15, 15);
+                    diagCtx.fillStyle = 'black';
+                    diagCtx.fillText('Non-Darcy Flow', 470, 88);
+                    
+                    // Update result text
+                    minDerivativeSpan.textContent = minDerivative.toFixed(2);
+                    if (minDerivative < -0.5) {
+                        flowRegimeSpan.textContent = "Laminar";
+                        flowRegimeSpan.style.color = "blue";
+                    } else {
+                        flowRegimeSpan.textContent = "Non-Darcy (inertial effects present)";
+                        flowRegimeSpan.style.color = "red";
+                    }
+                }
+});
+</script>
+    </div>
+    
+    <h2>Real-World Applications and Implications</h2>
+    
+    <p>Understanding non-Darcy flow in dual-porosity systems has several practical applications:</p>
+    
+    <h3>1. Well Testing and Reservoir Characterization</h3>
+    
+    <p>When analyzing pressure and rate data from wells, engineers need to account for non-Darcy effects to correctly estimate reservoir properties. Ignoring these effects can lead to:</p>
+    <ul>
+        <li>Underestimation of reservoir permeability</li>
+        <li>Incorrect calculation of skin factor (near-wellbore damage)</li>
+        <li>Erroneous prediction of future production</li>
+    </ul>
+    
+    <h3>2. Production Forecasting</h3>
+    
+    <p>The paper shows that non-Darcy effects are most significant early in production and diminish over time. This explains why some fractured wells show a rapid initial decline followed by a more gradual decline later.</p>
+    
+    <h3>3. Completion Design</h3>
+    
+    <p>Understanding how non-Darcy flow affects production can inform decisions about:</p>
+    <ul>
+        <li>Fracture design in stimulation treatments</li>
+        <li>Optimal production rates to minimize non-Darcy effects</li>
+        <li>Well spacing and drainage area calculations</li>
+    </ul>
+    
+    <div class="note">
+        <h3>Important Finding</h3>
+        <p>The paper shows that methods for calculating drainage area under laminar conditions still work well even when non-Darcy effects are present, with errors less than 3%.</p>
+    </div>
+    
+    <h2>Putting It All Together: A Simplified Model</h2>
+    
+    <p>Let's build a simplified mental model of what happens in a dual-porosity reservoir with non-Darcy flow:</p>
+    
+    <ol>
+        <li><strong>Early Time:</strong> Flow is dominated by the fractures. High velocities near the wellbore cause significant non-Darcy effects, resulting in a higher pressure drop than predicted by Darcy's law.</li>
+        <li><strong>Middle Time:</strong> Matrix begins to contribute flow to the fractures. Flow rates decrease, reducing non-Darcy effects.</li>
+        <li><strong>Late Time:</strong> Flow reaches boundaries. Flow rates are lower, and the system behaves essentially like a laminar flow system.</li>
+    </ol>
+    
+    <p>This explains why production decline curves in fractured reservoirs often show a steep initial decline followed by a more gradual decline.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Simulation: Production Decline in a Dual-Porosity Reservoir</h3>
+        <p>This simulation shows how production rate changes over time in a dual-porosity reservoir with and without non-Darcy effects.</p>
+        
+        <div class="slider-container">
+            <label for="omegaSimSlider">Fracture Storage Coefficient (ω): <span id="omegaSimValue">0.01</span></label><br>
+            <input type="range" min="0.001" max="0.1" step="0.001" value="0.01" class="slider" id="omegaSimSlider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="lambdaSimSlider">Interporosity Flow Coefficient (λ): <span id="lambdaSimValue">1.0e-5</span></label><br>
+            <input type="range" min="1e-7" max="1e-3" step="1e-7" value="1e-5" class="slider" id="lambdaSimSlider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="betaSimSlider">Non-Darcy Coefficient (β): <span id="betaSimValue">0</span> ft⁻¹</label><br>
+            <input type="range" min="0" max="1e6" step="1e4" value="0" class="slider" id="betaSimSlider">
+        </div>
+        
+        <canvas id="declineCanvas" width="600" height="400"></canvas>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Decline curve simulation parameters
+                const omegaSimSlider = document.getElementById('omegaSimSlider');
+                const lambdaSimSlider = document.getElementById('lambdaSimSlider');
+                const betaSimSlider = document.getElementById('betaSimSlider');
+                const omegaSimValue = document.getElementById('omegaSimValue');
+                const lambdaSimValue = document.getElementById('lambdaSimValue');
+                const betaSimValue = document.getElementById('betaSimValue');
+                const declineCanvas = document.getElementById('declineCanvas');
+                const declineCtx = declineCanvas.getContext('2d');
+                
+                // Update values when sliders change
+                omegaSimSlider.oninput = function() {
+                    omegaSimValue.textContent = parseFloat(this.value).toFixed(3);
+                    updateDeclineCurve();
+                };
+                
+                lambdaSimSlider.oninput = function() {
+                    lambdaSimValue.textContent = parseFloat(this.value).toExponential(1);
+                    updateDeclineCurve();
+                };
+                
+                betaSimSlider.oninput = function() {
+                    betaSimValue.textContent = parseInt(this.value).toLocaleString();
+                    updateDeclineCurve();
+                };
+                
+                // Initial draw
+                updateDeclineCurve();
+                
+                function updateDeclineCurve() {
+                    // Get parameter values
+                    const omega = parseFloat(omegaSimSlider.value);
+                    const lambda = parseFloat(lambdaSimSlider.value);
+                    const beta = parseFloat(betaSimSlider.value);
+                    
+                    // Clear canvas
+                    declineCtx.clearRect(0, 0, declineCanvas.width, declineCanvas.height);
+                    
+                    // Draw axes
+                    declineCtx.strokeStyle = '#000';
+                    declineCtx.lineWidth = 2;
+                    declineCtx.beginPath();
+                    declineCtx.moveTo(50, 50);
+                    declineCtx.lineTo(50, 350); // y-axis
+                    declineCtx.moveTo(50, 350);
+                    declineCtx.lineTo(550, 350); // x-axis
+                    declineCtx.stroke();
+                    
+                    // Add labels
+                    declineCtx.fillStyle = '#000';
+                    declineCtx.font = '14px Arial';
+                    declineCtx.fillText('Time (days)', 270, 380);
+                    declineCtx.save();
+                    declineCtx.translate(20, 200);
+                    declineCtx.rotate(-Math.PI/2);
+                    declineCtx.fillText('Production Rate (STB/day)', 0, 0);
+                    declineCtx.restore();
+                    
+                    // Draw decline curves
+                    const timePoints = 100;
+                    const maxTime = 365; // 1 year
+                    
+                    // Laminar flow curve
+                    declineCtx.strokeStyle = 'blue';
+                    declineCtx.beginPath();
+                    
+                    for (let i = 0; i <= timePoints; i++) {
+                        const t = i * maxTime / timePoints;
+                        const tD = t / 365 * 10; // Convert to dimensionless time
+                        
+                        // Simplified rate model for laminar flow
+                        let rate;
+                        if (tD < 0.1) {
+                            rate = 1000 * Math.sqrt(omega / (Math.PI * tD)); // Early time
+                        } else if (tD < 10) {
+                            // Transition period
+                            const earlyRate = 1000 * Math.sqrt(omega / (Math.PI * tD));
+                            const lateRate = 2000 / (Math.log(tD) + 0.80907);
+                            const blend = Math.min(1, (tD - 0.1) / 9.9);
+                            rate = earlyRate * (1 - blend) + lateRate * blend;
+                        } else {
+                            rate = 2000 / (Math.log(tD) + 0.80907); // Late time
+                        }
+                        
+                        const x = 50 + t * 500 / maxTime;
+                        const y = 350 - rate * 300 / 1000;
+                        
+                        if (i === 0) {
+                            declineCtx.moveTo(x, y);
+                        } else {
+                            declineCtx.lineTo(x, y);
+                        }
+                    }
+                    
+                    declineCtx.stroke();
+                    
+                    // Non-Darcy flow curve
+                    declineCtx.strokeStyle = 'red';
+                    declineCtx.beginPath();
+                    
+                    for (let i = 0; i <= timePoints; i++) {
+                        const t = i * maxTime / timePoints;
+                        const tD = t / 365 * 10; // Convert to dimensionless time
+                        
+                        // Non-Darcy effect decreases with time
+                        const betaEffect = beta / 1e6 * Math.exp(-tD);
+                        
+                        // Simplified rate model for non-Darcy flow
+                        let rate;
+                        if (tD < 0.1) {
+                            // Early time with non-Darcy effects
+                            rate = 1000 * Math.sqrt(omega / (Math.PI * tD)) * (1 - betaEffect);
+                        } else if (tD < 10) {
+                            // Transition period
+                            const earlyRate = 1000 * Math.sqrt(omega / (Math.PI * tD)) * (1 - betaEffect);
+                            const lateRate = 2000 / (Math.log(tD) + 0.80907);
+                            const blend = Math.min(1, (tD - 0.1) / 9.9);
+                            rate = earlyRate * (1 - blend) + lateRate * blend;
+                        } else {
+                            // Late time (converges to laminar)
+                            rate = 2000 / (Math.log(tD) + 0.80907);
+                        }
+                        
+                        const x = 50 + t * 500 / maxTime;
+                        const y = 350 - rate * 300 / 1000;
+                        
+                        if (i === 0) {
+                            declineCtx.moveTo(x, y);
+                        } else {
+                            declineCtx.lineTo(x, y);
+                        }
+                    }
+                    
+                    declineCtx.stroke();
+                    
+                    // Add legend
+                    declineCtx.fillStyle = 'blue';
+                    declineCtx.fillRect(450, 50, 15, 15);
+                    declineCtx.fillStyle = 'black';
+                    declineCtx.fillText('Laminar Flow', 470, 63);
+                    
+                    declineCtx.fillStyle = 'red';
+                    declineCtx.fillRect(450, 75, 15, 15);
+                    declineCtx.fillStyle = 'black';
+                    declineCtx.fillText('Non-Darcy Flow', 470, 88);
+                }
+});
+</script>
+    </div>
+    
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>The paper's findings have several important implications:</p>
+    
+    <ol>
+        <li><strong>Identification:</strong> We now have a method to identify when non-Darcy flow is significant by examining the logarithmic derivative of production rate.</li>
+        <li><strong>Accuracy:</strong> Ignoring non-Darcy effects leads to erroneous estimates of reservoir parameters from type curve analysis.</li>
+        <li><strong>Convergence:</strong> Non-Darcy effects diminish over time, and eventually the system behaves like a laminar flow system.</li>
+        <li><strong>Practical Tools:</strong> Despite the complexity, some methods developed for laminar flow (like drainage area calculation) still work well even when non-Darcy effects are present.</li>
+    </ol>
+    
+    <p>By understanding these principles, reservoir engineers can more accurately analyze well performance, predict future production, and make better decisions about well completions and field development.</p>
+    
+    <div class="note">
+        <h3>Final Thought</h3>
+        <p>The beauty of this work is how it connects complex mathematical models to practical engineering solutions. By breaking down the problem from first principles, we can see how the physics of fluid flow translates into observable well behavior.</p>
+    </div>
+    
+</body>
+</html>

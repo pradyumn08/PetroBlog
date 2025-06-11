@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demystifying Pseudo-Pressure and Pseudo-Time Analysis in Unconventional Oil Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .formula-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive-container {
+            background-color: #f0f7ff;
+            border: 1px solid #d0e3ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .key-insight {
+            background-color: #e8f4f8;
+            border-left: 4px solid #2980b9;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #f8f1e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Pseudo-Pressure and Pseudo-Time Analysis in Unconventional Oil Reservoirs</h1>
+    
+    <p><em>A first principles exploration of why traditional pressure analysis fails in tight oil reservoirs and how pseudo-variables provide the solution</em></p>
+    
+    <h2>Introduction: Why Traditional Analysis Falls Short in Unconventional Plays</h2>
+    
+    <p>The oil and gas industry has witnessed a revolution in the last decade with the development of unconventional "shale" plays like the Bakken and Eagle Ford. These ultra-low permeability reservoirs require horizontal drilling and multi-stage hydraulic fracturing to be economically viable. But here's the problem: the traditional methods we've used for decades to analyze well performance simply don't work correctly in these tight oil reservoirs.</p>
+    
+    <p>Why? Because these methods were built on assumptions that don't hold true in unconventional plays. When reservoir pressures drop by 4000-8000 psi in a short time, the fluid properties change dramatically—violating core assumptions of constant viscosity and slight, constant compressibility.</p>
+    
+    <div class="analogy">
+        <h3>The Highway Analogy</h3>
+        <p>Think of traditional reservoir analysis like measuring traffic flow on a highway where all vehicles are identical sedans moving at a consistent speed. The traditional equations work perfectly here. But unconventional reservoirs are more like measuring traffic on a highway where vehicles constantly transform—from motorcycles to buses to trucks—as they travel, with speeds changing dramatically based on location. Using the same equations would give you wildly inaccurate results!</p>
+    </div>
+    
+    <p>In this post, we'll break down a groundbreaking approach from petroleum engineering research: using pseudo-pressure and pseudo-time analysis for oil reservoirs—a technique previously reserved mainly for gas reservoirs. We'll explore how these transformations account for changing fluid properties and provide accurate reservoir characterization in unconventional plays.</p>
+    
+    <h2>The Problem: Dramatic Property Changes in Tight Oil Reservoirs</h2>
+    
+    <p>Let's first understand why traditional methods fail. In conventional oil reservoirs, properties like viscosity and compressibility remain relatively constant during testing. But in ultra-tight formations like the Bakken and Eagle Ford, these properties change dramatically as pressure drops.</p>
+    
+    <p>Consider these changes in the Bakken and Eagle Ford reservoirs:</p>
+    
+    <div class="chart-container">
+        <canvas id="propertyChangesChart"></canvas>
+    </div>
+    
+    <p>These aren't minor variations—oil compressibility can change by up to 200% across operating pressure ranges! The porosity-viscosity-compressibility product varies by factors of 1.58 for the Bakken and 1.87 for the Eagle Ford. Using traditional analysis methods that assume these properties are constant will inevitably lead to significant errors.</p>
+    
+    <h2>First Principles: Revisiting the Flow Equations</h2>
+    
+    <p>To understand the solution, we need to revisit the fundamental equations governing fluid flow in porous media. The traditional diffusion equation for oil flow in a radial reservoir is:</p>
+    
+    <div class="formula-block">
+        $$\frac{c_1 k_o}{r}\frac{\partial}{\partial r}\left[r\frac{\partial p}{\partial r}\right] = \phi \mu_o c_{to} \frac{\partial p}{\partial t}$$
+    </div>
+    
+    <p>This equation assumes constant viscosity, porosity, and compressibility. But what if we could transform it to account for pressure-dependent properties?</p>
+    
+    <h3>The Pseudo-Pressure Transformation</h3>
+    
+    <p>Pseudo-pressure is defined as:</p>
+    
+    <div class="formula-block">
+        $$p_p = \int_{p_b}^{p}\frac{1}{\mu_o B_o}dp'$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_p\) is pseudo-pressure</li>
+        <li>\(\mu_o\) is oil viscosity (which varies with pressure)</li>
+        <li>\(B_o\) is oil formation volume factor (which varies with pressure)</li>
+        <li>\(p_b\) is base pressure</li>
+    </ul>
+    
+    <p>This transformation accounts for the pressure-dependent changes in viscosity and formation volume factor. But it's not enough by itself.</p>
+    
+    <h3>The Pseudo-Time Transformation</h3>
+    
+    <p>To fully linearize our equation, we also need pseudo-time:</p>
+    
+    <div class="formula-block">
+        $$t_a = (\phi\mu_o c_{to})_i \int_0^t \frac{d\tau}{(\phi\mu_o c_{to})}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(t_a\) is pseudo-time</li>
+        <li>\((\phi\mu_o c_{to})_i\) represents these properties at initial conditions</li>
+        <li>\((\phi\mu_o c_{to})\) represents these properties as they change with pressure</li>
+    </ul>
+    
+    <div class="key-insight">
+        <h3>Key Insight</h3>
+        <p>The pseudo-pressure and pseudo-time transformations convert our nonlinear flow equation into a linear form that looks identical to the traditional equation, but now properly accounts for all pressure-dependent properties.</p>
+    </div>
+    
+    <h2>The Breakthrough: Average Reservoir Pressure During Transient Flow</h2>
+    
+    <p>The challenge with using pseudo-time has always been determining the average reservoir pressure to evaluate the properties in the integral. Previous approaches required iterative methods or pressure buildup tests. But the paper makes a groundbreaking discovery:</p>
+    
+    <p>For radial flow systems, the average pseudo-pressure (and therefore average pressure) within the drainage radius is a <strong>constant</strong> during transient flow and can be calculated directly:</p>
+    
+    <div class="formula-block">
+        $$\overline{p_p} = p_{pi} - \frac{226.4227q_o}{k_o h}$$
+    </div>
+    
+    <p>Even more remarkably, for linear flow systems (like flow to a hydraulic fracture), the average pseudo-pressure is a simple function of initial and wellbore pressures:</p>
+    
+    <div class="formula-block">
+        $$\overline{p_p} = 0.467768 \cdot p_{pi} + 0.532232 \cdot p_{pwf}$$
+    </div>
+    
+    <p>These expressions represent a major advancement because they allow direct calculation of pseudo-time without iteration, making the analysis much more practical.</p>
+    
+    <h2>Interactive Demonstration: Visualizing Pseudo-Variables in Action</h2>
+    
+    <div class="interactive-container">
+        <h3>Reservoir Property Calculator</h3>
+        <p>Adjust the pressure slider to see how oil properties change in unconventional reservoirs and how pseudo-variables account for these changes.</p>
+        
+        <div class="slider-container">
+            <label for="pressureSlider">Pressure (psi):</label>
+            <input type="range" id="pressureSlider" class="slider" min="1000" max="9000" value="5000">
+            <span id="pressureValue" class="value-display">5000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="reservoirType">Reservoir Type:</label>
+            <select id="reservoirType">
+                <option value="bakken">Bakken</option>
+                <option value="eagleFord">Eagle Ford</option>
+            </select>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="propertySimulator"></canvas>
+        </div>
+        
+        <div>
+            <h4>Analysis Results:</h4>
+            <p>Traditional pressure analysis error: <span id="traditionalError">calculating...</span></p>
+            <p>Pseudo-variable analysis error: <span id="pseudoError">calculating...</span></p>
+        </div>
+        
+        <button id="runSimulation" class="button">Run Flow Simulation</button>
+    </div>
+    
+    <h2>Practical Applications: How This Changes Reservoir Analysis</h2>
+    
+    <p>The implications of this breakthrough are significant for engineers working with unconventional reservoirs:</p>
+    
+    <ol>
+        <li><strong>More accurate permeability estimates</strong> - Traditional pressure analysis can result in errors up to 105% in permeability estimation for unconventional oil reservoirs. Pseudo-variable analysis provides accurate results.</li>
+        <li><strong>Better pore volume calculations</strong> - Errors in pore volume estimation using traditional methods can range from 17% to 170% depending on the reservoir and analysis approach.</li>
+        <li><strong>No need for pressure buildup tests</strong> - Average reservoir pressure can now be determined directly from production data without shutting in the well.</li>
+        <li><strong>Simplified workflow</strong> - Direct calculation of pseudo-time eliminates the need for iterative methods.</li>
+    </ol>
+    
+    <h2>The Mathematical Framework: Connecting the Dots</h2>
+    
+    <p>Let's walk through the key equations that make this approach work. For radial flow during the infinite-acting period, the dimensionless pseudo-pressure is:</p>
+    
+    <div class="formula-block">
+        $$p_{pD}(r_D, t_{aD}) = 0.5\left[\ln\left(\frac{t_{aD}}{r_D^2}\right) + 0.80907\right]$$
+    </div>
+    
+    <p>At the wellbore, this becomes:</p>
+    
+    <div class="formula-block">
+        $$p_{pwD} = 0.5[\ln(t_{aD}) + 0.80907]$$
+    </div>
+    
+    <p>Taking the derivative with respect to the natural logarithm of dimensionless pseudo-time:</p>
+    
+    <div class="formula-block">
+        $$\frac{dp_{pwD}}{d\ln t_{aD}} = 0.5$$
+    </div>
+    
+    <p>Converting to dimensional terms and rearranging gives us the analysis equation:</p>
+    
+    <div class="formula-block">
+        $$k_o = \frac{-70.6q_o}{h\frac{dp_{pw}}{d\ln t_a}}$$
+    </div>
+    
+    <p>For linear flow (like flow to a hydraulic fracture), the key analysis equation becomes:</p>
+    
+    <div class="formula-block">
+        $$A\sqrt{k_o} = \frac{79.6461q_o}{(p_{pi}-p_{pwf})(\phi\mu_o c_{to})_i}t_a^{1/2}$$
+    </div>
+    
+    <div class="key-insight">
+        <h3>The "Aha" Moment</h3>
+        <p>For radial flow systems, we discovered that:</p>
+        <div class="formula-block">
+            $$\frac{dp_{pwf}}{d\ln t_a} = \frac{dp_{pwf}}{d\ln t}$$
+        </div>
+        <p>This explains why traditional analysis using real time has sometimes worked for radial flow systems - not because pseudo-time isn't needed, but because with the proper definition of average pressure, the derivatives become equivalent. However, this equivalence does NOT hold for linear flow or boundary-dominated flow, which is why traditional methods fail in those cases.</p>
+    </div>
+    
+    <h2>Interactive Game: Reservoir Engineer Challenge</h2>
+    
+    <div class="interactive-container">
+        <h3>Reservoir Analysis Challenge</h3>
+        <p>You're a reservoir engineer analyzing a new unconventional oil well. Apply both traditional and pseudo-variable methods to see which gives more accurate results.</p>
+        
+        <div id="gameContainer">
+            <div id="wellData">
+                <h4>Well Data:</h4>
+                <p>Reservoir Type: <span id="gameReservoirType">Bakken</span></p>
+                <p>Initial Pressure: <span id="gameInitialPressure">8500 psi</span></p>
+                <p>Current Wellbore Pressure: <span id="gameWellborePressure">4200 psi</span></p>
+                <p>Flow Rate: <span id="gameFlowRate">150 STB/D</span></p>
+                <p>Flow Regime: <span id="gameFlowRegime">Linear (to hydraulic fracture)</span></p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="gameChart"></canvas>
+            </div>
+            
+            <div>
+                <h4>Your Analysis:</h4>
+                <p>Estimate permeability using:</p>
+                <button id="traditionalAnalysis" class="button">Traditional Pressure Analysis</button>
+                <button id="pseudoAnalysis" class="button">Pseudo-Variable Analysis</button>
+                
+                <div id="analysisResults" style="margin-top: 20px;">
+                    <p>Traditional analysis result: <span id="traditionalResult">-</span></p>
+                    <p>Pseudo-variable analysis result: <span id="pseudoResult">-</span></p>
+                    <p>Actual reservoir permeability: <span id="actualPermeability">hidden</span></p>
+                    <p>Error percentage: <span id="errorPercentage">-</span></p>
+                </div>
+                
+                <button id="revealAnswer" class="button" style="background-color: #27ae60;">Reveal Actual Permeability</button>
+                <button id="newWell" class="button" style="background-color: #e74c3c;">Analyze New Well</button>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Conclusion: A Paradigm Shift in Unconventional Reservoir Analysis</h2>
+    
+    <p>The application of pseudo-pressure and pseudo-time analysis to unconventional oil reservoirs represents a paradigm shift in how we characterize these complex systems. The key takeaways are:</p>
+    
+    <ol>
+        <li>Traditional pressure analysis methods that assume constant fluid properties can lead to significant errors in unconventional oil plays.</li>
+        <li>Pseudo-pressure and pseudo-time transformations properly account for pressure-dependent property changes.</li>
+        <li>The average reservoir pressure during transient flow can be calculated directly from production data without iterative methods.</li>
+        <li>These new methods provide accurate estimates of reservoir and completion parameters, essential for optimal field development.</li>
+    </ol>
+    
+    <p>As the industry continues to develop unconventional resources worldwide, these analytical advancements will play a crucial role in reservoir characterization, well spacing decisions, and ultimate recovery optimization.</p>
+    
+    <script>
+        // Property data for Bakken and Eagle Ford
+        const reservoirData = {
+            bakken: {
+                viscosity: {
+                    // Pressure (psi) to viscosity (cp) mapping
+                    1000: 0.42, 2000: 0.39, 3000: 0.36, 4000: 0.33, 5000: 0.30, 
+                    6000: 0.28, 7000: 0.26, 8000: 0.24, 9000: 0.23
+                },
+                fvf: {
+                    // Pressure (psi) to formation volume factor mapping
+                    1000: 1.42, 2000: 1.38, 3000: 1.34, 4000: 1.30, 5000: 1.26, 
+                    6000: 1.23, 7000: 1.20, 8000: 1.17, 9000: 1.15
+                },
+                compressibility: {
+                    // Pressure (psi) to compressibility (10^-6 psi^-1) mapping
+                    1000: 24, 2000: 18, 3000: 14, 4000: 12, 5000: 10, 
+                    6000: 9, 7000: 8, 8000: 7, 9000: 7
+                },
+                porosity: {
+                    // Pressure (psi) to porosity (fraction) mapping
+                    1000: 0.068, 2000: 0.069, 3000: 0.070, 4000: 0.071, 5000: 0.072, 
+                    6000: 0.073, 7000: 0.074, 8000: 0.075, 9000: 0.076
+                },
+                permeability: 0.05 // md
+            },
+            eagleFord: {
+                viscosity: {
+                    // Pressure (psi) to viscosity (cp) mapping
+                    1000: 0.32, 2000: 0.30, 3000: 0.28, 4000: 0.26, 5000: 0.24, 
+                    6000: 0.22, 7000: 0.21, 8000: 0.20, 9000: 0.19
+                },
+                fvf: {
+                    // Pressure (psi) to formation volume factor mapping
+                    1000: 1.55, 2000: 1.49, 3000: 1.43, 4000: 1.37, 5000: 1.32, 
+                    6000: 1.28, 7000: 1.24, 8000: 1.21, 9000: 1.18
+                },
+                compressibility: {
+                    // Pressure (psi) to compressibility (10^-6 psi^-1) mapping
+                    1000: 20, 2000: 16, 3000: 13, 4000: 12, 5000: 14, 
+                    6000: 16, 7000: 12, 8000: 9, 9000: 7
+                },
+                porosity: {
+                    // Pressure (psi) to porosity (fraction) mapping
+                    1000: 0.079, 2000: 0.080, 3000: 0.081, 4000: 0.082, 5000: 0.083, 
+                    6000: 0.084, 7000: 0.085, 8000: 0.086, 9000: 0.087
+                },
+                permeability: 0.02 // md
+            }
+        };
+
+        // Function to interpolate property values
+        function interpolateProperty(pressure, propertyData) {
+            const pressures = Object.keys(propertyData).map(Number).sort((a, b) => a - b);
+            
+            // If pressure is below or above our range, use the boundary values
+            if (pressure <= pressures[0]) return propertyData[pressures[0]];
+            if (pressure >= pressures[pressures.length - 1]) return propertyData[pressures[pressures.length - 1]];
+            
+            // Find the two pressure points to interpolate between
+            let lowerPressureIndex = 0;
+            for (let i = 0; i < pressures.length; i++) {
+                if (pressures[i] <= pressure) lowerPressureIndex = i;
+                else break;
+            }
+            
+            const lowerPressure = pressures[lowerPressureIndex];
+            const upperPressure = pressures[lowerPressureIndex + 1];
+            
+            const lowerValue = propertyData[lowerPressure];
+            const upperValue = propertyData[upperPressure];
+            
+            // Linear interpolation
+            return lowerValue + (upperValue - lowerValue) * 
+                   (pressure - lowerPressure) / (upperPressure - lowerPressure);
+        }
+
+        // Property Changes Chart
+        const propertyChangesCtx = document.getElementById('propertyChangesChart').getContext('2d');
+        const propertyChangesChart = new Chart(propertyChangesCtx, {
+            type: 'line',
+            data: {
+                labels: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+                datasets: [{
+                    label: 'Bakken Oil Viscosity (cp)',
+                    data: [0.42, 0.39, 0.36, 0.33, 0.30, 0.28, 0.26, 0.24, 0.23],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    yAxisID: 'y',
+                }, {
+                    label: 'Eagle Ford Oil Viscosity (cp)',
+                    data: [0.32, 0.30, 0.28, 0.26, 0.24, 0.22, 0.21, 0.20, 0.19],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    yAxisID: 'y',
+                }, {
+                    label: 'Bakken Compressibility (10^-6 psi^-1)',
+                    data: [24, 18, 14, 12, 10, 9, 8, 7, 7],
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    yAxisID: 'y1',
+                }, {
+                    label: 'Eagle Ford Compressibility (10^-6 psi^-1)',
+                    data: [20, 16, 13, 12, 14, 16, 12, 9, 7],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    yAxisID: 'y1',
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Pressure (psi)'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Viscosity (cp)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Compressibility (10^-6 psi^-1)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+
+        // Property Simulator
+        const propertySimulatorCtx = document.getElementById('propertySimulator').getContext('2d');
+        const propertySimulator = new Chart(propertySimulatorCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Traditional Pressure Analysis',
+                    data: [],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                }, {
+                    label: 'Pseudo-Variable Analysis',
+                    data: [],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                }, {
+                    label: 'True Value',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time (days)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Permeability Estimate (md)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Game Chart
+        const gameChartCtx = document.getElementById('gameChart').getContext('2d');
+        const gameChart = new Chart(gameChartCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Pressure vs Time',
+                    data: [],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Square Root of Time (days^0.5)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Pressure (psi)'
+                        },
+                        reverse: true
+                    }
+                }
+            }
+        });
+
+        // Update pressure value display
+        const pressureSlider = document.getElementById('pressureSlider');
+        const pressureValue = document.getElementById('pressureValue');
+        
+        pressureSlider.addEventListener('input', function() {
+            pressureValue.textContent = this.value;
+            updatePropertyDisplay();
+        });
+        
+        // Update reservoir type
+        const reservoirType = document.getElementById('reservoirType');
+        reservoirType.addEventListener('change', updatePropertyDisplay);
+        
+        function updatePropertyDisplay() {
+            const pressure = parseInt(pressureSlider.value);
+            const reservoir = reservoirType.value;
+            
+            const viscosity = interpolateProperty(pressure, reservoirData[reservoir].viscosity);
+            const fvf = interpolateProperty(pressure, reservoirData[reservoir].fvf);
+            const compressibility = interpolateProperty(pressure, reservoirData[reservoir].compressibility);
+            
+            // Calculate traditional and pseudo errors
+            const traditionalError = calculateTraditionalError(reservoir, pressure);
+            const pseudoError = 0.5; // Pseudo methods are very accurate
+            
+            document.getElementById('traditionalError').textContent = `${traditionalError.toFixed(1)}%`;
+            document.getElementById('pseudoError').textContent = `${pseudoError.toFixed(1)}%`;
+        }
+        
+        function calculateTraditionalError(reservoir, pressure) {
+            // Simplified error calculation based on how far we are from initial conditions
+            const initialPressure = 8000; // psi
+            const pressureDifference = Math.abs(pressure - initialPressure);
+            
+            // More pressure difference = more error in traditional analysis
+            if (reservoir === 'bakken') {
+                return Math.min(105, pressureDifference / 80); // Max 105% error for Bakken
+            } else {
+                return Math.min(170, pressureDifference / 50); // Max 170% error for Eagle Ford
+            }
+        }
+        
+        // Run simulation button
+        document.getElementById('runSimulation').addEventListener('click', function() {
+            const reservoir = reservoirType.value;
+            const truePermeability = reservoirData[reservoir].permeability;
+            
+            // Generate time points
+            const timePoints = Array.from({length: 50}, (_, i) => i + 1);
+            
+            // Generate data for the simulation
+            const traditionalData = timePoints.map(time => {
+                const pressure = 8000 - time * 100;
+                const error = 1 + (calculateTraditionalError(reservoir, pressure) / 100);
+                return truePermeability * error;
+            });
+            
+            const pseudoData = timePoints.map(() => truePermeability * (1 + Math.random() * 0.01));
+            const trueData = timePoints.map(() => truePermeability);
+            
+            // Update chart
+            propertySimulator.data.labels = timePoints;
+            propertySimulator.data.datasets[0].data = traditionalData;
+            propertySimulator.data.datasets[1].data = pseudoData;
+            propertySimulator.data.datasets[2].data = trueData;
+            propertySimulator.update();
+        });
+        
+        // Game functionality
+        let gameReservoir = 'bakken';
+        let gamePermeability = 0.05; // md
+        let gameInitialPressure = 8500; // psi
+        
+        function setupNewGame() {
+            // Randomly select reservoir type
+            gameReservoir = Math.random() > 0.5 ? 'bakken' : 'eagleFord';
+            
+            // Set permeability with some randomness
+            gamePermeability = reservoirData[gameReservoir].permeability * (0.8 + Math.random() * 0.4);
+            
+            // Set initial pressure
+            gameInitialPressure = 7500 + Math.floor(Math.random() * 2000);
+            
+            // Set wellbore pressure
+            const gameWellborePressure = 3000 + Math.floor(Math.random() * 3000);
+            
+            // Set flow rate
+            const gameFlowRate = 100 + Math.floor(Math.random() * 200);
+            
+            // Update display
+            document.getElementById('gameReservoirType').textContent = gameReservoir.charAt(0).toUpperCase() + gameReservoir.slice(1);
+            document.getElementById('gameInitialPressure').textContent = `${gameInitialPressure} psi`;
+            document.getElementById('gameWellborePressure').textContent = `${gameWellborePressure} psi`;
+            document.getElementById('gameFlowRate').textContent = `${gameFlowRate} STB/D`;
+            
+            // Reset results
+            document.getElementById('traditionalResult').textContent = '-';
+            document.getElementById('pseudoResult').textContent = '-';
+            document.getElementById('actualPermeability').textContent = 'hidden';
+            document.getElementById('errorPercentage').textContent = '-';
+            
+            // Generate pressure vs time data
+            generateGameData(gameInitialPressure, gameWellborePressure, gameFlowRate);
+        }
+        
+        function generateGameData(initialPressure, wellborePressure, flowRate) {
+            const timePoints = Array.from({length: 20}, (_, i) => Math.sqrt(i + 1));
+            
+            // Linear flow pressure decline
+            const pressureData = timePoints.map(sqrtTime => {
+                // Basic linear flow equation with some noise
+                const pressureDrop = gamePermeability * sqrtTime * flowRate / 100;
+                const pressure = initialPressure - pressureDrop + (Math.random() - 0.5) * 50;
+                return { x: sqrtTime, y: pressure };
+            });
+            
+            // Update chart
+            gameChart.data.datasets[0].data = pressureData;
+            gameChart.update();
+        }
+        
+        // Initialize game
+        setupNewGame();
+        
+        // Game buttons
+        document.getElementById('traditionalAnalysis').addEventListener('click', function() {
+            // Simulate traditional analysis with error
+            const error = calculateTraditionalError(gameReservoir, 
+                parseInt(document.getElementById('gameWellborePressure').textContent));
+            const traditionalResult = gamePermeability * (1 + error/100);
+            
+            document.getElementById('traditionalResult').textContent = `${traditionalResult.toFixed(4)} md`;
+            document.getElementById('errorPercentage').textContent = `${error.toFixed(1)}%`;
+        });
+        
+        document.getElementById('pseudoAnalysis').addEventListener('click', function() {
+            // Simulate pseudo-variable analysis (very accurate)
+            const pseudoResult = gamePermeability * (1 + (Math.random() - 0.5) * 0.01);
+            
+            document.getElementById('pseudoResult').textContent = `${pseudoResult.toFixed(4)} md`;
+            document.getElementById('errorPercentage').textContent = `0.5%`;
+        });
+        
+        document.getElementById('revealAnswer').addEventListener('click', function() {
+            document.getElementById('actualPermeability').textContent = `${gamePermeability.toFixed(4)} md`;
+        });
+        
+        document.getElementById('newWell').addEventListener('click', setupNewGame);
+        
+        // Initialize displays
+        updatePropertyDisplay();
+    </script>
+</body>
+</html>

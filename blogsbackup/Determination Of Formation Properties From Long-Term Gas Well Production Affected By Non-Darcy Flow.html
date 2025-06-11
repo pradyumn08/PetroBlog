@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Non-Darcy Flow in Gas Wells: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        .formula-explanation {
+            background-color: #eaf7fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .analogy {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        .two-col {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .col {
+            width: 48%;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .output {
+            min-height: 20px;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Why Gas Wells Don't Follow Darcy's Law: A First Principles Exploration</h1>
+    
+    <p>If you've ever tried to drink a thick milkshake through a straw versus water, you've experienced the difference between non-Darcy and Darcy flow. While water flows easily and predictably, the milkshake requires more effort as you suck harder. This same principle applies to gas wells, where at high flow rates, gas doesn't behave as neatly as Darcy's law would predict.</p>
+    
+    <p>In this post, we'll break down the complex concept of non-Darcy flow in gas wells from first principles, exploring the groundbreaking work from Fraim and Lee's paper on "Determination Of Formation Properties From Long-Term Gas Well Production Affected By Non-Darcy Flow." By the end, you'll understand why this matters for gas well production analysis and how to account for it in real-world applications.</p>
+
+    <h2>The Problem with Darcy's Law for Gas Wells</h2>
+    
+    <p>Darcy's law is the bedrock equation of fluid flow through porous media, stating that flow rate is proportional to pressure gradient:</p>
+    
+    <div class="formula-explanation">
+        <p>Darcy's Law: \[ \frac{\partial P}{\partial x} = \frac{\mu}{k}v \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(\frac{\partial P}{\partial x}\) is the pressure gradient</li>
+            <li>\(\mu\) is fluid viscosity</li>
+            <li>\(k\) is permeability</li>
+            <li>\(v\) is velocity</li>
+        </ul>
+    </div>
+    
+    <p>But here's the catch: when gas flows at high velocities through porous media (like in a productive gas well), this linear relationship breaks down. The pressure drop becomes greater than what Darcy's law predicts, leading to lower-than-expected production rates.</p>
+    
+    <div class="analogy">
+        <h3>Analogy: Highway Traffic Flow</h3>
+        <p>Think of Darcy's law like cars moving on a highway at low traffic density. Each car moves freely at a speed proportional to how hard the driver presses the gas pedal (the pressure gradient). But as traffic increases (higher flow rates), cars start to interfere with each other, creating turbulence and slowdowns. Now the relationship between pressing the gas pedal and the car's speed is no longer linear – this is analogous to non-Darcy flow.</p>
+    </div>
+
+    <h2>The Forchheimer Equation: Beyond Darcy's Law</h2>
+    
+    <p>To account for this non-linear behavior, petroleum engineers use the Forchheimer equation, which adds a quadratic term to Darcy's law:</p>
+    
+    <div class="formula-explanation">
+        <p>Forchheimer Equation: \[ \frac{\partial P}{\partial x} = \frac{\mu}{k}v + \beta\rho v^2 \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>The first term \(\frac{\mu}{k}v\) is the standard Darcy term</li>
+            <li>The second term \(\beta\rho v^2\) accounts for the additional pressure drop due to high-velocity effects</li>
+            <li>\(\beta\) is the non-Darcy flow coefficient (also called the inertial resistance coefficient)</li>
+            <li>\(\rho\) is fluid density</li>
+        </ul>
+    </div>
+    
+    <p>This equation is fundamental to understanding gas well performance, especially in high-rate gas wells or wells with hydraulic fractures where velocities can be extremely high.</p>
+
+    <h2>The Deliverability Equation for Gas Wells</h2>
+    
+    <p>For practical field applications, petroleum engineers use a deliverability equation derived from the Forchheimer equation. For a gas well with non-Darcy flow:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \frac{kh T_{sc}[p_p(p_i) - p_p(p_{wf})]}{50,300 p_{sc}T} = p_D + Dq_g \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(k\) is permeability (md)</li>
+            <li>\(h\) is formation thickness (ft)</li>
+            <li>\(T_{sc}\) is standard temperature</li>
+            <li>\(p_p\) is pseudo-pressure</li>
+            <li>\(p_i\) is initial reservoir pressure</li>
+            <li>\(p_{wf}\) is flowing bottomhole pressure</li>
+            <li>\(p_{sc}\) is standard pressure</li>
+            <li>\(p_D\) is dimensionless pressure</li>
+            <li>\(D\) is the non-Darcy flow coefficient</li>
+            <li>\(q_g\) is gas flow rate</li>
+        </ul>
+    </div>
+    
+    <p>The key insight here is that the relationship between pressure drop and flow rate includes both a linear term (\(p_D\)) and a quadratic term (\(Dq_g\)). When \(D = 0\), we have pure Darcy flow. The larger \(D\) becomes, the more significant the non-Darcy effects.</p>
+
+    <h2>Why This Matters: Impact on Gas Well Analysis</h2>
+    
+    <p>Ignoring non-Darcy flow can lead to serious errors in gas well analysis:</p>
+    
+    <ol>
+        <li><strong>Underestimating reservoir permeability</strong> - When non-Darcy effects are misinterpreted as lower permeability</li>
+        <li><strong>Overestimating skin factor</strong> - Non-Darcy pressure drops can be mistakenly attributed to near-wellbore damage</li>
+        <li><strong>Inaccurate production forecasts</strong> - Failing to account for non-Darcy flow leads to overly optimistic production predictions</li>
+        <li><strong>Poor hydraulic fracture design</strong> - Since fractures often experience significant non-Darcy flow</li>
+    </ol>
+
+    <h2>The Normalized Time Approach</h2>
+    
+    <p>One of the key contributions of Fraim and Lee's paper is the concept of "normalized time" to analyze gas well production data affected by non-Darcy flow. This approach allows engineers to use type curves developed for slightly compressible liquids with Darcy flow to analyze gas well data with non-Darcy effects.</p>
+    
+    <div class="formula-explanation">
+        <p>Normalized time is defined as:</p>
+        <p>\[ \bar{t} = \int_{0}^{t} \frac{(\mu c_t)_i}{\mu(\bar{p})c_t(\bar{p})} \left(\frac{q_{ND}}{q}\right) dt \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\((\mu c_t)_i\) is the viscosity-compressibility product at initial conditions</li>
+            <li>\(\mu(\bar{p})c_t(\bar{p})\) is this product at current average pressure</li>
+            <li>\(\frac{q_{ND}}{q}\) is the ratio of non-Darcy flow rate to Darcy flow rate</li>
+        </ul>
+        <p>For practical calculations, this can be approximated as:</p>
+        <p>\[ \bar{t} = \sum_{j=1}^{n} \frac{(\mu c_t)_i}{(\mu c_t)_{\bar{p}}} \left(\frac{q_{ND}}{q}\right) \Delta t_j \]</p>
+    </div>
+    
+    <p>This approach essentially transforms the time scale to account for both gas property variations with pressure and non-Darcy flow effects.</p>
+
+    <h2>Interactive Simulator: Explore Non-Darcy Flow Effects</h2>
+    
+    <div class="simulator">
+        <h3>Gas Well Production with Non-Darcy Flow Effects</h3>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (md):</label>
+            <input type="range" id="permeability" min="0.01" max="10" step="0.01" value="1">
+            <span id="permeability-value">1.00</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="beta">Non-Darcy Coefficient (β):</label>
+            <input type="range" id="beta" min="0" max="100" step="1" value="0">
+            <span id="beta-value">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="fracture-length">Fracture Half-Length (ft):</label>
+            <input type="range" id="fracture-length" min="0" max="500" step="10" value="0">
+            <span id="fracture-length-value">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="pressure-drawdown">Pressure Drawdown (psi):</label>
+            <input type="range" id="pressure-drawdown" min="100" max="2000" step="100" value="1000">
+            <span id="pressure-drawdown-value">1000</span>
+        </div>
+        
+        <canvas id="production-plot" width="700" height="400"></canvas>
+        
+        <div class="two-col">
+            <div class="col">
+                <button id="calculate-btn">Calculate Production</button>
+                <div class="output" id="calculation-output">Results will appear here</div>
+            </div>
+            <div class="col">
+                <button id="reset-btn">Reset Parameters</button>
+                <div class="output" id="interpretation">
+                    Adjust the sliders to see how non-Darcy flow affects gas well production. Higher β values lead to greater deviation from Darcy flow.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Practical Application: Step-by-Step Analysis</h2>
+    
+    <p>Let's walk through the process of analyzing gas well production data affected by non-Darcy flow:</p>
+    
+    <ol>
+        <li><strong>Plot production data</strong> - Gas rate vs. time and cumulative production vs. time</li>
+        <li><strong>Calculate non-Darcy flow ratio</strong> - Determine \(\frac{q_{ND}}{q}\) using correlations based on flow rate</li>
+        <li><strong>Calculate normalized time</strong> - Transform the time scale using the equation above</li>
+        <li><strong>Plot normalized data</strong> - Gas rate vs. normalized time</li>
+        <li><strong>Match on type curves</strong> - Use the appropriate type curve for your well configuration</li>
+        <li><strong>Determine reservoir properties</strong> - Extract permeability, drainage area, and fracture properties</li>
+    </ol>
+    
+    <div class="highlight">
+        <p><strong>Key Insight:</strong> The beauty of the normalized time approach is that it allows us to use the same type curves developed for Darcy flow, even when analyzing wells with significant non-Darcy effects.</p>
+    </div>
+
+    <h2>Fractured Well Analysis with Non-Darcy Flow</h2>
+    
+    <p>For hydraulically fractured wells, non-Darcy flow is particularly important because the high velocities in the fracture often cause significant deviations from Darcy's law. The dimensionless pressure drop with non-Darcy flow in a fracture is given by:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ p_{DND} = \frac{9.362 \times 10^{-18} k_f k (p_p(p_i) - p_p(p_{wf})) \gamma_g \beta}{b_f \mu_i L_f} \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(k_f\) is fracture permeability</li>
+            <li>\(k\) is formation permeability</li>
+            <li>\(b_f\) is fracture width</li>
+            <li>\(L_f\) is fracture half-length</li>
+            <li>\(\beta\) is the non-Darcy coefficient</li>
+        </ul>
+    </div>
+    
+    <p>The ratio of production rate with non-Darcy flow to the rate with pure Darcy flow (\(\frac{q_{ND}}{q}\)) depends on this dimensionless pressure drop and can be determined from correlations provided in the paper.</p>
+
+    <h2>From Theory to Practice: The Type Curve Approach</h2>
+    
+    <p>Type curves are graphical tools that allow engineers to match observed production data to theoretical models. Fraim and Lee developed specialized type curves for wells with finite-conductivity fractures that account for non-Darcy flow.</p>
+    
+    <p>These type curves plot dimensionless rate (\(q_{Dd}\)) and dimensionless cumulative production (\(Q_{Dd}\)) versus dimensionless time (\(t_{Dd}\)):</p>
+    
+    <div class="formula-explanation">
+        <p>For fractured wells:</p>
+        <p>\[ q_{Dd} = \frac{q_D}{F2} \]</p>
+        <p>\[ t_{Dd} = \frac{t_D}{((L_e/L_f)^2 F1)} \]</p>
+        <p>Where \(F1\) and \(F2\) are functions of fracture conductivity (\(c_{fD}\)) and the ratio of reservoir length to fracture half-length (\(L_e/L_f\)).</p>
+    </div>
+    
+    <p>By matching production data on these type curves, engineers can determine key reservoir and fracture properties even when non-Darcy flow is significant.</p>
+
+    <h2>The Mathematical Model Behind the Type Curves</h2>
+    
+    <p>The type curves are based on an analytical solution for a well with a finite-conductivity fracture in a bounded reservoir. The solution in Laplace space takes the form:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ s\bar{p}_D = \frac{\pi}{2a_1}\frac{1+\exp(-2a_1)}{1-\exp(-2a_1)} - \frac{\pi}{2a_2}\frac{1+\exp(-2a_2)}{1-\exp(-2a_2)} \]</p>
+        <p>\[ * \sum_{n=1}^{\infty}\frac{s\sin(a_4)\cos(0.73a_4)}{a_4a_3}\frac{1+\exp(-2a_3)}{1-\exp(-2a_3)} \]</p>
+        <p>\[ * \frac{\pi}{(k_f w)_D a_5[1-\exp(-2a_5)]} \]</p>
+        <p>Where:</p>
+        <p>\[ a_1 = SQRT(s/4) \]</p>
+        <p>\[ a_2 = SQRT(s/4) \cdot (L_f/L_e) \]</p>
+        <p>\[ a_3 = SQRT(s/(4\pi^2)+n^2) \]</p>
+        <p>\[ a_4 = n\pi(x_f/x_e) \]</p>
+        <p>\[ a_5 = SQRT[a_2^2/H_{Df}+2a_2\tanh(a_2)/c_{fD}] \]</p>
+    </div>
+    
+    <p>This complex mathematical formulation is the foundation for the type curves that make practical field analysis possible. The beauty of the type curve approach is that it distills this complex mathematics into a practical graphical tool.</p>
+
+    <h2>Practical Example: Analyzing a Fractured Gas Well</h2>
+    
+    <p>Let's walk through a simplified example of analyzing a fractured gas well with non-Darcy flow:</p>
+    
+    <div class="highlight">
+        <p><strong>Well Data:</strong></p>
+        <ul>
+            <li>Permeability: 0.2 md</li>
+            <li>Formation thickness: 100 ft</li>
+            <li>Initial pressure: 2000 psia</li>
+            <li>Flowing bottomhole pressure: 500 psia</li>
+            <li>Fracture half-length: 164 ft</li>
+            <li>Fracture conductivity: 88 md-ft</li>
+            <li>Non-Darcy coefficient (β): 1.0</li>
+        </ul>
+    </div>
+    
+    <p>Following the algorithm outlined in the paper:</p>
+    
+    <ol>
+        <li>Calculate dimensionless pressure drop: \(p_{DND} = 0.044\)</li>
+        <li>Determine the non-Darcy flow ratio \(\frac{q_{ND}}{q} = 0.69\) from the correlation</li>
+        <li>Calculate normalized time for each production data point</li>
+        <li>Plot normalized rate vs. normalized time and match on type curves</li>
+        <li>From the match, determine \(L_e/L_f = 10\) and \(c_{fD} = 3.14\)</li>
+        <li>Calculate permeability: \(k = 0.2\) md</li>
+        <li>Calculate fracture half-length: \(L_f = 164\) ft</li>
+        <li>Calculate gas in place: \(G = 13.8\) Bcf</li>
+    </ol>
+    
+    <p>This analysis provides a comprehensive understanding of the reservoir and fracture properties, accounting for the non-Darcy flow effects that would otherwise lead to erroneous results.</p>
+
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>Understanding and accounting for non-Darcy flow in gas wells is not just an academic exercise—it has significant practical implications:</p>
+    
+    <ul>
+        <li><strong>More accurate reserves estimation</strong> - Properly accounting for non-Darcy flow leads to better estimates of gas in place</li>
+        <li><strong>Improved production forecasting</strong> - Future performance predictions become more reliable</li>
+        <li><strong>Better fracture design</strong> - Understanding the impact of non-Darcy flow helps optimize hydraulic fracture treatments</li>
+        <li><strong>Enhanced field development planning</strong> - More accurate well spacing and drainage area estimates</li>
+    </ul>
+    
+    <p>The normalized time approach and type curves developed by Fraim and Lee provide practical tools for engineers to analyze gas well production data affected by non-Darcy flow. By accounting for these effects, engineers can make better decisions about reservoir management and field development.</p>
+    
+    <div class="highlight">
+        <p><strong>Key Takeaway:</strong> Non-Darcy flow is not an exotic phenomenon but a common reality in many gas wells, especially those with hydraulic fractures. Having the right tools to analyze production data affected by non-Darcy flow is essential for accurate reservoir characterization and production forecasting.</p>
+    </div>
+
+    <script>
+        // Initialize values display
+        document.getElementById('permeability-value').textContent = document.getElementById('permeability').value;
+        document.getElementById('beta-value').textContent = document.getElementById('beta').value;
+        document.getElementById('fracture-length-value').textContent = document.getElementById('fracture-length').value;
+        document.getElementById('pressure-drawdown-value').textContent = document.getElementById('pressure-drawdown').value;
+        
+        // Update displayed values when sliders change
+        document.getElementById('permeability').addEventListener('input', function() {
+            document.getElementById('permeability-value').textContent = parseFloat(this.value).toFixed(2);
+        });
+        
+        document.getElementById('beta').addEventListener('input', function() {
+            document.getElementById('beta-value').textContent = this.value;
+        });
+        
+        document.getElementById('fracture-length').addEventListener('input', function() {
+            document.getElementById('fracture-length-value').textContent = this.value;
+        });
+        
+        document.getElementById('pressure-drawdown').addEventListener('input', function() {
+            document.getElementById('pressure-drawdown-value').textContent = this.value;
+        });
+        
+        // Reset button functionality
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            document.getElementById('permeability').value = 1;
+            document.getElementById('permeability-value').textContent = '1.00';
+            
+            document.getElementById('beta').value = 0;
+            document.getElementById('beta-value').textContent = '0';
+            
+            document.getElementById('fracture-length').value = 0;
+            document.getElementById('fracture-length-value').textContent = '0';
+            
+            document.getElementById('pressure-drawdown').value = 1000;
+            document.getElementById('pressure-drawdown-value').textContent = '1000';
+            
+            document.getElementById('interpretation').textContent = 'Adjust the sliders to see how non-Darcy flow affects gas well production. Higher β values lead to greater deviation from Darcy flow.';
+            
+            drawProductionCurves();
+        });
+        
+        // Calculate button functionality
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            const k = parseFloat(document.getElementById('permeability').value);
+            const beta = parseFloat(document.getElementById('beta').value);
+            const Lf = parseFloat(document.getElementById('fracture-length').value);
+            const dp = parseFloat(document.getElementById('pressure-drawdown').value);
+            
+            // Simple calculations for demonstration
+            let darcyRate = k * dp / 100; // Simplified Darcy rate calculation
+            let nonDarcyFactor = 1 / (1 + (beta * darcyRate * 0.01)); // Simplified non-Darcy factor
+            let actualRate = darcyRate * nonDarcyFactor; // Non-Darcy rate
+            
+            // Adjust for fracture if present
+            if (Lf > 0) {
+                const fractureFactor = Math.sqrt(Lf) / 10;
+                darcyRate *= fractureFactor;
+                actualRate = darcyRate * nonDarcyFactor;
+            }
+            
+            // Display results
+            const output = document.getElementById('calculation-output');
+            output.innerHTML = `
+                <strong>Results:</strong><br>
+                Darcy Flow Rate: ${darcyRate.toFixed(2)} MSCF/D<br>
+                Non-Darcy Flow Rate: ${actualRate.toFixed(2)} MSCF/D<br>
+                Non-Darcy Factor (q<sub>ND</sub>/q): ${nonDarcyFactor.toFixed(3)}<br>
+                Production Reduction: ${((1 - nonDarcyFactor) * 100).toFixed(1)}%
+            `;
+            
+            // Update interpretation
+            const interpretation = document.getElementById('interpretation');
+            if (beta === 0) {
+                interpretation.textContent = "With β = 0, there is no non-Darcy effect. The well follows Darcy's law perfectly.";
+            } else if (beta < 20) {
+                interpretation.textContent = "With low β, non-Darcy effects are minimal. This is typical for low-rate gas wells or wells in high-permeability formations.";
+            } else if (beta < 50) {
+                interpretation.textContent = "Moderate non-Darcy effects are present. This is common in many gas wells, especially those with moderate flow rates.";
+            } else {
+                interpretation.textContent = "Significant non-Darcy effects are reducing production. This is typical for high-rate gas wells, wells with hydraulic fractures, or wells in tight formations.";
+            }
+            
+            drawProductionCurves();
+        });
+        
+        // Function to draw production curves
+        function drawProductionCurves() {
+            const canvas = document.getElementById('production-plot');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set up axes
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 350);
+            ctx.lineTo(650, 350);
+            ctx.stroke();
+            
+            // Add labels
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#000';
+            ctx.fillText('Time (days)', 325, 380);
+            ctx.save();
+            ctx.translate(20, 200);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Gas Rate (MSCF/D)', 0, 0);
+            ctx.restore();
+            
+            // Get parameter values
+            const k = parseFloat(document.getElementById('permeability').value);
+            const beta = parseFloat(document.getElementById('beta').value);
+            const Lf = parseFloat(document.getElementById('fracture-length').value);
+            const dp = parseFloat(document.getElementById('pressure-drawdown').value);
+            
+            // Draw Darcy flow curve
+            ctx.beginPath();
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            
+            const baseRate = k * dp / 100;
+            const fractureFactor = Lf > 0 ? Math.sqrt(Lf) / 10 : 1;
+            const initialRate = baseRate * fractureFactor;
+            
+            let x, y;
+            for (let t = 0; t <= 365; t += 5) {
+                // Simple decline curve model
+                const rate = initialRate * Math.exp(-0.001 * t);
+                x = 50 + (t / 365) * 600;
+                y = 350 - (rate / (initialRate * 1.2)) * 280;
+                
+                if (t === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw non-Darcy flow curve
+            if (beta > 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                
+                for (let t = 0; t <= 365; t += 5) {
+                    // Simple decline curve with non-Darcy effect
+                    const darcyRate = initialRate * Math.exp(-0.001 * t);
+                    const nonDarcyFactor = 1 / (1 + (beta * darcyRate * 0.0001));
+                    const actualRate = darcyRate * nonDarcyFactor;
+                    
+                    x = 50 + (t / 365) * 600;
+                    y = 350 - (actualRate / (initialRate * 1.2)) * 280;
+                    
+                    if (t === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Add legend
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#3498db';
+                ctx.fillText('Darcy Flow', 550, 80);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText('Non-Darcy Flow', 550, 100);
+            }
+            
+            // Add grid lines
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            // Vertical grid lines
+            for (let t = 0; t <= 365; t += 30) {
+                x = 50 + (t / 365) * 600;
+                ctx.beginPath();
+                ctx.moveTo(x, 50);
+                ctx.lineTo(x, 350);
+                ctx.stroke();
+                
+                // Add time labels
+                if (t % 90 === 0) {
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(t.toString(), x - 10, 365);
+                }
+            }
+            
+            // Horizontal grid lines
+            const maxRate = initialRate * 1.2;
+            for (let r = 0; r <= maxRate; r += maxRate / 5) {
+                y = 350 - (r / maxRate) * 280;
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(650, y);
+                ctx.stroke();
+                
+                // Add rate labels
+                ctx.fillStyle = '#000';
+                ctx.fillText(Math.round(r).toString(), 30, y + 5);
+            }
+        }
+        
+        // Initial drawing
+        drawProductionCurves();
+    </script>
+</body>
+</html>

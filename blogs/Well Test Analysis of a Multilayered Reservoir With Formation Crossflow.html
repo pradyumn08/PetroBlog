@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Multilayered Reservoirs with Formation Crossflow</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .simulation-container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .slider {
+            width: 300px;
+        }
+        canvas {
+            margin: 20px 0;
+            max-width: 100%;
+        }
+        .key-point {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .analogy-title {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            border-left: 3px solid #2ecc71;
+            padding: 10px 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Multilayered Reservoirs: Understanding Formation Crossflow from First Principles</h1>
+    
+    <p>When it comes to oil and gas extraction, what happens beneath the surface is far more complex than most people realize. Today, we're going to break down a fascinating phenomenon called "formation crossflow" in multilayered reservoirs, based on the groundbreaking research by Park and Horne.</p>
+    
+    <div class="highlight">
+        <p>Have you ever watched water flow between connected containers of different sizes? Or observed how traffic redistributes when there are multiple lanes with different speeds? These everyday phenomena share surprising similarities with how oil flows between different layers of rock underground. This is the essence of formation crossflow in petroleum engineering.</p>
+    </div>
+    
+    <h2>The Big Picture: What Are Multilayered Reservoirs?</h2>
+    
+    <p>Imagine the underground not as a single uniform sponge holding oil, but as a stack of different sponges (rock layers) with varying abilities to hold and transmit fluids. These layers can be:</p>
+    
+    <ul>
+        <li><strong>Connected</strong> - allowing fluid to move between them (crossflow system)</li>
+        <li><strong>Isolated</strong> - preventing fluid movement between layers (commingled system)</li>
+    </ul>
+    
+    <p>Understanding how these layers interact is crucial for efficient oil extraction. It's like knowing which straws to use in a multi-layered milkshake where some layers are thicker than others.</p>
+    
+    <figure>
+        <img src="https://miro.medium.com/max/700/1*Z8NbX_OhMdVRZQ2VIFbPvg.png" alt="Illustration of a multilayered reservoir" style="max-width:100%; height:auto;">
+        <figcaption>Fig. 1: Schematic representation of a multilayered reservoir with formation crossflow</figcaption>
+    </figure>
+    
+    <h2>The Core Concept: What is Formation Crossflow?</h2>
+    
+    <p>Formation crossflow is the movement of fluids between different layers of rock in a reservoir. This happens because of pressure differences between the layers. When we start extracting oil from a well that penetrates multiple layers, each layer responds differently based on its properties.</p>
+    
+    <p class="key-point">The key insight: A multilayered reservoir with crossflow behaves in three distinct stages over time:</p>
+    
+    <ol>
+        <li><strong>Early time:</strong> Each layer acts independently (like a commingled system)</li>
+        <li><strong>Intermediate time:</strong> Transition occurs as layers begin to communicate</li>
+        <li><strong>Late time:</strong> The entire system behaves as one homogeneous unit</li>
+    </ol>
+    
+    <div class="analogy">
+        <div class="analogy-title">Real-world Analogy: The Highway System</div>
+        <p>Think of a multilayered reservoir like a highway with several parallel lanes, each with different speed limits (permeabilities) and entry/exit ramps (skin factors):</p>
+        <ul>
+            <li>Early time: Cars stay in their assigned lanes</li>
+            <li>Intermediate time: Cars begin changing lanes to optimize their journey</li>
+            <li>Late time: Traffic distributes to reach an equilibrium across all lanes</li>
+        </ul>
+    </div>
+    
+    <h2>The Mathematical Foundation: Governing Equations</h2>
+    
+    <p>To understand crossflow, we need to model how pressure changes in each layer. The fundamental equation governing fluid flow in a layer \(j\) is:</p>
+    
+    <div class="equation-box">
+        <p>$$(k h)_{j}\nabla^{2}p_{j}+k_{v}{\frac{\partial p_{j}}{\partial z}}|_{z=z_{j+\frac{1}{2}}}-k_{v}{\frac{\partial p_{j}}{\partial z}}|_{z=z_{j-\frac{1}{2}}}=(\phi\mu c_{t}h)_{j}{\frac{\partial p_{j}}{\partial t}}$$</p>
+    </div>
+    
+    <p>This intimidating equation can be broken down into simpler components:</p>
+    
+    <ul>
+        <li>Left side, first term: How pressure spreads horizontally within the layer</li>
+        <li>Left side, second and third terms: How fluid moves vertically between layers (the crossflow)</li>
+        <li>Right side: How pressure changes over time</li>
+    </ul>
+    
+    <p>When we apply the finite difference method, this equation becomes:</p>
+    
+    <div class="equation-box">
+        <p>$$(k h)_{j}\nabla^{2}p_{j}+\frac{k_{v j+\frac{1}{2}}}{h_{j+\frac{1}{2}}}(p_{j+1}-p_{j})+\frac{k_{v j-\frac{1}{2}}}{h_{j-\frac{1}{2}}}(p_{j-1}-p_{j})=(\phi\mu c_{t}h)_{j}\frac{\partial p_{j}}{\partial t}$$</p>
+    </div>
+    
+    <p>This form makes it clearer that crossflow depends on:</p>
+    <ul>
+        <li>The pressure difference between layers \((p_{j+1}-p_{j})\)</li>
+        <li>The vertical permeability \(k_v\) (how easily fluid moves vertically)</li>
+        <li>The thickness of layers \(h\)</li>
+    </ul>
+    
+    <h3>Making It Dimensionless</h3>
+    
+    <p>To simplify analysis, petroleum engineers convert these equations to dimensionless form using variables like:</p>
+    
+    <div class="equation-box">
+        <p>$$p_{j D}=\frac{2\pi(k h)_{t}}{q\mu}(p_{i}-p_{j})$$ (Dimensionless pressure)</p>
+        <p>$$t_{D}=\frac{(k h)_{t}t}{(\phi h)_{t}\mu c_{t}r_{w}^{2}}$$ (Dimensionless time)</p>
+        <p>$$\kappa_{j}=\frac{(k h)_{j}}{(k h)_{t}}$$ (Productivity ratio)</p>
+        <p>$$\lambda_{j+\frac{1}{2}}=(\frac{k_{v}}{h})_{j+\frac{1}{2}}\frac{r_{w}^{2}}{(k h)_{t}}$$ (Dimensionless vertical permeability)</p>
+    </div>
+    
+    <p>This gives us the dimensionless governing equation:</p>
+    
+    <div class="equation-box">
+        <p>$$\kappa_{j}\nabla^{2}p_{j D}+\lambda_{j+\frac{1}{2}}\big(p_{j+1D}-p_{j D}\big)+\lambda_{j-\frac{1}{2}}\big(p_{j-1D}-p_{j D}\big)=\omega_{j}\frac{\partial p_{j D}}{\partial t_{D}}$$</p>
+    </div>
+    
+    <h2>The Three Stages of Crossflow: A Closer Look</h2>
+    
+    <h3>1. Early Time Behavior</h3>
+    
+    <p>At early times, each layer acts independently because crossflow hasn't had time to develop. The production rate from layer \(j\) depends on its properties:</p>
+    
+    <div class="equation-box">
+        <p>When skin factor \(s_j = 0\):</p>
+        <p>$$q_{j D}=\frac{\sqrt{\omega_{j}\kappa_{j}}}{\sum_{s_{k}=0}\sqrt{\omega_{k}\kappa_{k}}}$$</p>
+        
+        <p>When skin factor \(s_j \neq 0\):</p>
+        <p>$$q_{j D}=\frac{\kappa_{j}/s_{j}}{\sum_{k=1}^{n}\kappa_{k}/s_{k}}$$</p>
+    </div>
+    
+    <p>In simpler terms: Initially, layers with better flow properties (higher permeability, lower skin damage) contribute more to production.</p>
+    
+    <h3>2. Intermediate Time Behavior (Transition)</h3>
+    
+    <p>As production continues, pressure differences between layers cause fluid to start moving vertically (crossflow). This transition period is characterized by:</p>
+    
+    <ul>
+        <li>A noticeable "concavity" in pressure derivative curves</li>
+        <li>Changing production rates from individual layers</li>
+        <li>Direction of crossflow initially determined by permeability differences</li>
+    </ul>
+    
+    <p class="key-point">Critical insight: The timing of this transition is controlled entirely by vertical permeability (\(\lambda\)). Higher vertical permeability causes earlier transition.</p>
+    
+    <h3>3. Late Time Behavior</h3>
+    
+    <p>Eventually, the system reaches a new equilibrium where it behaves like a single homogeneous layer. At this stage:</p>
+    
+    <ul>
+        <li>The wellbore pressure follows a semi-log straight line</li>
+        <li>Layer production rates become constant</li>
+        <li>The direction of crossflow is determined by skin factors</li>
+    </ul>
+    
+    <div class="equation-box">
+        <p>The late-time wellbore pressure follows:</p>
+        <p>$$p_{w D}^{L T}=\frac{1}{2}\ln t_{D}+0.404535+\overline{s}$$</p>
+        
+        <p>The late-time production rate from layer \(j\) (for a two-layer system):</p>
+        <p>$$(q_{j D})^{L T}=\kappa_{j}[1+\frac{\kappa_{k}(s_{k}-s_{j})}{K_{1}^{0}(\sigma_{k j})+\kappa_{j}s_{k}+\kappa_{k}s_{j}}]$$</p>
+    </div>
+    
+    <p>This formula reveals a surprising fact: at late time, fluid flows from layers with higher skin damage to layers with lower skin damage, regardless of permeability differences!</p>
+    
+    <h2>Interactive Simulation: Experiencing Crossflow</h2>
+    
+    <div class="simulation-container">
+        <h3>Multilayered Reservoir Simulator</h3>
+        <p>Adjust the parameters below to see how they affect pressure response and layer production in a two-layer reservoir system.</p>
+        
+        <div class="slider-container">
+            <label for="permeability-ratio">Permeability Ratio (k₁/k₂):</label>
+            <input type="range" id="permeability-ratio" class="slider" min="1" max="100" value="10" step="1">
+            <span id="permeability-ratio-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skin1">Skin Factor Layer 1:</label>
+            <input type="range" id="skin1" class="slider" min="0" max="20" value="2" step="0.5">
+            <span id="skin1-value">2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skin2">Skin Factor Layer 2:</label>
+            <input type="range" id="skin2" class="slider" min="0" max="20" value="5" step="0.5">
+            <span id="skin2-value">5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="vertical-perm">Vertical Permeability Ratio (kv/k):</label>
+            <input type="range" id="vertical-perm" class="slider" min="0.001" max="1" value="0.1" step="0.001">
+            <span id="vertical-perm-value">0.1</span>
+        </div>
+        
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+            <div style="width: 48%;">
+                <h4>Pressure Response</h4>
+                <canvas id="pressure-chart"></canvas>
+            </div>
+            <div style="width: 48%;">
+                <h4>Layer Production Rates</h4>
+                <canvas id="production-chart"></canvas>
+            </div>
+        </div>
+        
+        <div>
+            <h4>Observations</h4>
+            <ul id="observations">
+                <li>Adjust the sliders to see how the system behavior changes</li>
+                <li>Notice the three stages of response in the pressure curve</li>
+                <li>Observe how layer production rates stabilize at late time</li>
+            </ul>
+        </div>
+    </div>
+    
+    <h2>Key Practical Insights</h2>
+    
+    <p>Understanding formation crossflow has several practical implications for oil and gas production:</p>
+    
+    <ol>
+        <li><strong>Well Testing:</strong> The three-stage response pattern can be used to identify reservoir properties through pressure transient analysis.</li>
+        <li><strong>Production Optimization:</strong> Knowledge of crossflow helps prevent early water breakthrough from "thief zones" (highly permeable layers).</li>
+        <li><strong>Enhanced Recovery:</strong> Understanding how fluids redistribute between layers is crucial for designing effective enhanced oil recovery methods.</li>
+        <li><strong>Parameter Estimation:</strong> The paper presents new methods to determine individual layer properties, which is essential for reservoir characterization.</li>
+    </ol>
+    
+    <h2>Conclusions: The Big Takeaways</h2>
+    
+    <div class="highlight">
+        <ol>
+            <li>Multilayered reservoirs with crossflow exhibit a three-stage response: commingled system behavior at early time, transition at intermediate time, and homogeneous system behavior at late time.</li>
+            <li>Vertical permeability is the sole parameter controlling when transition begins and ends.</li>
+            <li>The direction of crossflow is initially determined by permeability differences but is later controlled by skin factors.</li>
+            <li>Layer production rates become constant at late time, unlike in commingled systems.</li>
+            <li>The pressure response at late time follows a semi-log straight line similar to a homogeneous system.</li>
+        </ol>
+    </div>
+    
+    <p>This understanding of multilayered reservoirs with formation crossflow represents a significant advancement in petroleum engineering, allowing for more accurate reservoir characterization and more efficient oil recovery strategies.</p>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update slider value displays
+            document.getElementById('permeability-ratio').addEventListener('input', function() {
+                document.getElementById('permeability-ratio-value').textContent = this.value;
+                updateCharts();
+            });
+            
+            document.getElementById('skin1').addEventListener('input', function() {
+                document.getElementById('skin1-value').textContent = this.value;
+                updateCharts();
+            });
+            
+            document.getElementById('skin2').addEventListener('input', function() {
+                document.getElementById('skin2-value').textContent = this.value;
+                updateCharts();
+            });
+            
+            document.getElementById('vertical-perm').addEventListener('input', function() {
+                document.getElementById('vertical-perm-value').textContent = this.value;
+                updateCharts();
+            });
+            
+            // Initialize charts
+            let pressureChart, productionChart;
+            
+            function initializeCharts() {
+                // Pressure chart
+                const pressureCtx = document.getElementById('pressure-chart').getContext('2d');
+                pressureChart = new Chart(pressureCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Crossflow System',
+                                borderColor: 'rgb(54, 162, 235)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                                data: [],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Commingled System',
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                data: [],
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Homogeneous System',
+                                borderColor: 'rgb(75, 192, 192)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                                data: [],
+                                borderDash: [10, 5],
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Time (tD)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Pressure (pD)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Pressure Response in Multilayered Reservoir'
+                            }
+                        }
+                    }
+                });
+                
+                // Production chart
+                const productionCtx = document.getElementById('production-chart').getContext('2d');
+                productionChart = new Chart(productionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Layer 1 (Crossflow)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                                data: [],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 2 (Crossflow)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                data: [],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 1 (Commingled)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                                data: [],
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Layer 2 (Commingled)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                data: [],
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Time (tD)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Production Rate (qD)'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Layer Production Rates'
+                            }
+                        }
+                    }
+                });
+                
+                updateCharts();
+            }
+            
+            function updateCharts() {
+                const permRatio = parseFloat(document.getElementById('permeability-ratio').value);
+                const skin1 = parseFloat(document.getElementById('skin1').value);
+                const skin2 = parseFloat(document.getElementById('skin2').value);
+                const verticalPerm = parseFloat(document.getElementById('vertical-perm').value);
+                
+                // Generate logarithmic time points
+                const timePoints = [];
+                const pressureCrossflow = [];
+                const pressureCommingled = [];
+                const pressureHomogeneous = [];
+                const layer1ProductionCrossflow = [];
+                const layer2ProductionCrossflow = [];
+                const layer1ProductionCommingled = [];
+                const layer2ProductionCommingled = [];
+                
+                // Calculate kappa (productivity ratio) values
+                const kappa1 = permRatio / (permRatio + 1);
+                const kappa2 = 1 / (permRatio + 1);
+                
+                // Calculate transition times based on vertical permeability
+                const transitionStart = 0.1 / verticalPerm;
+                const transitionEnd = 10 / verticalPerm;
+                
+                // Generate data points
+                for (let i = -3; i <= 5; i += 0.1) {
+                    const tD = Math.pow(10, i);
+                    timePoints.push(tD);
+                    
+                    // Early time limiting values for production rates
+                    const q1Early = kappa1 / skin1 / (kappa1 / skin1 + kappa2 / skin2);
+                    const q2Early = kappa2 / skin2 / (kappa1 / skin1 + kappa2 / skin2);
+                    
+                    // Late time limiting values for production rates
+                    const q1Late = kappa1 + kappa1 * kappa2 * (skin2 - skin1) / (1 + kappa1 * skin2 + kappa2 * skin1);
+                    const q2Late = kappa2 + kappa2 * kappa1 * (skin1 - skin2) / (1 + kappa1 * skin2 + kappa2 * skin1);
+                    
+                    // Pressure calculations
+                    let pCrossflow, pCommingled, pHomogeneous;
+                    
+                    // Simplified pressure models
+                    pHomogeneous = 0.5 * Math.log(tD) + 0.404535 + (q1Late * skin1 + q2Late * skin2);
+                    
+                    if (tD < transitionStart) {
+                        // Early time - behaves like commingled
+                        pCommingled = 0.5 * Math.log(tD) + 0.404535 + (q1Early * skin1 + q2Early * skin2) + 
+                                     0.5 * Math.log(kappa1 * kappa1 + kappa2 * kappa2);
+                        pCrossflow = pCommingled;
+                    } else if (tD > transitionEnd) {
+                        // Late time - behaves like homogeneous
+                        pCrossflow = pHomogeneous;
+                        pCommingled = 0.5 * Math.log(tD) + 0.404535 + (q1Early * skin1 + q2Early * skin2) + 
+                                     0.5 * Math.log(kappa1 * kappa1 + kappa2 * kappa2);
+                    } else {
+                        // Transition period - interpolate
+                        const weight = (Math.log10(tD) - Math.log10(transitionStart)) / 
+                                      (Math.log10(transitionEnd) - Math.log10(transitionStart));
+                        
+                        pCommingled = 0.5 * Math.log(tD) + 0.404535 + (q1Early * skin1 + q2Early * skin2) + 
+                                     0.5 * Math.log(kappa1 * kappa1 + kappa2 * kappa2);
+                        
+                        // Add concavity during transition if permRatio > 1 and skin1 < skin2
+                        let transitionEffect = 0;
+                        if (permRatio > 1 && skin1 < skin2) {
+                            const midPoint = (Math.log10(transitionStart) + Math.log10(transitionEnd)) / 2;
+                            const distFromMid = Math.abs(Math.log10(tD) - midPoint);
+                            const maxEffect = 0.2 * Math.log10(permRatio) * (skin2 - skin1) / 20;
+                            transitionEffect = maxEffect * Math.exp(-10 * distFromMid * distFromMid);
+                        }
+                        
+                        pCrossflow = pCommingled * (1 - weight) + pHomogeneous * weight - transitionEffect;
+                    }
+                    
+                    // Production rate calculations
+                    let q1Cross, q2Cross, q1Comm, q2Comm;
+                    
+                    // Commingled system rates
+                    q1Comm = q1Early;
+                    q2Comm = q2Early;
+                    
+                    // Crossflow system rates
+                    if (tD < transitionStart) {
+                        // Early time
+                        q1Cross = q1Early;
+                        q2Cross = q2Early;
+                    } else if (tD > transitionEnd) {
+                        // Late time
+                        q1Cross = q1Late;
+                        q2Cross = q2Late;
+                    } else {
+                        // Transition - interpolate with S-curve
+                        const weight = (Math.log10(tD) - Math.log10(transitionStart)) / 
+                                      (Math.log10(transitionEnd) - Math.log10(transitionStart));
+                        
+                        // S-curve weighting for smoother transition
+                        const sWeight = 1 / (1 + Math.exp(-12 * (weight - 0.5)));
+                        
+                        q1Cross = q1Early * (1 - sWeight) + q1Late * sWeight;
+                        q2Cross = q2Early * (1 - sWeight) + q2Late * sWeight;
+                    }
+                    
+                    // Store calculated values
+                    pressureCrossflow.push(pCrossflow);
+                    pressureCommingled.push(pCommingled);
+                    pressureHomogeneous.push(pHomogeneous);
+                    layer1ProductionCrossflow.push(q1Cross);
+                    layer2ProductionCrossflow.push(q2Cross);
+                    layer1ProductionCommingled.push(q1Comm);
+                    layer2ProductionCommingled.push(q2Comm);
+                }
+                
+                // Update charts
+                pressureChart.data.labels = timePoints;
+                pressureChart.data.datasets[0].data = pressureCrossflow;
+                pressureChart.data.datasets[1].data = pressureCommingled;
+                pressureChart.data.datasets[2].data = pressureHomogeneous;
+                pressureChart.update();
+                
+                productionChart.data.labels = timePoints;
+                productionChart.data.datasets[0].data = layer1ProductionCrossflow;
+                productionChart.data.datasets[1].data = layer2ProductionCrossflow;
+                productionChart.data.datasets[2].data = layer1ProductionCommingled;
+                productionChart.data.datasets[3].data = layer2ProductionCommingled;
+                productionChart.update();
+                
+                // Update observations
+                const observations = document.getElementById('observations');
+                observations.innerHTML = '';
+                
+                // Add observations based on parameters
+                const li1 = document.createElement('li');
+                li1.textContent = `Transition period: starts at tD ≈ ${transitionStart.toFixed(2)} and ends at tD ≈ ${transitionEnd.toFixed(2)}`;
+                observations.appendChild(li1);
+                
+                const li2 = document.createElement('li');
+                if (permRatio > 1 && skin1 < skin2) {
+                    li2.textContent = `Layer 1 is more permeable and has less skin damage, so crossflow is from Layer 2 to Layer 1 at late time`;
+                } else if (permRatio > 1 && skin1 > skin2) {
+                    li2.textContent = `Layer 1 is more permeable but has more skin damage, so crossflow direction changes over time`;
+                } else if (permRatio < 1 && skin1 < skin2) {
+                    li2.textContent = `Layer 1 is less permeable but has less skin damage, so crossflow direction changes over time`;
+                } else {
+                    li2.textContent = `Layer 1 is less permeable and has more skin damage, so crossflow is from Layer 1 to Layer 2 at late time`;
+                }
+                observations.appendChild(li2);
+                
+                const li3 = document.createElement('li');
+                li3.textContent = `Late time production: Layer 1 = ${(q1Late*100).toFixed(1)}%, Layer 2 = ${(q2Late*100).toFixed(1)}% (compared to productivity ratios: ${(kappa1*100).toFixed(1)}% and ${(kappa2*100).toFixed(1)}%)`;
+                observations.appendChild(li3);
+                
+                const li4 = document.createElement('li');
+                if (verticalPerm < 0.01) {
+                    li4.textContent = `Very low vertical permeability (${verticalPerm}) causes the system to behave like a commingled system for a long time`;
+                } else if (verticalPerm > 0.5) {
+                    li4.textContent = `High vertical permeability (${verticalPerm}) causes rapid transition to homogeneous behavior`;
+                } else {
+                    li4.textContent = `Moderate vertical permeability (${verticalPerm}) shows clear three-stage behavior`;
+                }
+                observations.appendChild(li4);
+            }
+            
+            // Initialize the charts when the page loads
+            window.onload = initializeCharts;
+});
+</script>
+</body>
+</html>

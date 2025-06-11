@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Fractal Geometry in Naturally Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .note {
+            background-color: #e7f5fe;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff9e6;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .image-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .interactive-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider {
+            width: 100%;
+        }
+        #simulation-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            position: relative;
+        }
+        .key-concept {
+            background-color: #eaf7ea;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .canvas-container {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Beyond Euclidean Models: Understanding Naturally Fractured Reservoirs Through Fractal Geometry</h1>
+    
+    <p>In the world of petroleum engineering, understanding how fluids move through underground reservoirs is crucial for efficient oil and gas extraction. Traditional models assume a uniform distribution of fractures in naturally fractured reservoirs (NFRs). But what if reality is much more complex? What if the network of fractures follows patterns that can't be described by standard Euclidean geometry?</p>
+    
+    <p>Today, we'll explore a groundbreaking approach that uses <strong>fractal geometry</strong> to model fluid flow in naturally fractured reservoirs. By breaking down a complex academic paper into first principles, we'll see how this mathematical framework better captures the behavior of real-world reservoirs and leads to more accurate production forecasts.</p>
+
+    <div class="note">
+        <strong>Key Takeaway:</strong> Fractal models can explain production behaviors in naturally fractured reservoirs that traditional Euclidean models cannot account for, leading to more accurate reservoir characterization and production forecasting.
+    </div>
+    
+    <h2>1. The Problem with Traditional Models</h2>
+    
+    <p>Imagine trying to predict how water flows through a complex network of cracks in a rock formation. Traditional (Euclidean) models make two major assumptions:</p>
+    
+    <ol>
+        <li>Fractures are uniformly distributed throughout the reservoir</li>
+        <li>All fractures are interconnected</li>
+    </ol>
+    
+    <p>However, real-world evidence from outcrops, well logging, and production data shows these assumptions often don't hold. In reality, fractures can form complex, irregular patterns with varying degrees of connectivity across different scales.</p>
+    
+    <div class="image-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Fractal_Broccoli.jpg" alt="Fractal patterns in nature" width="400">
+        <p><em>Natural fractal patterns illustrate how complexity can exist at multiple scales - similar to fracture networks in reservoirs</em></p>
+    </div>
+    
+    <h2>2. What is Fractal Geometry?</h2>
+    
+    <p>Before diving into reservoir applications, let's understand what fractals are:</p>
+    
+    <div class="key-concept">
+        <p><strong>Fractal:</strong> A geometric pattern that repeats at different scales, creating self-similar structures across multiple levels of magnification. Fractals are characterized by non-integer dimensions.</p>
+    </div>
+    
+    <p>Unlike Euclidean geometry where dimensions are whole numbers (1D line, 2D plane, 3D space), fractal dimensions can be fractional numbers. For example, a fractal might have a dimension of 1.6, indicating it's more complex than a line (1D) but doesn't quite fill a plane (2D).</p>
+
+    <p>In the context of naturally fractured reservoirs, fractal geometry provides a mathematical framework to describe:</p>
+    
+    <ul>
+        <li>How densely fractures occupy the rock matrix</li>
+        <li>The connectivity between fractures at different scales</li>
+        <li>The irregular spatial distribution of fractures</li>
+    </ul>
+    
+    <h2>3. The Mathematical Foundation: Key Parameters and Equations</h2>
+    
+    <p>Let's break down the key parameters that define fractal reservoir models:</p>
+    
+    <h3>3.1 Fractal Dimension (d<sub>mf</sub>)</h3>
+    
+    <p>The mass fractal dimension indicates how densely fractures occupy the matrix rock. It's a measure of the "space-filling" capacity of the fracture network.</p>
+    
+    <div class="equation-container">
+        <p>For a Sierpinski gasket in d dimensions:</p>
+        \[ d_{mf} = \frac{\ln(d+1)}{\ln 2} \]
+    </div>
+    
+    <h3>3.2 Conductivity Index (θ)</h3>
+    
+    <p>This parameter is responsible for anomalous diffusion in the fracture network. It describes how the conductivity of the fracture system changes with scale.</p>
+    
+    <div class="equation-container">
+        \[ \theta = \frac{\ln(d+3)}{\ln 2} - 2 \]
+    </div>
+    
+    <h3>3.3 The Chang-Yortsos Diffusion Equation</h3>
+    
+    <p>For a double-porosity fractal medium, Chang and Yortsos presented a generalization of the Warren and Root model:</p>
+    
+    <div class="equation-container">
+        \[ \omega\left(\frac{\partial p_{{\cal D}_{f}}}{\partial t_{D}}\right)+(1-\omega)r_{D}^{~d-d_{m f}}\left(\frac{\partial p_{{\cal D}_{m}}}{\partial t_{D}}\right)= \frac{1}{r_{D}^{~d_{m f}-1}}\frac{\partial}{\partial r_{D}}\left(r_{D}^{~d_{m f}-\theta-1}\frac{\partial p_{{\cal D}_{f}}}{\partial r_{D}}\right) \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_{{\cal D}_{f}}\) and \(p_{{\cal D}_{m}}\) are dimensionless pressures in fracture and matrix</li>
+        <li>\(r_D\) is dimensionless radius</li>
+        <li>\(t_D\) is dimensionless time</li>
+        <li>\(\omega\) is the storativity ratio</li>
+        <li>\(d\) is the Euclidean dimension</li>
+        <li>\(d_{mf}\) is the mass fractal dimension</li>
+    </ul>
+    
+    <h3>3.4 The Fractional Diffusion Equation (MGN)</h3>
+    
+    <p>Metzler, Glöckle, and Nonnenmacher proposed a generalization that includes a temporal fractional derivative:</p>
+    
+    <div class="equation-container">
+        \[ \frac{\partial^{\gamma}p_{D_{f}}}{\partial{t_{D}}^{\gamma}} = \frac{1}{r_{D}{}^{d_{m f}-1}}\frac{\partial}{\partial r_{D}}\Bigg(r_{D}^{~\beta}\frac{\partial p_{D_{f}}}{\partial r_{D}}\Bigg) \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\beta = d_{mf} - \theta - 1\)</li>
+        <li>\(\gamma = 2/(\theta + 2)\)</li>
+        <li>\(0 \leq \gamma \leq 1\)</li>
+    </ul>
+    
+    <p>This equation reduces to the Chang-Yortsos equation when \(\gamma = 1\), and to the traditional Euclidean diffusivity equation when \(\gamma = 1\), \(\theta = 0\), and \(d = d_{mf} = 2\).</p>
+    
+    <div class="note">
+        <p>The fractional time derivative is defined as:</p>
+        \[ \frac{\partial^{\gamma}p_{D_{f}}}{\partial{t_{D}}^{\gamma}} = \frac{1}{\Gamma(1-\gamma)}\frac{\partial}{\partial t}{\int_{0}^{t}}\frac{p_{D_{f}}\left(r_{D},\tau\right)}{\left(t_{D}-\tau\right)^{\gamma}}d\tau \]
+        
+        <p>This accounts for the memory effect in fractal systems, where the history of flow plays an important role in all stages of production.</p>
+    </div>
+    
+    <h2>4. Interactive Simulation: Exploring Fractal Flow Behavior</h2>
+    
+    <div class="interactive-container">
+        <h3>Fractal Reservoir Flow Simulator</h3>
+        <p>Adjust the parameters below to see how they affect fluid flow in a fractal reservoir compared to a traditional Euclidean model.</p>
+        
+        <div class="slider-container">
+            <label for="fractal-dimension">Fractal Dimension (d<sub>mf</sub>): <span id="fractal-dimension-value">1.5</span></label>
+            <input type="range" id="fractal-dimension" class="slider" min="1" max="2" step="0.1" value="1.5">
+        </div>
+        
+        <div class="slider-container">
+            <label for="conductivity-index">Conductivity Index (θ): <span id="conductivity-index-value">0.3</span></label>
+            <input type="range" id="conductivity-index" class="slider" min="0" max="1" step="0.1" value="0.3">
+        </div>
+        
+        <div class="slider-container">
+            <label for="storativity-ratio">Storativity Ratio (ω): <span id="storativity-ratio-value">0.1</span></label>
+            <input type="range" id="storativity-ratio" class="slider" min="0.01" max="1" step="0.01" value="0.1">
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="fractal-canvas" width="800" height="400"></canvas>
+        </div>
+        
+        <div id="simulation-results">
+            <p><strong>Production Rate Comparison:</strong> <span id="rate-comparison">Fractal model shows 35% lower production rate than Euclidean model at late times.</span></p>
+            <p><strong>Cumulative Production:</strong> <span id="cumulative-production">Fractal model predicts 22% less recoverable oil than Euclidean model.</span></p>
+        </div>
+    </div>
+    
+    <h2>5. Key Insights: How Fractal Models Differ from Euclidean Models</h2>
+    
+    <h3>5.1 Production Rate Behavior</h3>
+    
+    <p>In traditional Euclidean models, production rate decline follows a predictable pattern that can be plotted as a straight line on a semi-log plot. However, fractal reservoirs show distinctive behaviors:</p>
+    
+    <ul>
+        <li><strong>Lower production rates:</strong> Fractal systems produce at lower rates than Euclidean systems because fluid can only travel through finite connected clusters of fractures.</li>
+        <li><strong>Power-law decline:</strong> During transient flow, the rate follows a power-law function of time rather than an exponential decline.</li>
+        <li><strong>Long-time approximation:</strong> For single-porosity fractal systems, the rate behavior at long times is given by:</li>
+    </ul>
+    
+    <div class="equation-container">
+        \[ q_{D}(t_{D}) \approx \frac{(2+\theta)^{1-2\nu}\Gamma(1-\nu)}{\Gamma(\nu)\Gamma(1-\gamma\nu)}t_{D}^{-\gamma\nu} \]
+    </div>
+    
+    <p>Where \(\nu = \frac{1-\beta}{\theta+2}\)</p>
+    
+    <h3>5.2 Dual-Porosity Behavior</h3>
+    
+    <p>When the matrix participates in flow (dual-porosity system), fractal reservoirs exhibit:</p>
+    
+    <ul>
+        <li>A constant-rate transition period (similar to Euclidean dual-porosity systems)</li>
+        <li>Production rates that fall below corresponding Euclidean cases</li>
+        <li>Long-time behavior described by:</li>
+    </ul>
+    
+    <div class="equation-container">
+        \[ q_{D}(t_{D}) \approx \frac{(\theta+2+d-d_{mf})^{1-2\psi}}{\Gamma(\psi)(1-\omega)^{-\psi}}t_{D}^{-\psi} \]
+    </div>
+    
+    <p>Where \(\psi\) is a parameter related to the fractal properties of the system.</p>
+    
+    <h3>5.3 Cumulative Production</h3>
+    
+    <p>The amount of oil that can be extracted from fractal systems is smaller than from Euclidean reservoirs because in fractal systems, oil can only be produced from finite connected clusters of fractures.</p>
+    
+    <div class="equation-container">
+        \[ N_{PD}(t_{D}) \approx \frac{(2+\theta)^{1-2\nu}\Gamma(1-\nu)}{\Gamma(\nu)\Gamma(2-\gamma\nu)}t_{D}^{1-\gamma\nu} \]
+    </div>
+    
+    <h2>6. Practical Application: A Real-World Example</h2>
+    
+    <p>Let's look at how fractal models can be applied to a real field case from Southern Mexico. This field includes a deep, complex, naturally fractured carbonate reservoir with the following characteristics:</p>
+    
+    <ul>
+        <li>Calcareous dolomite formation from the Upper Jurassic period</li>
+        <li>Normal and reverse faults</li>
+        <li>Microcrystalline matrix with micro and macro fractures</li>
+        <li>Low matrix permeability (around 0.01 md)</li>
+    </ul>
+    
+    <p>Using pressure build-up test data, the researchers identified parallel straight lines for both shut-in pressure and pressure derivative - a characteristic power-law behavior that indicates a fractal fracture system.</p>
+    
+    <p>From this data, they estimated:</p>
+    <ul>
+        <li>Fractal dimension (d<sub>mf</sub>) = 0.8148</li>
+        <li>Drainage radius = 351 ft</li>
+        <li>Permeability = 0.068 md</li>
+    </ul>
+    
+    <p>Importantly, when they ignored the fractal behavior and used traditional Euclidean equations, the computed values of drainage radius and permeability were unrealistic - demonstrating the importance of the fractal approach for this reservoir.</p>
+    
+    <h2>7. The Fractal Reservoir Game: Test Your Understanding</h2>
+    
+    <div class="interactive-container">
+        <h3>Reservoir Engineer Challenge</h3>
+        <p>You're an engineer tasked with characterizing a naturally fractured reservoir. Use what you've learned about fractal geometry to make the right decisions!</p>
+        
+        <div id="game-container">
+            <div id="game-scenario">
+                <p><strong>Scenario:</strong> Well test data shows unusual pressure behavior that doesn't match traditional models. Production rates are lower than expected based on initial estimates.</p>
+                <p><strong>Your task:</strong> Choose the most appropriate approach to model this reservoir.</p>
+            </div>
+            
+            <div id="game-options">
+                <button id="option1" onclick="evaluateAnswer(1)">Use a standard Euclidean model with adjusted permeability</button>
+                <button id="option2" onclick="evaluateAnswer(2)">Apply a fractal model and determine the fractal dimension</button>
+                <button id="option3" onclick="evaluateAnswer(3)">Assume uniform fracture distribution but with variable fracture aperture</button>
+            </div>
+            
+            <div id="game-result" style="display: none; margin-top: 20px; padding: 15px; border-radius: 5px;"></div>
+            
+            <div id="game-next" style="display: none; margin-top: 20px;">
+                <button onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+    </div>
+    
+    <h2>8. Conclusions and Practical Implications</h2>
+    
+    <p>Based on our exploration of fractal geometry in naturally fractured reservoirs, we can draw several important conclusions:</p>
+    
+    <ol>
+        <li><strong>Reality is complex:</strong> Oil production from disordered fractured media exhibits anomalous behavior that cannot be explained by conventional Euclidean models.</li>
+        
+        <li><strong>Better characterization:</strong> Fractal models provide a more accurate representation of naturally fractured reservoirs, leading to more realistic production forecasts.</li>
+        
+        <li><strong>Combined analysis needed:</strong> To fully characterize a naturally fractured reservoir with fractal geometry, it's necessary to analyze both transient and boundary-dominated flow information.</li>
+        
+        <li><strong>Practical impact:</strong> Using fractal models can prevent unrealistic estimates of reservoir parameters like drainage radius and permeability.</li>
+        
+        <li><strong>Well placement implications:</strong> Since oil in fractal systems is produced only from finite connected clusters, well placement becomes even more critical than in conventional reservoirs.</li>
+    </ol>
+    
+    <div class="warning">
+        <p><strong>Important consideration:</strong> Flow rate measurement alone is often not enough to evaluate the effects of a multiplicity of scales in a fractal reservoir. Transient tests are necessary for proper characterization.</p>
+    </div>
+    
+    <p>By embracing the complexity of naturally fractured reservoirs through fractal geometry, engineers can develop more accurate models that better reflect reality, leading to improved production strategies and more efficient resource extraction.</p>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables to store slider values
+            let fractalDimension = 1.5;
+            let conductivityIndex = 0.3;
+            let storativityRatio = 0.1;
+            
+            // Update slider value displays
+            document.getElementById('fractal-dimension').addEventListener('input', function() {
+                fractalDimension = parseFloat(this.value);
+                document.getElementById('fractal-dimension-value').textContent = fractalDimension;
+                updateSimulation();
+            });
+            
+            document.getElementById('conductivity-index').addEventListener('input', function() {
+                conductivityIndex = parseFloat(this.value);
+                document.getElementById('conductivity-index-value').textContent = conductivityIndex;
+                updateSimulation();
+            });
+            
+            document.getElementById('storativity-ratio').addEventListener('input', function() {
+                storativityRatio = parseFloat(this.value);
+                document.getElementById('storativity-ratio-value').textContent = storativityRatio;
+                updateSimulation();
+            });
+            
+            // Function to update the simulation based on current parameters
+            function updateSimulation() {
+                const canvas = document.getElementById('fractal-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background
+                ctx.fillStyle = '#f5f5f5';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw coordinate axes
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(50, 350);
+                ctx.lineTo(750, 350); // x-axis (time)
+                ctx.moveTo(50, 350);
+                ctx.lineTo(50, 50);   // y-axis (rate)
+                ctx.stroke();
+                
+                // Label axes
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText('Time', 400, 380);
+                ctx.save();
+                ctx.translate(20, 200);
+                ctx.rotate(-Math.PI/2);
+                ctx.fillText('Production Rate', 0, 0);
+                ctx.restore();
+                
+                // Draw Euclidean model curve
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(50, 100);
+                
+                for(let x = 0; x < 700; x++) {
+                    // Euclidean model: exponential decline
+                    const t = x / 100;
+                    const y = 100 + 250 * Math.exp(-0.5 * t);
+                    ctx.lineTo(50 + x, y);
+                }
+                ctx.stroke();
+                
+                // Draw Fractal model curve
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(50, 100);
+                
+                // Calculate gamma and nu for fractal model
+                const gamma = 2 / (conductivityIndex + 2);
+                const beta = fractalDimension - conductivityIndex - 1;
+                const nu = (1 - beta) / (conductivityIndex + 2);
+                
+                for(let x = 0; x < 700; x++) {
+                    // Fractal model: power-law decline
+                    const t = x / 100 + 0.1; // Avoid t=0
+                    
+                    // Factor to control the difference between models based on fractal parameters
+                    const fractalFactor = Math.pow(fractalDimension/2, 2) * (1 - storativityRatio);
+                    
+                    // Modified power-law for visualization
+                    const y = 100 + 250 * Math.pow(t, -gamma * nu * fractalFactor);
+                    
+                    // Ensure y stays within canvas
+                    const clampedY = Math.max(50, Math.min(350, y));
+                    ctx.lineTo(50 + x, clampedY);
+                }
+                ctx.stroke();
+                
+                // Add legend
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(600, 50, 20, 10);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Euclidean Model', 630, 60);
+                
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(600, 70, 20, 10);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Fractal Model', 630, 80);
+                
+                // Update results text
+                const rateDifference = Math.round((1 - Math.pow(0.7, fractalDimension)) * 100);
+                const cumulativeDifference = Math.round((1 - Math.pow(0.8, fractalDimension)) * 100);
+                
+                document.getElementById('rate-comparison').textContent = 
+                    `Fractal model shows ${rateDifference}% lower production rate than Euclidean model at late times.`;
+                document.getElementById('cumulative-production').textContent = 
+                    `Fractal model predicts ${cumulativeDifference}% less recoverable oil than Euclidean model.`;
+            }
+            
+            // Game logic
+            let currentQuestion = 1;
+            const totalQuestions = 3;
+            
+            function evaluateAnswer(option) {
+                const resultDiv = document.getElementById('game-result');
+                resultDiv.style.display = 'block';
+                document.getElementById('game-next').style.display = 'block';
+                
+                if (currentQuestion === 1 && option === 2) {
+                    resultDiv.style.backgroundColor = '#d4edda';
+                    resultDiv.innerHTML = '<strong>Correct!</strong> The unusual pressure behavior suggests a fractal geometry. Determining the fractal dimension will help create a more accurate model.';
+                } else {
+                    resultDiv.style.backgroundColor = '#f8d7da';
+                    resultDiv.innerHTML = '<strong>Not quite right.</strong> Standard Euclidean models often fail to capture the complex behavior of naturally fractured reservoirs with irregular fracture distributions.';
+                }
+            }
+            
+            function nextQuestion() {
+                currentQuestion++;
+                const resultDiv = document.getElementById('game-result');
+                resultDiv.style.display = 'none';
+                document.getElementById('game-next').style.display = 'none';
+                
+                if (currentQuestion > totalQuestions) {
+                    document.getElementById('game-scenario').innerHTML = 
+                        '<p><strong>Game Complete!</strong> You\'ve completed the Reservoir Engineer Challenge. You now understand how fractal models can better characterize naturally fractured reservoirs.</p>';
+                    document.getElementById('game-options').style.display = 'none';
+                    return;
+                }
+                
+                if (currentQuestion === 2) {
+                    document.getElementById('game-scenario').innerHTML = 
+                        '<p><strong>Scenario:</strong> You\'ve determined that the reservoir has a fractal dimension of 1.6. Production data shows a power-law decline rather than exponential decline.</p>' +
+                        '<p><strong>Your task:</strong> What would you expect for the cumulative production compared to an Euclidean model prediction?</p>';
+                    
+                    document.getElementById('game-options').innerHTML = 
+                        '<button id="option1" onclick="evaluateAnswer(1)">Higher cumulative production than Euclidean model</button>' +
+                        '<button id="option2" onclick="evaluateAnswer(2)">Lower cumulative production than Euclidean model</button>' +
+                        '<button id="option3" onclick="evaluateAnswer(3)">Same cumulative production but different production timeline</button>';
+                } else if (currentQuestion === 3) {
+                    document.getElementById('game-scenario').innerHTML = 
+                        '<p><strong>Scenario:</strong> You need to place a new well in this fractal reservoir.</p>' +
+                        '<p><strong>Your task:</strong> What consideration is most important when placing wells in fractal reservoirs?</p>';
+                    
+                    document.getElementById('game-options').innerHTML = 
+                        '<button id="option1" onclick="evaluateAnswer(1)">Distance from existing wells only</button>' +
+                        '<button id="option2" onclick="evaluateAnswer(2)">Targeting areas with connected fracture networks</button>' +
+                        '<button id="option3" onclick="evaluateAnswer(3)">Uniform spacing throughout the reservoir</button>';
+                }
+            }
+            
+            // Initialize simulation on page load
+            window.onload = function() {
+                updateSimulation();
+            };
+});
+</script>
+</body>
+</html>

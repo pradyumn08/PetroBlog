@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Multiphase Flow in Water Injection Wells: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Multiphase Flow in Water Injection Wells: A First Principles Approach</h1>
+    
+    <p class="highlight">
+        Have you ever wondered what happens when water is injected into an oil reservoir? The physics behind this process is fascinating, involving complex interactions between fluids and rock formations. Today, we'll break down a sophisticated academic paper on this topic into digestible concepts that anyone can understand.
+    </p>
+    
+    <h2>The Problem We're Solving</h2>
+    
+    <p>
+        When engineers inject water into oil reservoirs (a common practice to maintain pressure and improve oil recovery), they need to predict how pressure will change over time. This is crucial for designing efficient operations and avoiding problems like fracturing the reservoir.
+    </p>
+    
+    <p>
+        The paper we're exploring today, by Reynolds and colleagues, tackles this problem by developing analytical solutions for predicting pressure responses at water injection wells. What makes this particularly interesting is that they consider both vertical wells with restricted entry (where only part of the well is open to the reservoir) and horizontal wells that aren't centered in the formation.
+    </p>
+    
+    <div class="note">
+        <strong>Why This Matters:</strong> Accurate pressure prediction helps engineers optimize oil recovery, prevent equipment damage, and make better economic decisions about field development.
+    </div>
+    
+    <h2>The Core Concept: A Two-Component Solution</h2>
+    
+    <p>
+        The fundamental insight in this paper is that the pressure response during water injection can be broken down into two components:
+    </p>
+    
+    <ol>
+        <li><strong>Single-phase component:</strong> The pressure response if the reservoir contained only oil</li>
+        <li><strong>Multiphase component:</strong> An additional pressure term that accounts for the presence of both water and oil in the reservoir</li>
+    </ol>
+    
+    <p>
+        This can be expressed mathematically as:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \Delta p = \Delta\hat{p}_o + \Delta p_{multiphase}
+        \end{align}
+    </div>
+    
+    <p>
+        Where \(\Delta p\) is the total pressure change, \(\Delta\hat{p}_o\) is the single-phase oil solution, and \(\Delta p_{multiphase}\) represents the additional pressure change due to the presence of both water and oil.
+    </p>
+    
+    <h2>Understanding Dimensionless Variables</h2>
+    
+    <p>
+        Before diving deeper, let's understand the dimensionless variables that make the equations more elegant and universally applicable. The paper defines these in terms of oil properties at irreducible water saturation:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        p_D(r_D,t_D) &= \frac{k\hat{\lambda}_oh(p(r,t)-p_i)}{\alpha q_{\mathrm{inj}}} \\
+        p_{wD} &= \frac{k\hat{\lambda}_oh(p_{wf}(t)-p_i)}{\alpha q_{\mathrm{inj}}} \\
+        r_D &= \frac{r}{r_w} \\
+        t_D &= \frac{\beta\hat{k}\hat{\lambda}_ot}{\phi\hat{c}_{to}r_w^2}
+        \end{align}
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(p_D\) is dimensionless pressure change</li>
+        <li>\(p_{wD}\) is dimensionless wellbore pressure change</li>
+        <li>\(r_D\) is dimensionless radial distance</li>
+        <li>\(t_D\) is dimensionless time</li>
+        <li>\(k\) is permeability</li>
+        <li>\(\hat{\lambda}_o\) is endpoint oil mobility</li>
+        <li>\(h\) is formation thickness</li>
+        <li>\(q_{inj}\) is injection rate</li>
+        <li>\(\alpha\) and \(\beta\) are unit conversion factors</li>
+    </ul>
+    
+    <h2>The Key Insight: Mobility and Its Effect on Pressure</h2>
+    
+    <p>
+        A central concept in this analysis is <strong>mobility</strong>, which describes how easily a fluid flows through the rock. The total mobility (\(\lambda_t\)) is the sum of oil and water mobilities:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \lambda_t = \lambda_o + \lambda_w = \frac{k_{ro}}{\mu_o} + \frac{k_{rw}}{\mu_w}
+        \end{align}
+    </div>
+    
+    <p>
+        Where \(k_{ro}\) and \(k_{rw}\) are relative permeabilities of oil and water, and \(\mu_o\) and \(\mu_w\) are their viscosities.
+    </p>
+    
+    <p>
+        A crucial parameter is the <strong>endpoint mobility ratio</strong>:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \hat{M} = \frac{\hat{\lambda}_w}{\hat{\lambda}_o} = \frac{k_{rw}(S_w=1-S_{or})}{\mu_w}\frac{\mu_o}{k_{ro}(S_{iw})}
+        \end{align}
+    </div>
+    
+    <p>
+        This ratio tells us whether water flows more easily than oil (\(\hat{M} > 1\), unfavorable) or less easily (\(\hat{M} < 1\), favorable) through the rock.
+    </p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Mobility Ratio Explorer</h3>
+        
+        <p>Adjust the parameters below to see how they affect the mobility ratio:</p>
+        
+        <div class="slider-container">
+            <label for="krw">Maximum Water Relative Permeability (k<sub>rw</sub> at S<sub>or</sub>): <span id="krwValue">0.6</span></label>
+            <input type="range" id="krw" min="0.1" max="1.0" step="0.05" value="0.6">
+        </div>
+        
+        <div class="slider-container">
+            <label for="kro">Maximum Oil Relative Permeability (k<sub>ro</sub> at S<sub>iw</sub>): <span id="kroValue">1.0</span></label>
+            <input type="range" id="kro" min="0.5" max="1.0" step="0.05" value="1.0">
+        </div>
+        
+        <div class="slider-container">
+            <label for="muw">Water Viscosity (μ<sub>w</sub>): <span id="muwValue">0.5</span> cp</label>
+            <input type="range" id="muw" min="0.1" max="2.0" step="0.1" value="0.5">
+        </div>
+        
+        <div class="slider-container">
+            <label for="muo">Oil Viscosity (μ<sub>o</sub>): <span id="muoValue">1.0</span> cp</label>
+            <input type="range" id="muo" min="0.5" max="10.0" step="0.5" value="1.0">
+        </div>
+        
+        <div>
+            <p><strong>Calculated Mobility Ratio (M̂): <span id="mobilityRatio">1.2</span></strong></p>
+            <p id="mobilityInterpretation">This is an unfavorable mobility ratio, meaning water flows more easily than oil.</p>
+        </div>
+        
+        <div>
+            <canvas id="relPermChart" width="400" height="250"></canvas>
+        </div>
+    </div>
+    
+    <h2>The General Solution for Vertical Wells</h2>
+    
+    <p>
+        Now, let's look at the general solution for a vertical well with restricted entry. The paper presents this as:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        p_{wf}-p_i &= \Delta\hat{p}_o(t) + \frac{\alpha q_{\mathrm{inj}}}{k h\hat{\lambda}_o} \\
+        &\times \left[\left(\frac{k}{k_s}-1\right)\int_{r_w}^{r_s}\left(\frac{\hat{\lambda}_o}{\lambda_t(r,t)}-1\right)\frac{h}{h(r)}\frac{dr}{r} + \int_{r_w}^{r_f(t)}\left(\frac{\hat{\lambda}_o}{\lambda_t(r,t)}-1\right)\frac{h}{h(r)}\frac{dr}{r}\right]
+        \end{align}
+    </div>
+    
+    <p>
+        This may look intimidating, but let's break it down:
+    </p>
+    
+    <ul>
+        <li>The first term (\(\Delta\hat{p}_o(t)\)) is the single-phase oil solution</li>
+        <li>The second term accounts for the multiphase flow effects</li>
+        <li>The integrals represent the additional pressure drop due to the contrast between oil mobility and total mobility in the region invaded by water</li>
+        <li>\(h(r)\) is the height of the water bank, which varies with radial distance for restricted-entry wells</li>
+    </ul>
+    
+    <h2>Water Movement Models</h2>
+    
+    <p>
+        To calculate the pressure response, we need to know how water moves through the reservoir. The paper presents two models for restricted-entry vertical wells:
+    </p>
+    
+    <h3>Model 1: Constant Height then Expansion</h3>
+    
+    <p>
+        In this model, water initially moves radially with a constant height equal to the perforated interval (\(h_p\)). Once it reaches a critical radius (\(r_c\)), it expands to fill the entire formation thickness (\(h\)):
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        h(r) = 
+        \begin{cases}
+        h_p & \text{for } r_w < r < r_c \\
+        h & \text{for } r > r_c
+        \end{cases}
+        \end{align}
+    </div>
+    
+    <h3>Model 2: Gradually Increasing Height</h3>
+    
+    <p>
+        In this model, the water bank height increases linearly from \(h_p\) at the wellbore to \(h\) at the radius of convergence:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        h(r) = h + \left(\frac{h-h_p}{r_c-r_w}\right)(r-r_c) \text{ for } r_w < r < r_c
+        \end{align}
+    </div>
+    
+    <div class="interactive-container">
+        <h3>Interactive Water Bank Visualization</h3>
+        
+        <div class="two-column">
+            <div class="column">
+                <p>Select a model:</p>
+                <select id="modelSelect">
+                    <option value="model1">Model 1: Constant Height then Expansion</option>
+                    <option value="model2">Model 2: Gradually Increasing Height</option>
+                </select>
+                
+                <div class="slider-container">
+                    <label for="penetrationRatio">Penetration Ratio (h<sub>p</sub>/h): <span id="penetrationRatioValue">0.4</span></label>
+                    <input type="range" id="penetrationRatio" min="0.1" max="1.0" step="0.05" value="0.4">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="radiusRatio">Current Radius (r/r<sub>c</sub>): <span id="radiusRatioValue">0.5</span></label>
+                    <input type="range" id="radiusRatio" min="0.1" max="2.0" step="0.1" value="0.5">
+                </div>
+                
+                <button id="animateBtn" class="btn">Animate Water Movement</button>
+            </div>
+            <div class="column">
+                <canvas id="waterBankCanvas" width="350" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <h2>The Buckley-Leverett Equation: Tracking Water Movement</h2>
+    
+    <p>
+        To calculate the water saturation distribution (which determines the total mobility), the paper uses the Buckley-Leverett equation. For radial flow through a system of variable thickness, this is:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \int_{r_w}^{r(S_w)}rh(r)dr = \frac{\theta q_{\mathrm{inj}}t}{2\pi\phi}\frac{df_w(S_w)}{dS_w}
+        \end{align}
+    </div>
+    
+    <p>
+        Where \(f_w\) is the fractional flow of water, \(S_w\) is water saturation, and \(\theta\) is a unit conversion factor.
+    </p>
+    
+    <p>
+        For Model 1, this simplifies to:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        r^2(S_w) = r_w^2 + \frac{\theta q_{\mathrm{inj}}t}{\pi\phi h_p}\frac{df_w(S_w)}{dS_w}
+        \end{align}
+    </div>
+    
+    <p>
+        This equation tells us where each water saturation value is located at a given time, allowing us to map the saturation profile in the reservoir.
+    </p>
+    
+    <h2>Surprising Insights: Negative Pressure Derivatives</h2>
+    
+    <p>
+        One of the most interesting findings in the paper is that for restricted-entry wells, the pressure derivative (rate of change of pressure with respect to the logarithm of time) can be negative throughout an entire injection test, even for tests lasting more than ten days.
+    </p>
+    
+    <p>
+        The condition for a negative pressure derivative in the second-radial/first-radial flow regime (when the single-phase solution reflects the entire formation thickness but water is still flowing within the height of the perforated interval) is:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \hat{M}(1-b) > 1
+        \end{align}
+    </div>
+    
+    <p>
+        Where \(b = h_p/h\) is the penetration ratio.
+    </p>
+    
+    <p>
+        This is counterintuitive! In conventional well test analysis, a negative pressure derivative is often attributed to wellbore storage effects or a damaged zone around the well. But here, it's a natural consequence of the physics of multiphase flow in a restricted-entry well.
+    </p>
+    
+    <div class="interactive-container">
+        <h3>Pressure Derivative Simulator</h3>
+        
+        <div class="two-column">
+            <div class="column">
+                <div class="slider-container">
+                    <label for="mobilityRatioSlider">Mobility Ratio (M̂): <span id="mobilityRatioSliderValue">3.0</span></label>
+                    <input type="range" id="mobilityRatioSlider" min="0.2" max="5.0" step="0.1" value="3.0">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="penetrationRatioSlider">Penetration Ratio (b): <span id="penetrationRatioSliderValue">0.35</span></label>
+                    <input type="range" id="penetrationRatioSlider" min="0.1" max="1.0" step="0.05" value="0.35">
+                </div>
+                
+                <p id="derivativeCondition">For these values, M̂(1-b) = 1.95 > 1, so we expect a negative pressure derivative.</p>
+            </div>
+            <div class="column">
+                <canvas id="pressureDerivativeChart" width="350" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Horizontal Wells: A Different Geometry</h2>
+    
+    <p>
+        For horizontal wells, the paper extends previous work to handle cases where the well isn't centered in the formation. The general solution is similar in structure to the vertical well case:
+    </p>
+    
+    <div class="equation-box">
+        \begin{align}
+        \Delta p = p_{wf}(t)-p_i = \Delta\hat{p}_o + \Delta p^{(zx)} + \Delta p^{(x)} + \Delta p^{(xy)}
+        \end{align}
+    </div>
+    
+    <p>
+        Where the multiphase component is split into three terms representing different flow patterns:
+    </p>
+    
+    <ul>
+        <li>\(\Delta p^{(zx)}\): Pressure change due to radial flow in the xz-plane</li>
+        <li>\(\Delta p^{(x)}\): Pressure change due to linear flow in the x-direction</li>
+        <li>\(\Delta p^{(xy)}\): Pressure change due to radial flow in the xy-plane</li>
+    </ul>
+    
+    <p>
+        The models for water movement are conceptually similar to those for vertical wells, but adapted for the horizontal well geometry.
+    </p>
+    
+    <h2>Real-World Implications</h2>
+    
+    <p>
+        The analytical solutions developed in this paper provide several practical insights for reservoir engineers:
+    </p>
+    
+    <ol>
+        <li><strong>Pressure behavior prediction:</strong> Engineers can predict pressure responses during water injection tests without running complex numerical simulations</li>
+        <li><strong>Flow regime identification:</strong> The solutions help identify different flow regimes during injection tests, which aids in reservoir characterization</li>
+        <li><strong>Negative derivative explanation:</strong> The work explains why negative pressure derivatives might be observed during injection tests, even without wellbore storage effects</li>
+        <li><strong>Fault detection:</strong> For wells near faults, the ratio of slopes in the pressure derivative isn't simply 2 (as in single-phase flow) but depends on the mobility ratio</li>
+    </ol>
+    
+    <h2>Conclusion: The Power of Analytical Solutions</h2>
+    
+    <p>
+        This paper demonstrates how analytical solutions, derived from first principles, can provide deep insights into complex multiphase flow problems. By breaking down the pressure response into single-phase and multiphase components, and using Buckley-Leverett theory to track water movement, the authors created practical tools for analyzing water injection tests.
+    </p>
+    
+    <p>
+        The most surprising finding—that restricted-entry wells can show negative pressure derivatives throughout an entire test—challenges conventional interpretations and highlights the importance of understanding the underlying physics of multiphase flow in reservoirs.
+    </p>
+    
+    <p>
+        For practicing engineers, these solutions offer a way to analyze injection test data more accurately, leading to better reservoir characterization and more efficient oil recovery operations.
+    </p>
+    
+    <script>
+        // Mobility Ratio Calculator
+        function updateMobilityRatio() {
+            const krw = parseFloat(document.getElementById('krw').value);
+            const kro = parseFloat(document.getElementById('kro').value);
+            const muw = parseFloat(document.getElementById('muw').value);
+            const muo = parseFloat(document.getElementById('muo').value);
+            
+            document.getElementById('krwValue').textContent = krw.toFixed(2);
+            document.getElementById('kroValue').textContent = kro.toFixed(2);
+            document.getElementById('muwValue').textContent = muw.toFixed(1);
+            document.getElementById('muoValue').textContent = muo.toFixed(1);
+            
+            const mobilityRatio = (krw / muw) * (muo / kro);
+            document.getElementById('mobilityRatio').textContent = mobilityRatio.toFixed(2);
+            
+            const interpretation = document.getElementById('mobilityInterpretation');
+            if (mobilityRatio > 1) {
+                interpretation.textContent = "This is an unfavorable mobility ratio, meaning water flows more easily than oil.";
+            } else if (mobilityRatio < 1) {
+                interpretation.textContent = "This is a favorable mobility ratio, meaning oil flows more easily than water.";
+            } else {
+                interpretation.textContent = "The mobility ratio is exactly 1, meaning water and oil flow with equal ease.";
+            }
+            
+            updateRelPermChart(krw, kro);
+        }
+        
+        // Relative Permeability Chart
+        let relPermChart;
+        
+        function initRelPermChart(krw, kro) {
+            const ctx = document.getElementById('relPermChart').getContext('2d');
+            
+            relPermChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 21}, (_, i) => (i * 5 + 25).toString()),
+                    datasets: [
+                        {
+                            label: 'Water Relative Permeability',
+                            data: generateKrwData(krw),
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Oil Relative Permeability',
+                            data: generateKroData(kro),
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Water Saturation (%)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Relative Permeability'
+                            },
+                            min: 0,
+                            max: 1
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateRelPermChart(krw, kro) {
+            relPermChart.data.datasets[0].data = generateKrwData(krw);
+            relPermChart.data.datasets[1].data = generateKroData(kro);
+            relPermChart.update();
+        }
+        
+        function generateKrwData(krwMax) {
+            // Generates water relative permeability curve
+            // Sw ranges from 25% (Siw) to 100%
+            return Array.from({length: 21}, (_, i) => {
+                const sw = i * 5 + 25; // 25% to 100%
+                if (sw <= 25) return 0; // Below Siw
+                if (sw >= 72) return krwMax; // Above 1-Sor (assuming Sor = 28%)
+                
+                // Simple power law model between Siw and 1-Sor
+                const normalizedSw = (sw - 25) / (72 - 25);
+                return krwMax * Math.pow(normalizedSw, 2);
+            });
+        }
+        
+        function generateKroData(kroMax) {
+            // Generates oil relative permeability curve
+            // Sw ranges from 25% (Siw) to 100%
+            return Array.from({length: 21}, (_, i) => {
+                const sw = i * 5 + 25; // 25% to 100%
+                if (sw >= 72) return 0; // Above 1-Sor
+                if (sw <= 25) return kroMax; // Below Siw
+                
+                // Simple power law model between Siw and 1-Sor
+                const normalizedSw = (sw - 25) / (72 - 25);
+                return kroMax * Math.pow(1 - normalizedSw, 2);
+            });
+        }
+        
+        // Water Bank Visualization
+        let waterBankCtx, waterBankCanvas;
+        
+        function initWaterBankCanvas() {
+            waterBankCanvas = document.getElementById('waterBankCanvas');
+            waterBankCtx = waterBankCanvas.getContext('2d');
+            drawWaterBank();
+        }
+        
+        function drawWaterBank() {
+            const model = document.getElementById('modelSelect').value;
+            const penetrationRatio = parseFloat(document.getElementById('penetrationRatio').value);
+            const radiusRatio = parseFloat(document.getElementById('radiusRatio').value);
+            
+            document.getElementById('penetrationRatioValue').textContent = penetrationRatio.toFixed(2);
+            document.getElementById('radiusRatioValue').textContent = radiusRatio.toFixed(1);
+            
+            waterBankCtx.clearRect(0, 0, waterBankCanvas.width, waterBankCanvas.height);
+            
+            // Draw reservoir boundaries
+            waterBankCtx.strokeStyle = '#333';
+            waterBankCtx.lineWidth = 2;
+            waterBankCtx.strokeRect(50, 50, 250, 150);
+            
+            // Draw wellbore
+            waterBankCtx.fillStyle = '#333';
+            waterBankCtx.beginPath();
+            waterBankCtx.arc(50, 125, 5, 0, Math.PI * 2);
+            waterBankCtx.fill();
+            
+            // Draw perforated interval
+            waterBankCtx.fillStyle = 'red';
+            const perfHeight = penetrationRatio * 150;
+            waterBankCtx.fillRect(45, 125 - perfHeight/2, 10, perfHeight);
+            
+            // Draw water bank
+            waterBankCtx.fillStyle = 'rgba(54, 162, 235, 0.4)';
+            
+            const rcX = 150; // Position of rc on canvas
+            
+            if (model === 'model1') {
+                // Model 1: Constant height then expansion
+                if (radiusRatio <= 1) {
+                    // Before rc
+                    const bankWidth = (rcX - 50) * radiusRatio;
+                    waterBankCtx.fillRect(50, 125 - perfHeight/2, bankWidth, perfHeight);
+                } else {
+                    // After rc, full height
+                    const bankWidth = (rcX - 50) + (radiusRatio - 1) * 100;
+                    waterBankCtx.fillRect(50, 50, bankWidth, 150);
+                }
+            } else {
+                // Model 2: Gradually increasing height
+                if (radiusRatio <= 1) {
+                    // Before rc, create a trapezoid
+                    const bankWidth = (rcX - 50) * radiusRatio;
+                    const endHeight = perfHeight + (radiusRatio * (150 - perfHeight));
+                    
+                    waterBankCtx.beginPath();
+                    waterBankCtx.moveTo(50, 125 - perfHeight/2);
+                    waterBankCtx.lineTo(50 + bankWidth, 125 - endHeight/2);
+                    waterBankCtx.lineTo(50 + bankWidth, 125 + endHeight/2);
+                    waterBankCtx.lineTo(50, 125 + perfHeight/2);
+                    waterBankCtx.closePath();
+                    waterBankCtx.fill();
+                } else {
+                    // After rc, full height
+                    const bankWidth = (rcX - 50) + (radiusRatio - 1) * 100;
+                    waterBankCtx.fillRect(50, 50, bankWidth, 150);
+                }
+            }
+            
+            // Draw rc line
+            waterBankCtx.strokeStyle = '#999';
+            waterBankCtx.setLineDash([5, 3]);
+            waterBankCtx.beginPath();
+            waterBankCtx.moveTo(rcX, 50);
+            waterBankCtx.lineTo(rcX, 200);
+            waterBankCtx.stroke();
+            waterBankCtx.setLineDash([]);
+            
+            // Add labels
+            waterBankCtx.fillStyle = '#333';
+            waterBankCtx.font = '12px Arial';
+            waterBankCtx.fillText('rw', 45, 145);
+            waterBankCtx.fillText('rc', rcX - 5, 220);
+            waterBankCtx.fillText('Water', 100, 125);
+            waterBankCtx.fillText('Oil', 200, 90);
+        }
+        
+        function animateWaterMovement() {
+            const btn = document.getElementById('animateBtn');
+            btn.disabled = true;
+            
+            let radiusRatio = 0.1;
+            const interval = setInterval(() => {
+                document.getElementById('radiusRatio').value = radiusRatio;
+                drawWaterBank();
+                radiusRatio += 0.1;
+                
+                if (radiusRatio > 2.0) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                }
+            }, 100);
+        }
+        
+        // Pressure Derivative Simulator
+        let pressureDerivativeChart;
+        
+        function initPressureDerivativeChart() {
+            const ctx = document.getElementById('pressureDerivativeChart').getContext('2d');
+            
+            pressureDerivativeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 100}, (_, i) => (i * 0.1 + 0.1).toFixed(1)),
+                    datasets: [
+                        {
+                            label: 'Pressure Derivative',
+                            data: [],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time (hours)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Pressure Derivative'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updatePressureDerivative();
+        }
+        
+        function updatePressureDerivative() {
+            const mobilityRatio = parseFloat(document.getElementById('mobilityRatioSlider').value);
+            const penetrationRatio = parseFloat(document.getElementById('penetrationRatioSlider').value);
+            
+            document.getElementById('mobilityRatioSliderValue').textContent = mobilityRatio.toFixed(1);
+            document.getElementById('penetrationRatioSliderValue').textContent = penetrationRatio.toFixed(2);
+            
+            const condition = mobilityRatio * (1 - penetrationRatio);
+            document.getElementById('derivativeCondition').textContent = 
+                `For these values, M̂(1-b) = ${condition.toFixed(2)} ${condition > 1 ? '> 1, so we expect a negative pressure derivative.' : '≤ 1, so we expect a positive pressure derivative.'}`;
+            
+            // Generate pressure derivative data
+            const derivativeData = Array.from({length: 100}, (_, i) => {
+                const time = i * 0.1 + 0.1;
+                
+                // Simple model for demonstration purposes
+                // In reality, this would be based on the complex equations from the paper
+                const baseDerivative = 5 * (1 - mobilityRatio * (1 - penetrationRatio) / (1 + time * 0.5));
+                
+                // Add some early-time behavior
+                if (time < 1) {
+                    return baseDerivative * (1 + 2 * Math.exp(-time * 3));
+                }
+                
+                // Add some late-time behavior
+                if (time > 5) {
+                    return baseDerivative * (1 + 0.2 * Math.log10(time/5));
+                }
+                
+                return baseDerivative;
+            });
+            
+            pressureDerivativeChart.data.datasets[0].data = derivativeData;
+            pressureDerivativeChart.update();
+        }
+        
+        // Initialize everything when the page loads
+        window.onload = function() {
+            // Initialize mobility ratio calculator
+            document.getElementById('krw').addEventListener('input', updateMobilityRatio);
+            document.getElementById('kro').addEventListener('input', updateMobilityRatio);
+            document.getElementById('muw').addEventListener('input', updateMobilityRatio);
+            document.getElementById('muo').addEventListener('input', updateMobilityRatio);
+            initRelPermChart(0.6, 1.0);
+            updateMobilityRatio();
+            
+            // Initialize water bank visualization
+            document.getElementById('modelSelect').addEventListener('change', drawWaterBank);
+            document.getElementById('penetrationRatio').addEventListener('input', drawWaterBank);
+            document.getElementById('radiusRatio').addEventListener('input', drawWaterBank);
+            document.getElementById('animateBtn').addEventListener('click', animateWaterMovement);
+            initWaterBankCanvas();
+            
+            // Initialize pressure derivative simulator
+            document.getElementById('mobilityRatioSlider').addEventListener('input', updatePressureDerivative);
+            document.getElementById('penetrationRatioSlider').addEventListener('input', updatePressureDerivative);
+            initPressureDerivativeChart();
+        };
+    </script>
+</body>
+</html>

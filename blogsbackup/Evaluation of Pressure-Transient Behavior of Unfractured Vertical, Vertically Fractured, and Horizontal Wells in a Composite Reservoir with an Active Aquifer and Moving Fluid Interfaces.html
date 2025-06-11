@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Pressure-Transient Models for Wells in Composite Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        code {
+            background-color: #f9f9f9;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #e7f5fe;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff5e6;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        .key-concept {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider {
+            width: 100%;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .two-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        #simulation-canvas {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detecting Water Encroachment in Oil Reservoirs: A First Principles Approach to Pressure-Transient Models</h1>
+    
+    <p>Welcome to a deep dive into one of the most crucial challenges in oil extraction: detecting when water is about to contaminate your oil well before it happens. This early detection can save millions of dollars and significantly increase oil recovery rates. Today, we'll break down complex mathematical models from a recent academic paper into understandable concepts, using first principles thinking.</p>
+
+    <div class="note">
+        <p><strong>Key Takeaway:</strong> By monitoring pressure changes in oil wells, we can detect approaching water <em>before</em> it reaches the well, allowing preventive actions to be taken.</p>
+    </div>
+
+    <h2>The Problem: Water Encroachment in Oil Reservoirs</h2>
+
+    <p>Imagine you're extracting oil from an underground reservoir. This reservoir is often in contact with water (from an "aquifer") that naturally wants to fill the space as you remove oil. If this water reaches your well, it can:</p>
+
+    <ul>
+        <li>Reduce oil production</li>
+        <li>Increase operating costs</li>
+        <li>Leave valuable oil trapped in the reservoir</li>
+    </ul>
+
+    <p>Traditionally, oil companies only discover water encroachment when it's too late - when water starts coming up with the oil (called "breakthrough"). But what if we could detect the approaching water front <em>before</em> it reaches the well?</p>
+
+    <div class="analogy">
+        <p><strong>Everyday Analogy:</strong> Think of an oil reservoir like a sponge soaked with oil, sitting partially in water. As you extract oil from the top (using a straw), the water level rises through the sponge. You want to know when the water is getting close to your straw before it reaches it.</p>
+    </div>
+
+    <h2>The Composite Reservoir Concept</h2>
+
+    <p>The key to understanding this problem is the concept of a <span class="key-concept">composite reservoir</span> - a system with distinct regions having different properties:</p>
+
+    <ol>
+        <li><strong>Uninvaded oil zone:</strong> The region containing only oil</li>
+        <li><strong>Water invaded transition zone:</strong> The region where water has partially replaced oil</li>
+        <li><strong>Active aquifer:</strong> The region containing only water</li>
+    </ol>
+
+    <p>As oil is extracted, the boundaries between these regions move, with water gradually encroaching toward the well.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Composite Reservoir Model</h3>
+        <div id="reservoir-simulation">
+            <canvas id="simulation-canvas"></canvas>
+            <div class="slider-container">
+                <label for="production-rate">Production Rate: <span id="rate-value" class="slider-value">50</span> STB/D</label>
+                <input type="range" id="production-rate" class="slider" min="0" max="100" value="50">
+            </div>
+            <div class="slider-container">
+                <label for="mobility-ratio">Mobility Ratio: <span id="mobility-value" class="slider-value">1.0</span></label>
+                <input type="range" id="mobility-ratio" class="slider" min="0.1" max="5" step="0.1" value="1.0">
+            </div>
+            <button id="restart-simulation">Restart Simulation</button>
+        </div>
+    </div>
+
+    <h2>First Principles: The Physics Behind Pressure Transients</h2>
+
+    <p>At its core, this problem is about fluid flow through porous media. Let's break it down to fundamental principles:</p>
+
+    <h3>1. Darcy's Law</h3>
+    
+    <p>Fluid flow through porous media (like rock) follows Darcy's Law, which states that the flow rate is proportional to the pressure gradient:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        q = -\frac{kA}{\mu} \frac{dp}{dx}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(q\) = flow rate</li>
+        <li>\(k\) = permeability (how easily fluid flows through the rock)</li>
+        <li>\(A\) = cross-sectional area</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(\frac{dp}{dx}\) = pressure gradient</li>
+    </ul>
+
+    <h3>2. Conservation of Mass</h3>
+    
+    <p>The principle that matter cannot be created or destroyed leads to the continuity equation:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{\partial}{\partial t}(\phi \rho) + \nabla \cdot (\rho \vec{v}) = 0
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\phi\) = porosity (fraction of rock volume that is pore space)</li>
+        <li>\(\rho\) = fluid density</li>
+        <li>\(\vec{v}\) = fluid velocity</li>
+    </ul>
+
+    <h3>3. The Diffusivity Equation</h3>
+    
+    <p>Combining Darcy's Law with conservation of mass gives us the diffusivity equation, which describes how pressure changes propagate through the reservoir:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{k}{\mu}\frac{\partial p}{\partial r}\right) = \phi c_t \frac{\partial p}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(c_t\) = total compressibility</li>
+        <li>\(r\) = radial distance from well</li>
+        <li>\(t\) = time</li>
+    </ul>
+
+    <p>This equation is fundamental to understanding pressure transient behavior in reservoirs. When we introduce multiple regions with different properties (our composite system), we need to solve this equation for each region and ensure continuity at the boundaries.</p>
+
+    <h2>The Buckley-Leverett Frontal Advance Theory</h2>
+
+    <p>To model how the water-oil interface moves through the reservoir, we use the <span class="key-concept">Buckley-Leverett frontal advance theory</span>. This theory describes how water displaces oil in porous media.</p>
+
+    <h3>Fractional Flow Concept</h3>
+
+    <p>The key component is the fractional flow equation, which tells us what fraction of the total flow is water:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        f_w = \frac{1}{1 + \frac{k_{ro}\mu_w}{k_{rw}\mu_o}}
+        \end{equation}
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(f_w\) = fractional flow of water</li>
+        <li>\(k_{ro}\) = relative permeability to oil</li>
+        <li>\(k_{rw}\) = relative permeability to water</li>
+        <li>\(\mu_o\) = oil viscosity</li>
+        <li>\(\mu_w\) = water viscosity</li>
+    </ul>
+
+    <p>The velocity of the water front is then given by:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        v_f = \frac{q}{\phi A}\left(\frac{df_w}{dS_w}\right)^*
+        \end{equation}
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(v_f\) = velocity of the water front</li>
+        <li>\(q\) = total flow rate</li>
+        <li>\(\phi\) = porosity</li>
+        <li>\(A\) = cross-sectional area</li>
+        <li>\(\left(\frac{df_w}{dS_w}\right)^*\) = slope of the tangent to the fractional flow curve at the front</li>
+    </ul>
+
+    <div class="interactive-container">
+        <h3>Interactive Fractional Flow Curve</h3>
+        <div id="fractional-flow-plot" style="width:100%; height:400px;"></div>
+        <div class="slider-container">
+            <label for="viscosity-ratio">Oil/Water Viscosity Ratio: <span id="viscosity-value" class="slider-value">1.0</span></label>
+            <input type="range" id="viscosity-ratio" class="slider" min="0.1" max="10" step="0.1" value="1.0">
+        </div>
+        <div class="slider-container">
+            <label for="exponent-water">Water Relative Permeability Exponent: <span id="exponent-water-value" class="slider-value">2.0</span></label>
+            <input type="range" id="exponent-water" class="slider" min="1" max="5" step="0.1" value="2.0">
+        </div>
+        <div class="slider-container">
+            <label for="exponent-oil">Oil Relative Permeability Exponent: <span id="exponent-oil-value" class="slider-value">2.0</span></label>
+            <input type="range" id="exponent-oil" class="slider" min="1" max="5" step="0.1" value="2.0">
+        </div>
+    </div>
+
+    <h2>The Mathematical Model</h2>
+
+    <p>Now, let's look at the complete mathematical model that allows us to detect water encroachment before breakthrough. We'll focus on the case of a vertical well in a radial composite system.</p>
+
+    <h3>The Dimensionless Diffusivity Equation</h3>
+
+    <p>For each region in our composite system, we need to solve the dimensionless diffusivity equation:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        \frac{1}{r_D}\frac{\partial}{\partial r_D}\left(r_D\lambda_{tD}\frac{\partial p_D}{\partial r_D}\right) = c_{tD}\frac{\partial p_D}{\partial t_D}
+        \end{equation}
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(r_D\) = dimensionless radius</li>
+        <li>\(\lambda_{tD}\) = dimensionless total mobility</li>
+        <li>\(p_D\) = dimensionless pressure</li>
+        <li>\(c_{tD}\) = dimensionless total compressibility</li>
+        <li>\(t_D\) = dimensionless time</li>
+    </ul>
+
+    <h3>Laplace Transform Finite Difference (LTFD) Method</h3>
+
+    <p>To solve this system of equations, we use the <span class="key-concept">Laplace Transform Finite Difference (LTFD)</span> method. This transforms our partial differential equations in time and space into a set of ordinary differential equations in space only:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        \frac{1}{r_D}\frac{d}{d r_D}\left(r_D\lambda_{tD}\frac{d\overline{p}_D}{d r_D}\right) = c_{tD}[u\overline{p}_D - \overline{p}_D(r_D, t_D=0)]
+        \end{equation}
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(\overline{p}_D\) = Laplace transform of \(p_D\)</li>
+        <li>\(u\) = Laplace transform parameter</li>
+    </ul>
+
+    <p>We then discretize this equation using finite differences and solve the resulting system of linear equations. Finally, we invert the solution back to the time domain using numerical inversion techniques like the Stehfest algorithm.</p>
+
+    <h3>Moving Boundary Conditions</h3>
+
+    <p>The key innovation in this model is how it handles the moving boundaries between regions. The position of the water-oil interface is given by:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        \frac{dr_f^2}{dt} = \frac{q(r_f)}{\pi h\phi}\left(\frac{df_w}{dS_w}\right)^*
+        \end{equation}
+    </div>
+
+    <p>This equation is coupled with the pressure equations and solved simultaneously.</p>
+
+    <h2>Pressure Derivative: The Key to Early Detection</h2>
+
+    <p>The most important insight from this research is that we can detect water encroachment by looking at the <span class="key-concept">pressure derivative</span> - the rate of change of pressure with respect to time.</p>
+
+    <p>The pressure derivative is defined as:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        \frac{d p_{wD}}{d \ln t_D} = t_D \frac{d p_{wD}}{d t_D}
+        \end{equation}
+    </div>
+
+    <p>When plotted against time on a log-log scale, the pressure derivative shows distinct patterns that can be interpreted to identify reservoir characteristics and detect approaching fluid fronts.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Pressure Derivative Analysis</h3>
+        <div id="pressure-derivative-plot" style="width:100%; height:400px;"></div>
+        <div class="slider-container">
+            <label for="reservoir-size">Reservoir Size (rᵦD): <span id="reservoir-size-value" class="slider-value">1000</span></label>
+            <input type="range" id="reservoir-size" class="slider" min="50" max="5000" step="50" value="1000">
+        </div>
+        <div class="slider-container">
+            <label for="front-position">Initial Front Position (rᵦD): <span id="front-position-value" class="slider-value">500</span></label>
+            <input type="range" id="front-position" class="slider" min="50" max="1000" step="10" value="500">
+        </div>
+        <div class="slider-container">
+            <label for="mobility-contrast">Mobility Contrast (λₐD): <span id="mobility-contrast-value" class="slider-value">2.0</span></label>
+            <input type="range" id="mobility-contrast" class="slider" min="0.1" max="10" step="0.1" value="2.0">
+        </div>
+        <button id="calculate-derivative">Calculate Derivative</button>
+    </div>
+
+    <h2>The Second Derivative: Advanced Detection</h2>
+
+    <p>One of the novel contributions of this research is the use of the <span class="key-concept">second derivative</span> of pressure to provide even earlier detection of water encroachment:</p>
+
+    <div class="equation-box">
+        \begin{equation}
+        \frac{d^2 p_{wD}}{d (\ln t_D)^2} = t_D \frac{d}{dt_D}\left(t_D \frac{d p_{wD}}{d t_D}\right)
+        \end{equation}
+    </div>
+
+    <p>The second derivative can show subtle changes in the pressure behavior that might not be apparent in the first derivative, providing even earlier warning of approaching water.</p>
+
+    <h2>Application to Different Well Types</h2>
+
+    <p>The paper extends this methodology to various well configurations:</p>
+
+    <ol>
+        <li><strong>Unfractured vertical wells</strong> in radial composite systems</li>
+        <li><strong>Vertically fractured wells</strong> in linear and radial composite systems</li>
+        <li><strong>Horizontal wells</strong> in radial and linear composite systems</li>
+        <li><strong>Vertical fractures intersected by horizontal wells</strong> in linear composite systems</li>
+    </ol>
+
+    <p>Each configuration requires specific mathematical adaptations, but the fundamental principle remains the same: monitoring pressure transient behavior to detect approaching water fronts.</p>
+
+    <h2>Let's Play a Game: Water Encroachment Detective</h2>
+
+    <div class="interactive-container">
+        <h3>Water Encroachment Detective Game</h3>
+        <p>Your job is to monitor the pressure derivative curve and identify when water encroachment is occurring before breakthrough. Adjust the production rate to maximize oil recovery while avoiding water breakthrough.</p>
+        <div id="game-container" style="width:100%; height:500px; position: relative; border: 1px solid #ccc;">
+            <div id="game-canvas" style="width:100%; height:400px;"></div>
+            <div id="game-controls" style="padding: 10px;">
+                <button id="start-game">Start New Game</button>
+                <button id="decrease-rate">Decrease Rate</button>
+                <button id="increase-rate">Increase Rate</button>
+                <div>Current Rate: <span id="current-rate">50</span> STB/D</div>
+                <div>Oil Produced: <span id="oil-produced">0</span> STB</div>
+                <div>Time: <span id="game-time">0</span> days</div>
+                <div>Status: <span id="game-status">Ready to start</span></div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Real-World Applications</h2>
+
+    <p>This methodology has significant practical applications in the oil industry:</p>
+
+    <ul>
+        <li><strong>Proactive management:</strong> By detecting water encroachment early, operators can adjust production rates to delay breakthrough</li>
+        <li><strong>Selective completion:</strong> In multilayer or horizontal wells, operators can shut off sections that are about to experience water breakthrough while continuing to produce from other sections</li>
+        <li><strong>Enhanced oil recovery planning:</strong> Better understanding of fluid movement helps in planning secondary and tertiary recovery methods</li>
+        <li><strong>Reserve estimation:</strong> More accurate assessment of remaining oil reserves</li>
+    </ul>
+
+    <h2>Conclusion</h2>
+
+    <p>The pressure-transient models presented in this paper provide a powerful tool for detecting water encroachment before breakthrough. By monitoring the pressure and its derivatives, oil producers can take proactive measures to maximize recovery and extend well life.</p>
+
+    <p>The key insights are:</p>
+
+    <ol>
+        <li>Water encroachment creates distinctive patterns in pressure derivative curves</li>
+        <li>These patterns appear before water reaches the well</li>
+        <li>Second derivatives can provide even earlier detection</li>
+        <li>The methodology works for various well configurations</li>
+    </ol>
+
+    <p>This approach represents a significant advancement in reservoir management, allowing operators to make data-driven decisions to optimize oil recovery.</p>
+
+    <div class="note">
+        <p><strong>Final Thought:</strong> The ability to "see" fluid movements deep within the earth by analyzing pressure changes at the surface is a remarkable application of mathematical modeling to solve real-world problems. It demonstrates how combining fundamental physical principles with advanced computational techniques can lead to practical solutions with significant economic impact.</p>
+    </div>
+
+    <script>
+        // Simulation canvas
+        const canvas = document.getElementById('simulation-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        
+        // Reservoir simulation
+        let productionRate = 50;
+        let mobilityRatio = 1.0;
+        let frontPosition = 0.7; // Starting at 70% of the distance from well to boundary
+        let time = 0;
+        let isSimulationRunning = true;
+        
+        // Update slider values
+        document.getElementById('production-rate').addEventListener('input', function() {
+            productionRate = parseInt(this.value);
+            document.getElementById('rate-value').textContent = productionRate;
+        });
+        
+        document.getElementById('mobility-ratio').addEventListener('input', function() {
+            mobilityRatio = parseFloat(this.value);
+            document.getElementById('mobility-value').textContent = mobilityRatio.toFixed(1);
+        });
+        
+        document.getElementById('restart-simulation').addEventListener('click', function() {
+            frontPosition = 0.7;
+            time = 0;
+            isSimulationRunning = true;
+        });
+        
+        // Animation function for reservoir simulation
+        function drawReservoir() {
+            if (!isSimulationRunning) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = Math.min(canvas.width, canvas.height) * 0.45;
+            
+            // Draw aquifer (outer region)
+            ctx.fillStyle = '#ADD8E6'; // Light blue
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw oil region (inner region)
+            ctx.fillStyle = '#8B4513'; // Brown
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius * frontPosition, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw transition zone
+            const gradientRadius = 10;
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, maxRadius * frontPosition - gradientRadius,
+                centerX, centerY, maxRadius * frontPosition + gradientRadius
+            );
+            gradient.addColorStop(0, '#8B4513');
+            gradient.addColorStop(1, '#ADD8E6');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius * frontPosition, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw well
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Update front position based on production rate and mobility ratio
+            if (frontPosition > 0.1) { // Stop when close to well
+                const frontVelocity = (productionRate / 100) * (1 / mobilityRatio) * 0.0005;
+                frontPosition -= frontVelocity;
+                time += 1;
+            } else {
+                isSimulationRunning = false;
+                alert("Water breakthrough has occurred!");
+            }
+            
+            requestAnimationFrame(drawReservoir);
+        }
+        
+        // Start animation
+        drawReservoir();
+
+        // Create fractional flow plot
+        let fractionalFlowPlot = document.createElement('div');
+        fractionalFlowPlot.id = 'fractional-flow-plot';
+        fractionalFlowPlot.style.width = '100%';
+        fractionalFlowPlot.style.height = '400px';
+        document.getElementById('fractional-flow-plot').appendChild(fractionalFlowPlot);
+
+        // Function to calculate fractional flow
+        function calculateFractionalFlow(Sw, viscosityRatio, exponentWater, exponentOil) {
+            const Swc = 0.2; // Connate water saturation
+            const Sor = 0.2; // Residual oil saturation
+            
+            // Normalized saturation
+            const Swn = (Sw - Swc) / (1 - Swc - Sor);
+            
+            if (Swn <= 0) return 0;
+            if (Swn >= 1) return 1;
+            
+            // Relative permeabilities
+            const krw = Math.pow(Swn, exponentWater);
+            const kro = Math.pow(1 - Swn, exponentOil);
+            
+            // Fractional flow
+            return 1 / (1 + (kro / krw) * viscosityRatio);
+        }
+
+        // Function to draw fractional flow curve
+        function drawFractionalFlowCurve() {
+            const viscosityRatio = parseFloat(document.getElementById('viscosity-ratio').value);
+            const exponentWater = parseFloat(document.getElementById('exponent-water').value);
+            const exponentOil = parseFloat(document.getElementById('exponent-oil').value);
+            
+            document.getElementById('viscosity-value').textContent = viscosityRatio.toFixed(1);
+            document.getElementById('exponent-water-value').textContent = exponentWater.toFixed(1);
+            document.getElementById('exponent-oil-value').textContent = exponentOil.toFixed(1);
+            
+            const canvas = document.getElementById('fractional-flow-plot');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set up coordinates
+            const padding = 40;
+            const width = canvas.width - 2 * padding;
+            const height = canvas.height - 2 * padding;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(padding, padding);
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Water Saturation (Sw)', canvas.width / 2, canvas.height - 10);
+            ctx.save();
+            ctx.translate(10, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Fractional Flow (fw)', 0, 0);
+            ctx.restore();
+            
+            // Draw fractional flow curve
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            
+            for (let i = 0; i <= 100; i++) {
+                const Sw = 0.2 + (i / 100) * 0.6; // From Swc to 1-Sor
+                const fw = calculateFractionalFlow(Sw, viscosityRatio, exponentWater, exponentOil);
+                
+                const x = padding + (Sw - 0.2) * width / 0.6;
+                const y = canvas.height - padding - fw * height;
+                
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw tangent line for front saturation
+            // This is a simplified approximation
+            const SwFront = 0.2 + 0.6 * 0.3; // Example front saturation
+            const fwFront = calculateFractionalFlow(SwFront, viscosityRatio, exponentWater, exponentOil);
+            
+            // Calculate derivative at front (approximation)
+            const dSw = 0.01;
+            const fwPlus = calculateFractionalFlow(SwFront + dSw, viscosityRatio, exponentWater, exponentOil);
+            const fwMinus = calculateFractionalFlow(SwFront - dSw, viscosityRatio, exponentWater, exponentOil);
+            const derivative = (fwPlus - fwMinus) / (2 * dSw);
+            
+            // Draw tangent line
+            const xFront = padding + (SwFront - 0.2) * width / 0.6;
+            const yFront = canvas.height - padding - fwFront * height;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding - (fwFront - derivative * (SwFront - 0.2)) * height);
+            ctx.lineTo(padding + width, canvas.height - padding - (fwFront + derivative * (0.8 - SwFront)) * height);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Mark front saturation
+            ctx.beginPath();
+            ctx.arc(xFront, yFront, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+            
+            // Label front saturation
+            ctx.fillStyle = '#000';
+            ctx.fillText('Front', xFront + 10, yFront - 10);
+        }
+
+        // Create pressure derivative plot
+        let pressureDerivativePlot = document.createElement('div');
+        pressureDerivativePlot.id = 'pressure-derivative-plot';
+        pressureDerivativePlot.style.width = '100%';
+        pressureDerivativePlot.style.height = '400px';
+        document.getElementById('pressure-derivative-plot').appendChild(pressureDerivativePlot);
+
+        // Function to calculate pressure and derivative
+        function calculatePressureDerivative(reservoirSize, frontPosition, mobilityContrast) {
+            // This is a simplified model based on the paper's findings
+            // In a real implementation, we would solve the full diffusivity equation
+            
+            const timePoints = [];
+            const pressurePoints = [];
+            const derivativePoints = [];
+            const secondDerivativePoints = [];
+            
+            // Generate logarithmically spaced time points
+            for (let i = 0; i <= 100; i++) {
+                const logTime = 1 + i / 10; // log10(time) from 1 to 11
+                const time = Math.pow(10, logTime);
+                timePoints.push(time);
+                
+                // Calculate dimensionless pressure
+                // This is a simplified model that mimics the behavior described in the paper
+                let pressure = 0.5 * Math.log(time); // Base infinite-acting radial flow
+                
+                // Add effect of front
+                const frontTime = Math.pow(frontPosition, 2) * 100;
+                if (time > frontTime * 0.1) {
+                    const frontEffect = -0.2 * Math.exp(-Math.pow((Math.log10(time) - Math.log10(frontTime)), 2) / 2);
+                    pressure += frontEffect * mobilityContrast;
+                }
+                
+                // Add effect of boundary
+                const boundaryTime = Math.pow(reservoirSize, 2) * 100;
+                if (time > boundaryTime * 0.1) {
+                    const boundaryEffect = 0.5 * (1 - Math.exp(-time / boundaryTime));
+                    pressure += boundaryEffect;
+                }
+                
+                pressurePoints.push(pressure);
+                
+                // Calculate derivative (simplified)
+                let derivative;
+                if (i > 0) {
+                    const dt = Math.log(timePoints[i]) - Math.log(timePoints[i-1]);
+                    const dp = pressurePoints[i] - pressurePoints[i-1];
+                    derivative = dp / dt;
+                } else {
+                    derivative = 0.5; // Initial derivative for infinite-acting radial flow
+                }
+                
+                // Add characteristic dip for front
+                if (time > frontTime * 0.1 && time < frontTime * 10) {
+                    const dipFactor = 0.3 * Math.exp(-Math.pow((Math.log10(time) - Math.log10(frontTime)), 2) / 0.5);
+                    derivative -= dipFactor * mobilityContrast;
+                }
+                
+                // Add unit slope for boundary
+                if (time > boundaryTime) {
+                    derivative = Math.min(1, derivative + 0.1 * (time - boundaryTime) / boundaryTime);
+                }
+                
+                derivativePoints.push(derivative);
+                
+                // Calculate second derivative (simplified)
+                let secondDerivative;
+                if (i > 1) {
+                    const ddt = Math.log(timePoints[i]) - Math.log(timePoints[i-2]);
+                    const ddp = derivativePoints[i] - derivativePoints[i-2];
+                    secondDerivative = ddp / ddt;
+                } else {
+                    secondDerivative = 0;
+                }
+                
+                // Enhance second derivative response for front
+                if (time > frontTime * 0.01 && time < frontTime) {
+                    const enhanceFactor = 0.5 * Math.exp(-Math.pow((Math.log10(time) - Math.log10(frontTime * 0.1)), 2) / 0.5);
+                    secondDerivative -= enhanceFactor * mobilityContrast;
+                }
+                
+                secondDerivativePoints.push(secondDerivative);
+            }
+            
+            return {
+                time: timePoints,
+                pressure: pressurePoints,
+                derivative: derivativePoints,
+                secondDerivative: secondDerivativePoints,
+                frontTime: Math.pow(frontPosition, 2) * 100
+            };
+        }
+
+        // Function to draw pressure derivative plot
+        function drawPressureDerivativePlot() {
+            const reservoirSize = parseInt(document.getElementById('reservoir-size').value);
+            const frontPosition = parseInt(document.getElementById('front-position').value);
+            const mobilityContrast = parseFloat(document.getElementById('mobility-contrast').value);
+            
+            document.getElementById('reservoir-size-value').textContent = reservoirSize;
+            document.getElementById('front-position-value').textContent = frontPosition;
+            document.getElementById('mobility-contrast-value').textContent = mobilityContrast.toFixed(1);
+            
+            const result = calculatePressureDerivative(reservoirSize, frontPosition, mobilityContrast);
+            
+            const canvas = document.getElementById('pressure-derivative-plot');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set up coordinates
+            const padding = 50;
+            const width = canvas.width - 2 * padding;
+            const height = canvas.height - 2 * padding;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(padding, padding);
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Dimensionless Time (tD)', canvas.width / 2, canvas.height - 10);
+            ctx.save();
+            ctx.translate(10, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Pressure and Derivatives', 0, 0);
+            ctx.restore();
+            
+            // Draw log scales
+            ctx.font = '10px Arial';
+            for (let i = 1; i <= 10; i++) {
+                const logTime = i;
+                const x = padding + (logTime - 1) * width / 10;
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height - padding);
+                ctx.lineTo(x, canvas.height - padding + 5);
+                ctx.stroke();
+                ctx.fillText('10^' + i, x - 10, canvas.height - padding + 15);
+            }
+            
+            // Draw pressure
+            ctx.beginPath();
+            for (let i = 0; i < result.time.length; i++) {
+                const x = padding + (Math.log10(result.time[i]) - 1) * width / 10;
+                const y = canvas.height - padding - result.pressure[i] * height / 5;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw first derivative
+            ctx.beginPath();
+            for (let i = 0; i < result.time.length; i++) {
+                const x = padding + (Math.log10(result.time[i]) - 1) * width / 10;
+                const y = canvas.height - padding - result.derivative[i] * height / 5;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw second derivative
+            ctx.beginPath();
+            for (let i = 0; i < result.time.length; i++) {
+                const x = padding + (Math.log10(result.time[i]) - 1) * width / 10;
+                const y = canvas.height - padding - result.secondDerivative[i] * height / 2;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Mark front time
+            const frontX = padding + (Math.log10(result.frontTime) - 1) * width / 10;
+            ctx.beginPath();
+            ctx.moveTo(frontX, padding);
+            ctx.lineTo(frontX, canvas.height - padding);
+            ctx.strokeStyle = '#f39c12';
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Add legend
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#3498db';
+            ctx.fillText('Pressure', padding + 10, padding + 20);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillText('First Derivative', padding + 10, padding + 40);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillText('Second Derivative', padding + 10, padding + 60);
+            ctx.fillStyle = '#f39c12';
+            ctx.fillText('Front Position', padding + 10, padding + 80);
+        }
+
+        // Initialize game
+        let gameRate = 50;
+        let gameOilProduced = 0;
+        let gameTime = 0;
+        let gameFrontPosition = 0.9;
+        let gameIsRunning = false;
+        let gameBreakthrough = false;
+
+        document.getElementById('start-game').addEventListener('click', function() {
+            gameRate = 50;
+            gameOilProduced = 0;
+            gameTime = 0;
+            gameFrontPosition = 0.9;
+            gameIsRunning = true;
+            gameBreakthrough = false;
+            document.getElementById('current-rate').textContent = gameRate;
+            document.getElementById('oil-produced').textContent = '0';
+            document.getElementById('game-time').textContent = '0';
+            document.getElementById('game-status').textContent = 'Running';
+            runGame();
+        });
+
+        document.getElementById('decrease-rate').addEventListener('click', function() {
+            if (gameRate > 10) {
+                gameRate -= 10;
+                document.getElementById('current-rate').textContent = gameRate;
+            }
+        });
+
+        document.getElementById('increase-rate').addEventListener('click', function() {
+            if (gameRate < 100) {
+                gameRate += 10;
+                document.getElementById('current-rate').textContent = gameRate;
+            }
+        });
+
+        function runGame() {
+            if (!gameIsRunning) return;
+            
+            // Update game state
+            gameTime += 1;
+            gameOilProduced += gameRate;
+            
+            // Update front position based on rate
+            const frontVelocity = (gameRate / 50) * 0.005;
+            gameFrontPosition -= frontVelocity;
+            
+            // Check for breakthrough
+            if (gameFrontPosition <= 0.1) {
+                gameBreakthrough = true;
+                gameIsRunning = false;
+                document.getElementById('game-status').textContent = 'Water Breakthrough! Game Over.';
+            }
+            
+            // Update display
+            document.getElementById('game-time').textContent = gameTime;
+            document.getElementById('oil-produced').textContent = gameOilProduced;
+            
+            // Draw game state
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+            
+            // Draw reservoir
+            const centerX = canvas.clientWidth / 2;
+            const centerY = canvas.clientHeight / 2;
+            const maxRadius = Math.min(canvas.clientWidth, canvas.clientHeight) * 0.4;
+            
+            // Draw aquifer
+            ctx.fillStyle = '#ADD8E6';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw oil region
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius * gameFrontPosition, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw transition zone
+            const gradientRadius = 10;
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, maxRadius * gameFrontPosition - gradientRadius,
+                centerX, centerY, maxRadius * gameFrontPosition + gradientRadius
+            );
+            gradient.addColorStop(0, '#8B4513');
+            gradient.addColorStop(1, '#ADD8E6');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius * gameFrontPosition, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw well
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw pressure derivative
+            const chartWidth = canvas.clientWidth * 0.9;
+            const chartHeight = canvas.clientHeight * 0.3;
+            const chartX = (canvas.clientWidth - chartWidth) / 2;
+            const chartY = 10;
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillRect(chartX, chartY, chartWidth, chartHeight);
+            
+            ctx.strokeStyle = '#000';
+            ctx.beginPath();
+            ctx.rect(chartX, chartY, chartWidth, chartHeight);
+            ctx.stroke();
+            
+            // Draw derivative curve
+            ctx.beginPath();
+            for (let i = 0; i < 100; i++) {
+                const x = chartX + i * chartWidth / 100;
+                
+                // Simulate derivative curve
+                let y = chartY + chartHeight / 2;
+                
+                // Add characteristic dip as front approaches
+                const frontTimePoint = 50 * gameFrontPosition;
+                const timeDiff = Math.abs(i - frontTimePoint);
+                if (timeDiff < 20) {
+                    y += (chartHeight / 4) * Math.exp(-Math.pow(timeDiff / 5, 2));
+                }
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw current time marker
+            const timeX = chartX + (gameTime % 100) * chartWidth / 100;
+            ctx.beginPath();
+            ctx.moveTo(timeX, chartY);
+            ctx.lineTo(timeX, chartY + chartHeight);
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Continue game loop
+            if (gameIsRunning) {
+                setTimeout(runGame, 100);
+            }
+        }
+
+        // Initialize interactive elements
+        document.getElementById('viscosity-ratio').addEventListener('input', drawFractionalFlowCurve);
+        document.getElementById('exponent-water').addEventListener('input', drawFractionalFlowCurve);
+        document.getElementById('exponent-oil').addEventListener('input', drawFractionalFlowCurve);
+        
+        document.getElementById('calculate-derivative').addEventListener('click', drawPressureDerivativePlot);
+        
+        // Initial draws
+        drawFractionalFlowCurve();
+        drawPressureDerivativePlot();
+    </script>
+</body>
+</html>

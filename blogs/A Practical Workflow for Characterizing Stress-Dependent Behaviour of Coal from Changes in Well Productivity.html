@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress-Dependent Permeability in Coal Seam Gas: From Theory to Practice</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #3498db;
+        }
+        .author {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .date {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        pre {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            color: #555;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .figure img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+        }
+        .figure-caption {
+            font-style: italic;
+            margin-top: 10px;
+            color: #555;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fcf3cf;
+            padding: 15px;
+            border-left: 5px solid #f1c40f;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f7f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output-value {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            font-family: monospace;
+        }
+        canvas {
+            margin: 20px auto;
+            display: block;
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .key-concept {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-left: 5px solid #1abc9c;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .tab-container {
+            margin: 20px 0;
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border: none;
+            cursor: pointer;
+            margin-right: 2px;
+        }
+        .tab-button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Stress-Dependent Permeability in Coal Seam Gas: From Theory to Practice</h1>
+    <p class="author">By First Principles Blog</p>
+    <p class="date">Published: June 15, 2023</p>
+
+    <div class="note">
+        <strong>Key Takeaway:</strong> This article breaks down how coal permeability changes with pressure, why this matters for gas production, and presents a simplified workflow that engineers can use in the field.
+    </div>
+
+    <h2>Introduction: Why Coal Permeability Changes Matter</h2>
+
+    <p>Imagine you're squeezing a kitchen sponge. As you apply pressure, the pores shrink and water flows out more slowly. Release that pressure, and the sponge expands, allowing water to flow more freely. Coal seams behave in a surprisingly similar way, but with a fascinating twist.</p>
+
+    <p>In conventional oil and gas reservoirs, rocks tend to have relatively stable pathways for fluid flow. But coal is different. As pressure changes within a coal seam, the tiny pathways (called cleats) through which gas and water flow can dramatically expand or contract. This phenomenon, known as <strong>stress-dependent permeability (SDP)</strong>, can cause a coal's ability to transmit fluids to change by orders of magnitude during production.</p>
+
+    <p>Despite its importance, SDP is often ignored in production forecasting because:</p>
+    <ol>
+        <li>It's difficult to reliably characterize from limited pressure tests</li>
+        <li>There are large uncertainties in both coal porosity and compressibility</li>
+    </ol>
+
+    <p>This article presents a simplified approach to understand and account for these effects in practical field applications.</p>
+
+    <h2>The Coal Permeability Problem: A First Principles Approach</h2>
+
+    <div class="key-concept">
+        <strong>First Principles Definition:</strong> Coal permeability is the measure of how easily fluids can flow through the coal's natural fracture network (cleats). Unlike conventional reservoirs, coal permeability is highly dynamic and changes dramatically as pressure conditions evolve during production.
+    </div>
+
+    <p>To understand why coal permeability changes, we need to recognize two competing mechanisms:</p>
+
+    <ol>
+        <li><strong>Mechanical compression/expansion:</strong> As pressure decreases, the overburden stress compresses the coal matrix, reducing cleat aperture and decreasing permeability</li>
+        <li><strong>Matrix shrinkage:</strong> As methane desorbs from the coal surface, the coal matrix physically shrinks, which can increase cleat aperture and permeability</li>
+    </ol>
+
+    <p>These opposing forces create a distinctive "U-shaped" permeability curve as pressure decreases during production:</p>
+
+    <div class="figure">
+        <img src="https://via.placeholder.com/600x350" alt="U-shaped permeability curve showing initial decrease followed by increase as pressure drops">
+        <p class="figure-caption">Figure 1: Typical stress-dependent permeability behavior in coal showing initial decrease followed by increase as pressure drops below desorption threshold</p>
+    </div>
+
+    <h2>The Mathematical Foundation: Simplified Palmer-Mansoori Model</h2>
+
+    <p>Several models describe coal permeability behavior, but they're often complex and require parameters that are difficult to measure. We'll work with a simplified version of the Palmer-Mansoori (P&M) model, which captures the essential physics while remaining practical for field use.</p>
+
+    <p>Let's break down the core equation step by step:</p>
+
+    <div class="equation-box">
+        <p>Starting with the porosity change equation:</p>
+        $$\frac{\mathrm{d}\emptyset}{\emptyset}=\mathrm{d}\mathfrak{s}_{\mathrm{b}}^{\mathrm{M}}+\mathrm{d}\mathfrak{s}_{\mathrm{b}}^{\mathrm{S}}-\mathrm{d}\mathfrak{s}_{\mathrm{p}}^{\mathrm{M}}-\mathrm{d}\mathfrak{s}_{\mathrm{p}}^{\mathrm{S}}$$
+    </div>
+
+    <p>This equation represents the change in porosity as a combination of mechanical and swelling strains affecting both the bulk volume and pore volume. The superscripts M and S represent mechanical and swelling strains, while the subscripts b and p represent bulk and pore volumes.</p>
+
+    <p>For coal, we can simplify by ignoring the mechanical strain for bulk volume (since coal matrix compressibility is much smaller than cleat compressibility) and the swelling strain for pore volume:</p>
+
+    <div class="equation-box">
+        $$\frac{\mathrm{d}\emptyset}{\emptyset}=\mathrm{d}\mathfrak{E}_{\mathrm{b}}^{\mathrm{S}}-\mathrm{d}\mathfrak{E}_{\mathrm{p}}^{\mathrm{M}}$$
+    </div>
+
+    <p>The two strain components can be defined as:</p>
+
+    <div class="equation-box">
+        $$\mathrm{d}\mathfrak{E}_{\mathfrak{p}}^{\mathrm{M}}=\mathfrak{c}_{\mathrm{f}}\mathrm{d}\mathfrak{p}$$
+    </div>
+
+    <p>This represents the mechanical compression of the cleats as pressure changes, where \(c_f\) is the cleat volume compressibility.</p>
+
+    <div class="equation-box">
+        $$\mathrm{d}\mathfrak{E}_{\mathrm{b}}^{\mathrm{S}}=-\left(\frac{\mathrm{B}}{\varnothing_{0}}\right)\times\frac{\mathrm{d}}{\mathrm{d}\mathrm{p}}\left(\frac{\mathfrak{e}_{\mathrm{l}}\times\mathrm{P}_{\big/\mathrm{P}_{\mathrm{L}}}}{1+\mathrm{P}_{\big/\mathrm{P}_{\mathrm{L}}}}\right)$$
+    </div>
+
+    <p>This represents the matrix shrinkage effect as gas desorbs, where B is related to geomechanical properties, \(\varepsilon_l\) is the maximum strain, and \(P_L\) is the Langmuir pressure.</p>
+
+    <p>After integration and further simplification, we arrive at our key working equation:</p>
+
+    <div class="equation-box">
+        $$\frac{\varnothing}{\varnothing_{0}}=\mathrm{e}^{-\mathrm{c}_{\mathrm{f}}(\mathrm{p}-\mathrm{p}_{0})}+\left(\frac{f}{\varnothing_{0}}\times\mathrm{V}_{\mathrm{L}}\times7.2\times10^{-5}\right)\times\left[\left(\frac{\mathrm{\texttt{p}}_{\mathrm{sat}}}{1+\mathrm{\texttt{p}}_{\mathrm{sat}}}\right)-\left(\frac{\mathrm{\texttt{p}}_{/\mathrm{P}_{L}}}{1+\mathrm{\texttt{p}}_{/\mathrm{P}_{L}}}\right)\right]$$
+    </div>
+
+    <p>This equation has two main components:</p>
+    <ol>
+        <li>The exponential term \(e^{-c_f(p-p_0)}\) represents mechanical compression</li>
+        <li>The second term represents matrix shrinkage effects</li>
+    </ol>
+
+    <p>The parameter <em>f</em> represents the fraction of adsorbate volume that converts to increased porosity, effectively controlling the strength of the shrinkage effect.</p>
+
+    <p>To convert from porosity changes to permeability changes, we use the cubic relationship:</p>
+
+    <div class="equation-box">
+        $$\frac{\mathrm{k}}{\mathrm{k}_{0}}=\left(\frac{\emptyset}{\emptyset_{0}}\right)^{3}$$
+    </div>
+
+    <h2>Interactive Visualization: Stress-Dependent Permeability in Action</h2>
+
+    <div class="interactive-container">
+        <h3>Explore How Coal Permeability Changes During Production</h3>
+        <p>Adjust the parameters below to see how they affect permeability behavior as pressure decreases during production.</p>
+
+        <div class="slider-container">
+            <span class="slider-label">Initial Pressure (psi):</span>
+            <input type="range" id="initialPressure" min="500" max="2000" value="1000" step="50">
+            <span class="output-value" id="initialPressureValue">1000</span>
+        </div>
+
+        <div class="slider-container">
+            <span class="slider-label">Cleat Compressibility (×10<sup>-3</sup> psi<sup>-1</sup>):</span>
+            <input type="range" id="compressibility" min="0.2" max="4" value="1.5" step="0.1">
+            <span class="output-value" id="compressibilityValue">1.5</span>
+        </div>
+
+        <div class="slider-container">
+            <span class="slider-label">Initial Porosity (%):</span>
+            <input type="range" id="initialPorosity" min="0.05" max="1" value="0.2" step="0.05">
+            <span class="output-value" id="initialPorosityValue">0.2</span>
+        </div>
+
+        <div class="slider-container">
+            <span class="slider-label">Langmuir Volume (scf/ton):</span>
+            <input type="range" id="langmuirVolume" min="100" max="600" value="300" step="50">
+            <span class="output-value" id="langmuirVolumeValue">300</span>
+        </div>
+
+        <div class="slider-container">
+            <span class="slider-label">Langmuir Pressure (psi):</span>
+            <input type="range" id="langmuirPressure" min="100" max="1000" value="600" step="50">
+            <span class="output-value" id="langmuirPressureValue">600</span>
+        </div>
+
+        <div class="slider-container">
+            <span class="slider-label">Shrinkage Factor (f):</span>
+            <input type="range" id="shrinkageFactor" min="0" max="1" value="0.25" step="0.05">
+            <span class="output-value" id="shrinkageFactorValue">0.25</span>
+        </div>
+
+        <canvas id="permeabilityChart" width="700" height="400"></canvas>
+
+        <div class="key-concept">
+            <p><strong>What to observe:</strong></p>
+            <ul>
+                <li>The initial <strong>decrease</strong> in permeability is due to mechanical compression as pressure drops</li>
+                <li>The later <strong>increase</strong> occurs when matrix shrinkage effects become dominant</li>
+                <li>Higher compressibility values cause a steeper initial decline</li>
+                <li>Higher shrinkage factor (f) values cause a more dramatic rebound</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>From Theory to Practice: The Stress-Dependent Pseudo-Pressure Approach</h2>
+
+    <p>Now that we understand how permeability changes, we need a practical way to incorporate this into our engineering workflows. This is where the concept of <strong>Stress-Dependent Pseudo-Pressure (SDPP)</strong> becomes valuable.</p>
+
+    <p>The traditional radial flow equation assumes constant permeability, which we know isn't valid for coal. By introducing a pseudo-pressure transformation, we can adapt our existing analytical solutions to account for changing permeability.</p>
+
+    <p>For under-saturated conditions (single-phase water flow), the SDPP transform is:</p>
+
+    <div class="equation-box">
+        $$m^{\prime}(p)=\int_{p_{1}}^{p_{2}}e^{-3c_{f}(p_{0}-p)}.dp$$
+    </div>
+
+    <p>Which evaluates to:</p>
+
+    <div class="equation-box">
+        $$m^{\prime}(p)=\frac{e^{-3c_{f}(p_{0}-p)}}{3c_{f}}$$
+    </div>
+
+    <p>For saturated conditions (gas flow), the transform is more complex:</p>
+
+    <div class="equation-box">
+        $$m^{\prime}(p^{2})=2\int_{p_{1}}^{p_{2}}\biggl\{e^{-c_{f}(p-p_{0})}+\biggl(\frac{f}{\varnothing_{0}}\times7.2\times10^{-5}\biggr)\times\biggl[G C_{i}-\frac{V_{L}.P}{P_{L}+P}\biggr]\biggr\}^{3}p.dp$$
+    </div>
+
+    <p>The key insight is that we can define a productivity ratio that compares the SDP system to a constant permeability case:</p>
+
+    <div class="equation-box">
+        $$S D P P_{M u l t}=\frac{m^{\prime}(P_{e})-m^{\prime}\big(P_{w f}\big)}{\big(P_{e}-P_{w f}\big)}$$
+    </div>
+
+    <p>This multiplier tells us how much more (or less) productive a well will be compared to what we would expect with constant permeability.</p>
+
+    <h2>Interactive Game: Coal Seam Gas Production Challenge</h2>
+
+    <div class="interactive-container">
+        <h3>🎮 CSG Production Optimization Game</h3>
+        <p>You're the reservoir engineer for a new coal seam gas field. Your goal is to maximize production while managing stress-dependent permeability effects.</p>
+
+        <div class="game-container">
+            <canvas id="gameCanvas" width="700" height="400"></canvas>
+            <div id="gameControls">
+                <button id="startGame">Start New Game</button>
+                <button id="changeDrawdown">Change Drawdown</button>
+                <div id="gameStats">
+                    <p>Current Production: <span id="currentProduction">0</span> Mscf/d</p>
+                    <p>Cumulative Production: <span id="cumulativeProduction">0</span> MMscf</p>
+                    <p>Days Elapsed: <span id="daysElapsed">0</span></p>
+                    <p>Current Permeability: <span id="currentPermeability">0</span>× initial</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-concept">
+            <p><strong>Game Rules:</strong></p>
+            <ul>
+                <li>Start with a new coal seam gas well</li>
+                <li>Set your drawdown strategy (aggressive vs. conservative)</li>
+                <li>Watch how permeability evolves over time</li>
+                <li>Too much drawdown too early can damage permeability</li>
+                <li>Too little drawdown wastes time and delays production</li>
+                <li>Find the optimal strategy to maximize cumulative production</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Practical Workflow: Characterizing SDP from Field Data</h2>
+
+    <p>Now that we understand the theory, let's outline a practical workflow that engineers can use to characterize SDP from field data:</p>
+
+    <ol>
+        <li>Use permeability-depth trends to estimate coal cleat compressibility</li>
+        <li>Correct interpreted apparent skins from well tests to remove SDP effects</li>
+        <li>Assemble observed productivity data over time for a group of wells</li>
+        <li>Regress on global values of the SDP controlling parameter to minimize error between observed and calculated productivity</li>
+        <li>Identify different families of behavior if needed</li>
+        <li>Adjust parameters to match water production behavior</li>
+    </ol>
+
+    <p>This workflow allows engineers to characterize SDP behavior without requiring complex laboratory measurements or detailed geomechanical data.</p>
+
+    <div class="figure">
+        <img src="https://via.placeholder.com/700x400" alt="Workflow diagram for SDP characterization">
+        <p class="figure-caption">Figure 2: Workflow for characterizing stress-dependent permeability from field data</p>
+    </div>
+
+    <h2>Real-World Application: The Scotia Field Case Study</h2>
+
+    <p>Let's examine how this approach worked in a real field case. The Scotia field in Queensland, Australia has been producing coal seam gas since 2002 from depths of 580-1100m.</p>
+
+    <p>Using the workflow described above:</p>
+
+    <ol>
+        <li>Cleat compressibility was estimated at 1.85×10<sup>-3</sup> psi<sup>-1</sup> from permeability-depth trends</li>
+        <li>A single value of the SDP controlling parameter f√<sup>3</sup>A = 135 was found to match productivity behavior across multiple wells</li>
+        <li>The shrinkage factor f was estimated at 0.13 to match water production behavior</li>
+    </ol>
+
+    <p>The results showed that ignoring pressure profile effects would lead to overly optimistic production forecasts. The SDPP approach provided more realistic predictions of how productivity would evolve over time.</p>
+
+    <div class="figure">
+        <img src="https://via.placeholder.com/700x400" alt="Comparison of match and forecast with and without SDPP approach">
+        <p class="figure-caption">Figure 3: Comparison of match and forecast-to-abandonment of productivity improvements with and without SDPP approach</p>
+    </div>
+
+    <h2>Practical Applications for Engineers</h2>
+
+    <p>This SDPP approach has several practical applications:</p>
+
+    <ol>
+        <li><strong>Correcting coarse grid well productivities in simulation models</strong> - Accounting for sub-grid-block permeability changes</li>
+        <li><strong>Forecasting apparent skin changes</strong> - Predicting how skin will evolve during production</li>
+        <li><strong>Determining appropriate drawdown levels</strong> - Setting limits to avoid damaging the coal</li>
+    </ol>
+
+    <p>For drawdown management, a practical rule of thumb is to limit stress-dependent effects to a maximum of 100 psi difference between drawdown with and without SDP effects. This helps keep the coal in the elastic region and prevents irreversible damage.</p>
+
+    <h2>Limitations and Considerations</h2>
+
+    <p>While powerful, this approach does have some limitations:</p>
+
+    <ol>
+        <li>It requires reasonably accurate estimates of bottom hole flowing pressures and production rates</li>
+        <li>It assumes the combined coal package acts as one coal of uniform properties</li>
+        <li>It uses a cubic relationship between porosity and permeability</li>
+        <li>It assumes instant gas desorption and elastic coal behavior</li>
+        <li>It works best for pressures below about 2,000 psi</li>
+    </ol>
+
+    <h2>Conclusion: Bridging Theory and Practice</h2>
+
+    <p>Understanding stress-dependent permeability is critical for accurate production forecasting in coal seam gas reservoirs. The simplified approach presented here bridges the gap between complex theoretical models and practical field applications.</p>
+
+    <p>By using the SDPP approach, engineers can:</p>
+
+    <ol>
+        <li>Characterize SDP behavior from limited field data</li>
+        <li>Incorporate these effects into production forecasting</li>
+        <li>Optimize drawdown strategies to maximize production</li>
+        <li>Avoid the pitfalls of overly optimistic forecasts</li>
+    </ol>
+
+    <p>This approach represents a significant step forward in making sophisticated coal reservoir engineering concepts accessible for everyday use in the field.</p>
+
+    <script>
+setTimeout(function() {
+    try {
+        // Update slider values
+        document.getElementById('initialPressure').addEventListener('input', function() {
+            document.getElementById('initialPressureValue').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('compressibility').addEventListener('input', function() {
+            document.getElementById('compressibilityValue').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('initialPorosity').addEventListener('input', function() {
+            document.getElementById('initialPorosityValue').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('langmuirVolume').addEventListener('input', function() {
+            document.getElementById('langmuirVolumeValue').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('langmuirPressure').addEventListener('input', function() {
+            document.getElementById('langmuirPressureValue').textContent = this.value;
+            updateChart();
+        });
+        
+        document.getElementById('shrinkageFactor').addEventListener('input', function() {
+            document.getElementById('shrinkageFactorValue').textContent = this.value;
+            updateChart();
+        });
+
+        // Chart drawing function
+        function updateChart() {
+            const canvas = document.getElementById('permeabilityChart');
+            if (!canvas || !canvas.getContext) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get parameters from sliders
+            const P0 = parseFloat(document.getElementById('initialPressure').value);
+            const cf = parseFloat(document.getElementById('compressibility').value) * 1e-3;
+            const phi0 = parseFloat(document.getElementById('initialPorosity').value) / 100;
+            const VL = parseFloat(document.getElementById('langmuirVolume').value);
+            const PL = parseFloat(document.getElementById('langmuirPressure').value);
+            const f = parseFloat(document.getElementById('shrinkageFactor').value);
+            
+            // Calculate the initial gas content (assuming 80% of VL at initial pressure)
+            const GCi = VL * P0 / (PL + P0);
+            
+            // Constants
+            const shrinkageConstant = f * 7.2e-5 * VL / phi0;
+            
+            // Calculate permeability ratio for pressure range
+            const pressurePoints = [];
+            const kRatioPoints = [];
+            const mechanicalPoints = [];
+            const shrinkagePoints = [];
+            
+            for (let p = P0; p >= 50; p -= 25) {
+                // Calculate porosity ratio components
+                const mechanical = Math.exp(-cf * (P0 - p));
+                const shrinkage = shrinkageConstant * ((p/(PL+p)) - (P0/(PL+P0)));
+                const porosityRatio = mechanical + shrinkage;
+                
+                // Calculate permeability ratio
+                const kRatio = Math.pow(porosityRatio, 3);
+                
+                pressurePoints.push(p);
+                kRatioPoints.push(kRatio);
+                mechanicalPoints.push(Math.pow(mechanical, 3));
+                shrinkagePoints.push(Math.pow(mechanical + shrinkage, 3) - Math.pow(mechanical, 3));
+            }
+            
+            // Draw chart
+            const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+            const width = canvas.width - margin.left - margin.right;
+            const height = canvas.height - margin.top - margin.bottom;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, height + margin.top);
+            ctx.lineTo(width + margin.left, height + margin.top);
+            ctx.stroke();
+            
+            // X-axis labels
+            ctx.textAlign = 'center';
+            ctx.fillText('Pressure (psi)', width/2 + margin.left, height + margin.top + 35);
+            
+            // Y-axis labels
+            ctx.save();
+            ctx.translate(margin.left - 40, height/2 + margin.top);
+            ctx.rotate(-Math.PI/2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Permeability Ratio (k/k₀)', 0, 0);
+            ctx.restore();
+            
+            // Draw x-axis ticks
+            const xScale = width / (P0 - 50);
+            for (let p = 0; p <= P0; p += 200) {
+                const x = margin.left + (P0 - p) * xScale;
+                ctx.beginPath();
+                ctx.moveTo(x, height + margin.top);
+                ctx.lineTo(x, height + margin.top + 5);
+                ctx.stroke();
+                ctx.fillText(p, x, height + margin.top + 20);
+            }
+            
+            // Find max k ratio for y-axis scaling
+            const maxKRatio = Math.max(...kRatioPoints, 0);
+            const yScale = height / (maxKRatio > 5 ? maxKRatio : 5);
+            
+            // Draw y-axis ticks
+            const yTickInterval = maxKRatio > 10 ? 2 : (maxKRatio > 5 ? 1 : 0.5);
+            for (let k = 0; k <= (maxKRatio > 5 ? maxKRatio : 5); k += yTickInterval) {
+                const y = height + margin.top - k * yScale;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left - 5, y);
+                ctx.stroke();
+                ctx.textAlign = 'right';
+                ctx.fillText(k.toFixed(1), margin.left - 10, y + 4);
+            }
+            
+            // Plot data
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            pressurePoints.forEach((p, i) => {
+                const x = margin.left + (P0 - p) * xScale;
+                const y = height + margin.top - kRatioPoints[i] * yScale;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+        }
+        
+        // Initial chart draw
+        updateChart();
+
+        // Game initialization code would go here
+        const gameCanvas = document.getElementById('gameCanvas');
+        if (gameCanvas && gameCanvas.getContext) {
+            const gameCtx = gameCanvas.getContext('2d');
+            
+            // Draw placeholder for the game
+            gameCtx.fillStyle = '#f5f5f5';
+            gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            gameCtx.fillStyle = '#333';
+            gameCtx.font = 'bold 16px Arial';
+            gameCtx.textAlign = 'center';
+            gameCtx.fillText('Coal Seam Gas Production Game', gameCanvas.width/2, 50);
+            gameCtx.font = '14px Arial';
+            gameCtx.fillText('Click "Start New Game" to begin', gameCanvas.width/2, 80);
+            
+            // Draw a simple coal seam illustration
+            gameCtx.fillStyle = '#333';
+            gameCtx.fillRect(100, 150, 500, 100);
+            gameCtx.fillStyle = '#555';
+            for (let i = 0; i < 20; i++) {
+                gameCtx.fillRect(120 + i*25, 160, 2, 80);
+            }
+            
+            // Draw wellbore
+            gameCtx.fillStyle = '#aaa';
+            gameCtx.fillRect(350, 100, 10, 200);
+            
+            document.getElementById('startGame').addEventListener('click', function() {
+                alert('Game would start here in a full implementation');
+            });
+            
+            document.getElementById('changeDrawdown').addEventListener('click', function() {
+                alert('Drawdown would be adjusted here in a full implementation');
+            });
+        }
+    } catch(e) {
+        console.error('Error in script:', e);
+    }
+}, 200);
+</script>
+</body>
+</html>

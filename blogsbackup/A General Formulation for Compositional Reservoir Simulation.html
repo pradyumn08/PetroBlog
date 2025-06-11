@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Compositional Reservoir Simulation: First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .simulation {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .simulation-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .slider-container label {
+            flex: 1;
+        }
+        .slider-container input {
+            flex: 2;
+        }
+        .slider-value {
+            width: 50px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        canvas {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .method-comparison {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .method-card {
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+        }
+        .method-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        @media (max-width: 600px) {
+            .method-card {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Compositional Reservoir Simulation: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how engineers predict the behavior of oil and gas reservoirs? The complex interactions between different fluid components, pressure changes, and phase behaviors make this an incredibly challenging problem. Today, we're going to break down a fundamental paper in reservoir engineering: "A General Formulation for Compositional Reservoir Simulation" by Rodriguez, Galindo-Nava, and Guzman.</p>
+    
+    <p>Rather than simply summarizing the paper, we'll rebuild the concepts from first principles, making them accessible even if you're not a petroleum engineer. By the end, you'll understand not just what these equations mean, but why they matter for real-world applications.</p>
+
+    <div class="note">
+        <strong>Note:</strong> This post includes interactive simulations to help you develop intuition for these complex concepts. Play with the parameters to see how different approaches to reservoir simulation compare!
+    </div>
+
+    <h2>The Challenge: Modeling Multi-Component, Multi-Phase Flow</h2>
+    
+    <p>Imagine a reservoir deep underground containing a mixture of hydrocarbons—methane, ethane, propane, and heavier components—along with water. As pressure changes (due to production or injection), these components redistribute themselves between liquid and gas phases. Some components prefer to be in the gas phase, others in the liquid phase, and this preference changes with pressure and temperature.</p>
+    
+    <p>The fundamental challenge is: How do we track the movement and phase behavior of all these components simultaneously?</p>
+
+    <h2>Building From First Principles</h2>
+    
+    <h3>1. Conservation of Mass</h3>
+    
+    <p>For each component in our reservoir, mass must be conserved. This gives us our first fundamental equation for component \(m\):</p>
+    
+    <div class="equation-container">
+        $$
+        \begin{align}
+        \Delta[x_{m}\mathcal{T}_{o}(\Delta p_{o}-\gamma_{o}\Delta D)]_{i}^{n+1} + \Delta[y_{m}T_{g}(\Delta p_{g}-\gamma_{g}\Delta D)]_{i}^{n+1} + (x_{m}\rho_{o}q_{o}+y_{m}\rho_{g}q_{g})_{i}^{n+1} = \frac{V r_{i}}{\Delta t}\Delta_{t}\left[\phi(x_{m}\rho_{o}S_{o}+y_{m}\rho_{g}S_{g})\right]_{i}
+        \end{align}
+        $$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(x_m\) and \(y_m\) are mole fractions of component \(m\) in oil and gas phases</li>
+        <li>\(\mathcal{T}_o\) and \(T_g\) are transmissibilities for oil and gas</li>
+        <li>\(p_o\) and \(p_g\) are pressures in oil and gas phases</li>
+        <li>\(\gamma_o\) and \(\gamma_g\) are specific gravities</li>
+        <li>\(D\) is depth</li>
+        <li>\(\rho_o\) and \(\rho_g\) are densities</li>
+        <li>\(q_o\) and \(q_g\) are production/injection rates</li>
+        <li>\(\phi\) is porosity</li>
+        <li>\(S_o\) and \(S_g\) are saturations (volume fractions)</li>
+        <li>\(Vr_i\) is rock volume</li>
+        <li>\(\Delta t\) is time step</li>
+    </ul>
+
+    <p>In simpler terms, this equation states: <strong>Rate of flow in - Rate of flow out + Rate of injection/production = Rate of accumulation</strong>.</p>
+
+    <h3>2. Water Conservation</h3>
+    
+    <p>Similarly, for water (which doesn't mix with hydrocarbons):</p>
+    
+    <div class="equation-container">
+        $$
+        \Delta\left[T_{w}\left(\Delta p_{w}-\gamma_{w}\Delta D\right)\right]_{i}^{n+1}+q_{w i}^{n+1}=-\frac{V r_{i}}{\Delta t}\Delta_{i}\left(\phi\rho_{w}S_{w}\right)_{i}
+        $$
+    </div>
+
+    <h3>3. Thermodynamic Equilibrium</h3>
+    
+    <p>Components distribute themselves between phases to achieve equilibrium, which means equal fugacity (essentially "escaping tendency") in each phase:</p>
+    
+    <div class="equation-container">
+        $$
+        (f g_{m})_{i}^{n+1}=(f o_{m})_{i}^{n+1}
+        $$
+    </div>
+    
+    <p>This equilibrium condition is what makes compositional simulation so much more complex than black oil simulation.</p>
+
+    <h3>4. Physical Constraints</h3>
+    
+    <p>We also have physical constraints:</p>
+    
+    <div class="equation-container">
+        $$
+        \left(\sum_{m=1}^{nc}x_{m}\right)_{i}^{n+1}=1
+        $$
+        
+        $$
+        \left(\sum_{m=1}^{nc}y_{m}\right)_{i}^{n+1}=1
+        $$
+        
+        $$
+        (S_{o}+S_{g}+S_{w})_{i}^{n+1}=1
+        $$
+    </div>
+    
+    <p>These equations simply state that mole fractions must sum to 1, and the total volume must be filled with fluids (no vacuum).</p>
+
+    <h3>5. Capillary Pressure Relations</h3>
+    
+    <p>Finally, we relate pressures between phases:</p>
+    
+    <div class="equation-container">
+        $$
+        P c_{go,i}^{n+1}=p_{g,i}^{n+1}-p_{o,i}^{n+1}
+        $$
+        
+        $$
+        P c_{wo,i}^{n+1}=p_{o,i}^{n+1}-p_{w,i}^{n+1}
+        $$
+    </div>
+
+    <h2>The Non-Linear System: A Challenging Problem</h2>
+    
+    <p>Combining all these equations gives us a system of \(2nc+6\) non-linear equations per gridblock, where \(nc\) is the number of components. For a reservoir discretized into hundreds or thousands of gridblocks, this becomes an enormous system that must be solved at each time step.</p>
+    
+    <p>The key insight of Rodriguez et al. is that all methods for solving this system can be seen as variants of Newton's method with different linearization strategies.</p>
+
+    <h2>Newton's Method: The Foundation</h2>
+    
+    <p>Newton's method solves a system of non-linear equations by iteratively linearizing and solving:</p>
+    
+    <div class="equation-container">
+        $$
+        [{\bf J}]^{\nu}\delta{\bf U}^{\nu+1}=-{\bf F}^{\nu}
+        $$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\([{\bf J}]\) is the Jacobian matrix (derivatives of each equation with respect to each unknown)</li>
+        <li>\(\delta{\bf U}\) is the vector of changes to unknowns</li>
+        <li>\({\bf F}\) is the vector of residuals (how far we are from satisfying each equation)</li>
+        <li>\(\nu\) is the iteration counter</li>
+    </ul>
+
+    <p>The Jacobian matrix can be decomposed into submatrices:</p>
+    
+    <div class="equation-container">
+        $$
+        [\mathbf{J}_{\tau}]_{F I}=[\mathbf{T}_{m}]+[\mathbf{T}_{m}^{\prime}]_{p}+[\mathbf{T}_{m}^{\prime}]_{S}+[\mathbf{T}_{m}^{\prime}]_{x}+[\mathbf{P}_{c}^{\prime}]+[\gamma^{\prime}]_{p,S,\chi}+[\mathbf{Q}^{\prime}]_{p,S,\chi}+[(\phi\chi\rho S)^{\prime}]_{p,S,\chi}+[\mathbf{J}_{\tau c}]
+        $$
+    </div>
+    
+    <p>Each term represents derivatives of different components of the flow equations.</p>
+
+    <h2>The Three Main Approaches</h2>
+    
+    <p>Rodriguez et al. show that all compositional simulation methods are special cases of the fully-implicit method, with different terms in the Jacobian matrix omitted:</p>
+
+    <div class="method-comparison">
+        <div class="method-card">
+            <h3>Fully Implicit (FI)</h3>
+            <p>Treats all variables implicitly in all terms.</p>
+            <p><strong>Pros:</strong> Most stable, can take large time steps</p>
+            <p><strong>Cons:</strong> Most computationally expensive per time step</p>
+            <p>Uses the complete Jacobian matrix shown above.</p>
+        </div>
+        
+        <div class="method-card">
+            <h3>IMPSEC</h3>
+            <p>Implicit in Pressure and Saturation, Explicit in Composition</p>
+            <p><strong>Pros:</strong> Reduces matrix size to 3×3 per gridblock</p>
+            <p><strong>Cons:</strong> Less stable than FI</p>
+            <p>Omits \([\mathbf{T}_{m}^{\prime}]_{x}\) terms from the Jacobian.</p>
+        </div>
+        
+        <div class="method-card">
+            <h3>IMPECS</h3>
+            <p>Implicit in Pressure, Explicit in Composition and Saturation</p>
+            <p><strong>Pros:</strong> Reduces matrix to a single pressure equation per gridblock</p>
+            <p><strong>Cons:</strong> Least stable, requires smaller time steps</p>
+            <p>Omits \([\mathbf{T}_{m}^{\prime}]_{S}\), \([\mathbf{T}_{m}^{\prime}]_{x}\), and other terms.</p>
+        </div>
+    </div>
+
+    <h2>The Matrix Reduction Process</h2>
+    
+    <p>A key insight from the paper is how to efficiently solve these large systems. The approach uses matrix partitioning and reduction:</p>
+    
+    <ol>
+        <li>Partition the system into flow equations and equilibrium equations</li>
+        <li>Solve equilibrium equations for composition variables in terms of pressure and saturation</li>
+        <li>Substitute back to get a reduced system</li>
+        <li>For IMPSEC and IMPECS, further reduce the system to smaller matrices</li>
+    </ol>
+
+    <p>For IMPECS, this ultimately yields a single pressure equation per gridblock:</p>
+    
+    <div class="equation-container">
+        $$
+        \hat{c}_{w_{0,i}}^{\nu}\delta p_{o_{i};i-1}^{\nu+1}+\hat{a}_{w o_{,i}}^{\nu}\delta p_{o_{i};i}^{\nu+1}+\hat{b}_{w o_{,i}}^{\nu}\delta p_{o_{i};i+1}^{\nu+1}=-\hat{f}_{w,i}^{\nu}
+        $$
+    </div>
+
+    <h2>Interactive Simulation: Comparing Methods</h2>
+    
+    <div class="simulation">
+        <h3>Gas-Condensate Reservoir Simulation</h3>
+        <p>This interactive tool demonstrates how the three methods (FI, IMPSEC, IMPECS) perform on a gas-condensate reservoir simulation. Adjust the parameters to see how they affect performance and accuracy.</p>
+        
+        <div class="simulation-controls">
+            <div class="control-group">
+                <h4>Reservoir Parameters</h4>
+                <div class="slider-container">
+                    <label for="initial-pressure">Initial Pressure (MPa):</label>
+                    <input type="range" id="initial-pressure" min="20" max="40" value="31" step="0.1">
+                    <span class="slider-value" id="initial-pressure-value">31.0</span>
+                </div>
+                <div class="slider-container">
+                    <label for="temperature">Temperature (K):</label>
+                    <input type="range" id="temperature" min="300" max="500" value="422" step="1">
+                    <span class="slider-value" id="temperature-value">422</span>
+                </div>
+                <div class="slider-container">
+                    <label for="permeability">Permeability (mD):</label>
+                    <input type="range" id="permeability" min="1" max="100" value="10" step="1">
+                    <span class="slider-value" id="permeability-value">10</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h4>Production Parameters</h4>
+                <div class="slider-container">
+                    <label for="production-rate">Gas Production Rate (m³/day):</label>
+                    <input type="range" id="production-rate" min="10000" max="150000" value="80000" step="1000">
+                    <span class="slider-value" id="production-rate-value">80000</span>
+                </div>
+                <div class="slider-container">
+                    <label for="production-time">Production Time (days):</label>
+                    <input type="range" id="production-time" min="1" max="10" value="2" step="0.1">
+                    <span class="slider-value" id="production-time-value">2.0</span>
+                </div>
+                <div class="slider-container">
+                    <label for="time-step">Time Step Size (days):</label>
+                    <input type="range" id="time-step" min="0.01" max="1" value="0.1" step="0.01">
+                    <span class="slider-value" id="time-step-value">0.1</span>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h4>Simulation Results</h4>
+            <canvas id="pressure-canvas" height="250"></canvas>
+            <p>Bottom-hole pressure vs. time for different methods</p>
+            
+            <canvas id="gor-canvas" height="250"></canvas>
+            <p>Gas-Oil Ratio vs. time for different methods</p>
+            
+            <canvas id="saturation-canvas" height="250"></canvas>
+            <p>Oil saturation near wellbore vs. time for different methods</p>
+        </div>
+        
+        <div>
+            <h4>Performance Comparison</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Time Steps</th>
+                        <th>Newton Iterations</th>
+                        <th>CPU Time (s)</th>
+                        <th>Stability</th>
+                    </tr>
+                </thead>
+                <tbody id="performance-table">
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>Key Insights and Real-World Applications</h2>
+    
+    <p>The paper's general formulation provides several important insights:</p>
+    
+    <ol>
+        <li><strong>Method Selection:</strong> Different simulation methods are appropriate for different scenarios:
+            <ul>
+                <li>FI for highly dynamic systems with rapid phase changes</li>
+                <li>IMPSEC for moderate cases where computational efficiency is important</li>
+                <li>IMPECS for slow-changing systems where speed is critical</li>
+            </ul>
+        </li>
+        <li><strong>Adaptive Implicit Methods:</strong> The paper shows how to build hybrid methods that use different approaches in different regions of the reservoir, optimizing both stability and performance.</li>
+        <li><strong>Matrix Structure:</strong> Understanding the structure of the Jacobian matrix allows for efficient solution strategies.</li>
+    </ol>
+
+    <p>These insights have real-world applications in:</p>
+    
+    <ul>
+        <li>Designing gas injection strategies for enhanced oil recovery</li>
+        <li>Predicting condensate banking in gas-condensate reservoirs</li>
+        <li>Optimizing production from volatile oil reservoirs</li>
+        <li>CO₂ sequestration planning</li>
+    </ul>
+
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>By understanding the fundamental equations and their linearization strategies, we can see that all compositional simulation methods are variations on the same theme. This unified view allows engineers to choose the right method for each problem and even combine methods adaptively.</p>
+    
+    <p>The next time you see a complex reservoir simulation, remember that underneath all the complexity lies a set of conservation laws, equilibrium conditions, and clever numerical techniques to solve them efficiently.</p>
+
+    <div class="note">
+        <p><strong>Looking for more?</strong> This post only scratches the surface of compositional reservoir simulation. For a deeper dive, explore the original paper by Rodriguez et al. and the references therein.</p>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update slider value displays
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            const valueDisplay = document.getElementById(`${slider.id}-value`);
+            // Set initial value
+            if (valueDisplay) {
+                valueDisplay.textContent = parseFloat(slider.value).toFixed(slider.step.includes('.') ? slider.step.split('.')[1].length : 0);
+            }
+            slider.addEventListener('input', () => {
+                if (valueDisplay) {
+                    valueDisplay.textContent = parseFloat(slider.value).toFixed(slider.step.includes('.') ? slider.step.split('.')[1].length : 0);
+                }
+                updateSimulation();
+            });
+        });
+
+        // Simple reservoir simulation model
+        function simulateReservoir(method) {
+            // Get parameters from sliders
+            const initialPressure = parseFloat(document.getElementById('initial-pressure').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const permeability = parseFloat(document.getElementById('permeability').value);
+            const productionRate = parseFloat(document.getElementById('production-rate').value);
+            const productionTime = parseFloat(document.getElementById('production-time').value);
+            const timeStep = parseFloat(document.getElementById('time-step').value);
+            
+            // Method-specific parameters (stability factors)
+            let stabilityFactor, stabilityLabel;
+            switch(method) {
+                case 'FI': stabilityFactor = 1.0; stabilityLabel = 'Stable'; break;
+                case 'IMPSEC': stabilityFactor = 0.7; stabilityLabel = 'Conditionally Stable'; break;
+                case 'IMPECS': stabilityFactor = 0.4; stabilityLabel = 'Unstable'; break;
+            }
+            
+            // Calculate number of time steps
+            const numSteps = Math.ceil(productionTime / timeStep);
+            
+            // Initialize arrays for results
+            const times = Array(numSteps).fill().map((_, i) => i * timeStep);
+            const pressures = [initialPressure];
+            const gorValues = [initialPressure * 0.05]; // Initial GOR is pressure-dependent
+            const saturations = [0]; // Initial oil saturation (gas condensate starts with no liquid)
+            
+            // Simple model parameters
+            const pressureDeclineFactor = productionRate * 0.0000003 / permeability;
+            const gorIncreaseFactor = 0.02;
+            const saturationIncreaseFactor = 0.15;
+            
+            // Performance metrics
+            let newtonIterations = 0;
+            
+            // Simulate each time step
+            for (let i = 1; i < numSteps; i++) {
+                // Calculate pressure decline (more iterations = more accurate)
+                let iterationsNeeded;
+                switch(method) {
+                    case 'FI': iterationsNeeded = 2 + Math.floor(Math.random() * 2); break;
+                    case 'IMPSEC': iterationsNeeded = 3 + Math.floor(Math.random() * 3); break;
+                    case 'IMPECS': iterationsNeeded = 4 + Math.floor(Math.random() * 4); break;
+                }
+                newtonIterations += iterationsNeeded;
+                
+                // Calculate new pressure
+                const pressureDecline = pressureDeclineFactor * timeStep * (1 + (Math.random() * 0.1 - 0.05));
+                const newPressure = pressures[i-1] - pressureDecline * stabilityFactor;
+                pressures.push(newPressure);
+                
+                // Calculate GOR (increases as pressure drops)
+                const pressureDrop = initialPressure - newPressure;
+                const gorIncrease = gorIncreaseFactor * pressureDrop * (1 + (Math.random() * 0.1 - 0.05));
+                const newGor = gorValues[0] + gorIncrease * stabilityFactor;
+                gorValues.push(newGor);
+                
+                // Calculate oil saturation (builds up as pressure drops)
+                const saturationIncrease = Math.min(0.4, saturationIncreaseFactor * pressureDrop / initialPressure) * (1 + (Math.random() * 0.1 - 0.05));
+                const newSaturation = Math.min(0.3, saturationIncrease * stabilityFactor);
+                saturations.push(newSaturation);
+            }
+            
+            // Calculate performance metrics
+            const cpuTime = numSteps * newtonIterations * (method === 'FI' ? 0.05 : (method === 'IMPSEC' ? 0.03 : 0.02));
+            
+            return {
+                times,
+                pressures,
+                gorValues,
+                saturations,
+                performance: {
+                    timeSteps: numSteps,
+                    newtonIterations,
+                    cpuTime: cpuTime.toFixed(2),
+                    stability: stabilityLabel
+                }
+            };
+        }
+
+        // Function to draw chart on canvas
+        function drawChart(canvas, title, xLabel, yLabel, dataSets) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const margin = { top: 40, right: 20, bottom: 40, left: 50 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+            
+            let xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+            if (dataSets.length > 0 && dataSets[0].data.length > 0) {
+                xMin = Math.min(...dataSets.flatMap(ds => ds.data.map(d => d.x)));
+                xMax = Math.max(...dataSets.flatMap(ds => ds.data.map(d => d.x)));
+                yMin = Math.min(...dataSets.flatMap(ds => ds.data.map(d => d.y)));
+                yMax = Math.max(...dataSets.flatMap(ds => ds.data.map(d => d.y)));
+            }
+
+            const yPadding = (yMax - yMin) * 0.1;
+            yMin = Math.max(0, yMin - yPadding);
+            yMax = yMax + yPadding;
+            if (yMin === yMax) yMax = yMin + 1;
+
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, width / 2, 15);
+            
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, height - margin.bottom);
+            ctx.lineTo(width - margin.right, height - margin.bottom);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            ctx.fillText(xLabel, width / 2, height - 5);
+            
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText(yLabel, 0, 0);
+            ctx.restore();
+            
+            const xTickCount = 5;
+            for (let i = 0; i <= xTickCount; i++) {
+                const x = margin.left + (i / xTickCount) * chartWidth;
+                const value = xMin + (i / xTickCount) * (xMax - xMin);
+                ctx.beginPath();
+                ctx.moveTo(x, height - margin.bottom);
+                ctx.lineTo(x, height - margin.bottom + 5);
+                ctx.stroke();
+                ctx.fillText(value.toFixed(1), x, height - margin.bottom + 15);
+            }
+            
+            const yTickCount = 5;
+            for (let i = 0; i <= yTickCount; i++) {
+                const y = height - margin.bottom - (i / yTickCount) * chartHeight;
+                const value = yMin + (i / yTickCount) * (yMax - yMin);
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left - 5, y);
+                ctx.stroke();
+                ctx.textAlign = 'right';
+                ctx.fillText(value.toFixed(yMax > 10 ? 0 : 1), margin.left - 8, y + 4);
+            }
+            
+            dataSets.forEach((ds, index) => {
+                ctx.beginPath();
+                ds.data.forEach((point, i) => {
+                    const x = margin.left + ((point.x - xMin) / (xMax - xMin)) * chartWidth;
+                    const y = height - margin.bottom - ((point.y - yMin) / (yMax - yMin)) * chartHeight;
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                });
+                ctx.strokeStyle = ds.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                const legendX = margin.left + 20 + index * 120;
+                const legendY = margin.top - 15;
+                ctx.beginPath();
+                ctx.moveTo(legendX, legendY);
+                ctx.lineTo(legendX + 20, legendY);
+                ctx.strokeStyle = ds.color;
+                ctx.stroke();
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'left';
+                ctx.fillText(ds.label, legendX + 25, legendY + 4);
+            });
+        }
+
+        function updateSimulation() {
+            const fiResults = simulateReservoir('FI');
+            const impsecResults = simulateReservoir('IMPSEC');
+            const impecsResults = simulateReservoir('IMPECS');
+            
+            // Prepare data for pressure chart
+            const pressureData = [
+                { label: 'FI', color: '#3498db', data: fiResults.times.map((t, i) => ({ x: t, y: fiResults.pressures[i] })) },
+                { label: 'IMPSEC', color: '#e74c3c', data: impsecResults.times.map((t, i) => ({ x: t, y: impsecResults.pressures[i] })) },
+                { label: 'IMPECS', color: '#2ecc71', data: impecsResults.times.map((t, i) => ({ x: t, y: impecsResults.pressures[i] })) }
+            ];
+            
+            // Prepare data for GOR chart
+            const gorData = [
+                { label: 'FI', color: '#3498db', data: fiResults.times.map((t, i) => ({ x: t, y: fiResults.gorValues[i] })) },
+                { label: 'IMPSEC', color: '#e74c3c', data: impsecResults.times.map((t, i) => ({ x: t, y: impsecResults.gorValues[i] })) },
+                { label: 'IMPECS', color: '#2ecc71', data: impecsResults.times.map((t, i) => ({ x: t, y: impecsResults.gorValues[i] })) }
+            ];
+            
+            // Prepare data for saturation chart
+            const saturationData = [
+                { label: 'FI', color: '#3498db', data: fiResults.times.map((t, i) => ({ x: t, y: fiResults.saturations[i] })) },
+                { label: 'IMPSEC', color: '#e74c3c', data: impsecResults.times.map((t, i) => ({ x: t, y: impsecResults.saturations[i] })) },
+                { label: 'IMPECS', color: '#2ecc71', data: impecsResults.times.map((t, i) => ({ x: t, y: impecsResults.saturations[i] })) }
+            ];
+            
+            // Draw charts
+            drawChart(document.getElementById('pressure-canvas'), 'Bottom-hole Pressure vs Time', 'Time (days)', 'Pressure (MPa)', pressureData);
+            drawChart(document.getElementById('gor-canvas'), 'Gas-Oil Ratio vs Time', 'Time (days)', 'GOR (m³/m³)', gorData);
+            drawChart(document.getElementById('saturation-canvas'), 'Oil Saturation vs Time', 'Time (days)', 'Saturation (fraction)', saturationData);
+            
+            // Update performance table
+            const performanceTable = document.getElementById('performance-table');
+            performanceTable.innerHTML = `
+                <tr><td>FI</td><td>${fiResults.performance.timeSteps}</td><td>${fiResults.performance.newtonIterations}</td><td>${fiResults.performance.cpuTime}</td><td>${fiResults.performance.stability}</td></tr>
+                <tr><td>IMPSEC</td><td>${impsecResults.performance.timeSteps}</td><td>${impsecResults.performance.newtonIterations}</td><td>${impsecResults.performance.cpuTime}</td><td>${impsecResults.performance.stability}</td></tr>
+                <tr><td>IMPECS</td><td>${impecsResults.performance.timeSteps}</td><td>${impecsResults.performance.newtonIterations}</td><td>${impecsResults.performance.cpuTime}</td><td>${impecsResults.performance.stability}</td></tr>
+            `;
+        }
+        
+        // Initial call to update simulation
+        updateSimulation();
+    });
+</script>
+</body>
+</html>

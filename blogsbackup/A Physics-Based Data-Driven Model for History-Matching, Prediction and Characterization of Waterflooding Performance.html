@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Reservoir Flow: The INSIM-FT Model</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        #simulator {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .slider {
+            width: 300px;
+        }
+        .output {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tracking Water Through Oil Reservoirs: Understanding the INSIM-FT Model</h1>
+    
+    <p>Have you ever wondered how oil companies figure out where injected water goes in an oil field? Today, we're going to break down a fascinating new approach called INSIM-FT that helps engineers track water movement through underground oil reservoirs without needing to know all the complex geological details.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll explore:</p>
+        <ul>
+            <li>Why tracking water movement in oil reservoirs is crucial</li>
+            <li>How the INSIM-FT model works using first principles</li>
+            <li>The mathematical foundation that makes this possible</li>
+            <li>An interactive simulation showing the model in action</li>
+        </ul>
+    </div>
+    
+    <h2>The Problem: Understanding Underground Flow</h2>
+    
+    <p>Imagine you're trying to extract oil from an underground reservoir. To help push the oil toward your production wells, you inject water into the reservoir through injection wells. But here's the challenge: you need to know where that water goes and how it displaces the oil.</p>
+    
+    <div class="analogy">
+        <p><strong>Analogy:</strong> Think of an oil reservoir like a sponge filled with honey (oil). When you inject water into one side of the sponge, you want to predict how the water will move through it and push the honey out the other side. But unlike a simple sponge, underground reservoirs have complex, invisible pathways that are difficult to map.</p>
+    </div>
+    
+    <p>Traditional approaches require detailed knowledge of rock properties throughout the reservoir, which is nearly impossible to obtain accurately. That's where data-driven models like INSIM-FT come in - they use actual production data to infer how fluids move underground.</p>
+    
+    <h2>What Makes INSIM-FT Special?</h2>
+    
+    <p>The INSIM-FT (Interwell Numerical Simulation with Front Tracking) model improves upon previous data-driven models in three key ways:</p>
+    
+    <ol>
+        <li>It accurately tracks water movement using a mathematical technique called "front tracking"</li>
+        <li>It estimates relative permeabilities (how easily oil and water flow through rock) directly from production data</li>
+        <li>It provides a reliable way to identify reservoir features like faults or high-flow channels</li>
+    </ol>
+    
+    <h2>The Core Physics: First Principles</h2>
+    
+    <p>At its heart, INSIM-FT is based on fundamental conservation laws. Let's break down the key physical principles:</p>
+    
+    <h3>1. Conservation of Mass</h3>
+    
+    <p>The model starts with the principle that mass must be conserved - fluid that enters the reservoir must either leave through production wells or remain in the reservoir. This gives us our first key equation:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{1}{5.615}\frac{\partial}{\partial t}\int_{V_{b,i}}{\left({\rho}_{m}\phi S_{m}\right)}d\nu=1.127\times10^{-3}\int_{S_{i}}{\bigl(}{\rho}_{m}\frac{k\cdot k_{r m}}{\mu_{m}}\frac{\partial p}{\partial n}{\bigr)}d S+{\rho}_{m}q_{m,i}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(V_{b,i}\) is the bulk volume controlled by well i</li>
+        <li>\(\phi\) is the porosity (fraction of rock that is pore space)</li>
+        <li>\(S_m\) is the saturation of phase m (oil or water)</li>
+        <li>\(k\) is absolute permeability</li>
+        <li>\(k_{rm}\) is relative permeability of phase m</li>
+        <li>\(\mu_m\) is viscosity of phase m</li>
+        <li>\(q_{m,i}\) is the volumetric rate of phase m at well i</li>
+    </ul>
+    
+    <h3>2. Simplified Reservoir Representation</h3>
+    
+    <p>INSIM-FT represents the reservoir as a network of one-dimensional connections between wells:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        T_{i,j}=1.127\times10^{-3}\frac{k_{i,j}A_{i,j}\lambda_{t}\left(S_{w,i,j}\right)}{L_{i,j}}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(T_{i,j}\) is the transmissibility between wells i and j</li>
+        <li>\(k_{i,j}\) is the effective permeability between wells</li>
+        <li>\(A_{i,j}\) is the cross-sectional area of the connection</li>
+        <li>\(\lambda_t\) is the total mobility, which depends on water saturation</li>
+        <li>\(L_{i,j}\) is the distance between wells</li>
+    </ul>
+    
+    <h3>3. Buckley-Leverett Flow</h3>
+    
+    <p>For water movement along each connection, INSIM-FT uses the Buckley-Leverett equation:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{\partial S_{w}}{\partial t}+\frac{5.615q_{t,i,j}(t)}{\phi_{i,j}A_{i,j}}\frac{\partial f_{w}}{\partial x}=0
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(S_w\) is water saturation</li>
+        <li>\(q_{t,i,j}\) is the total flow rate between wells i and j</li>
+        <li>\(f_w\) is the fractional flow of water, given by:</li>
+    </ul>
+    
+    <div class="equation-box">
+        \begin{equation}
+        f_{w}(S_{w})=\frac{1}{1+\frac{k_{r o}(S_{w})\cdot\mu_{w}}{k_{r w}(S_{w})\cdot\mu_{o}}}
+        \end{equation}
+    </div>
+    
+    <h2>The Front Tracking Method: A Key Innovation</h2>
+    
+    <p>The most significant improvement in INSIM-FT is its use of a front tracking method to solve the Buckley-Leverett equation. This allows it to accurately track the water front as it moves through the reservoir.</p>
+    
+    <p>The front tracking method works by:</p>
+    
+    <ol>
+        <li>Identifying the type of wave solution (shock, rarefaction, or composite)</li>
+        <li>Computing the analytical solution for each wave type</li>
+        <li>Tracking collisions between waves and generating new solutions</li>
+    </ol>
+    
+    <p>For a shock wave (abrupt change in saturation), the speed is given by:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \sigma_{trial}=\eta\frac{f_{w}(S_{w l})-f_{w}(S_{w r})}{S_{w l}-S_{w r}}
+        \end{equation}
+    </div>
+    
+    <p>For a rarefaction wave (smooth change in saturation), the solution is:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        S_{w}(x,t)=\begin{cases}
+        S_{w l}, & \frac{x-x_{0}}{t}<\eta f_{w}^{'}(S_{w l}) \\
+        (f_{w}^{'})^{-1}\big(\frac{x-x_{0}}{\eta t}\big), & \eta f_{w}^{'}(S_{w l})<\frac{x-x_{0}}{t}<\eta f_{w}^{'}(S_{w r}) \\
+        S_{w r}, & \frac{x-x_{0}}{t}>\eta f_{w}^{'}(S_{w r})
+        \end{cases}
+        \end{equation}
+    </div>
+    
+    <h2>Relative Permeability: The Key to Accurate Flow Prediction</h2>
+    
+    <p>Unlike previous models, INSIM-FT estimates relative permeability curves directly from production data. These curves determine how easily oil and water flow through the rock at different saturations.</p>
+    
+    <p>The model uses power-law functions:</p>
+    
+    <div class="equation-box">
+        \begin{align}
+        k_{r w}(S_{w n})&=a\cdot S_{w n}^{n_{w}}\\
+        k_{r o}(S_{w n})&=S_{w n}^{n_{o}}
+        \end{align}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(S_{wn}\) is normalized water saturation: \(S_{wn} = \frac{S_w - S_{iw}}{1 - S_{iw} - S_{or}}\)</li>
+        <li>\(S_{iw}\) is irreducible water saturation</li>
+        <li>\(S_{or}\) is residual oil saturation</li>
+        <li>\(a\), \(n_w\), and \(n_o\) are parameters estimated during history matching</li>
+    </ul>
+    
+    <h2>Interactive Simulation: INSIM-FT in Action</h2>
+    
+    <div class="interactive">
+        <h3>Reservoir Flow Simulator</h3>
+        <p>Adjust the parameters below to see how they affect water movement in a simple reservoir with one injector and one producer.</p>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (md):</label>
+            <input type="range" id="permeability" class="slider" min="10" max="1000" value="200">
+            <span id="permeability-value" class="output">200</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="nw">Water exponent (n<sub>w</sub>):</label>
+            <input type="range" id="nw" class="slider" min="1" max="5" step="0.1" value="1.5">
+            <span id="nw-value" class="output">1.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="no">Oil exponent (n<sub>o</sub>):</label>
+            <input type="range" id="no" class="slider" min="1" max="5" step="0.1" value="1.5">
+            <span id="no-value" class="output">1.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="a-coef">Coefficient (a):</label>
+            <input type="range" id="a-coef" class="slider" min="0.1" max="1" step="0.05" value="0.6">
+            <span id="a-coef-value" class="output">0.6</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="injection-rate">Injection Rate (RB/day):</label>
+            <input type="range" id="injection-rate" class="slider" min="50" max="500" value="100">
+            <span id="injection-rate-value" class="output">100</span>
+        </div>
+        
+        <button id="run-simulation">Run Simulation</button>
+        <button id="reset-simulation">Reset</button>
+        
+        <div>
+            <canvas id="reservoir-canvas" width="700" height="200"></canvas>
+            <div id="results">
+                <p>Water breakthrough time: <span id="breakthrough-time">-</span> days</p>
+                <p>Oil recovery: <span id="oil-recovery">-</span>%</p>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Practical Applications: What Can INSIM-FT Tell Us?</h2>
+    
+    <p>The paper demonstrates INSIM-FT's capabilities through three case studies:</p>
+    
+    <ol>
+        <li><strong>Fault Detection:</strong> INSIM-FT correctly identified a sealing fault in a reservoir by showing zero connectivity between wells on opposite sides of the fault.</li>
+        <li><strong>Channel Identification:</strong> The model successfully detected high-permeability channels in a complex reservoir, matching results from more detailed simulation methods.</li>
+        <li><strong>Field Application:</strong> When applied to a real field with bottom water drive, INSIM-FT provided excellent history matching and future production predictions.</li>
+    </ol>
+    
+    <h2>Advantages Over Other Methods</h2>
+    
+    <p>INSIM-FT offers several advantages over traditional approaches:</p>
+    
+    <ul>
+        <li><strong>Efficiency:</strong> It requires far less computational time than full-scale reservoir simulation</li>
+        <li><strong>Minimal Prior Knowledge:</strong> It doesn't need detailed geological models or rock property distributions</li>
+        <li><strong>Physical Accuracy:</strong> Unlike purely statistical models, it incorporates fundamental flow physics</li>
+        <li><strong>Flexibility:</strong> It can handle complex scenarios like changing well conditions</li>
+    </ul>
+    
+    <h2>Conclusion: A Powerful Tool for Reservoir Management</h2>
+    
+    <p>INSIM-FT represents a significant advancement in data-driven reservoir modeling. By combining physical principles with efficient mathematical techniques, it provides a practical tool for:</p>
+    
+    <ul>
+        <li>History matching production data</li>
+        <li>Predicting future reservoir performance</li>
+        <li>Identifying key geological features</li>
+        <li>Optimizing waterflood operations</li>
+    </ul>
+    
+    <p>The model demonstrates that we don't always need detailed geological models to make accurate predictions about reservoir behavior. By focusing on the fundamental physics and using actual production data, INSIM-FT provides valuable insights that can help engineers manage oil reservoirs more effectively.</p>
+    
+    <script>
+        // Update slider values
+        document.getElementById('permeability').addEventListener('input', function() {
+            document.getElementById('permeability-value').textContent = this.value;
+        });
+        
+        document.getElementById('nw').addEventListener('input', function() {
+            document.getElementById('nw-value').textContent = this.value;
+        });
+        
+        document.getElementById('no').addEventListener('input', function() {
+            document.getElementById('no-value').textContent = this.value;
+        });
+        
+        document.getElementById('a-coef').addEventListener('input', function() {
+            document.getElementById('a-coef-value').textContent = this.value;
+        });
+        
+        document.getElementById('injection-rate').addEventListener('input', function() {
+            document.getElementById('injection-rate-value').textContent = this.value;
+        });
+        
+        // Simulation code
+        const canvas = document.getElementById('reservoir-canvas');
+        const ctx = canvas.getContext('2d');
+        let animationId = null;
+        let simTime = 0;
+        let waterFront = 0;
+        let breakthrough = false;
+        let breakthroughTime = 0;
+        
+        function drawReservoir() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw reservoir
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(50, 50, 600, 100);
+            
+            // Draw wells
+            ctx.fillStyle = '#3498db'; // Injector (blue)
+            ctx.beginPath();
+            ctx.arc(50, 100, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#e74c3c'; // Producer (red)
+            ctx.beginPath();
+            ctx.arc(650, 100, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw oil (green)
+            ctx.fillStyle = '#27ae60';
+            ctx.fillRect(50 + waterFront, 50, 600 - waterFront, 100);
+            
+            // Draw water front (blue gradient)
+            const gradient = ctx.createLinearGradient(50, 0, 50 + waterFront, 0);
+            gradient.addColorStop(0, '#3498db');
+            gradient.addColorStop(1, '#2980b9');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(50, 50, waterFront, 100);
+            
+            // Draw time
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.fillText(`Time: ${Math.floor(simTime)} days`, 50, 30);
+        }
+        
+        function calculateFractionalFlow(Sw) {
+            // Get parameters from sliders
+            const nw = parseFloat(document.getElementById('nw').value);
+            const no = parseFloat(document.getElementById('no').value);
+            const a = parseFloat(document.getElementById('a-coef').value);
+            
+            // Normalized saturation
+            const Siw = 0.2;
+            const Sor = 0.2;
+            const Swn = (Sw - Siw) / (1 - Siw - Sor);
+            
+            if (Swn <= 0) return 0;
+            if (Swn >= 1) return 1;
+            
+            // Calculate relative permeabilities
+            const krw = a * Math.pow(Swn, nw);
+            const kro = Math.pow(1 - Swn, no);
+            
+            // Water/oil viscosity ratio
+            const viscosityRatio = 0.5; // water viscosity / oil viscosity
+            
+            // Fractional flow
+            return 1 / (1 + (kro / krw) * viscosityRatio);
+        }
+        
+        function calculateShockFrontVelocity() {
+            // Get injection rate
+            const injectionRate = parseFloat(document.getElementById('injection-rate').value);
+            
+            // Get permeability
+            const permeability = parseFloat(document.getElementById('permeability').value);
+            
+            // Calculate shock front velocity based on Buckley-Leverett theory
+            // This is a simplified calculation for demonstration
+            const porosity = 0.2;
+            const length = 600; // pixels representing reservoir length
+            const area = 100; // pixels representing cross-sectional area
+            
+            // Initial water saturation
+            const Siw = 0.2;
+            
+            // Shock front saturation (simplified calculation)
+            const Sf = 0.5;
+            
+            // Fractional flow at shock front
+            const fw = calculateFractionalFlow(Sf);
+            
+            // Velocity factor based on permeability
+            const permFactor = permeability / 200;
+            
+            // Calculate velocity (pixels/day)
+            return (injectionRate * permFactor * fw) / (porosity * area) * 0.1;
+        }
+        
+        function runSimulation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            simTime = 0;
+            waterFront = 0;
+            breakthrough = false;
+            breakthroughTime = 0;
+            
+            document.getElementById('breakthrough-time').textContent = '-';
+            document.getElementById('oil-recovery').textContent = '-';
+            
+            const velocity = calculateShockFrontVelocity();
+            
+            function animate() {
+                simTime += 1;
+                waterFront += velocity;
+                
+                if (waterFront >= 600 && !breakthrough) {
+                    breakthrough = true;
+                    breakthroughTime = Math.floor(simTime);
+                    document.getElementById('breakthrough-time').textContent = breakthroughTime;
+                    
+                    // Calculate oil recovery at breakthrough
+                    const recovery = (waterFront / 600 * 0.8 * 100).toFixed(1);
+                    document.getElementById('oil-recovery').textContent = recovery;
+                }
+                
+                if (waterFront > 600) {
+                    waterFront = 600;
+                }
+                
+                drawReservoir();
+                
+                if (waterFront < 600 || simTime < breakthroughTime + 50) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        document.getElementById('run-simulation').addEventListener('click', runSimulation);
+        
+        document.getElementById('reset-simulation').addEventListener('click', function() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            simTime = 0;
+            waterFront = 0;
+            breakthrough = false;
+            document.getElementById('breakthrough-time').textContent = '-';
+            document.getElementById('oil-recovery').textContent = '-';
+            drawReservoir();
+        });
+        
+        // Initial draw
+        drawReservoir();
+    </script>
+</body>
+</html>

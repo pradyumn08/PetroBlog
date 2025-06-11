@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Transient Temperature Measurements in Wellbores</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .key-concept {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .analogy {
+            background-color: #f0f7fb;
+            border-left: 4px solid #5bc0de;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .formula {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .app-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .slider {
+            width: 300px;
+        }
+        .output {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+            margin-top: 10px;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+        }
+        .figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .figure img {
+            max-width: 100%;
+        }
+        .figure figcaption {
+            font-style: italic;
+            margin-top: 10px;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Decoding the Language of Wells: How Temperature Measurements Reveal Reservoir Secrets</h1>
+    
+    <p>When engineers drill into the Earth to extract oil or gas, they're essentially creating a communication channel with the reservoir thousands of feet below. But how do we understand what the reservoir is "saying"? One powerful but often underutilized method is temperature measurement. Today, we'll break down the complex physics of wellbore temperature behavior and show how these thermal signals can reveal crucial information about what's happening deep underground.</p>
+    
+    <div class="key-concept">
+        <h3>Key Takeaways:</h3>
+        <ul>
+            <li>Temperature measurements in wellbores contain valuable information about reservoir properties</li>
+            <li>Drawdown temperatures are dominated by advection (fluid movement), while buildup temperatures are dominated by conduction (heat transfer)</li>
+            <li>Temperature data can reveal skin zone properties (damaged area near wellbore) and formation characteristics</li>
+            <li>The location of temperature gauges significantly impacts what information can be extracted</li>
+        </ul>
+    </div>
+    
+    <h2>The Physics Behind Wellbore Temperature Changes</h2>
+    
+    <p>When fluid flows through a reservoir and up a wellbore, several physical phenomena affect its temperature:</p>
+    
+    <h3>1. Joule-Thomson Effect</h3>
+    
+    <div class="analogy">
+        <p>Imagine squeezing a spray can - the gas coming out feels cold. This is similar to what happens when fluid expands as pressure drops in a reservoir. For most oils, this causes heating during production (contrary to what you might expect), and cooling during shut-in periods.</p>
+    </div>
+    
+    <p>The Joule-Thomson effect describes temperature change when a fluid expands without performing external work. The mathematical expression for this effect is:</p>
+    
+    <div class="formula">
+        <p>\[ \varepsilon_{JT} = \left(\frac{\partial T}{\partial p}\right)_H \]</p>
+        <p>Where \(\varepsilon_{JT}\) is the Joule-Thomson coefficient, which can be positive (cooling during expansion) or negative (heating during expansion) depending on the fluid.</p>
+    </div>
+    
+    <h3>2. Adiabatic Expansion/Compression</h3>
+    
+    <p>When pressure changes rapidly, fluid can expand or compress with minimal heat transfer to surroundings, causing temperature changes. This is especially important in early-time measurements.</p>
+    
+    <div class="formula">
+        <p>The adiabatic expansion coefficient is defined as:</p>
+        <p>\[ \varphi_t^* = \frac{(\rho c_p \varphi)_t}{(\rho c_p)_t} \]</p>
+        <p>Where \((\rho c_p \varphi)_t\) is the adiabatic-expansion coefficient of the fluid system.</p>
+    </div>
+    
+    <h3>3. Conduction</h3>
+    
+    <p>Heat transfer through direct contact between particles - this dominates during buildup (shut-in) periods when fluid is not moving.</p>
+    
+    <h3>4. Convection</h3>
+    
+    <p>Heat transfer through fluid movement - this dominates during drawdown (production) periods.</p>
+    
+    <h2>The Master Equation: Temperature Distribution in a Reservoir</h2>
+    
+    <p>The temperature behavior in a reservoir is governed by a partial differential equation that accounts for all these effects:</p>
+    
+    <div class="formula">
+        <p>\[ \frac{\partial T}{\partial t}+u_{c}(r,t)\frac{\partial T}{\partial r}-\frac{1}{r}\frac{\partial}{\partial r}\Bigg(r\alpha_{t}\frac{\partial T}{\partial r}\Bigg)=\varphi_{t}^{*}\big(r)\frac{\partial p}{\partial t}+\varepsilon_{\scriptscriptstyle{J T}}\big(r\big)u_{c}(r,t)\frac{\partial p}{\partial r} \]</p>
+        
+        <p>Breaking this down:</p>
+        <ul>
+            <li>\(\frac{\partial T}{\partial t}\): Rate of temperature change over time</li>
+            <li>\(u_{c}(r,t)\frac{\partial T}{\partial r}\): Convection term (heat transfer due to fluid movement)</li>
+            <li>\(\frac{1}{r}\frac{\partial}{\partial r}\left(r\alpha_{t}\frac{\partial T}{\partial r}\right)\): Conduction term (heat diffusion)</li>
+            <li>\(\varphi_{t}^{*}\big(r)\frac{\partial p}{\partial t}\): Adiabatic expansion/compression effect</li>
+            <li>\(\varepsilon_{\scriptscriptstyle{J T}}\big(r\big)u_{c}(r,t)\frac{\partial p}{\partial r}\): Joule-Thomson effect</li>
+        </ul>
+    </div>
+    
+    <p>The velocity of convective heat transfer \(u_c\) is defined as:</p>
+    
+    <div class="formula">
+        <p>\[ u_{c}(r,t)=c_{p R}(r)v_{r}=-c_{p R}(r)\kappa(r)\frac{\partial p}{\partial r} \]</p>
+        <p>Where \(c_{pR}\) is the ratio of volumetric heat capacity of fluid to the volumetric heat capacity of the fluid-saturated rock, and \(\kappa\) is the mobility function.</p>
+    </div>
+    
+    <h2>Wellbore Storage and Momentum Effects</h2>
+    
+    <p>When analyzing temperature data, we must account for wellbore dynamics. Two main models are used:</p>
+    
+    <h3>1. Conventional Wellbore Storage (WBS) Model</h3>
+    
+    <p>This simpler model considers mass balance in the wellbore but ignores momentum effects:</p>
+    
+    <div class="formula">
+        <p>\[ q_{sf}(t) = q_{wh}(t) + C\frac{dp_{bh}}{dt} \]</p>
+        <p>Where \(q_{sf}\) is sandface flow rate, \(q_{wh}\) is wellhead flow rate, \(C\) is wellbore storage coefficient, and \(p_{bh}\) is bottomhole pressure.</p>
+    </div>
+    
+    <h3>2. Momentum Model</h3>
+    
+    <p>This more comprehensive model accounts for both mass and momentum balance in the wellbore:</p>
+    
+    <div class="formula">
+        <p>Mass balance equation:</p>
+        <p>\[ \frac{\partial p^w}{\partial t}+\frac{1}{A^w c_o^w}\frac{\partial q^w}{\partial z}=0 \]</p>
+        
+        <p>Momentum equation:</p>
+        <p>\[ \frac{1}{A^w}\frac{\partial q^w}{\partial t}+\frac{1}{\rho_o^w}\frac{\partial p^w}{\partial z}+g\sin\theta^w+\frac{R q^w}{A^w}=0 \]</p>
+        
+        <p>Where \(A^w\) is wellbore cross-sectional area, \(c_o^w\) is fluid compressibility, \(\rho_o^w\) is fluid density, \(g\) is gravity, \(\theta^w\) is wellbore angle with horizontal, and \(R\) is related to friction.</p>
+    </div>
+    
+    <h2>Wellbore Heat Flow Model</h2>
+    
+    <p>The temperature distribution along the wellbore is described by:</p>
+    
+    <div class="formula">
+        <p>\[ \rho_{o}^{w}A^{w}c_{p o}^{w}(1+C_{T})\frac{\partial T^{w}}{\partial t}=\rho_{o}^{w}q^{w}c_{p o}^{w}L_{R}\big[T_{e i}(z)-T^{w}(z,t)\big]-\rho_{o}^{w}q^{w}c_{p o}^{w}\left[\frac{\partial T^{w}}{\partial z}-\varphi(z,t)+\frac{g\sin\theta^{w}}{g_{c}c_{p o}^{w}J}\right] \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(C_T\) is thermal storage constant</li>
+            <li>\(L_R\) is relaxation distance</li>
+            <li>\(T_{ei}(z)\) is initial earth temperature at depth z</li>
+            <li>\(\varphi(z,t)\) includes Joule-Thomson effects and other terms</li>
+        </ul>
+    </div>
+    
+    <h2>Key Insights from Temperature Measurements</h2>
+    
+    <h3>1. Drawdown vs. Buildup Temperature Behavior</h3>
+    
+    <p>Drawdown (production) and buildup (shut-in) temperature data reveal different aspects of the reservoir:</p>
+    
+    <ul>
+        <li><strong>Drawdown temperatures</strong> are dominated by advection (fluid movement) and show strong Joule-Thomson heating effects</li>
+        <li><strong>Buildup temperatures</strong> are dominated by conduction and show cooling effects</li>
+    </ul>
+    
+    <h3>2. Semilog Straight Lines in Temperature Data</h3>
+    
+    <p>Both drawdown and buildup temperature data can exhibit two semilog straight lines:</p>
+    
+    <ul>
+        <li>Early-time straight line: Reflects adiabatic fluid expansion in the skin zone (damaged area near wellbore)</li>
+        <li>Late-time straight line: Reflects Joule-Thomson effects and exhibits non-skin zone properties</li>
+    </ul>
+    
+    <h3>3. Gauge Location Effects</h3>
+    
+    <p>The position of temperature gauges significantly impacts what information can be extracted:</p>
+    
+    <ul>
+        <li>Gauges near the producing zone can detect both skin and non-skin zone properties</li>
+        <li>Gauges far from the producing zone are heavily influenced by wellbore heat losses</li>
+        <li>Buildup temperature data from gauges above the producing zone rarely show discernible flow regimes</li>
+    </ul>
+    
+    <div class="app-container">
+        <h3>Interactive Wellbore Temperature Simulator</h3>
+        <p>Explore how different parameters affect temperature measurements in a wellbore:</p>
+        
+        <div class="slider-container">
+            <label for="flowRate">Flow Rate (m³/s):</label>
+            <input type="range" id="flowRate" class="slider" min="0.001" max="0.01" step="0.001" value="0.003">
+            <span id="flowRateValue" class="output">0.003</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skinFactor">Skin Factor:</label>
+            <input type="range" id="skinFactor" class="slider" min="-5" max="10" step="1" value="0">
+            <span id="skinFactorValue" class="output">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gaugeDepth">Gauge Depth (m from producing zone):</label>
+            <input type="range" id="gaugeDepth" class="slider" min="0" max="500" step="50" value="0">
+            <span id="gaugeDepthValue" class="output">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="testType">Test Type:</label>
+            <select id="testType">
+                <option value="drawdown">Drawdown (Production)</option>
+                <option value="buildup">Buildup (Shut-in)</option>
+            </select>
+        </div>
+        
+        <canvas id="temperatureCanvas" width="700" height="400"></canvas>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get elements
+                const flowRateSlider = document.getElementById('flowRate');
+                const flowRateValue = document.getElementById('flowRateValue');
+                const skinFactorSlider = document.getElementById('skinFactor');
+                const skinFactorValue = document.getElementById('skinFactorValue');
+                const gaugeDepthSlider = document.getElementById('gaugeDepth');
+                const gaugeDepthValue = document.getElementById('gaugeDepthValue');
+                const testTypeSelect = document.getElementById('testType');
+                const canvas = document.getElementById('temperatureCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Update output values
+                flowRateSlider.oninput = function() {
+                    flowRateValue.textContent = this.value;
+                    updateChart();
+                }
+                
+                skinFactorSlider.oninput = function() {
+                    skinFactorValue.textContent = this.value;
+                    updateChart();
+                }
+                
+                gaugeDepthSlider.oninput = function() {
+                    gaugeDepthValue.textContent = this.value;
+                    updateChart();
+                }
+                
+                testTypeSelect.onchange = function() {
+                    updateChart();
+                }
+                
+                // Function to calculate temperature
+                function calculateTemperature(time, flowRate, skinFactor, gaugeDepth, isDrawdown) {
+                    const initialTemp = 351.48; // K
+                    const geothermalGradient = 0.03; // K/m
+                    
+                    // Constants
+                    const JTCoefficient = 3e-7; // K/Pa for oil
+                    const permeability = 5e-14; // m²
+                    const viscosity = 5e-3; // Pa·s
+                    
+                    // Calculate base temperature change due to JT effect
+                    let deltaT = 0;
+                    
+                    if (isDrawdown) {
+                        // Drawdown - heating effect
+                        const pressureDrop = flowRate * viscosity / (2 * Math.PI * permeability * 10);
+                        const JTHeating = JTCoefficient * pressureDrop;
+                        
+                        // Early time behavior (adiabatic expansion)
+                        const earlyEffect = 0.5 * Math.exp(-time / 0.5);
+                        
+                        // Late time behavior (JT heating)
+                        const lateEffect = JTHeating * (1 - Math.exp(-time / 10));
+                        
+                        // Skin effect
+                        const skinEffect = skinFactor * 0.05 * (1 - Math.exp(-time / 2));
+                        
+                        deltaT = earlyEffect + lateEffect + skinEffect;
+                        
+                        // Gauge depth effect - temperature decreases with distance from producing zone
+                        if (gaugeDepth > 0) {
+                            // Heat loss factor increases with gauge depth
+                            const heatLossFactor = 1 - Math.min(0.9, gaugeDepth / 500);
+                            
+                            // Delay factor - temperature changes are delayed further up the wellbore
+                            const delayFactor = Math.exp(-gaugeDepth / 100);
+                            
+                            // Geothermal effect - cooler as we go up
+                            const geothermalEffect = geothermalGradient * gaugeDepth;
+                            
+                            deltaT = deltaT * heatLossFactor * (time > gaugeDepth / 20 ? delayFactor : 0) - geothermalEffect;
+                        }
+                    } else {
+                        // Buildup - cooling effect
+                        const JTCooling = -0.2;
+                        
+                        // Early time behavior (rapid cooling)
+                        const earlyEffect = JTCooling * (1 - Math.exp(-time / 0.5));
+                        
+                        // Late time behavior (return to geothermal)
+                        const lateEffect = -JTCooling * (1 - Math.exp(-time / 20));
+                        
+                        // Skin effect - less pronounced in buildup
+                        const skinEffect = skinFactor * 0.02 * (1 - Math.exp(-time / 5));
+                        
+                        deltaT = earlyEffect + lateEffect + skinEffect;
+                        
+                        // Gauge depth effect
+                        if (gaugeDepth > 0) {
+                            // Buildup is more affected by gauge depth
+                            const heatLossFactor = 1 - Math.min(0.95, gaugeDepth / 300);
+                            const geothermalEffect = geothermalGradient * gaugeDepth;
+                            
+                            deltaT = deltaT * heatLossFactor - geothermalEffect;
+                        }
+                    }
+                    
+                    return initialTemp + deltaT;
+                }
+                
+                // Function to update chart
+                function updateChart() {
+                    const flowRate = parseFloat(flowRateSlider.value);
+                    const skinFactor = parseInt(skinFactorSlider.value);
+                    const gaugeDepth = parseInt(gaugeDepthSlider.value);
+                    const isDrawdown = testTypeSelect.value === 'drawdown';
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw axes
+                    ctx.beginPath();
+                    ctx.moveTo(50, 50);
+                    ctx.lineTo(50, 350);
+                    ctx.lineTo(650, 350);
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // X-axis label (Time)
+                    ctx.fillStyle = '#000';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Time (hours)', 350, 380);
+                    
+                    // Y-axis label (Temperature)
+                    ctx.save();
+                    ctx.translate(15, 200);
+                    ctx.rotate(-Math.PI/2);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Temperature (K)', 0, 0);
+                    ctx.restore();
+                    
+                    // Draw grid lines
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    
+                    // Horizontal grid lines
+                    for (let i = 1; i < 6; i++) {
+                        const y = 350 - i * 60;
+                        ctx.moveTo(50, y);
+                        ctx.lineTo(650, y);
+                    }
+                    
+                    // Vertical grid lines
+                    for (let i = 1; i < 12; i++) {
+                        const x = 50 + i * 50;
+                        ctx.moveTo(x, 50);
+                        ctx.lineTo(x, 350);
+                    }
+                    ctx.stroke();
+                    
+                    // Calculate temperature data
+                    const times = [];
+                    const temps = [];
+                    const maxTime = 100; // hours
+                    
+                    // Use logarithmic time scale for better visualization
+                    for (let i = 0; i <= 100; i++) {
+                        // Logarithmic time scale from 0.01 to 100 hours
+                        const time = Math.pow(10, -2 + i * 4 / 100);
+                        times.push(time);
+                        temps.push(calculateTemperature(time, flowRate, skinFactor, gaugeDepth, isDrawdown));
+                    }
+                    
+                    // Find min and max temperature for scaling
+                    const minTemp = Math.min(...temps) - 0.5;
+                    const maxTemp = Math.max(...temps) + 0.5;
+                    const tempRange = maxTemp - minTemp;
+                    
+                    // Draw temperature curve
+                    ctx.beginPath();
+                    ctx.strokeStyle = isDrawdown ? '#e74c3c' : '#3498db';
+                    ctx.lineWidth = 3;
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const x = 50 + (Math.log10(times[i]) + 2) * 150; // Convert to log scale for x-axis
+                        const y = 350 - ((temps[i] - minTemp) / tempRange) * 300;
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.stroke();
+                    
+                    // Draw x-axis labels (log scale)
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'center';
+                    ctx.font = '10px Arial';
+                    
+                    const logTimes = [0.01, 0.1, 1, 10, 100];
+                    for (let time of logTimes) {
+                        const x = 50 + (Math.log10(time) + 2) * 150;
+                        ctx.fillText(time.toString(), x, 365);
+                    }
+                    
+                    // Draw y-axis labels
+                    ctx.textAlign = 'right';
+                    for (let i = 0; i <= 5; i++) {
+                        const temp = minTemp + (i / 5) * tempRange;
+                        const y = 350 - (i / 5) * 300;
+                        ctx.fillText(temp.toFixed(2), 45, y + 5);
+                    }
+                    
+                    // Add title
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${isDrawdown ? 'Drawdown' : 'Buildup'} Temperature Response at ${gaugeDepth}m from Producing Zone`, 350, 30);
+                    
+                    // Add legend
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = isDrawdown ? '#e74c3c' : '#3498db';
+                    ctx.fillRect(550, 60, 15, 15);
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`${isDrawdown ? 'Drawdown' : 'Buildup'} Temperature`, 570, 72);
+                }
+                
+                // Initial chart
+                updateChart();
+});
+</script>
+    </div>
+    
+    <h2>The Significance of Skin Factor</h2>
+    
+    <div class="analogy">
+        <p><strong>What is skin factor?</strong> Imagine trying to drink a smoothie through a straw. If the straw gets clogged with fruit chunks, you have to suck harder to get the same amount of liquid. In oil wells, the "skin zone" is like this clogged area around the wellbore where the permeability is reduced due to drilling damage, precipitation, or other factors.</p>
+    </div>
+    
+    <p>The skin factor is quantified using Hawkins' formula:</p>
+    
+    <div class="formula">
+        <p>\[ S = \left(\frac{k_o}{k_s} - 1\right) \ln\left(\frac{r_s}{r_w}\right) \]</p>
+        <p>Where \(k_o\) is the original formation permeability, \(k_s\) is the skin zone permeability, \(r_s\) is the radius of the skin zone, and \(r_w\) is the wellbore radius.</p>
+    </div>
+    
+    <p>Temperature data can help estimate both the permeability damage ratio (\(k_o/k_s\)) and the extent of the damaged zone (\(r_s\)).</p>
+    
+    <h2>Practical Applications</h2>
+    
+    <h3>1. Reservoir Characterization</h3>
+    
+    <p>Temperature measurements can help determine:</p>
+    <ul>
+        <li>Formation permeability</li>
+        <li>Extent and severity of near-wellbore damage (skin)</li>
+        <li>Fluid properties</li>
+    </ul>
+    
+    <h3>2. Production Optimization</h3>
+    
+    <p>By understanding the temperature behavior:</p>
+    <ul>
+        <li>Engineers can identify when wellbore cleanup or stimulation is needed</li>
+        <li>Production rates can be optimized to minimize damage</li>
+        <li>Completion designs can be improved</li>
+    </ul>
+    
+    <h3>3. Monitoring Well Performance</h3>
+    
+    <p>Regular temperature measurements can track:</p>
+    <ul>
+        <li>Changes in skin factor over time</li>
+        <li>Effectiveness of stimulation treatments</li>
+        <li>Early warning of formation damage</li>
+    </ul>
+    
+    <h2>Analyzing Temperature Data: A Step-by-Step Approach</h2>
+    
+    <p>To extract meaningful information from temperature measurements:</p>
+    
+    <ol>
+        <li><strong>Plot temperature vs. log(time)</strong> to identify semilog straight lines</li>
+        <li><strong>Calculate temperature derivative</strong> \(\left|\frac{d\Delta T}{d\ln\Delta t}\right|\) to identify flow regimes</li>
+        <li><strong>Analyze early-time slope</strong> to estimate skin zone properties</li>
+        <li><strong>Analyze late-time slope</strong> to estimate formation properties</li>
+        <li><strong>Combine with pressure transient analysis</strong> for comprehensive reservoir characterization</li>
+    </ol>
+    
+    <h2>Limitations and Challenges</h2>
+    
+    <p>Despite its potential, temperature analysis has several challenges:</p>
+    
+    <ul>
+        <li>Temperature changes are typically small (often less than 1°C)</li>
+        <li>High-resolution temperature sensors are required (better than 0.01°C)</li>
+        <li>Gauge location significantly impacts interpretability</li>
+        <li>Buildup temperatures from gauges above the producing zone are difficult to interpret</li>
+        <li>Multiple physical effects can obscure the signal</li>
+    </ul>
+    
+    <h2>Conclusion</h2>
+    
+    <p>Temperature measurements in wellbores provide a wealth of information about reservoir properties and near-wellbore conditions. By understanding the physics behind temperature changes and applying appropriate analysis techniques, engineers can extract valuable insights that complement traditional pressure transient analysis.</p>
+    
+    <p>The key findings from our investigation are:</p>
+    
+    <ul>
+        <li>Drawdown temperatures are dominated by advection and Joule-Thomson heating</li>
+        <li>Buildup temperatures are dominated by conduction</li>
+        <li>Both exhibit early-time and late-time semilog straight lines that reveal different aspects of the reservoir</li>
+        <li>Gauge location is critical - measurements closer to the producing zone provide more formation information</li>
+        <li>Temperature derivative analysis is a powerful tool for identifying flow regimes</li>
+    </ul>
+    
+    <p>As temperature sensing technology continues to improve, we can expect temperature analysis to become an increasingly important tool in the petroleum engineer's toolkit.</p>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // MathJax configuration
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    processEscapes: true
+                }
+            };
+});
+</script>
+</body>
+</html>

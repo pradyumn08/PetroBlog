@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Drill Stem Tests from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #ffd700;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e7f5fe;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .equation-box {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .slider {
+            width: 100%;
+        }
+        .canvas-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+        #simulation-canvas {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            display: block;
+            margin: 0 auto;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 5px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Drill Stem Tests: A First Principles Approach</h1>
+    
+    <p class="highlight">In this blog post, we'll break down the complex mathematical modeling of drill stem tests (DSTs) from first principles. We'll transform the dense academic paper by Correa and Ramey into an accessible explanation that anyone with basic calculus can understand, complete with interactive visualizations.</p>
+    
+    <h2>What is a Drill Stem Test and Why Should You Care?</h2>
+    
+    <p>Imagine you're drilling for oil or gas, investing millions of dollars in the process. Before committing to a full well completion, you'd want to know: Is there actually anything valuable down there? And if so, how easily will it flow?</p>
+    
+    <p>That's where a <strong>Drill Stem Test (DST)</strong> comes in. It's like a "try before you buy" approach to oil and gas wells that has been used since 1926. During drilling, the DST tool is lowered into the well to isolate a specific zone of interest. The well is then opened to allow fluids to flow, followed by shutting it in to observe pressure recovery.</p>
+    
+    <div class="two-column">
+        <div class="column">
+            <p>The beauty of a DST is that it provides critical information about:</p>
+            <ul>
+                <li>Initial reservoir pressure</li>
+                <li>Formation permeability (how easily fluids flow through the rock)</li>
+                <li>Skin effect (damage or stimulation near the wellbore)</li>
+                <li>Fluid type and properties</li>
+            </ul>
+        </div>
+        <div class="column">
+            <img src="https://miro.medium.com/max/1400/1*n7z-rvbBJwmRTh-XeQfJLw.png" alt="Simplified diagram of a drill stem test setup">
+            <p class="caption">Simplified representation of a drill stem test setup</p>
+        </div>
+    </div>
+    
+    <h2>The Problem with Traditional DST Analysis</h2>
+    
+    <p>For decades, petroleum engineers have analyzed DST data using the Horner method, which was originally developed for constant-rate production followed by pressure buildup. However, there's a fundamental mismatch here:</p>
+    
+    <div class="note">
+        <p><strong>The Horner method assumes:</strong> The well produces at a constant rate before shut-in.</p>
+        <p><strong>The reality of DSTs:</strong> The flow rate continuously changes as fluid accumulates in the wellbore, and the flowing pressure often increases during production rather than decreasing.</p>
+    </div>
+    
+    <p>This mismatch can lead to misinterpretations, including false identification of reservoir boundaries that don't actually exist. The paper by Correa and Ramey addresses this problem by developing a more accurate mathematical model.</p>
+    
+    <h2>First Principles: The Physics of Fluid Flow in a DST</h2>
+    
+    <p>To understand the DST process from first principles, we need to consider what physically happens during the test:</p>
+    
+    <h3>1. The Flow Period</h3>
+    
+    <p>When the bottom-hole valve is opened, the pressure in the wellbore suddenly drops. This creates a pressure difference between the reservoir and the wellbore, causing fluid to flow into the wellbore. As fluid accumulates in the wellbore, the pressure starts to build back up.</p>
+    
+    <p>This is fundamentally different from a normal production test where the flow rate is controlled at the surface. In a DST, the flow rate is uncontrolled and continuously changing.</p>
+    
+    <h3>2. The Shut-in Period</h3>
+    
+    <p>When the valve is closed, fluid can no longer enter the wellbore. However, the reservoir pressure continues to equalize, and this pressure buildup is recorded. This data contains valuable information about the reservoir properties.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive DST Simulation</h3>
+        <div class="slider-container">
+            <label for="permeability-slider">Formation Permeability (mD): <span id="permeability-value">50</span></label>
+            <input type="range" id="permeability-slider" class="slider" min="1" max="500" value="50">
+        </div>
+        <div class="slider-container">
+            <label for="skin-slider">Skin Factor: <span id="skin-value">0</span></label>
+            <input type="range" id="skin-slider" class="slider" min="-5" max="10" value="0" step="0.5">
+        </div>
+        <div class="slider-container">
+            <label for="storage-slider">Wellbore Storage Coefficient: <span id="storage-value">0.01</span></label>
+            <input type="range" id="storage-slider" class="slider" min="0.001" max="0.1" value="0.01" step="0.001">
+        </div>
+        <div class="canvas-container">
+            <canvas id="simulation-canvas" width="800" height="400"></canvas>
+        </div>
+        <p class="caption">Adjust the sliders to see how different reservoir parameters affect the DST pressure response.</p>
+    </div>
+    
+    <h2>The Mathematical Model: A New Approach</h2>
+    
+    <p>The key insight from Correa and Ramey is to model a DST as a "slug test" with a changing wellbore storage coefficient. Let's break down what this means:</p>
+    
+    <h3>The Diffusivity Equation: The Foundation</h3>
+    
+    <p>All petroleum reservoir analysis starts with the diffusivity equation, which describes how pressure changes propagate through a porous medium:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{\partial^{2}p_{D}}{\partial r_{D}^{2}}+\frac{1}{r_{D}}\frac{\partial p_{D}}{\partial r_{D}}=\frac{\partial p_{D}}{\partial t_{D}}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_D\) is dimensionless pressure</li>
+        <li>\(r_D\) is dimensionless radius</li>
+        <li>\(t_D\) is dimensionless time</li>
+    </ul>
+    
+    <h3>The Changing Wellbore Storage Concept</h3>
+    
+    <p>During the flow period, the wellbore storage coefficient is defined by the rate at which fluid accumulates in the wellbore:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        C_{F}=\frac{\pi r_{p}^{2}}{\gamma_{w}}
+        \end{equation}
+    </div>
+    
+    <p>Where \(r_p\) is the internal radius of the production pipe and \(\gamma_w\) is the specific weight of the wellbore fluid.</p>
+    
+    <p>After shut-in, the wellbore storage mechanism changes. Now it's governed by the compressibility of fluid below the shut-in valve:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        C_{S}=c_{w}V_{w}
+        \end{equation}
+    </div>
+    
+    <p>Where \(c_w\) is the compressibility of the wellbore fluid and \(V_w\) is the volume of the bottom-hole storage chamber.</p>
+    
+    <p>The brilliance of the Correa and Ramey approach is to combine these two phases into a single boundary condition using the Heaviside step function:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \left[(1-S_{k})\ C_{F D}+S_{k}\ C_{S D}\right]\frac{d p_{w D}}{d t_{D}}-\left[r_{D}\frac{\partial p_{D}}{\partial r_{D}}\right]_{r_{D}=1}=0\ ,t_{D}>0
+        \end{equation}
+    </div>
+    
+    <p>Where \(S_k\) is the Heaviside step function that equals 0 during production and 1 after shut-in.</p>
+    
+    <h3>The Complete Solution</h3>
+    
+    <p>After solving the diffusivity equation with this boundary condition (using Laplace transforms), they arrive at the solution:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        p_{w D}(t_{D})=C_{S D}{\bf\delta p_{D}}^{\prime}(S,C_{S D},t_{D})+
+        (C_{S D}-C_{F D})\int_{0}^{k}{\bf p_{D}}^{\prime}(S,C_{S D},t_{D}-\tau_{D})p_{w D}^{\prime}(\tau_{D})d\tau_{D}
+        \end{equation}
+    </div>
+    
+    <p>This equation looks intimidating, but it essentially combines the wellbore pressure response for both the flow and shut-in periods into a single solution.</p>
+    
+    <h2>Making It Practical: The Cartesian Plot Method</h2>
+    
+    <p>For practical field applications, Correa and Ramey derived a simplified method based on their solution. For pressure buildup analysis, they showed that:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        p_{w}(t)=p_{i}-m_{C}\frac{t_{p}}{t_{p}+\Delta t}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_w(t)\) is the wellbore pressure at time \(t\)</li>
+        <li>\(p_i\) is the initial reservoir pressure</li>
+        <li>\(t_p\) is the production time</li>
+        <li>\(\Delta t\) is the shut-in time</li>
+        <li>\(m_C\) is a slope related to permeability</li>
+    </ul>
+    
+    <p>This leads to a simple interpretation method:</p>
+    
+    <ol>
+        <li>Plot the shut-in pressure \(p_{ws}\) versus the ratio \(\frac{t_p}{t_p+\Delta t}\)</li>
+        <li>Draw a straight line through the data points</li>
+        <li>The y-intercept gives the initial reservoir pressure \(p_i\)</li>
+        <li>The slope \(m_C\) is related to permeability by: \(\frac{kh}{\mu} = \frac{q}{4\pi m_C}\)</li>
+    </ol>
+    
+    <div class="interactive-container">
+        <h3>Interactive Cartesian Plot Analysis</h3>
+        <div class="slider-container">
+            <label for="data-points-slider">Number of Data Points: <span id="data-points-value">10</span></label>
+            <input type="range" id="data-points-slider" class="slider" min="5" max="20" value="10">
+        </div>
+        <div class="slider-container">
+            <label for="noise-slider">Noise Level: <span id="noise-value">0</span></label>
+            <input type="range" id="noise-slider" class="slider" min="0" max="10" value="0">
+        </div>
+        <button id="generate-data-btn">Generate Data</button>
+        <button id="analyze-data-btn">Analyze Data</button>
+        <div class="canvas-container">
+            <canvas id="analysis-canvas" width="800" height="400"></canvas>
+        </div>
+        <div id="analysis-results">
+            <p>Initial Reservoir Pressure (p<sub>i</sub>): <span id="pi-result">--</span> psi</p>
+            <p>Permeability-Thickness/Viscosity (kh/μ): <span id="perm-result">--</span> mD-ft/cp</p>
+        </div>
+    </div>
+    
+    <h2>Real-World Example: Analyzing Field Data</h2>
+    
+    <p>Let's walk through a simplified example using data from Well A in the paper:</p>
+    
+    <table>
+        <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Formation thickness (h)</td>
+            <td>27 ft</td>
+        </tr>
+        <tr>
+            <td>Average flow rate (q<sub>1</sub>)</td>
+            <td>74 bbl/day</td>
+        </tr>
+        <tr>
+            <td>Initial flowing pressure (p<sub>fi1</sub>)</td>
+            <td>44 psi</td>
+        </tr>
+        <tr>
+            <td>Final flowing pressure (p<sub>ff1</sub>)</td>
+            <td>160 psi</td>
+        </tr>
+        <tr>
+            <td>Production time (t<sub>p1</sub>)</td>
+            <td>0.55 hr</td>
+        </tr>
+    </table>
+    
+    <p>Following the Cartesian plot method, we plot the shut-in pressure versus \(\frac{t_p}{t_p+\Delta t}\) and find:</p>
+    
+    <ul>
+        <li>Initial reservoir pressure (p<sub>i</sub>): 1,021 psi</li>
+        <li>Slope (m<sub>C1</sub>): 387 psi</li>
+        <li>Calculated permeability-thickness/viscosity (kh/μ): 0.50 mD-ft/cp</li>
+        <li>Skin factor (S<sub>1</sub>): -1.9 (indicating a stimulated well)</li>
+    </ul>
+    
+    <p>The beauty of this method is that analyzing the second shut-in period gives consistent results: kh/μ = 0.50 mD-ft/cp and S<sub>2</sub> = -2.0. This consistency validates the approach, unlike the traditional Horner method which often gives inconsistent results between cycles.</p>
+    
+    <h2>The Slug Test vs. Horner Method: A Clear Comparison</h2>
+    
+    <p>To demonstrate why the slug test model is superior to the Horner method for DST analysis, let's look at Well B from the paper:</p>
+    
+    <div class="two-column">
+        <div class="column">
+            <h3>Cartesian Plot (Slug Test Model)</h3>
+            <img src="https://i.imgur.com/JFnFKvL.png" alt="Cartesian plot showing a clean straight line">
+            <p class="caption">Shows a clean straight line, indicating a proper model fit</p>
+        </div>
+        <div class="column">
+            <h3>Horner Plot (Traditional Method)</h3>
+            <img src="https://i.imgur.com/dRn7Uoi.png" alt="Horner plot showing curvature that could be misinterpreted">
+            <p class="caption">Shows curvature that could be misinterpreted as a reservoir boundary</p>
+        </div>
+    </div>
+    
+    <p>The Horner plot erroneously suggests the presence of a linear barrier (like a fault) near the wellbore, while the Cartesian plot based on the slug test model shows no such feature. This demonstrates how using an inappropriate model can lead to incorrect reservoir characterization.</p>
+    
+    <h2>Why This Matters: Practical Implications</h2>
+    
+    <p>The improved DST analysis method has several practical benefits:</p>
+    
+    <ol>
+        <li><strong>Better investment decisions:</strong> More accurate reservoir characterization leads to better decisions about whether to complete a well.</li>
+        <li><strong>Consistent results across test cycles:</strong> The method provides consistent parameter estimates from different shut-in periods.</li>
+        <li><strong>Avoids false interpretations:</strong> Prevents misidentification of reservoir boundaries that don't actually exist.</li>
+        <li><strong>Simple field application:</strong> The Cartesian plot method is straightforward enough to be applied in the field without complex calculations.</li>
+    </ol>
+    
+    <h2>Conclusion: A Revolution in DST Analysis</h2>
+    
+    <p>Correa and Ramey's approach to DST analysis represents a fundamental shift in how we understand these tests. By recognizing that a DST is essentially a slug test with changing wellbore storage, they developed a mathematically sound model that better represents the physical reality.</p>
+    
+    <p>The resulting Cartesian plot method provides a simple yet powerful tool for field engineers to extract accurate reservoir properties from DST data. This approach eliminates the inconsistencies and misinterpretations that can occur with the traditional Horner method.</p>
+    
+    <p>Next time you're analyzing a drill stem test, remember: it's not a constant-rate test followed by buildup—it's a slug test with changing storage. This mental model will guide you toward more accurate interpretations and better reservoir characterization.</p>
+    
+    <div class="note">
+        <p><strong>Key Takeaway:</strong> The fundamental insight from this paper is that a DST can be modeled as a single test with changing wellbore storage mechanics, rather than two separate tests (flow and buildup) that require superposition. This insight leads to more accurate and consistent analysis methods.</p>
+    </div>
+
+    <script>
+        // Simulation canvas
+        const simulationCanvas = document.getElementById('simulation-canvas');
+        const simCtx = simulationCanvas.getContext('2d');
+        
+        // Analysis canvas
+        const analysisCanvas = document.getElementById('analysis-canvas');
+        const analysisCtx = analysisCanvas.getContext('2d');
+        
+        // Slider elements
+        const permeabilitySlider = document.getElementById('permeability-slider');
+        const permeabilityValue = document.getElementById('permeability-value');
+        const skinSlider = document.getElementById('skin-slider');
+        const skinValue = document.getElementById('skin-value');
+        const storageSlider = document.getElementById('storage-slider');
+        const storageValue = document.getElementById('storage-value');
+        
+        // Analysis elements
+        const dataPointsSlider = document.getElementById('data-points-slider');
+        const dataPointsValue = document.getElementById('data-points-value');
+        const noiseSlider = document.getElementById('noise-slider');
+        const noiseValue = document.getElementById('noise-value');
+        const generateDataBtn = document.getElementById('generate-data-btn');
+        const analyzeDataBtn = document.getElementById('analyze-data-btn');
+        const piResult = document.getElementById('pi-result');
+        const permResult = document.getElementById('perm-result');
+        
+        // Update display values for sliders
+        permeabilitySlider.addEventListener('input', () => {
+            permeabilityValue.textContent = permeabilitySlider.value;
+            drawSimulation();
+        });
+        
+        skinSlider.addEventListener('input', () => {
+            skinValue.textContent = skinSlider.value;
+            drawSimulation();
+        });
+        
+        storageSlider.addEventListener('input', () => {
+            storageValue.textContent = storageSlider.value;
+            drawSimulation();
+        });
+        
+        dataPointsSlider.addEventListener('input', () => {
+            dataPointsValue.textContent = dataPointsSlider.value;
+        });
+        
+        noiseSlider.addEventListener('input', () => {
+            noiseValue.textContent = noiseSlider.value;
+        });
+        
+        // DST simulation functions
+        function drawSimulation() {
+            const k = parseFloat(permeabilitySlider.value); // permeability in mD
+            const s = parseFloat(skinSlider.value); // skin factor
+            const cd = parseFloat(storageSlider.value); // wellbore storage coefficient
+            
+            simCtx.clearRect(0, 0, simulationCanvas.width, simulationCanvas.height);
+            
+            // Draw axes
+            simCtx.beginPath();
+            simCtx.moveTo(50, 50);
+            simCtx.lineTo(50, 350);
+            simCtx.lineTo(750, 350);
+            simCtx.strokeStyle = '#000';
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            
+            // Axis labels
+            simCtx.font = '14px Arial';
+            simCtx.fillStyle = '#000';
+            simCtx.fillText('Time', 400, 380);
+            simCtx.save();
+            simCtx.translate(20, 200);
+            simCtx.rotate(-Math.PI/2);
+            simCtx.fillText('Pressure', 0, 0);
+            simCtx.restore();
+            
+            // Draw DST pressure curve
+            simCtx.beginPath();
+            simCtx.moveTo(50, 100); // Starting at initial reservoir pressure
+            
+            // Flow period (0 to 300 on x-axis)
+            for (let x = 0; x <= 250; x++) {
+                const t = x / 250; // Normalized time
+                let p;
+                
+                // Simple model for flow period
+                // Lower pressure for higher permeability, more damage with positive skin
+                p = 100 + (250 - Math.sqrt(k) * 10 * t) * (1 - s/10) + 50 * cd * t;
+                
+                // Ensure pressure doesn't go below a minimum
+                p = Math.max(p, 150);
+                
+                simCtx.lineTo(50 + x, 350 - p);
+            }
+            
+            // Shut-in period (300 to 700 on x-axis)
+            const shutInPressure = 350 - simCtx.currentPath.currentPoint.y; // Pressure at shut-in
+            
+            for (let x = 0; x <= 450; x++) {
+                const t = x / 450; // Normalized time
+                
+                // Simple model for buildup period
+                // Faster buildup for higher permeability, slower with damage
+                const p = shutInPressure + (250 - shutInPressure) * (1 - Math.exp(-Math.sqrt(k/50) * t * (1 - s/20) / cd));
+                
+                simCtx.lineTo(300 + x, 350 - p);
+            }
+            
+            simCtx.strokeStyle = '#3498db';
+            simCtx.lineWidth = 3;
+            simCtx.stroke();
+            
+            // Mark shut-in point
+            simCtx.beginPath();
+            simCtx.arc(300, 350 - shutInPressure, 6, 0, Math.PI * 2);
+            simCtx.fillStyle = '#e74c3c';
+            simCtx.fill();
+            
+            // Labels for flow and shut-in periods
+            simCtx.font = '16px Arial';
+            simCtx.fillStyle = '#000';
+            simCtx.fillText('Flow Period', 150, 50);
+            simCtx.fillText('Shut-in Period', 450, 50);
+            
+            // Vertical line at shut-in
+            simCtx.beginPath();
+            simCtx.moveTo(300, 50);
+            simCtx.lineTo(300, 350);
+            simCtx.strokeStyle = '#e74c3c';
+            simCtx.setLineDash([5, 5]);
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            simCtx.setLineDash([]);
+        }
+        
+        // Generate synthetic DST data
+        let analysisData = [];
+        
+        function generateData() {
+            const numPoints = parseInt(dataPointsSlider.value);
+            const noiseLevel = parseFloat(noiseSlider.value);
+            
+            // Reset data array
+            analysisData = [];
+            
+            // Initial reservoir pressure (psi)
+            const pi = 1000;
+            
+            // Production time (hours)
+            const tp = 1.0;
+            
+            // Slope parameter (related to permeability)
+            const mc = 300;
+            
+            // Generate data points for tp/(tp+Δt) vs pressure
+            for (let i = 0; i < numPoints; i++) {
+                const ratio = i / (numPoints - 1) * 0.9; // tp/(tp+Δt) from 0 to 0.9
+                const pressure = pi - mc * ratio + (Math.random() - 0.5) * noiseLevel * 20;
+                
+                analysisData.push({
+                    ratio: ratio,
+                    pressure: pressure
+                });
+            }
+            
+            drawAnalysisData();
+        }
+        
+        function drawAnalysisData() {
+            analysisCtx.clearRect(0, 0, analysisCanvas.width, analysisCanvas.height);
+            
+            // Draw axes
+            analysisCtx.beginPath();
+            analysisCtx.moveTo(50, 50);
+            analysisCtx.lineTo(50, 350);
+            analysisCtx.lineTo(750, 350);
+            analysisCtx.strokeStyle = '#000';
+            analysisCtx.lineWidth = 2;
+            analysisCtx.stroke();
+            
+            // Axis labels
+            analysisCtx.font = '14px Arial';
+            analysisCtx.fillStyle = '#000';
+            analysisCtx.fillText('tp/(tp+Δt)', 400, 380);
+            analysisCtx.save();
+            analysisCtx.translate(20, 200);
+            analysisCtx.rotate(-Math.PI/2);
+            analysisCtx.fillText('Pressure (psi)', 0, 0);
+            analysisCtx.restore();
+            
+            // Plot data points
+            if (analysisData.length > 0) {
+                analysisData.forEach(point => {
+                    const x = 50 + point.ratio * 700;
+                    const y = 350 - (point.pressure - 700) * 0.3;
+                    
+                    analysisCtx.beginPath();
+                    analysisCtx.arc(x, y, 5, 0, Math.PI * 2);
+                    analysisCtx.fillStyle = '#3498db';
+                    analysisCtx.fill();
+                });
+            }
+        }
+        
+        function analyzeData() {
+            if (analysisData.length < 2) {
+                alert('Please generate data first.');
+                return;
+            }
+            
+            // Simple linear regression
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            const n = analysisData.length;
+            
+            analysisData.forEach(point => {
+                sumX += point.ratio;
+                sumY += point.pressure;
+                sumXY += point.ratio * point.pressure;
+                sumX2 += point.ratio * point.ratio;
+            });
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            // Draw regression line
+            analysisCtx.beginPath();
+            analysisCtx.moveTo(50, 350 - (intercept - 700) * 0.3);
+            analysisCtx.lineTo(750, 350 - ((slope * 0.9 + intercept) - 700) * 0.3);
+            analysisCtx.strokeStyle = '#e74c3c';
+            analysisCtx.lineWidth = 2;
+            analysisCtx.stroke();
+            
+            // Display results
+            piResult.textContent = intercept.toFixed(0);
+            
+            // Calculate permeability (simplified formula)
+            const q = 100; // bbl/day
+            const mc = -slope;
+            const khmu = (70.6 * q) / mc;
+            permResult.textContent = khmu.toFixed(1);
+        }
+        
+        // Event listeners for buttons
+        generateDataBtn.addEventListener('click', generateData);
+        analyzeDataBtn.addEventListener('click', analyzeData);
+        
+        // Initial draws
+        drawSimulation();
+        drawAnalysisData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucker Rod Dynamics in Inclined Wells</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.2em;
+        }
+        h2 {
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .quote {
+            font-style: italic;
+            border-left: 4px solid #ccc;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        .simulation-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            display: block;
+            margin: 20px auto;
+            background-color: white;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .value-display {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4a7eb3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #3a6491;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a7eb3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-explanation {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dancing Rods: Understanding the Dynamic Behavior of Sucker Rod Strings in Inclined Oil Wells</h1>
+    
+
+
+    <h2>Introduction: The Problem with Tilted Wells</h2>
+    
+    <p>Imagine you're holding a long, flexible string and you dip it into a straw. If the straw is perfectly vertical, the string hangs straight down. But what happens if you tilt the straw? The string touches the sides, creating friction and changing how it moves. Now imagine that string is actually a metal rod several thousand feet long, pumping oil from deep underground through a curved well. That's our problem today.</p>
+    
+    <p>Oil wells aren't always drilled straight down. Many are intentionally deviated (tilted) at angles up to 60 degrees. This creates a fascinating physics problem: how do these long, jointed sucker rods behave when they're no longer hanging straight?</p>
+    
+    <p>In a vertical well, analyzing rod behavior is straightforward. But in a deviated well, everything changes. The rods touch the sides of the tubing, creating friction. They bend and curve. The forces that were once purely vertical now act at angles. It's a complex dance of physics that petroleum engineers must understand to pump oil efficiently and safely.</p>
+
+    <h2>The Physics: How Rods Move in Curved Spaces</h2>
+    
+    <p>To understand this problem, we need to break it down to first principles. What forces act on a rod in a curved well?</p>
+    
+    <ol>
+        <li>Gravity pulls down</li>
+        <li>The pump creates forces from below</li>
+        <li>The surface equipment pulls from above</li>
+        <li>The tubing walls push from the sides</li>
+        <li>Friction resists motion</li>
+    </ol>
+    
+    <p>When a rod moves in a curved well, it experiences two types of motion simultaneously: longitudinal (up and down) and transverse (side to side). These motions aren't independent - they're coupled together by the curvature of the well.</p>
+    
+    <div class="formula-explanation">
+        <h3>The Mathematical Framework</h3>
+        
+        <p>Let's look at the fundamental equations that describe this motion. For a rod element of length \(ds\), we have two coupled equations:</p>
+        
+        <p>The equation for motion in the direction tangential to the rod:</p>
+        
+        \[ \frac{\partial S}{\partial\mathbf{s}}-A\gamma\frac{\partial^{2}\mathit{\mathbf{u}}}{\partial\mathbf{t}^{2}}+\gamma\mathbf{g}\mathbf{A}\cos\phi-\eta\frac{\partial\mathbf{u}}{\partial\mathbf{t}}-F_{\mathbf{t}}=0 \]
+        
+        <p>And the equation for transverse motion:</p>
+        
+        \[ \frac{\partial^{2}}{\partial s^2}\left[EI\left(\frac{\partial^{2}w}{\partial s^2}+\frac{1}{R_a}\right)\right]+\gamma A\frac{\partial^{2}w}{\partial t^2}+n_t\frac{\partial w}{\partial t}+n_t+n_p+\frac{S}{R}-\gamma g A \sin\phi=0 \]
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(S\) is the axial force in the rod</li>
+            <li>\(u(t)\) is axial displacement</li>
+            <li>\(w(t)\) is transverse displacement</li>
+            <li>\(A\) is rod cross-section</li>
+            <li>\(\gamma\) is rod material density</li>
+            <li>\(g\) is acceleration of gravity</li>
+            <li>\(\phi\) is angle of inclination</li>
+            <li>\(\eta\) is viscous damping coefficient</li>
+            <li>\(F_t\) is friction force</li>
+            <li>\(EI\) is bending stiffness</li>
+            <li>\(R_a\) is radius of curvature of the tubing</li>
+            <li>\(n_t\) is transverse normal force from tubing contact</li>
+            <li>\(n_p\) is transverse normal force from fluid pressure</li>
+        </ul>
+    </div>
+    
+    <p>These equations look intimidating, but they're simply describing how forces balance on a small piece of the rod. The first equation tracks forces along the rod's length, while the second tracks forces perpendicular to it.</p>
+
+    <h2>Breaking Down the Equations</h2>
+    
+    <p>Let's simplify these equations to understand what they're really saying:</p>
+    
+    <div class="formula-explanation">
+        <p>For the axial motion, if we substitute the expression for the axial force \(S\), we get:</p>
+        
+        \[ \frac{\partial^{2}u}{\partial s^{2}}+\frac{\partial w}{\partial s}\frac{\partial^{2}w}{\partial s^{2}}-\frac{1}{a^{2}}\frac{\partial^{2}u}{\partial t^{2}}-\frac{\eta}{AE}\frac{\partial u}{\partial t}+\frac{\gamma g}{E}\cos\phi-\frac{F_t}{AE}=0 \]
+        
+        <p>Where \(a = \sqrt{E/\gamma}\) is the sound velocity in the rod.</p>
+    </div>
+    
+    <p>The second term in this equation is what makes it nonlinear and interesting. It shows how the transverse motion (bending) affects the axial motion. When the rod bends, it effectively becomes "longer" from end to end.</p>
+    
+    <p>Think of it like a chain - when it's pulled straight, it has one length, but when it's allowed to curve, the end-to-end distance is shorter even though the chain itself hasn't changed. This coupling between axial and transverse motion is at the heart of the problem.</p>
+
+    <h2>Two Key Scenarios: Contact vs. No Contact</h2>
+    
+    <p>The rod can interact with the tubing in two main ways:</p>
+    
+    <ol>
+        <li><strong>Full Contact:</strong> The rod lies against the tubing along its length</li>
+        <li><strong>Point Contact:</strong> The rod only touches at certain points (like at couplings)</li>
+    </ol>
+    
+    <p>When the rod is in full contact with the tubing, its transverse displacement is zero (\(w = 0\)). This simplifies our equations, but we now have to account for friction along the entire length.</p>
+    
+    <div class="formula-explanation">
+        <p>The normal force at the contact points is:</p>
+        
+        \[ n = \gamma g A \sin\phi - \frac{S}{R} \]
+        
+        <p>And the friction force is proportional to this normal force:</p>
+        
+        \[ F_t \leq \mu_k \left(\gamma g A \sin\phi - \frac{S}{R}\right) \]
+        
+        <p>Where \(\mu_k\) is the coefficient of kinetic friction.</p>
+    </div>
+    
+    <p>When the rod only contacts the tubing at specific points (like at couplings or guides), it can flex between these points. This creates a more complex motion that we can model using the deflection equation:</p>
+    
+    <div class="formula-explanation">
+        <p>The lateral deflection can be approximated as:</p>
+        
+        \[ w(s) = f_0 + f_1 \sin\frac{\pi s}{\mathcal{L}} + f_2 \sin\frac{2\pi s}{\mathcal{L}} + \ldots \]
+        
+        <p>Where \(\mathcal{L}\) is the distance between guides or couplings, and the coefficients determine the shape of the deflection.</p>
+    </div>
+    
+    <h2>The "Equivalent Stiffness" Concept</h2>
+    
+    <p>One of the most important insights is that a curved rod behaves as if it were "softer" than a straight rod. This is because some of the axial force goes into changing the rod's curvature rather than stretching it directly.</p>
+    
+    <div class="formula-explanation">
+        <p>We can define an equivalent modulus of elasticity:</p>
+        
+        \[ E_e = \frac{E}{1 + \Delta u_n/\Delta u} \]
+        
+        <p>Where \(\Delta u_n\) is the elongation due to change in curvature and \(\Delta u\) is the axial elongation.</p>
+    </div>
+    
+    <p>This concept of "equivalent stiffness" helps us simplify the complex nonlinear behavior into something more manageable for calculations.</p>
+
+    <h2>Interactive Simulation: Sucker Rod Dynamics</h2>
+    
+    <div class="simulation-container">
+        <h3>Rod Motion Simulator</h3>
+        <p>This interactive simulation demonstrates how a sucker rod behaves in an inclined well. Adjust the parameters to see how they affect the rod's motion and the resulting dynamometer card.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="inclination">Well Inclination (degrees):</label>
+                <input type="range" id="inclination" min="0" max="60" value="30" step="5">
+                <div class="value-display">30°</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="friction">Friction Coefficient:</label>
+                <input type="range" id="friction" min="0" max="0.5" value="0.2" step="0.05">
+                <div class="value-display">0.2</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="stroke">Stroke Length (inches):</label>
+                <input type="range" id="stroke" min="20" max="200" value="100" step="10">
+                <div class="value-display">100 inches</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="spm">Strokes Per Minute:</label>
+                <input type="range" id="spm" min="5" max="20" value="10" step="1">
+                <div class="value-display">10 SPM</div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="start-button">Start Animation</button>
+            <button id="reset-button">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+            <div style="flex: 1; min-width: 300px;">
+                <canvas id="well-canvas" width="350" height="500"></canvas>
+                <div class="caption">Well and Rod Visualization</div>
+            </div>
+            <div style="flex: 1; min-width: 300px;">
+                <canvas id="card-canvas" width="350" height="300"></canvas>
+                <div class="caption">Dynamometer Card</div>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><strong>How to interpret:</strong> The left canvas shows the rod movement in the well. The right canvas shows the dynamometer card - a plot of load vs. position that petroleum engineers use to diagnose pump performance. Note how the shape changes with different parameters.</p>
+        </div>
+    </div>
+
+    <h2>Practical Implications: What This Means for Oil Production</h2>
+    
+    <p>Understanding the dynamics of sucker rods in inclined wells has several practical implications:</p>
+    
+    <ol>
+        <li><strong>Safety:</strong> Accurate prediction of rod stresses helps prevent failures</li>
+        <li><strong>Production Optimization:</strong> Proper design can maximize oil production</li>
+        <li><strong>Equipment Spacing:</strong> Calculating the optimal distance between rod guides</li>
+        <li><strong>Power Requirements:</strong> Determining how much power is needed to operate the pump</li>
+        <li><strong>Troubleshooting:</strong> Interpreting dynamometer cards to diagnose pump problems</li>
+    </ol>
+    
+    <p>The research shows several interesting trends:</p>
+    
+    <ul>
+        <li>Safety factors for rods typically increase with inclination angle (the rods experience less stress)</li>
+        <li>Production rates generally decrease with increased inclination</li>
+        <li>The effects of deviation are more pronounced in deeper wells</li>
+        <li>Friction has a significant impact on performance in deviated wells</li>
+    </ul>
+    
+    <h2>Probability Distributions in Rod Design</h2>
+    
+    <div class="simulation-container">
+        <h3>Failure Probability Calculator</h3>
+        <p>This tool shows how various parameters affect the probability distribution of rod failures in inclined wells.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="angle-input">Inclination Angle (degrees):</label>
+                <input type="range" id="angle-input" min="0" max="60" value="30" step="5">
+                <div class="value-display">30°</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="depth-input">Well Depth (feet):</label>
+                <input type="range" id="depth-input" min="1000" max="10000" value="5000" step="500">
+                <div class="value-display">5000 ft</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="friction-input">Friction Coefficient:</label>
+                <input type="range" id="friction-input" min="0.1" max="0.5" value="0.2" step="0.05">
+                <div class="value-display">0.2</div>
+            </div>
+        </div>
+        
+        <button id="calculate-button">Calculate Probability</button>
+        
+        <canvas id="probability-canvas" width="700" height="300"></canvas>
+        <div class="caption">Probability Distribution of Rod Stress</div>
+        
+        <div class="note">
+            <p><strong>How to interpret:</strong> This graph shows the probability distribution of stress in the rod string. The vertical red line indicates the yield strength of the material. The area to the right of this line represents the probability of failure. Notice how changing parameters shifts the distribution.</p>
+        </div>
+    </div>
+
+    <h2>Connecting Theory to Reality: What the Model Predicts</h2>
+    
+    <p>The mathematical model developed in the paper was implemented in a computer program called SRPUMP. When tested against real-world data, it showed impressive accuracy:</p>
+    
+    <ul>
+        <li>Production rates were predicted within 10% of measured values</li>
+        <li>Peak polished rod loads matched measurements closely</li>
+        <li>The model correctly identified pump problems that simpler models missed</li>
+    </ul>
+    
+    <p>One key insight was that applying vertical well models to inclined wells can lead to serious errors. For example, a vertical well model might incorrectly attribute all friction to the pump plunger, when in reality it's distributed along the rod string. This can lead to incorrect conclusions about pump problems and rod stresses.</p>
+
+    <h2>Conclusion: The Dance of Rods in Curved Space</h2>
+    
+    <p>The dynamics of sucker rods in inclined wells is a beautiful example of how seemingly simple mechanical systems can exhibit complex behavior. By breaking down the problem to first principles - forces, motion, and material properties - we can build a mathematical model that accurately predicts real-world behavior.</p>
+    
+    <p>The key insights from this analysis are:</p>
+    
+    <ol>
+        <li>Rod motion in inclined wells involves coupled axial and transverse vibrations</li>
+        <li>Friction and contact forces significantly alter rod behavior</li>
+        <li>A curved rod behaves as if it has a lower effective stiffness</li>
+        <li>The spacing of rod guides or couplings is critical to prevent excessive bending</li>
+        <li>Accurate modeling requires solving nonlinear partial differential equations</li>
+    </ol>
+    
+    <p>These insights help petroleum engineers design more efficient pumping systems, diagnose problems more accurately, and ultimately extract oil more effectively and safely from the curved paths that lead to Earth's hidden reservoirs.</p>
+
+
+    <script>
+        // Rod Motion Simulator
+        const wellCanvas = document.getElementById('well-canvas');
+        const cardCanvas = document.getElementById('card-canvas');
+        const wellCtx = wellCanvas.getContext('2d');
+        const cardCtx = cardCanvas.getContext('2d');
+        
+        // Probability Distribution Simulator
+        const probCanvas = document.getElementById('probability-canvas');
+        const probCtx = probCanvas.getContext('2d');
+        
+        // Input controls
+        const inclinationInput = document.getElementById('inclination');
+        const frictionInput = document.getElementById('friction');
+        const strokeInput = document.getElementById('stroke');
+        const spmInput = document.getElementById('spm');
+        const startButton = document.getElementById('start-button');
+        const resetButton = document.getElementById('reset-button');
+        
+        // Probability controls
+        const angleInput = document.getElementById('angle-input');
+        const depthInput = document.getElementById('depth-input');
+        const frictionProbInput = document.getElementById('friction-input');
+        const calculateButton = document.getElementById('calculate-button');
+        
+        // Display values
+        const valueDisplays = document.querySelectorAll('.value-display');
+        
+        // Update displayed values when sliders change
+        inclinationInput.addEventListener('input', () => {
+            valueDisplays[0].textContent = `${inclinationInput.value}°`;
+        });
+        
+        frictionInput.addEventListener('input', () => {
+            valueDisplays[1].textContent = frictionInput.value;
+        });
+        
+        strokeInput.addEventListener('input', () => {
+            valueDisplays[2].textContent = `${strokeInput.value} inches`;
+        });
+        
+        spmInput.addEventListener('input', () => {
+            valueDisplays[3].textContent = `${spmInput.value} SPM`;
+        });
+        
+        angleInput.addEventListener('input', () => {
+            valueDisplays[4].textContent = `${angleInput.value}°`;
+        });
+        
+        depthInput.addEventListener('input', () => {
+            valueDisplays[5].textContent = `${depthInput.value} ft`;
+        });
+        
+        frictionProbInput.addEventListener('input', () => {
+            valueDisplays[6].textContent = frictionProbInput.value;
+        });
+        
+        // Animation variables
+        let animationId = null;
+        let time = 0;
+        const fps = 60;
+        
+        // Rod and well parameters
+        let wellDepth = 500;
+        let wellWidth = 50;
+        let rodLength = 450;
+        let rodWidth = 5;
+        
+        // Dynamometer card data
+        let cardData = [];
+        const maxCardPoints = 100;
+        
+        // Draw the well and rod
+        function drawWell() {
+            wellCtx.clearRect(0, 0, wellCanvas.width, wellCanvas.height);
+            
+            // Get parameters
+            const inclination = parseInt(inclinationInput.value);
+            const friction = parseFloat(frictionInput.value);
+            const stroke = parseInt(strokeInput.value);
+            const spm = parseInt(spmInput.value);
+            
+            // Calculate well shape
+            const wellCenterX = wellCanvas.width / 2;
+            const wellTop = 50;
+            const angleRad = (inclination * Math.PI) / 180;
+            
+            // Calculate rod position
+            const cyclePosition = Math.sin(time * spm * Math.PI / 30); // Convert time and SPM to position
+            const rodPosition = (stroke / 2) * cyclePosition;
+            
+            // Draw well casing
+            wellCtx.beginPath();
+            wellCtx.strokeStyle = '#888';
+            wellCtx.lineWidth = 2;
+            
+            // Start at top center
+            wellCtx.moveTo(wellCenterX - wellWidth/2, wellTop);
+            
+            // Draw vertical section
+            const verticalLength = wellDepth * 0.3;
+            wellCtx.lineTo(wellCenterX - wellWidth/2, wellTop + verticalLength);
+            
+            // Draw curved section
+            const curveRadius = 100;
+            const curveStartAngle = Math.PI / 2;
+            const curveEndAngle = Math.PI / 2 - angleRad;
+            const curveX = wellCenterX - wellWidth/2 - curveRadius;
+            const curveY = wellTop + verticalLength;
+            wellCtx.arc(curveX, curveY, curveRadius, curveStartAngle, curveEndAngle, true);
+            
+            // Draw inclined section
+            const inclinedLength = wellDepth * 0.7;
+            const inclinedDeltaX = inclinedLength * Math.sin(angleRad);
+            const inclinedDeltaY = inclinedLength * Math.cos(angleRad);
+            const inclinedEndX = curveX + curveRadius * Math.cos(curveEndAngle) - inclinedDeltaX;
+            const inclinedEndY = curveY + curveRadius * Math.sin(curveEndAngle) + inclinedDeltaY;
+            wellCtx.lineTo(inclinedEndX, inclinedEndY);
+            
+            // Draw right side of well
+            // Top vertical section
+            wellCtx.moveTo(wellCenterX + wellWidth/2, wellTop);
+            wellCtx.lineTo(wellCenterX + wellWidth/2, wellTop + verticalLength);
+            
+            // Curved section
+            const rightCurveX = wellCenterX + wellWidth/2 + curveRadius;
+            wellCtx.arc(rightCurveX, curveY, curveRadius, Math.PI - curveStartAngle, Math.PI - curveEndAngle, false);
+            
+            // Inclined section
+            const rightInclinedEndX = rightCurveX - curveRadius * Math.cos(Math.PI - curveEndAngle) + inclinedDeltaX;
+            wellCtx.lineTo(rightInclinedEndX, inclinedEndY);
+            
+            wellCtx.stroke();
+            
+            // Draw rod
+            wellCtx.beginPath();
+            wellCtx.strokeStyle = '#c00';
+            wellCtx.lineWidth = 3;
+            
+            // Start at top with offset based on stroke position
+            const rodTopY = wellTop + rodPosition;
+            wellCtx.moveTo(wellCenterX, rodTopY);
+            
+            // Calculate rod path with deflection
+            const numSegments = 50;
+            let lastX = wellCenterX;
+            let lastY = rodTopY;
+            
+            for (let i = 1; i <= numSegments; i++) {
+                const t = i / numSegments;
+                let x, y;
+                
+                // Vertical section
+                if (t < 0.3) {
+                    const segT = t / 0.3;
+                    x = wellCenterX;
+                    y = rodTopY + segT * verticalLength;
+                }
+                // Curved section
+                else if (t < 0.4) {
+                    const segT = (t - 0.3) / 0.1;
+                    const curveAngle = curveStartAngle - segT * (curveStartAngle - curveEndAngle);
+                    x = wellCenterX - (wellWidth/2 - rodWidth/2) * segT + (curveRadius - rodWidth/2) * Math.cos(curveAngle);
+                    y = wellTop + verticalLength + (curveRadius - rodWidth/2) * Math.sin(curveAngle);
+                }
+                // Inclined section
+                else {
+                    const segT = (t - 0.4) / 0.6;
+                    const baseX = curveX + (curveRadius - rodWidth/2) * Math.cos(curveEndAngle);
+                    const baseY = curveY + (curveRadius - rodWidth/2) * Math.sin(curveEndAngle);
+                    
+                    // Add deflection based on position and friction
+                    const deflectionAmplitude = 10 * friction * (1 - Math.abs(cyclePosition));
+                    const deflectionPhase = time / 5; // Slow oscillation
+                    const deflection = deflectionAmplitude * Math.sin(segT * 3 * Math.PI + deflectionPhase);
+                    
+                    x = baseX - segT * inclinedDeltaX + deflection * Math.cos(angleRad);
+                    y = baseY + segT * inclinedDeltaY + deflection * Math.sin(angleRad);
+                }
+                
+                wellCtx.lineTo(x, y);
+                lastX = x;
+                lastY = y;
+            }
+            
+            wellCtx.stroke();
+            
+            // Calculate load based on position, friction, and inclination
+            const baseLoad = 5000; // Base load in pounds
+            const gravityComponent = 3000 * Math.cos(angleRad); // Gravity effect
+            const frictionComponent = 2000 * friction * (1 + Math.sin(time / 2)); // Friction effect
+            const inertiaComponent = 1000 * spm/10 * -Math.sin(time * spm * Math.PI / 30); // Inertia effect
+            
+            // Total load varies with position
+            const load = baseLoad + gravityComponent + frictionComponent + inertiaComponent * (1 - 0.5 * inclination/60);
+            
+            // Add point to dynamometer card
+            if (time % 2 === 0) {
+                cardData.push({
+                    position: rodPosition + stroke/2, // Normalize to 0-stroke range
+                    load: load
+                });
+                
+                // Keep card data at reasonable size
+                if (cardData.length > maxCardPoints) {
+                    cardData.shift();
+                }
+            }
+            
+            // Draw dynamometer card
+            drawDynamometerCard();
+        }
+        
+        // Draw the dynamometer card
+        function drawDynamometerCard() {
+            cardCtx.clearRect(0, 0, cardCanvas.width, cardCanvas.height);
+            
+            // Draw axes
+            cardCtx.beginPath();
+            cardCtx.strokeStyle = '#000';
+            cardCtx.lineWidth = 1;
+            
+            // X-axis (position)
+            cardCtx.moveTo(50, cardCanvas.height - 50);
+            cardCtx.lineTo(cardCanvas.width - 30, cardCanvas.height - 50);
+            
+            // Y-axis (load)
+            cardCtx.moveTo(50, cardCanvas.height - 50);
+            cardCtx.lineTo(50, 30);
+            
+            cardCtx.stroke();
+            
+            // Axis labels
+            cardCtx.fillStyle = '#000';
+            cardCtx.font = '12px Arial';
+            cardCtx.fillText('Position', cardCanvas.width / 2, cardCanvas.height - 20);
+            cardCtx.save();
+            cardCtx.translate(20, cardCanvas.height / 2);
+            cardCtx.rotate(-Math.PI / 2);
+            cardCtx.fillText('Load (lbs)', 0, 0);
+            cardCtx.restore();
+            
+            // Scale factors
+            const stroke = parseInt(strokeInput.value);
+            const xScale = (cardCanvas.width - 80) / stroke;
+            const yScale = (cardCanvas.height - 80) / 10000; // Assuming max load is 10000 lbs
+            
+            // Draw card data
+            if (cardData.length > 1) {
+                cardCtx.beginPath();
+                cardCtx.strokeStyle = '#c00';
+                cardCtx.lineWidth = 2;
+                
+                cardCtx.moveTo(
+                    50 + cardData[0].position * xScale,
+                    cardCanvas.height - 50 - cardData[0].load * yScale
+                );
+                
+                for (let i = 1; i < cardData.length; i++) {
+                    cardCtx.lineTo(
+                        50 + cardData[i].position * xScale,
+                        cardCanvas.height - 50 - cardData[i].load * yScale
+                    );
+                }
+                
+                cardCtx.stroke();
+            }
+        }
+        
+        // Draw the probability distribution
+        function drawProbabilityDistribution() {
+            probCtx.clearRect(0, 0, probCanvas.width, probCanvas.height);
+            
+            // Get parameters
+            const angle = parseInt(angleInput.value);
+            const depth = parseInt(depthInput.value);
+            const friction = parseFloat(frictionProbInput.value);
+            
+            // Calculate mean and standard deviation based on parameters
+            // These are simplified models based on the paper's findings
+            const meanStress = 20000 + (depth / 100) - (angle * 100) + (friction * 5000);
+            const stdDev = 2000 + (depth / 500) + (friction * 3000);
+            
+            // Material yield strength (constant)
+            const yieldStrength = 40000; // psi
+            
+            // Draw axes
+            probCtx.beginPath();
+            probCtx.strokeStyle = '#000';
+            probCtx.lineWidth = 1;
+            
+            // X-axis (stress)
+            probCtx.moveTo(50, probCanvas.height - 50);
+            probCtx.lineTo(probCanvas.width - 30, probCanvas.height - 50);
+            
+            // Y-axis (probability density)
+            probCtx.moveTo(50, probCanvas.height - 50);
+            probCtx.lineTo(50, 30);
+            
+            probCtx.stroke();
+            
+            // Axis labels
+            probCtx.fillStyle = '#000';
+            probCtx.font = '12px Arial';
+            probCtx.fillText('Stress (psi)', probCanvas.width / 2, probCanvas.height - 20);
+            probCtx.save();
+            probCtx.translate(20, probCanvas.height / 2);
+            probCtx.rotate(-Math.PI / 2);
+            probCtx.fillText('Probability Density', 0, 0);
+            probCtx.restore();
+            
+            // Scale factors
+            const xMin = Math.max(0, meanStress - 4 * stdDev);
+            const xMax = meanStress + 4 * stdDev;
+            const xScale = (probCanvas.width - 80) / (xMax - xMin);
+            
+            // Calculate normal distribution function
+            function normalPDF(x, mean, stdDev) {
+                return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * 
+                       Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2));
+            }
+            
+            // Find max PDF value for scaling
+            let maxPDF = 0;
+            for (let x = xMin; x <= xMax; x += (xMax - xMin) / 100) {
+                const pdf = normalPDF(x, meanStress, stdDev);
+                if (pdf > maxPDF) maxPDF = pdf;
+            }
+            
+            const yScale = (probCanvas.height - 80) / maxPDF;
+            
+            // Draw distribution curve
+            probCtx.beginPath();
+            probCtx.strokeStyle = '#00a';
+            probCtx.lineWidth = 2;
+            
+            let firstPoint = true;
+            for (let x = xMin; x <= xMax; x += (xMax - xMin) / 200) {
+                const pdf = normalPDF(x, meanStress, stdDev);
+                const canvasX = 50 + (x - xMin) * xScale;
+                const canvasY = probCanvas.height - 50 - pdf * yScale;
+                
+                if (firstPoint) {
+                    probCtx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    probCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            probCtx.stroke();
+            
+            // Fill area under curve
+            probCtx.beginPath();
+            probCtx.fillStyle = 'rgba(0, 0, 255, 0.1)';
+            
+            firstPoint = true;
+            for (let x = xMin; x <= xMax; x += (xMax - xMin) / 200) {
+                const pdf = normalPDF(x, meanStress, stdDev);
+                const canvasX = 50 + (x - xMin) * xScale;
+                const canvasY = probCanvas.height - 50 - pdf * yScale;
+                
+                if (firstPoint) {
+                    probCtx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    probCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            probCtx.lineTo(50 + (xMax - xMin) * xScale, probCanvas.height - 50);
+            probCtx.lineTo(50, probCanvas.height - 50);
+            probCtx.closePath();
+            probCtx.fill();
+            
+            // Draw yield strength line
+            const yieldX = 50 + (yieldStrength - xMin) * xScale;
+            
+            probCtx.beginPath();
+            probCtx.strokeStyle = '#c00';
+            probCtx.lineWidth = 2;
+            probCtx.setLineDash([5, 3]);
+            probCtx.moveTo(yieldX, probCanvas.height - 50);
+            probCtx.lineTo(yieldX, 30);
+            probCtx.stroke();
+            probCtx.setLineDash([]);
+            
+            // Label yield strength
+            probCtx.fillStyle = '#c00';
+            probCtx.font = '12px Arial';
+            probCtx.fillText('Yield Strength', yieldX + 5, 40);
+            
+            // Calculate failure probability (area beyond yield strength)
+            let failureProbability = 0;
+            for (let x = yieldStrength; x <= xMax; x += (xMax - xMin) / 1000) {
+                const pdf = normalPDF(x, meanStress, stdDev);
+                failureProbability += pdf * (xMax - xMin) / 1000;
+            }
+            
+            // Display failure probability
+            probCtx.fillStyle = '#000';
+            probCtx.font = 'bold 14px Arial';
+            probCtx.fillText(`Failure Probability: ${(failureProbability * 100).toFixed(4)}%`, 
+                             probCanvas.width - 250, 30);
+            
+            // Fill failure area
+            probCtx.beginPath();
+            probCtx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+            
+            firstPoint = true;
+            for (let x = yieldStrength; x <= xMax; x += (xMax - xMin) / 200) {
+                const pdf = normalPDF(x, meanStress, stdDev);
+                const canvasX = 50 + (x - xMin) * xScale;
+                const canvasY = probCanvas.height - 50 - pdf * yScale;
+                
+                if (firstPoint) {
+                    probCtx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    probCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            probCtx.lineTo(50 + (xMax - xMin) * xScale, probCanvas.height - 50);
+            probCtx.lineTo(yieldX, probCanvas.height - 50);
+            probCtx.closePath();
+            probCtx.fill();
+        }
+        
+        // Animation loop
+        function animate() {
+            time += 1/fps;
+            drawWell();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Start animation
+        startButton.addEventListener('click', () => {
+            if (!animationId) {
+                animate();
+            }
+        });
+        
+        // Reset animation
+        resetButton.addEventListener('click', () => {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            time = 0;
+            cardData = [];
+            drawWell();
+            drawDynamometerCard();
+        });
+        
+        // Calculate probability
+        calculateButton.addEventListener('click', () => {
+            drawProbabilityDistribution();
+        });
+        
+        // Initialize
+        drawWell();
+        drawDynamometerCard();
+        drawProbabilityDistribution();
+    </script>
+</body>

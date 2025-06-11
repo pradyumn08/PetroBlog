@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Dual-Porosity Composite Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .formula-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .analogy-title {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        .interactive-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            font-family: monospace;
+        }
+        .canvas-container {
+            margin: 20px 0;
+        }
+        .key-point {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .note {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 15px;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 4px 4px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Dual-Porosity Composite Reservoirs: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how oil flows through complex underground rock formations? Or why some oil wells produce more efficiently than others? Today, we're going to break down a fascinating concept from petroleum engineering that explains exactly that - the <span class="highlight">dual-porosity composite reservoir model</span>.</p>
+    
+    <p>Based on the academic paper "Rate Behavior of Composite Dual-Porosity Reservoirs" by Olarewaju and Lee, we'll explore how this model helps engineers predict oil production in reservoirs with unique characteristics. Whether you're a student, engineer, or just curious about how we extract resources from beneath the Earth's surface, this explanation will give you a clear understanding from first principles.</p>
+
+    <h2>The Big Picture: What Are We Modeling?</h2>
+    
+    <p>Imagine trying to drink a milkshake through two straws at once - one wide straw and one narrow, twisty straw. The fluid flows differently through each pathway, but they're connected. This is similar to how oil flows in certain types of reservoirs.</p>
+    
+    <div class="analogy">
+        <div class="analogy-title">Real-World Analogy: The Sponge and Pipe System</div>
+        <p>Think of a dual-porosity reservoir as a container filled with sponges (the matrix) with pipes (fractures) running between them. The sponges hold most of the fluid but release it slowly, while the pipes don't hold much fluid but allow it to flow easily. Now imagine that near your well, you've modified this system - perhaps you've replaced some sponges with different ones, or you've widened some pipes. This creates a "composite" system with different properties in different zones.</p>
+    </div>
+    
+    <p>The paper describes a mathematical model for predicting how fluids will flow through this complex system toward a well. This is crucial for:</p>
+    
+    <ul>
+        <li>Predicting how much oil a well will produce over time</li>
+        <li>Understanding the effects of well treatments (like acid stimulation)</li>
+        <li>Analyzing production data to determine reservoir properties</li>
+        <li>Planning enhanced oil recovery operations</li>
+    </ul>
+
+    <h2>Breaking Down the Reservoir System</h2>
+    
+    <p>Let's start by understanding exactly what we're modeling:</p>
+    
+    <h3>The Dual-Porosity Concept</h3>
+    
+    <p>A dual-porosity reservoir contains two distinct porous media:</p>
+    
+    <ol>
+        <li><strong>Matrix (Primary Porosity)</strong>: Contains most of the fluid but has low flow capacity</li>
+        <li><strong>Fractures/Vugs (Secondary Porosity)</strong>: Acts as flow highways but stores relatively little fluid</li>
+    </ol>
+    
+    <h3>The Composite Aspect</h3>
+    
+    <p>The reservoir has two concentric zones with different properties:</p>
+    
+    <ol>
+        <li><strong>Inner Zone (Zone 1)</strong>: Surrounds the wellbore with radius r₁</li>
+        <li><strong>Outer Zone (Zone 2)</strong>: Extends from r₁ to the outer boundary rₑ</li>
+    </ol>
+    
+    <p>These zones might differ in permeability, porosity, or fluid properties, creating a "discontinuity" at their interface.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Reservoir Visualization</h3>
+        <p>Use the sliders below to visualize a dual-porosity composite reservoir system:</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Inner Zone Radius (r₁/rw):</span>
+            <input type="range" id="inner-radius-slider" min="1" max="100" value="20">
+            <span class="value-display" id="inner-radius-value">20</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability Ratio (k₁/k₂):</span>
+            <input type="range" id="perm-ratio-slider" min="0.01" max="100" step="0.01" value="10">
+            <span class="value-display" id="perm-ratio-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Fracture Storativity (ω):</span>
+            <input type="range" id="storativity-slider" min="0.001" max="0.5" step="0.001" value="0.05">
+            <span class="value-display" id="storativity-value">0.05</span>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="reservoir-canvas" width="700" height="400"></canvas>
+        </div>
+    </div>
+
+    <h2>The Mathematical Framework: From Physics to Equations</h2>
+    
+    <p>Now let's build our understanding from first principles. The model is based on fundamental laws of fluid flow in porous media.</p>
+    
+    <h3>Core Physical Principles</h3>
+    
+    <ol>
+        <li><strong>Conservation of Mass</strong>: What flows in minus what flows out equals the accumulation</li>
+        <li><strong>Darcy's Law</strong>: Fluid flow rate is proportional to pressure gradient and permeability</li>
+        <li><strong>Fluid Compressibility</strong>: Fluids expand or contract with pressure changes</li>
+    </ol>
+    
+    <h3>The Governing Equations</h3>
+    
+    <p>Starting with these principles, we derive partial differential equations for fluid flow in each zone:</p>
+    
+    <div class="formula-block">
+        <h4>Zone 1 Fracture Equation:</h4>
+        \[
+        {\frac{1}{r}}{\frac{\partial}{\partial r}}\left(r{\frac{\partial p_{f1}}{\partial r}}\right)=\left({\frac{\phi\mu c_{t}}{k}}\right)_{f1}{\frac{\partial p_{f1}}{\partial t}}+\left({\frac{\mu}{k}}\right)_{f1}.q_{m1}
+        \]
+        
+        <h4>Zone 1 Matrix Equation:</h4>
+        \[
+        \frac{\partial^{2}p_{1}}{\partial z^{2}}=\left(\frac{\phi\mu c_{t}}{k}\right)_{m1}\frac{\partial p_{m1}}{\partial t}
+        \]
+        
+        <h4>Zone 2 Fracture Equation:</h4>
+        \[
+        {\frac{1}{r}}{\frac{\partial}{\partial r}}\left(r{\frac{\partial p_{f2}}{\partial r}}\right)=\left({\frac{\phi\mu c_{t}}{k}}\right)_{f2}{\frac{\partial p_{f2}}{\partial t}}+\left({\frac{\mu}{k}}\right)_{f2}.q_{m2}
+        \]
+        
+        <h4>Zone 2 Matrix Equation:</h4>
+        \[
+        \frac{\partial^{2}p_{2}}{\partial z^{2}}=\left(\frac{\phi\mu c_{t}}{k}\right)_{m2}\frac{\partial p_{m2}}{\partial t}
+        \]
+    </div>
+    
+    <p>Let's break down what these equations mean:</p>
+    
+    <ul>
+        <li>The left side of each fracture equation represents the <span class="highlight">spatial variation of pressure</span> (how pressure changes with distance)</li>
+        <li>The first term on the right side represents <span class="highlight">fluid storage</span> (how pressure changes with time)</li>
+        <li>The second term on the right side of the fracture equations represents <span class="highlight">fluid transfer from matrix to fracture</span></li>
+        <li>The matrix equations describe how fluid moves within the matrix blocks</li>
+    </ul>
+
+    <h3>Making the Equations Dimensionless</h3>
+    
+    <p>To make these equations more manageable, we convert them to dimensionless form using these key parameters:</p>
+    
+    <div class="formula-block">
+        <h4>Dimensionless Pressure:</h4>
+        \[
+        p_{f1D}={\frac{k_{f2}h(p_{i}-p_{f1})}{141.2q B\mu}}
+        \]
+        
+        <h4>Dimensionless Time:</h4>
+        \[
+        t_{D}=\frac{0.0002637k_{f2}t}{\left(\phi\mu c_{t}\right)_{2t}r_{w}^{2}}
+        \]
+        
+        <h4>Dimensionless Fracture Storativity Ratio (ω):</h4>
+        \[
+        \omega=\frac{(\phi c_{t})_{f}}{(\phi c_{t})_{2t}}
+        \]
+        
+        <h4>Inter-porosity Fluid Transfer Coefficient (λ):</h4>
+        \[
+        \lambda=\frac{12k_{m}r_{w}^{2}}{k_{f2}h_{m}^{2}}
+        \]
+        
+        <h4>Mobility Ratio (M):</h4>
+        \[
+        M=\frac{k_{f1}/\mu_{1}}{k_{f2}/\mu_{2}}
+        \]
+    </div>
+    
+    <p>These dimensionless parameters have important physical meanings:</p>
+    
+    <ul>
+        <li><strong>ω (omega)</strong>: Represents the fraction of fluid stored in the fractures. A small value (e.g., 0.01) means most fluid is in the matrix.</li>
+        <li><strong>λ (lambda)</strong>: Measures how quickly fluid transfers from matrix to fractures. Larger values mean faster transfer.</li>
+        <li><strong>M</strong>: Compares the fluid mobility in Zone 1 to Zone 2. Values > 1 mean Zone 1 has better flow capacity.</li>
+    </ul>
+
+    <h2>Solving the Model: The Path to Production Predictions</h2>
+    
+    <p>The paper solves these equations using the Laplace transform method. Without diving too deep into the mathematics, the solution gives us the dimensionless flow rate at the well:</p>
+    
+    <div class="formula-block">
+        \[
+        \tilde{q}_{f1\dot{D}}(s,1)={\frac{\xi_{1}[B_{4}K_{1}(\xi_{1})-A_{4}I_{1}(\xi_{1})]}{D_{4}}}
+        \]
+    </div>
+    
+    <p>This equation contains modified Bessel functions (I₁ and K₁) and complex coefficients. The important part is that this solution can be numerically inverted to give us the flow rate over time.</p>
+    
+    <h3>Key Insights from the Solution</h3>
+    
+    <p>The mathematical solution reveals several important flow regimes:</p>
+    
+    <ol>
+        <li><strong>Regime A</strong>: Early flow dominated by the inner zone</li>
+        <li><strong>Regime B</strong>: Transition period when the pressure disturbance reaches the interface between zones</li>
+        <li><strong>Regime C</strong>: Flow dominated by the outer zone properties</li>
+        <li><strong>Regime D</strong>: Boundary-dominated flow when the pressure disturbance reaches the outer boundary</li>
+    </ol>
+    
+    <p>The paper shows that when the inner zone has higher permeability (as in stimulated wells), production rates are significantly higher in the early stages.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Production Rate Simulator</h3>
+        <p>Experiment with different reservoir parameters to see how they affect production rates:</p>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="parameters">Parameters</div>
+            <div class="tab" data-tab="results">Results</div>
+        </div>
+        
+        <div class="tab-content active" id="parameters-content">
+            <div class="slider-container">
+                <span class="slider-label">Inner Zone Radius (r₁/rw):</span>
+                <input type="range" id="radius-ratio-slider" min="1" max="100" value="20">
+                <span class="value-display" id="radius-ratio-value">20</span>
+            </div>
+            
+            <div class="slider-container">
+                <span class="slider-label">Permeability Ratio (k₁/k₂):</span>
+                <input type="range" id="permeability-ratio-slider" min="0.01" max="100" step="0.01" value="10">
+                <span class="value-display" id="permeability-ratio-value">10</span>
+            </div>
+            
+            <div class="slider-container">
+                <span class="slider-label">Fracture Storativity (ω):</span>
+                <input type="range" id="omega-slider" min="0.001" max="0.1" step="0.001" value="0.01">
+                <span class="value-display" id="omega-value">0.01</span>
+            </div>
+            
+            <div class="slider-container">
+                <span class="slider-label">Interporosity Coefficient (λ):</span>
+                <input type="range" id="lambda-slider" min="1e-8" max="1e-4" step="1e-8" value="1e-6">
+                <span class="value-display" id="lambda-value">1e-6</span>
+            </div>
+            
+            <button class="button" id="calculate-button">Calculate Production</button>
+        </div>
+        
+        <div class="tab-content" id="results-content">
+            <div class="canvas-container">
+                <canvas id="production-canvas" width="700" height="400"></canvas>
+            </div>
+            <p class="note">The graph shows dimensionless production rate vs. dimensionless time on a log-log scale.</p>
+        </div>
+    </div>
+
+    <h2>Real-World Applications</h2>
+    
+    <p>The paper demonstrates two powerful applications of this model:</p>
+    
+    <h3>1. Analyzing Production Data</h3>
+    
+    <p>By matching actual production data with the model, engineers can estimate important reservoir properties like permeability and storativity. The paper shows an example from the Niger delta where they determined:</p>
+    
+    <ul>
+        <li>Inner zone permeability: 1709 md</li>
+        <li>Outer zone permeability: 575 md</li>
+        <li>Fracture storativity: 0.00185</li>
+    </ul>
+    
+    <p>This confirmed that the well's gravel-pack completion had successfully created a high-permeability zone around the wellbore.</p>
+    
+    <h3>2. Predicting Cyclic Steam Stimulation Performance</h3>
+    
+    <p>The model can predict production from wells treated with steam to reduce oil viscosity. The paper shows how production rates increase dramatically when a zone around the well is heated:</p>
+    
+    <ul>
+        <li>Unstimulated well: 11,000 STB over 6 months</li>
+        <li>Steam-stimulated well: 44,628 STB over 6 months (4x increase)</li>
+    </ul>
+    
+    <p>This demonstrates the model's value for planning enhanced oil recovery operations.</p>
+
+    <h2>Key Takeaways</h2>
+    
+    <p>From our exploration of dual-porosity composite reservoir models, we can draw several important conclusions:</p>
+    
+    <ol>
+        <li><span class="key-point">Reservoir heterogeneity matters</span>: Different zones with different properties significantly impact production behavior.</li>
+        <li><span class="key-point">Matrix-fracture interaction is crucial</span>: The rate at which fluid transfers from matrix to fractures (λ) greatly affects production, especially during transition periods.</li>
+        <li><span class="key-point">Well treatments can be quantified</span>: The model provides a way to predict and measure the effectiveness of stimulation treatments.</li>
+        <li><span class="key-point">Flow regimes evolve over time</span>: Production behavior changes as different parts of the reservoir begin to dominate flow.</li>
+    </ol>
+    
+    <p>This model bridges the gap between complex reservoir physics and practical engineering decisions, allowing for better well planning, more accurate reserves estimation, and optimized production strategies.</p>
+
+    <h2>Conclusion</h2>
+    
+    <p>The dual-porosity composite reservoir model represents a powerful tool for understanding and predicting fluid flow in complex reservoir systems. By breaking down the physics into fundamental principles and expressing them mathematically, engineers can make better decisions about well completions, stimulation treatments, and production strategies.</p>
+    
+    <p>Next time you see an oil well pumping away, remember that beneath the surface lies an intricate dance of fluid moving through different rock types, guided by the physical principles we've explored today.</p>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Reservoir visualization
+            const reservoirCanvas = document.getElementById('reservoir-canvas');
+            const ctx = reservoirCanvas.getContext('2d');
+            
+            // Production rate simulation
+            const productionCanvas = document.getElementById('production-canvas');
+            const prodCtx = productionCanvas.getContext('2d');
+            
+            // Sliders for reservoir visualization
+            const innerRadiusSlider = document.getElementById('inner-radius-slider');
+            const innerRadiusValue = document.getElementById('inner-radius-value');
+            const permRatioSlider = document.getElementById('perm-ratio-slider');
+            const permRatioValue = document.getElementById('perm-ratio-value');
+            const storativitySlider = document.getElementById('storativity-slider');
+            const storativityValue = document.getElementById('storativity-value');
+            
+            // Sliders for production simulation
+            const radiusRatioSlider = document.getElementById('radius-ratio-slider');
+            const radiusRatioValue = document.getElementById('radius-ratio-value');
+            const permeabilityRatioSlider = document.getElementById('permeability-ratio-slider');
+            const permeabilityRatioValue = document.getElementById('permeability-ratio-value');
+            const omegaSlider = document.getElementById('omega-slider');
+            const omegaValue = document.getElementById('omega-value');
+            const lambdaSlider = document.getElementById('lambda-slider');
+            const lambdaValue = document.getElementById('lambda-value');
+            
+            // Tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Button
+            const calculateButton = document.getElementById('calculate-button');
+            
+            // Update slider values
+            innerRadiusSlider.addEventListener('input', function() {
+                innerRadiusValue.textContent = this.value;
+                drawReservoir();
+            });
+            
+            permRatioSlider.addEventListener('input', function() {
+                permRatioValue.textContent = parseFloat(this.value).toFixed(2);
+                drawReservoir();
+            });
+            
+            storativitySlider.addEventListener('input', function() {
+                storativityValue.textContent = parseFloat(this.value).toFixed(3);
+                drawReservoir();
+            });
+            
+            radiusRatioSlider.addEventListener('input', function() {
+                radiusRatioValue.textContent = this.value;
+            });
+            
+            permeabilityRatioSlider.addEventListener('input', function() {
+                permeabilityRatioValue.textContent = parseFloat(this.value).toFixed(2);
+            });
+            
+            omegaSlider.addEventListener('input', function() {
+                omegaValue.textContent = parseFloat(this.value).toFixed(3);
+            });
+            
+            lambdaSlider.addEventListener('input', function() {
+                lambdaValue.textContent = parseFloat(this.value).toExponential(2);
+            });
+            
+            // Tab functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                });
+            });
+            
+            // Draw reservoir visualization
+            function drawReservoir() {
+                const innerRadius = parseFloat(innerRadiusSlider.value);
+                const permRatio = parseFloat(permRatioSlider.value);
+                const storativity = parseFloat(storativitySlider.value);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, reservoirCanvas.width, reservoirCanvas.height);
+                
+                const centerX = reservoirCanvas.width / 2;
+                const centerY = reservoirCanvas.height / 2;
+                const wellRadius = 10;
+                const maxRadius = Math.min(reservoirCanvas.width, reservoirCanvas.height) / 2 - 20;
+                const innerZoneRadius = wellRadius + (maxRadius - wellRadius) * (innerRadius / 100);
+                
+                // Draw outer zone
+                ctx.fillStyle = '#e6f7ff';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw inner zone
+                const innerColor = permRatio > 1 ? 
+                    `rgba(255, ${Math.max(0, 255 - permRatio * 10)}, ${Math.max(0, 255 - permRatio * 10)}, 0.7)` : 
+                    `rgba(${Math.max(0, 255 - (1/permRatio) * 10)}, ${Math.max(0, 255 - (1/permRatio) * 10)}, 255, 0.7)`;
+                
+                ctx.fillStyle = innerColor;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, innerZoneRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw wellbore
+                ctx.fillStyle = '#333';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, wellRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw fractures/vugs
+                const fractureDensity = storativity * 500;
+                const fractureSizeInner = 3 + storativity * 20;
+                const fractureSizeOuter = 2 + storativity * 15;
+                
+                // Inner zone fractures
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                for (let i = 0; i < fractureDensity; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = wellRadius + Math.random() * (innerZoneRadius - wellRadius);
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    const size = fractureSizeInner * Math.random();
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Outer zone fractures
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                for (let i = 0; i < fractureDensity * 2; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = innerZoneRadius + Math.random() * (maxRadius - innerZoneRadius);
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    const size = fractureSizeOuter * Math.random();
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw labels
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Well', centerX, centerY + 5);
+                ctx.fillText('Zone 1', centerX + innerZoneRadius / 2, centerY);
+                ctx.fillText('Zone 2', centerX + (maxRadius + innerZoneRadius) / 2, centerY);
+                
+                // Draw legend
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Inner Zone Radius (r₁/rw): ${innerRadius}`, 20, 20);
+                ctx.fillText(`Permeability Ratio (k₁/k₂): ${permRatio.toFixed(2)}`, 20, 40);
+                ctx.fillText(`Fracture Storativity (ω): ${storativity.toFixed(3)}`, 20, 60);
+            }
+            
+            // Simplified production rate calculation
+            function calculateProductionRate(tD, a, M, omega, lambda) {
+                // This is a simplified approximation of the complex solution
+                // Real solution would involve Bessel functions and Laplace transforms
+                
+                // Early time flow (Regime A)
+                const qA = 1 / (2 * Math.PI * Math.log(tD + 1));
+                
+                // Transition flow due to dual-porosity (Regime B)
+                const qB = (1 / (2 * Math.PI)) * (1 / Math.log(tD + 1)) * 
+                          (1 + (1 - omega) * Math.exp(-lambda * tD / (1 - omega)));
+                
+                // Interface effect (between zones)
+                const interfaceEffect = Math.exp(-Math.pow(tD / (a * a), 0.5));
+                
+                // Combine effects
+                let q;
+                if (tD < a * a) {
+                    // Early time dominated by inner zone
+                    q = qB * (M * interfaceEffect + (1 - interfaceEffect));
+                } else {
+                    // Later time influenced by outer zone
+                    q = qB * (1 + (M - 1) * Math.exp(-tD / (a * a)));
+                }
+                
+                return q;
+            }
+            
+            // Draw production rate graph
+            function drawProductionGraph() {
+                const a = parseFloat(radiusRatioSlider.value);
+                const M = parseFloat(permeabilityRatioSlider.value);
+                const omega = parseFloat(omegaSlider.value);
+                const lambda = parseFloat(lambdaSlider.value);
+                
+                // Generate data points
+                const timePoints = [];
+                const ratePoints = [];
+                const baselinePoints = [];
+                
+                for (let i = -3; i <= 6; i += 0.1) {
+                    const tD = Math.pow(10, i);
+                    timePoints.push(tD);
+                    
+                    // Calculate rate for our model
+                    const qD = calculateProductionRate(tD, a, M, omega, lambda);
+                    ratePoints.push(qD);
+                    
+                    // Calculate rate for baseline (homogeneous) model
+                    const qDBase = 1 / (2 * Math.PI * Math.log(tD + 1));
+                    baselinePoints.push(qDBase);
+                }
+                
+                // Clear previous chart if it exists
+                if (window.productionChart) {
+                    window.productionChart.destroy();
+                }
+                
+                // Create chart
+                window.productionChart = new Chart(prodCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Dual-Porosity Composite',
+                            data: timePoints.map((tD, i) => ({ x: tD, y: ratePoints[i] })),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }, {
+                            label: 'Homogeneous Reservoir',
+                            data: timePoints.map((tD, i) => ({ x: tD, y: baselinePoints[i] })),
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Time (tD)'
+                                }
+                            },
+                            y: {
+                                type: 'logarithmic',
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Flow Rate (qD)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Production Rate Behavior'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toExponential(2)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Highlight flow regimes
+                const a2 = a * a;
+                
+                // Add annotations for flow regimes
+                const annotations = [{
+                    type: 'box',
+                    xMin: 0.001,
+                    xMax: a2 * 0.1,
+                    yMin: 0.001,
+                    yMax: 1,
+                    backgroundColor: 'rgba(255, 255, 0, 0.1)',
+                    borderColor: 'rgba(255, 255, 0, 0.5)',
+                    borderWidth: 1,
+                    label: {
+                        content: 'Regime A',
+                        display: true,
+                        position: 'start'
+                    }
+                }, {
+                    type: 'box',
+                    xMin: a2 * 0.1,
+                    xMax: a2,
+                    yMin: 0.001,
+                    yMax: 1,
+                    backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                    borderColor: 'rgba(0, 255, 0, 0.5)',
+                    borderWidth: 1,
+                    label: {
+                        content: 'Regime B',
+                        display: true,
+                        position: 'start'
+                    }
+                }, {
+                    type: 'box',
+                    xMin: a2,
+                    xMax: 100 * a2,
+                    yMin: 0.001,
+                    yMax: 1,
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    borderColor: 'rgba(0, 0, 255, 0.5)',
+                    borderWidth: 1,
+                    label: {
+                        content: 'Regime C',
+                        display: true,
+                        position: 'start'
+                    }
+                }];
+                
+                // Update chart with annotations
+                window.productionChart.options.plugins.annotation = {
+                    annotations: annotations
+                };
+                window.productionChart.update();
+            }
+            
+            // Calculate button event
+            calculateButton.addEventListener('click', function() {
+                // Switch to results tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('[data-tab="results"]').classList.add('active');
+                document.getElementById('results-content').classList.add('active');
+                
+                // Draw production graph
+                drawProductionGraph();
+            });
+            
+            // Initial draw
+            drawReservoir();
+});
+</script>
+</body>
+</html>

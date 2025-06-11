@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Coal Seam Gas Modeling from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .result-display {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .analogy {
+            background-color: #e8f8e8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coal Seam Gas Modeling: Understanding the Dual-Porosity System</h1>
+    
+    <p>Welcome to our deep dive into coal seam gas modeling! Today, we're going to break down a complex academic paper on coalbed methane production models and make it accessible using first principles thinking. By the end of this post, you'll understand how gas flows through coal seams and how engineers model this process to predict production rates.</p>
+    
+    <div class="note">
+        <strong>Why this matters:</strong> Coal seam gas (also known as coalbed methane) is an important energy source globally. Understanding how to model its production helps in designing efficient extraction systems, forecasting energy supplies, and reducing environmental impacts.
+    </div>
+
+    <h2>The Coal Seam Gas System: A Unique Reservoir</h2>
+    
+    <p>Before diving into mathematical models, let's understand what makes coal seam gas reservoirs special.</p>
+    
+    <div class="two-column">
+        <div class="column">
+            <p>Unlike conventional gas reservoirs, coal seams have a <strong>dual-porosity system</strong>:</p>
+            <ol>
+                <li><strong>Macropores (cleats)</strong>: These are the natural fractures in coal where gas flows like in a conventional reservoir.</li>
+                <li><strong>Micropores</strong>: These are tiny pores within the coal matrix where methane is stored primarily through adsorption (sticking to the surface).</li>
+            </ol>
+            <p>This dual system creates a unique production mechanism where gas must first desorb from the coal surface, then diffuse through the micropores, and finally flow through the cleats to the wellbore.</p>
+        </div>
+        <div class="column">
+            <div class="analogy">
+                <h3>The Library Analogy</h3>
+                <p>Think of coal as a massive library. The micropores are like bookshelves where books (methane molecules) are stored in an organized manner (adsorption). The macropores are the hallways between shelves where people (gas molecules) can move freely.</p>
+                <p>To check out a book, it must first be removed from the shelf (desorption), carried through the narrow spaces between shelves (diffusion), and then transported through the hallways (laminar flow) to the exit (wellbore).</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Two Fundamental Approaches to Modeling</h2>
+    
+    <p>The academic paper reviews 52 different mathematical models for coal seam gas production, but they can be categorized into two main approaches:</p>
+
+    <h3>1. Equilibrium (Instantaneous) Desorption Models</h3>
+    
+    <p>These models assume that desorption and diffusion happen so quickly that they can be considered instantaneous. This simplifies the mathematics but is only valid when diffusion is significantly faster than the flow through cleats.</p>
+    
+    <div class="highlight">
+        <p>Equilibrium models are appropriate when: <br>
+        Rate of diffusion >> Rate of laminar (Darcy) flow</p>
+    </div>
+
+    <h3>2. Non-Equilibrium (Time-Dependent) Desorption Models</h3>
+    
+    <p>These models account for the time it takes for gas to desorb from the coal surface and diffuse through the micropores. They're more complex but more accurate for coals with slower diffusion rates.</p>
+    
+    <p>Non-equilibrium models are further divided into:</p>
+    <ul>
+        <li><strong>Pseudo-steady state models</strong>: Simplify the diffusion process using a constant rate parameter</li>
+        <li><strong>Unsteady state models</strong>: Fully model the transient diffusion process using Fick's laws</li>
+    </ul>
+
+    <h2>The Core Mathematical Formulation</h2>
+    
+    <p>Let's examine the fundamental equations that govern gas flow in coal seams, starting with the simplest form and building complexity.</p>
+
+    <h3>Basic Transport Equations</h3>
+    
+    <div class="equation-box">
+        <p>For gas transport in the macropores (cleats), we use Darcy's law:</p>
+        $$\nabla\bullet\left(\frac{\propto k_{m i}}{\upmu_{g}B_{g}}\nabla\Phi_{g}\right)=\frac{\partial}{\partial t}\left(\frac{\upphi_{m i}}{B_{g}}\right)+q_{d}$$
+        
+        <p>For gas transport in the micropores, we use a diffusion equation:</p>
+        $$\nabla\bullet(D_{m i}\nabla V_{m i})\ =\frac{\partial V_{m i}}{\partial t}-q_{d}$$
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(k_{mi}\) is the permeability of the coal matrix</li>
+            <li>\(\mu_g\) is gas viscosity</li>
+            <li>\(B_g\) is the gas formation volume factor</li>
+            <li>\(\Phi_g\) is the gas phase potential</li>
+            <li>\(\phi_{mi}\) is the porosity of the coal matrix</li>
+            <li>\(q_d\) is the desorption rate (gas transfer from micropores to macropores)</li>
+            <li>\(D_{mi}\) is the diffusion coefficient in micropores</li>
+            <li>\(V_{mi}\) is the gas concentration in micropores</li>
+        </ul>
+    </div>
+
+    <p>Combining these equations and assuming equilibrium conditions, we get:</p>
+
+    <div class="equation-box">
+        $$\nabla\bullet\left(\frac{\upalpha k_{e f f}}{\upmu_{g}B_{g}}\nabla p\right)=\frac{\upphi_{m i}c_{e f f}}{B_{g}}\frac{\partial p}{\partial t}$$
+        
+        <p>With effective permeability defined as:</p>
+        $$k_{e f f}=k_{m i}\frac{\partial\Phi_{g}}{\partial p}+\frac{D_{m i}\upmu_{g}B_{g}}{\upalpha}\frac{\partial V_{E}}{\partial p}$$
+        
+        <p>And effective compressibility defined as:</p>
+        $$c_{e f f}=c_{g}+c_{\phi_{m i}}+\frac{B_{g}}{\phi_{m i}}\frac{\partial V_{E}}{\partial p}$$
+    </div>
+
+    <h3>The Adsorption Isotherm: Connecting Pressure to Gas Content</h3>
+    
+    <p>A critical component of coal seam gas modeling is the relationship between pressure and gas content. This is described by adsorption isotherms, with the Langmuir isotherm being most common:</p>
+
+    <div class="equation-box">
+        $$V_{E}=\frac{V_{L}p}{p_{L}+p}$$
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(V_E\) is the equilibrium gas content at pressure p</li>
+            <li>\(V_L\) is the Langmuir volume (maximum gas content)</li>
+            <li>\(p_L\) is the Langmuir pressure (pressure at which gas content = \(V_L/2\))</li>
+        </ul>
+    </div>
+
+    <div class="interactive-container">
+        <h3>Interactive Langmuir Isotherm Explorer</h3>
+        <p>Adjust the parameters below to see how they affect the gas storage capacity of coal:</p>
+        
+        <div class="slider-container">
+            <label for="vl-slider">Langmuir Volume (VL): <span id="vl-value">500</span> scf/ton</label>
+            <input type="range" id="vl-slider" min="100" max="1000" value="500" step="10">
+        </div>
+        
+        <div class="slider-container">
+            <label for="pl-slider">Langmuir Pressure (PL): <span id="pl-value">500</span> psia</label>
+            <input type="range" id="pl-slider" min="100" max="1000" value="500" step="10">
+        </div>
+        
+        <canvas id="isotherm-canvas" width="600" height="400"></canvas>
+        
+        <div class="result-display">
+            <p>At reservoir pressure: <span id="current-pressure">500</span> psia</p>
+            <p>Gas content: <span id="gas-content">250.00</span> scf/ton</p>
+            <p>Percentage of maximum capacity: <span id="capacity-percent">50.00</span>%</p>
+        </div>
+        
+        <button id="reset-button">Reset Parameters</button>
+    </div>
+
+    <h2>Non-Equilibrium Models: Adding Time Dependency</h2>
+    
+    <p>When desorption and diffusion are not instantaneous, we need to account for the time it takes for gas to move from micropores to macropores. This is done using a transfer function:</p>
+
+    <div class="equation-box">
+        <p>For spherical diffusion (commonly used for coal particles), the transfer rate is:</p>
+        $$q_{d}=\left.\frac{3D_{m i}}{R_{m i}}\frac{\partial V_{m i}}{\partial r_{m i}}\right|_{r_{m i}=R_{m i}}$$
+        
+        <p>And the diffusion within the coal matrix is governed by:</p>
+        $${\frac{1}{r_{m i}^{2}}}{\frac{\partial}{\partial r_{m i}}}\left(r_{m i}^{2}{\frac{\partial V_{m i}}{\partial r_{m i}}}\right)={\frac{1}{D_{m i}}}{\frac{\partial V_{m i}}{\partial t}}$$
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(R_{mi}\) is the radius of the coal matrix elements</li>
+            <li>\(r_{mi}\) is the radial coordinate within the coal matrix</li>
+        </ul>
+    </div>
+
+    <h2>Real-World Application: Production Forecasting</h2>
+    
+    <p>Let's see how these models translate to practical applications. One key application is forecasting gas production rates over time.</p>
+
+    <p>For a vertical well in a coal seam reservoir with equilibrium desorption, the production rate can be approximated using:</p>
+
+    <div class="equation-box">
+        $$q_{g S C}=\frac{2\pi\alpha k_{r g}\bigg(\overline{{S_{w}}}\bigg)k_{m a}h}{[l n(r_{e}/r_{w})-0.75+S]}
+        \cdot\frac{Z_{S C}T_{S C}}{T_{P_{S C}}}\Big[m(\bar{p})-m(p_{w f})\Big]$$
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(q_{gSC}\) is the gas production rate at standard conditions</li>
+            <li>\(k_{rg}\) is the relative permeability to gas</li>
+            <li>\(S_w\) is the water saturation</li>
+            <li>\(k_{ma}\) is the macropore permeability</li>
+            <li>\(h\) is the coal seam thickness</li>
+            <li>\(r_e\) is the drainage radius</li>
+            <li>\(r_w\) is the wellbore radius</li>
+            <li>\(S\) is the skin factor</li>
+            <li>\(m(p)\) is the real gas pseudo-pressure function</li>
+            <li>\(p_{wf}\) is the flowing bottomhole pressure</li>
+        </ul>
+    </div>
+
+    <div class="interactive-container">
+        <h3>Interactive Production Simulator</h3>
+        <p>Explore how different reservoir and well parameters affect gas production:</p>
+        
+        <div class="slider-container">
+            <label for="perm-slider">Permeability (k): <span id="perm-value">5</span> md</label>
+            <input type="range" id="perm-slider" min="0.1" max="20" value="5" step="0.1">
+        </div>
+        
+        <div class="slider-container">
+            <label for="thick-slider">Coal Thickness (h): <span id="thick-value">20</span> ft</label>
+            <input type="range" id="thick-slider" min="5" max="50" value="20" step="1">
+        </div>
+        
+        <div class="slider-container">
+            <label for="diff-slider">Diffusion Coefficient: <span id="diff-value">0.1</span> ft²/day</label>
+            <input type="range" id="diff-slider" min="0.01" max="1" value="0.1" step="0.01">
+        </div>
+        
+        <div class="slider-container">
+            <label for="pressure-slider">Reservoir Pressure: <span id="pressure-value">800</span> psia</label>
+            <input type="range" id="pressure-slider" min="200" max="1500" value="800" step="10">
+        </div>
+        
+        <canvas id="production-canvas" width="600" height="400"></canvas>
+        
+        <div class="result-display">
+            <p>Initial Production Rate: <span id="initial-rate">0</span> Mscf/day</p>
+            <p>Cumulative Production (30 years): <span id="cumulative">0</span> MMscf</p>
+        </div>
+        
+        <button id="simulate-button">Run Simulation</button>
+    </div>
+
+    <h2>The Evolution of Coal Seam Gas Modeling</h2>
+    
+    <p>The paper traces the development of coal seam gas models from 1989 to 1994, showing a shift from numerical simulation to pressure transient analysis. This evolution reflects the industry's growing need for reliable data to input into commercial simulators.</p>
+    
+    <p>Modern approaches tend to focus on:</p>
+    <ol>
+        <li><strong>Pressure transient analysis</strong> for reservoir characterization</li>
+        <li><strong>Type-curve matching</strong> for production forecasting</li>
+        <li><strong>Compositional modeling</strong> for enhanced recovery scenarios</li>
+    </ol>
+
+    <h2>Key Insights for Practical Applications</h2>
+    
+    <p>From our analysis of the mathematical models, we can extract several practical insights:</p>
+    
+    <div class="highlight">
+        <ol>
+            <li>The choice between equilibrium and non-equilibrium models should be based on the relative speeds of diffusion and Darcy flow in your specific coal seam.</li>
+            <li>Effective permeability and compressibility in coal seams are pressure-dependent due to the desorption process, making traditional analysis methods inadequate.</li>
+            <li>Water production significantly impacts gas production through relative permeability effects and should be carefully modeled.</li>
+            <li>Pressure-dependent permeability due to coal matrix shrinkage can dramatically affect long-term production forecasts.</li>
+        </ol>
+    </div>
+
+    <h2>Conclusion: The Future of Coal Seam Gas Modeling</h2>
+    
+    <p>As we've seen, coal seam gas modeling has evolved from simple equilibrium models to sophisticated compositional simulators. The paper suggests that future models will likely incorporate:</p>
+    
+    <ul>
+        <li>Full compositional modeling for enhanced recovery scenarios</li>
+        <li>Better coupling of geomechanical effects with flow models</li>
+        <li>Improved representation of water vaporization and its effects</li>
+        <li>More accurate modeling of gas mixtures and impurities</li>
+    </ul>
+    
+    <p>By understanding the fundamental principles behind these models, engineers can make better decisions about reservoir management, well placement, and production optimization.</p>
+
+    <div class="note">
+        <p>Remember that all models are simplifications of reality. The key is choosing a model with the right level of complexity for your specific application and available data.</p>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Langmuir Isotherm Interactive
+            const vlSlider = document.getElementById('vl-slider');
+            const plSlider = document.getElementById('pl-slider');
+            const vlValue = document.getElementById('vl-value');
+            const plValue = document.getElementById('pl-value');
+            const currentPressure = document.getElementById('current-pressure');
+            const gasContent = document.getElementById('gas-content');
+            const capacityPercent = document.getElementById('capacity-percent');
+            const resetButton = document.getElementById('reset-button');
+            const isothermCanvas = document.getElementById('isotherm-canvas');
+            const isothermCtx = isothermCanvas.getContext('2d');
+            
+            function calculateGasContent(pressure, vl, pl) {
+                return (vl * pressure) / (pl + pressure);
+            }
+            
+            function drawIsotherm() {
+                const vl = parseInt(vlSlider.value);
+                const pl = parseInt(plSlider.value);
+                
+                // Clear canvas
+                isothermCtx.clearRect(0, 0, isothermCanvas.width, isothermCanvas.height);
+                
+                // Draw axes
+                isothermCtx.beginPath();
+                isothermCtx.moveTo(50, 350);
+                isothermCtx.lineTo(550, 350); // x-axis
+                isothermCtx.moveTo(50, 350);
+                isothermCtx.lineTo(50, 50);   // y-axis
+                isothermCtx.stroke();
+                
+                // Label axes
+                isothermCtx.font = '12px Arial';
+                isothermCtx.fillText('Pressure (psia)', 250, 380);
+                isothermCtx.save();
+                isothermCtx.translate(20, 200);
+                isothermCtx.rotate(-Math.PI/2);
+                isothermCtx.fillText('Gas Content (scf/ton)', 0, 0);
+                isothermCtx.restore();
+                
+                // Draw grid lines
+                isothermCtx.strokeStyle = '#ddd';
+                for (let i = 0; i <= 5; i++) {
+                    // Horizontal grid lines
+                    isothermCtx.beginPath();
+                    isothermCtx.moveTo(50, 350 - i * 60);
+                    isothermCtx.lineTo(550, 350 - i * 60);
+                    isothermCtx.stroke();
+                    
+                    // Vertical grid lines
+                    isothermCtx.beginPath();
+                    isothermCtx.moveTo(50 + i * 100, 350);
+                    isothermCtx.lineTo(50 + i * 100, 50);
+                    isothermCtx.stroke();
+                    
+                    // Label grid lines
+                    isothermCtx.fillText((i * 300).toString(), 50 + i * 100, 365);
+                    isothermCtx.fillText((i * vl/5).toFixed(0), 30, 355 - i * 60);
+                }
+                
+                // Draw isotherm curve
+                isothermCtx.strokeStyle = '#3498db';
+                isothermCtx.lineWidth = 2;
+                isothermCtx.beginPath();
+                
+                for (let x = 0; x <= 500; x += 5) {
+                    const pressure = x * 3; // Scale to max 1500 psia
+                    const content = calculateGasContent(pressure, vl, pl);
+                    const canvasX = 50 + (x);
+                    const canvasY = 350 - (content / vl * 300);
+                    
+                    if (x === 0) {
+                        isothermCtx.moveTo(canvasX, canvasY);
+                    } else {
+                        isothermCtx.lineTo(canvasX, canvasY);
+                    }
+                }
+                isothermCtx.stroke();
+                
+                // Draw current pressure point
+                const pressure = 500; // Fixed point for demonstration
+                const content = calculateGasContent(pressure, vl, pl);
+                const percentCapacity = (content / vl * 100).toFixed(2);
+                
+                currentPressure.textContent = pressure;
+                gasContent.textContent = content.toFixed(2);
+                capacityPercent.textContent = percentCapacity;
+                
+                const pointX = 50 + (pressure / 3);
+                const pointY = 350 - (content / vl * 300);
+                
+                isothermCtx.fillStyle = 'red';
+                isothermCtx.beginPath();
+                isothermCtx.arc(pointX, pointY, 5, 0, Math.PI * 2);
+                isothermCtx.fill();
+                
+                // Draw lines to axes
+                isothermCtx.strokeStyle = '#999';
+                isothermCtx.setLineDash([5, 5]);
+                isothermCtx.beginPath();
+                isothermCtx.moveTo(pointX, pointY);
+                isothermCtx.lineTo(pointX, 350);
+                isothermCtx.moveTo(pointX, pointY);
+                isothermCtx.lineTo(50, pointY);
+                isothermCtx.stroke();
+                isothermCtx.setLineDash([]);
+            }
+            
+            vlSlider.addEventListener('input', function() {
+                vlValue.textContent = this.value;
+                drawIsotherm();
+            });
+            
+            plSlider.addEventListener('input', function() {
+                plValue.textContent = this.value;
+                drawIsotherm();
+            });
+            
+            resetButton.addEventListener('click', function() {
+                vlSlider.value = 500;
+                plSlider.value = 500;
+                vlValue.textContent = '500';
+                plValue.textContent = '500';
+                drawIsotherm();
+            });
+            
+            // Production Simulator
+            const permSlider = document.getElementById('perm-slider');
+            const thickSlider = document.getElementById('thick-slider');
+            const diffSlider = document.getElementById('diff-slider');
+            const pressureSlider = document.getElementById('pressure-slider');
+            const permValue = document.getElementById('perm-value');
+            const thickValue = document.getElementById('thick-value');
+            const diffValue = document.getElementById('diff-value');
+            const pressureValue = document.getElementById('pressure-value');
+            const initialRate = document.getElementById('initial-rate');
+            const cumulative = document.getElementById('cumulative');
+            const simulateButton = document.getElementById('simulate-button');
+            const productionCanvas = document.getElementById('production-canvas');
+            const prodCtx = productionCanvas.getContext('2d');
+            
+            function calculateProduction() {
+                const perm = parseFloat(permSlider.value);
+                const thick = parseFloat(thickSlider.value);
+                const diff = parseFloat(diffSlider.value);
+                const pressure = parseFloat(pressureSlider.value);
+                
+                // Simplified production model
+                // Initial rate is proportional to permeability, thickness, and pressure
+                const initialRateValue = perm * thick * pressure / 800;
+                
+                // Cumulative is affected by all parameters
+                const cumulativeValue = initialRateValue * 365 * 30 * (0.2 + 0.8 * diff);
+                
+                initialRate.textContent = initialRateValue.toFixed(0);
+                cumulative.textContent = (cumulativeValue / 1000).toFixed(1);
+                
+                // Generate decline curve
+                const years = 30;
+                const points = [];
+                
+                for (let i = 0; i <= years; i++) {
+                    // Simplified decline curve equation
+                    const rate = initialRateValue * Math.exp(-0.15 * i * (1 - 0.5 * diff));
+                    points.push({ year: i, rate: rate });
+                }
+                
+                // Draw production profile
+                prodCtx.clearRect(0, 0, productionCanvas.width, productionCanvas.height);
+                
+                // Draw axes
+                prodCtx.beginPath();
+                prodCtx.moveTo(50, 350);
+                prodCtx.lineTo(550, 350); // x-axis
+                prodCtx.moveTo(50, 350);
+                prodCtx.lineTo(50, 50);   // y-axis
+                prodCtx.stroke();
+                
+                // Label axes
+                prodCtx.font = '12px Arial';
+                prodCtx.fillText('Time (years)', 250, 380);
+                prodCtx.save();
+                prodCtx.translate(20, 200);
+                prodCtx.rotate(-Math.PI/2);
+                prodCtx.fillText('Gas Rate (Mscf/day)', 0, 0);
+                prodCtx.restore();
+                
+                // Draw grid lines
+                prodCtx.strokeStyle = '#ddd';
+                for (let i = 0; i <= 5; i++) {
+                    // Horizontal grid lines
+                    prodCtx.beginPath();
+                    prodCtx.moveTo(50, 350 - i * 60);
+                    prodCtx.lineTo(550, 350 - i * 60);
+                    prodCtx.stroke();
+                    
+                    // Vertical grid lines
+                    prodCtx.beginPath();
+                    prodCtx.moveTo(50 + i * 100, 350);
+                    prodCtx.lineTo(50 + i * 100, 50);
+                    prodCtx.stroke();
+                    
+                    // Label grid lines
+                    prodCtx.fillText((i * 6).toString(), 50 + i * 100, 365);
+                    prodCtx.fillText((i * initialRateValue/5).toFixed(0), 30, 355 - i * 60);
+                }
+                
+                // Draw production curve
+                prodCtx.strokeStyle = '#3498db';
+                prodCtx.lineWidth = 2;
+                prodCtx.beginPath();
+                
+                for (let i = 0; i < points.length; i++) {
+                    const canvasX = 50 + (points[i].year / 30 * 500);
+                    const canvasY = 350 - (points[i].rate / initialRateValue * 300);
+                    
+                    if (i === 0) {
+                        prodCtx.moveTo(canvasX, canvasY);
+                    } else {
+                        prodCtx.lineTo(canvasX, canvasY);
+                    }
+                }
+                prodCtx.stroke();
+            }
+            
+            permSlider.addEventListener('input', function() {
+                permValue.textContent = this.value;
+            });
+            
+            thickSlider.addEventListener('input', function() {
+                thickValue.textContent = this.value;
+            });
+            
+            diffSlider.addEventListener('input', function() {
+                diffValue.textContent = this.value;
+            });
+            
+            pressureSlider.addEventListener('input', function() {
+                pressureValue.textContent = this.value;
+            });
+            
+            simulateButton.addEventListener('click', calculateProduction);
+            
+            // Initialize the visualizations
+            window.onload = function() {
+                drawIsotherm();
+                calculateProduction();
+            };
+});
+</script>
+</body>
+</html>

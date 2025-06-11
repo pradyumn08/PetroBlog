@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Interwell Tracer Tests: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .simulation-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        canvas {
+            max-width: 100%;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .two-column {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .two-column > div {
+            flex: 1;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flow Through Time: Understanding Interwell Tracer Tests From First Principles</h1>
+    
+    <p class="highlight">
+        <strong>TL;DR:</strong> This post breaks down how tracers move through oil reservoirs, showing how their behavior can be predicted mathematically and used to understand reservoir characteristics. We'll see how a tracer pulse injected at one well appears at another, revealing crucial information about the underground pathways between wells.
+    </p>
+    
+    <h2>Introduction: Why Tracers Matter</h2>
+    
+    <p>
+        Imagine you have two wells in an oil field, and you want to know: are they connected underground? If so, how? What paths does fluid take between them? How long does it take? These questions are crucial for efficient oil recovery, especially before implementing expensive enhanced oil recovery techniques.
+    </p>
+    
+    <p>
+        Enter <strong>interwell tracer testing</strong> - a technique where we inject a small amount of traceable substance (like a radioactive isotope) into one well (the injector) and monitor when and how it appears in another well (the producer). It's like pouring dye into one end of a complex underground maze and watching how it emerges at the other end.
+    </p>
+    
+    <p>
+        In this post, we'll explore Jacques Hagoort's paper on tracer tests in watered-out reservoirs (reservoirs where most of the oil has been pushed out by water). We'll break down the mathematics into intuitive concepts and see how tracer tests reveal the hidden structure of reservoirs.
+    </p>
+    
+    <h2>The Core Concept: Tracer Response Functions</h2>
+    
+    <p>
+        When we inject a tracer "pulse" (a short burst of tracer material) into an injection well, we can measure two key responses at the production well:
+    </p>
+    
+    <ol>
+        <li><strong>Tracer Production Rate</strong> \(q_{tp}(t)\) - How much tracer is coming out per unit time</li>
+        <li><strong>Cumulative Tracer Recovery</strong> \(N_t(t)\) - The total amount of tracer recovered up to time \(t\)</li>
+    </ol>
+    
+    <p>
+        These two functions are related by a simple integral:
+    </p>
+    
+    <div class="highlight">
+        \[N_t(t) = \int_0^t q_{tp}(\tilde{t})d\tilde{t}\]
+    </div>
+    
+    <p>
+        In other words, the cumulative recovery is the area under the production rate curve up to time \(t\).
+    </p>
+    
+    <h2>The Mathematics of Ideal Tracer Flow</h2>
+    
+    <p>
+        Let's start with the fundamental equations that govern how tracers move through a reservoir. These are based on physical principles of fluid flow and diffusion:
+    </p>
+    
+    <div class="highlight">
+        <p>The tracer conservation equation:</p>
+        \[\frac{\partial}{\partial t}(\phi^* C) + div(\vec{u}C) - \phi^* D~div~grad~C = 0\]
+        
+        <p>The fluid flow equation (incompressible flow):</p>
+        \[\vec{u} = -\lambda_w~grad~p\]
+        \[div(\vec{u}) = 0\]
+    </div>
+    
+    <p>
+        These equations might look intimidating, but let's break them down:
+    </p>
+    
+    <ul>
+        <li>\(\phi^*\) is the effective porosity - the fraction of rock volume that fluids can flow through</li>
+        <li>\(C\) is the tracer concentration</li>
+        <li>\(\vec{u}\) is the fluid velocity (Darcy velocity)</li>
+        <li>\(D\) is the diffusion/dispersion coefficient - how the tracer spreads out</li>
+        <li>\(\lambda_w\) is the water mobility - how easily water flows through the rock</li>
+        <li>\(p\) is the pressure</li>
+    </ul>
+    
+    <p>
+        The first equation is essentially saying: "The change in tracer amount equals the tracer flowing in minus the tracer flowing out, plus the tracer spreading by diffusion." The second set of equations describes how the water carrying the tracer moves through the reservoir.
+    </p>
+    
+    <h2>The Key Insight: Relating Tracer Tests to Miscible Displacement</h2>
+    
+    <p>
+        Here's where Hagoort's paper gets clever. He shows that solving these equations directly is complicated, but there's a shortcut: the response to a tracer pulse can be derived from a simpler problem - a unit-mobility-ratio miscible displacement.
+    </p>
+    
+    <p>
+        In simpler terms, if we inject water with tracer continuously (not as a pulse) and track how it displaces the original water, we can derive the pulse response from that solution.
+    </p>
+    
+    <div class="note">
+        <p><strong>Key Relationship:</strong> For a pulse injection with strength \(N^0\):</p>
+        
+        <p>The tracer production rate:</p>
+        \[q_{tp} = N^0 \frac{dq_{ts}^*}{dt}\]
+        
+        <p>The tracer recovery:</p>
+        \[N_{tp} = N^0 q_{ts}^*\]
+        
+        <p>Where \(q_{ts}^*\) is the normalized production rate response to continuous tracer injection.</p>
+    </div>
+    
+    <p>
+        This is powerful because it means we can understand pulse tests by studying the simpler continuous injection case!
+    </p>
+    
+    <h2>Interactive Simulation: Tracer Response in a Two-Spot Pattern</h2>
+    
+    <p>
+        Let's explore how tracers behave in a simple case: a "two-spot" pattern with one injection well and one production well in a homogeneous reservoir. Use the sliders to adjust parameters and see how the tracer response changes.
+    </p>
+    
+    <div class="simulation-container">
+        <div class="slider-container">
+            <label for="permeability-ratio">Permeability Ratio (k<sub>max</sub>/k<sub>min</sub>):</label>
+            <input type="range" id="permeability-ratio" min="1" max="4" step="0.1" value="1">
+            <span id="permeability-ratio-value">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="mixing-number">Transversal Mixing Number (N<sub>T</sub>):</label>
+            <input type="range" id="mixing-number" min="0" max="0.5" step="0.01" value="0.01">
+            <span id="mixing-number-value">0.01</span>
+        </div>
+        
+        <div class="two-column">
+            <div>
+                <h3>Tracer Production Rate</h3>
+                <canvas id="production-rate-chart"></canvas>
+            </div>
+            <div>
+                <h3>Cumulative Tracer Recovery</h3>
+                <canvas id="recovery-chart"></canvas>
+            </div>
+        </div>
+        
+        <p class="note">This simulation shows how tracer production rate and recovery change with time (expressed as cumulative water injection \(W_i\) in reservoir pore volumes).</p>
+    </div>
+    
+    <h2>The Effects of Mixing on Tracer Response</h2>
+    
+    <p>
+        In real reservoirs, tracers don't just flow; they also mix with the surrounding fluid. This mixing occurs in two ways:
+    </p>
+    
+    <ol>
+        <li><strong>Longitudinal mixing</strong> - mixing in the direction of flow</li>
+        <li><strong>Transversal mixing</strong> - mixing perpendicular to the flow direction</li>
+    </ol>
+    
+    <h3>Longitudinal Mixing</h3>
+    
+    <p>
+        For longitudinal mixing in a linear flow system, the tracer recovery response is:
+    </p>
+    
+    <div class="highlight">
+        \[N_{tp} = \frac{N^0}{2}\left[erfc\frac{1-W_i}{2\sqrt{(N_L W_i)}} + erfc\frac{1+W_i}{2\sqrt{(N_L W_i)}}exp(1/N_L)\right]\]
+    </div>
+    
+    <p>
+        Where \(N_L\) is the longitudinal mixing number defined as:
+    </p>
+    
+    <div class="highlight">
+        \[N_L = \frac{\phi^* D_L}{u_i L}\]
+    </div>
+    
+    <p>
+        This dimensionless number represents the ratio of dispersive transport to convective transport. In typical field conditions, \(N_L\) is very small (around 10<sup>-6</sup>), meaning longitudinal mixing has negligible effect on tracer response.
+    </p>
+    
+    <h3>Transversal Mixing</h3>
+    
+    <p>
+        Transversal mixing becomes important in layered reservoirs. For a high-permeability layer sandwiched between low-permeability layers, the tracer recovery response is:
+    </p>
+    
+    <div class="highlight">
+        \[N_{tp} = N^0 ~erfc~\left(\frac{N_T}{4(W_i-1)}\right)\]
+    </div>
+    
+    <p>
+        Where \(N_T\) is the transversal mixing number:
+    </p>
+    
+    <div class="highlight">
+        \[N_T = \frac{\phi_2^* D_T L}{\phi_1^* u_i h^2}\]
+    </div>
+    
+    <p>
+        Unlike longitudinal mixing, transversal mixing can significantly affect tracer response, especially in thinly layered reservoirs (centimeter to decimeter scale).
+    </p>
+    
+    <h2>The Effect of Reservoir Stratification</h2>
+    
+    <p>
+        Real reservoirs are rarely homogeneous. They typically consist of layers with different properties. Hagoort examines three models of stratification:
+    </p>
+    
+    <ol>
+        <li>Layer-cake model - discrete homogeneous layers</li>
+        <li>Continuous variation model - smoothly varying properties</li>
+        <li>Combined model - discrete layers with internal variation</li>
+    </ol>
+    
+    <p>
+        The key insight is that each layer produces its own "slide-shaped" response (a sudden rise followed by a gradual fall), but the overall response is dominated by the most permeable layers. Less permeable layers contribute later, smaller peaks that may be completely "swamped" by the response from more permeable layers.
+    </p>
+    
+    <figure>
+        <img src="https://i.ibb.co/VJbgcWh/stratification-model.png" alt="Three models of reservoir stratification" style="max-width: 600px;">
+        <figcaption>Three models of reservoir stratification: (a) discrete homogeneous layers, (b) continuous variation, and (c) discrete layers with internal variation.</figcaption>
+    </figure>
+    
+    <h2>The Characteristic "Slide-Shaped" Response</h2>
+    
+    <p>
+        One of the most important insights from Hagoort's paper is that tracer production rate typically shows a "slide-shaped" response - a sudden rise followed by a gradual decline. This shape is characteristic of any well pattern but varies in its details.
+    </p>
+    
+    <p>
+        For a homogeneous two-spot pattern, the tracer production rate response to a pulse is:
+    </p>
+    
+    <div class="highlight">
+        \[q_{tp} = \frac{N^0 i}{\phi \pi d^2 h} \frac{sin^4(\pi q_{ts}^*)/\pi}{-\frac{3}{2}sin(2\pi q_{ts}^*) + \pi q_{ts}^* + 2\pi q_{ts}^* cos^2(\pi q_{ts}^*)}\]
+    </div>
+    
+    <p>
+        This mathematical expression creates the characteristic slide shape. The more linear the flow pattern (less curved streamlines), the shorter the "tail" of the slide.
+    </p>
+    
+    <h2>Practical Application: Numerical Simulation of Tracer Tests</h2>
+    
+    <p>
+        For real-world applications, we need numerical methods to simulate tracer tests in complex reservoirs. Hagoort shows that we can use conventional black-oil reservoir simulators for this purpose, leveraging the mathematical similarity between tracer flow and two-phase immiscible flow.
+    </p>
+    
+    <p>
+        The key requirements for accurate simulation are:
+    </p>
+    
+    <ol>
+        <li>A sufficiently fine grid system (at least 7 grid blocks between wells)</li>
+        <li>Special settings for relative permeabilities and fluid properties</li>
+    </ol>
+    
+    <p>
+        With these considerations, both single-color and multi-color tracer tests can be accurately simulated.
+    </p>
+    
+    <h2>Putting It All Together: A Real-World Analogy</h2>
+    
+    <p>
+        To understand tracer tests intuitively, imagine a network of underground rivers (the reservoir) with various channels, some wide and fast-flowing, others narrow and slow. You pour a cup of dye (the tracer) into one entrance (injection well) and measure how it comes out at another exit (production well).
+    </p>
+    
+    <p>
+        If the dye comes out quickly and concentrated, you know there's a direct, fast-flowing channel. If it comes out slowly and diluted, the path is more tortuous. If it comes out in multiple pulses, there are likely multiple paths with different flow rates.
+    </p>
+    
+    <p>
+        This simple analogy captures the essence of what tracer tests tell us about reservoirs - the connectivity, flow paths, and heterogeneity between wells.
+    </p>
+    
+    <h2>Conclusion: The Power of Tracer Testing</h2>
+    
+    <p>
+        Interwell tracer testing is a powerful tool for understanding reservoir characteristics. By injecting tracers and analyzing their production response, we can:
+    </p>
+    
+    <ul>
+        <li>Identify flow barriers and preferential flow paths</li>
+        <li>Quantify sweep efficiencies</li>
+        <li>Characterize reservoir heterogeneity</li>
+        <li>Make better decisions about enhanced oil recovery strategies</li>
+    </ul>
+    
+    <p>
+        Hagoort's paper provides a rigorous mathematical framework for interpreting these tests, showing how the response to a tracer pulse relates to the underlying reservoir properties and how numerical simulations can be used to model complex real-world scenarios.
+    </p>
+    
+    <p>
+        The next time you hear about tracer testing in oil fields, you'll understand that it's not just about seeing if wells are connected - it's a sophisticated technique that reveals the hidden structure of the subsurface, guiding critical decisions in reservoir management.
+    </p>
+    
+    <script>
+        // Initialize charts
+        let productionRateChart, recoveryChart;
+        
+        function initCharts() {
+            const productionRateCtx = document.getElementById('production-rate-chart').getContext('2d');
+            const recoveryCtx = document.getElementById('recovery-chart').getContext('2d');
+            
+            productionRateChart = new Chart(productionRateCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Tracer Production Rate',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Cumulative Water Injection (W_i)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Normalized Production Rate'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            recoveryChart = new Chart(recoveryCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Cumulative Tracer Recovery',
+                        data: [],
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Cumulative Water Injection (W_i)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Normalized Recovery'
+                            },
+                            max: 1
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Calculate tracer response for homogeneous two-spot
+        function calculateHomogeneousResponse(wi) {
+            // For homogeneous case, breakthrough at Wi = 1/3
+            if (wi <= 1/3) {
+                return { rate: 0, recovery: 0 };
+            }
+            
+            // Approximate the complex relationship with a simplified model
+            // This is a simplified version of the equations in the paper
+            const qts = Math.min(0.999, Math.max(0, 1 - 1/(3*wi)));
+            const recovery = qts;
+            
+            // Production rate is derivative of recovery with respect to wi
+            // Using a simplified model that captures the "slide shape"
+            const rate = Math.max(0, 0.5 / Math.pow(wi - 1/3, 2) * Math.exp(-2 * (wi - 1/3)));
+            
+            return { rate, recovery };
+        }
+        
+        // Calculate tracer response for stratified case
+        function calculateStratifiedResponse(wi, permRatio, mixingNumber) {
+            // Get homogeneous response
+            const baseResponse = calculateHomogeneousResponse(wi);
+            
+            // Apply effect of permeability stratification
+            // Higher perm ratio = earlier breakthrough, lower peak, more spread out
+            const permEffect = Math.log(permRatio) / Math.log(4); // Normalized effect (0 to 1)
+            
+            // Apply effect of mixing
+            // Higher mixing number = later peak, lower peak, more spread out
+            const mixingEffect = mixingNumber * 20; // Scale for visualization
+            
+            // Modify the response based on these effects
+            let rate = baseResponse.rate;
+            let recovery = baseResponse.recovery;
+            
+            // Earlier breakthrough with higher perm ratio
+            if (wi <= 1/3 * (1 - 0.2 * permEffect)) {
+                rate = 0;
+                recovery = 0;
+            } else {
+                // Reduce peak height and spread it out
+                rate = rate * (1 - 0.5 * permEffect - 0.5 * mixingEffect);
+                
+                // Adjust recovery curve shape
+                recovery = recovery * (1 - 0.2 * permEffect * (1 - recovery) - 0.2 * mixingEffect * (1 - recovery));
+            }
+            
+            // Add secondary peak for multi-layer case if perm ratio > 1.5
+            if (permRatio > 1.5 && wi > 0.6) {
+                const secondaryPeak = 0.2 * Math.exp(-10 * Math.pow(wi - 0.8, 2)) * (permRatio - 1) / 3;
+                rate += secondaryPeak;
+                
+                // Adjust recovery for secondary peak
+                if (wi > 0.8) {
+                    recovery += 0.1 * (permRatio - 1) / 3 * (1 - Math.exp(-(wi - 0.8) * 5));
+                }
+            }
+            
+            return { rate, recovery };
+        }
+        
+        // Update charts based on slider values
+        function updateCharts() {
+            const permRatio = parseFloat(document.getElementById('permeability-ratio').value);
+            const mixingNumber = parseFloat(document.getElementById('mixing-number').value);
+            
+            document.getElementById('permeability-ratio-value').textContent = permRatio.toFixed(1);
+            document.getElementById('mixing-number-value').textContent = mixingNumber.toFixed(2);
+            
+            // Generate data points
+            const wiValues = Array.from({length: 100}, (_, i) => 0.01 + i * 0.02);
+            const rateData = [];
+            const recoveryData = [];
+            
+            for (const wi of wiValues) {
+                const response = calculateStratifiedResponse(wi, permRatio, mixingNumber);
+                rateData.push({x: wi, y: response.rate});
+                recoveryData.push({x: wi, y: response.recovery});
+            }
+            
+            // Update charts
+            productionRateChart.data.datasets[0].data = rateData;
+            recoveryChart.data.datasets[0].data = recoveryData;
+            
+            productionRateChart.update();
+            recoveryChart.update();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            
+            // Set up event listeners for sliders
+            document.getElementById('permeability-ratio').addEventListener('input', updateCharts);
+            document.getElementById('mixing-number').addEventListener('input', updateCharts);
+            
+            // Initial update
+            updateCharts();
+        });
+    </script>
+</body>
+</html>

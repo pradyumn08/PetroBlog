@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Finite-Conductivity Vertical Fractures: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .example {
+            background-color: #f0f7fb;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+        .simulator {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .simulator-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .output {
+            display: inline-block;
+            min-width: 40px;
+            text-align: right;
+        }
+        canvas {
+            width: 100%;
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .glossary {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 30px;
+        }
+        .glossary h3 {
+            margin-top: 0;
+        }
+        .glossary dt {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .glossary dd {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Finite-Conductivity Vertical Fractures: A First Principles Approach</h1>
+    
+    <p>When an oil or gas well isn't producing as expected, engineers often turn to hydraulic fracturing to enhance its performance. But how exactly does this process work, and more importantly, how can we predict and optimize its effects? Today, we'll break down a complex academic concept—the behavior of finite-conductivity vertical fractures in oil and gas reservoirs—into understandable principles that anyone with basic physics knowledge can grasp.</p>
+    
+    <h2>What Is a Vertical Fracture and Why Should You Care?</h2>
+    
+    <p>Imagine you have a sponge filled with oil (your reservoir), but the oil moves through it very slowly. Hydraulic fracturing creates cracks (fractures) in this sponge, providing highways for oil to flow more easily toward your well. A vertical fracture is simply a crack that runs up and down through the reservoir layers.</p>
+    
+    <p>The key question is: how much will this fracture improve your well's productivity? The answer depends on two critical factors:</p>
+    
+    <ol>
+        <li><strong>Fracture length</strong> - How far does the fracture extend into the reservoir?</li>
+        <li><strong>Fracture conductivity</strong> - How easily can fluids flow through the fracture?</li>
+    </ol>
+    
+    <p>The academic paper we're exploring today provides a mathematical model to predict exactly this, using a concept called "resistivity domains."</p>
+    
+    <h2>The Resistivity Domain Concept: An Electrical Analogy</h2>
+    
+    <p>To understand resistivity domains, think about electrical circuits. When electricity flows through a circuit, it encounters resistance. Similarly, when oil flows through a reservoir toward a well, it encounters resistance from the rock.</p>
+    
+    <p>The paper introduces a clever way to model this using two resistivity domains:</p>
+    
+    <ol>
+        <li><strong>Reservoir domain</strong> - The resistance oil encounters flowing through the untreated reservoir rock</li>
+        <li><strong>Fracture domain</strong> - The resistance oil encounters flowing through the fracture</li>
+    </ol>
+    
+    <p>These domains work in parallel—oil can flow either through the fracture or through the untreated rock—just like parallel resistors in an electrical circuit.</p>
+    
+    <div class="equation-box">
+        <p>The total system resistivity is given by:</p>
+        <p>\[ \frac{1}{\rho} = \frac{1}{\rho_r} + \frac{1}{\rho_f} \]</p>
+        <p>where \(\rho_r\) is the reservoir resistivity and \(\rho_f\) is the fracture resistivity.</p>
+    </div>
+    
+    <h2>The Effective Wellbore Radius: A Powerful Simplification</h2>
+    
+    <p>One of the most powerful concepts in this paper is the "effective wellbore radius." Instead of modeling a complex system with a well and a fracture, we can simplify it to an equivalent system with just a well that has a larger radius.</p>
+    
+    <p>Think of it this way: a fractured well with a small physical radius behaves like an unfractured well with a much larger radius. This larger, equivalent radius is called the "effective wellbore radius" (\(r'_w\)).</p>
+    
+    <div class="equation-box">
+        <p>For an infinite-conductivity fracture (one with extremely high flow capacity), the effective wellbore radius is:</p>
+        <p>\[ r'_w = \frac{x_f}{2} \]</p>
+        <p>where \(x_f\) is the fracture half-length.</p>
+    </div>
+    
+    <p>This means a well with a perfect fracture extending 100 feet into the reservoir behaves like an unfractured well with a radius of 50 feet! This is a dramatic improvement over a typical wellbore radius of less than a foot.</p>
+    
+    <h2>The Dimensionless Productivity Index: Measuring Improvement</h2>
+    
+    <p>How do we quantify the benefit of fracturing? The paper uses a metric called the "dimensionless productivity index" (\(J_D\)), which measures how easily fluids flow into the well.</p>
+    
+    <div class="equation-box">
+        <p>The dimensionless productivity index is defined as:</p>
+        <p>\[ J_D = \frac{\mu}{2\pi kh} \times \frac{q}{\bar{p}-p_{wf}} \]</p>
+        <p>where:</p>
+        <ul>
+            <li>\(\mu\) is the fluid viscosity</li>
+            <li>\(k\) is the reservoir permeability</li>
+            <li>\(h\) is the reservoir height</li>
+            <li>\(q\) is the flow rate</li>
+            <li>\(\bar{p}\) is the average reservoir pressure</li>
+            <li>\(p_{wf}\) is the flowing wellbore pressure</li>
+        </ul>
+    </div>
+    
+    <p>The higher the \(J_D\), the better the well performs. For pseudosteady-state flow (when the pressure throughout the reservoir declines at a constant rate), the inverse of \(J_D\) is given by:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{1}{J_D} = \ln\left(\beta_{r_e}\frac{r_e}{x_f}\right) + f \]</p>
+        <p>where:</p>
+        <ul>
+            <li>\(\beta_{r_e}\) is a geometric constant</li>
+            <li>\(r_e\) is the drainage radius</li>
+            <li>\(x_f\) is the fracture half-length</li>
+            <li>\(f\) is the pseudo-skin function that accounts for the fracture's finite conductivity</li>
+        </ul>
+    </div>
+    
+    <h2>Finite-Conductivity Fractures: Reality vs. Ideal</h2>
+    
+    <p>In an ideal world, fractures would have infinite conductivity—fluids would flow through them with no resistance. In reality, fractures have finite conductivity, which means they do offer some resistance to flow.</p>
+    
+    <p>The dimensionless fracture conductivity (\(C_{fD}\)) quantifies this:</p>
+    
+    <div class="equation-box">
+        <p>\[ C_{fD} = \frac{w_f k_f}{x_f k} \]</p>
+        <p>where:</p>
+        <ul>
+            <li>\(w_f\) is the fracture width</li>
+            <li>\(k_f\) is the fracture permeability</li>
+            <li>\(x_f\) is the fracture half-length</li>
+            <li>\(k\) is the reservoir permeability</li>
+        </ul>
+    </div>
+    
+    <p>For a uniform finite-conductivity fracture, the pseudo-skin function is:</p>
+    
+    <div class="equation-box">
+        <p>\[ f = \ln\left(\frac{\pi}{C_{fD}g(\lambda)} + \zeta_\infty\right) \]</p>
+        <p>where:</p>
+        <ul>
+            <li>\(g(\lambda)\) is a geometric parameter related to the reservoir shape</li>
+            <li>\(\zeta_\infty\) is the dimensionless effective wellbore radius for an infinite-conductivity fracture</li>
+        </ul>
+    </div>
+    
+    <h2>Interactive Fracture Productivity Simulator</h2>
+    
+    <p>Let's put these concepts into practice with an interactive simulator. Adjust the parameters below to see how fracture length, conductivity, and reservoir shape affect well productivity.</p>
+    
+    <div class="simulator">
+        <div class="simulator-controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="fracture-length">Fracture Half-Length (ft): <span id="fracture-length-value" class="output">100</span></label>
+                    <input type="range" id="fracture-length" min="10" max="500" value="100" step="10">
+                </div>
+                <div class="slider-container">
+                    <label for="fracture-conductivity">Dimensionless Fracture Conductivity: <span id="fracture-conductivity-value" class="output">10</span></label>
+                    <input type="range" id="fracture-conductivity" min="0.1" max="100" value="10" step="0.1">
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="reservoir-permeability">Reservoir Permeability (md): <span id="reservoir-permeability-value" class="output">1</span></label>
+                    <input type="range" id="reservoir-permeability" min="0.01" max="10" value="1" step="0.01">
+                </div>
+                <div class="slider-container">
+                    <label for="aspect-ratio">Reservoir Aspect Ratio: <span id="aspect-ratio-value" class="output">1</span></label>
+                    <input type="range" id="aspect-ratio" min="0.1" max="10" value="1" step="0.1">
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <canvas id="fracture-simulator" width="800" height="400"></canvas>
+        </div>
+        
+        <div id="results" style="margin-top: 20px;">
+            <p><strong>Effective Wellbore Radius:</strong> <span id="effective-radius">50 ft</span></p>
+            <p><strong>Productivity Improvement Ratio:</strong> <span id="productivity-ratio">12.5</span></p>
+            <p><strong>Dimensionless Productivity Index:</strong> <span id="productivity-index">0.18</span></p>
+        </div>
+    </div>
+    
+    <h2>Optimizing Fracture Design: The Goldilocks Zone</h2>
+    
+    <p>One of the most important insights from this paper is that there's an optimal fracture design for any given situation. If you have a fixed amount of proppant (the material used to keep the fracture open), how should you distribute it?</p>
+    
+    <p>Should you create a long, narrow fracture? Or a shorter, wider one?</p>
+    
+    <p>The paper shows that for a given proppant volume, there's an optimal dimensionless conductivity that maximizes productivity:</p>
+    
+    <div class="equation-box">
+        <p>\[ C_{fD}|_{opt} \to \frac{\pi}{2}\left(\frac{1+1/\lambda}{2}\right) \text{ as } I_x \to 0 \]</p>
+        <p>where \(I_x\) is the fracture penetration ratio (\(x_f/x_e\)) and \(\lambda\) is the reservoir aspect ratio.</p>
+    </div>
+    
+    <p>For a square reservoir (\(\lambda = 1\)), the optimal dimensionless conductivity is approximately 1.57. This means there's a "Goldilocks zone" for fracture design—not too long and narrow, not too short and wide, but just right.</p>
+    
+    <h2>Variable Conductivity: When Fractures Aren't Uniform</h2>
+    
+    <p>Real-world fractures are rarely uniform. The paper addresses several common scenarios:</p>
+    
+    <ol>
+        <li><strong>Tail-in fractures</strong> - Higher conductivity near the wellbore, decreasing toward the tip</li>
+        <li><strong>Over-flushed fractures</strong> - Lower conductivity near the wellbore due to over-displacement of proppant</li>
+        <li><strong>Choked fractures</strong> - A flow restriction near the wellbore</li>
+        <li><strong>Pinched fractures</strong> - A narrow section somewhere in the fracture</li>
+    </ol>
+    
+    <p>For variable conductivity fractures, the paper provides a generalized formula:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{1}{J_D} = \ln\left(\beta_{r_e}\frac{r_e}{x_f}\zeta_\infty\right) + \sum_{i=1}^{N}\Delta S_{fi} \]</p>
+        <p>where \(\Delta S_{fi}\) represents the additional skin from each fracture section with different conductivity.</p>
+    </div>
+    
+    <h2>The Practical Implications: Why This Matters</h2>
+    
+    <p>Understanding these concepts has profound practical implications:</p>
+    
+    <ol>
+        <li><strong>Accurate Production Forecasting</strong> - By accurately modeling fracture behavior, engineers can better predict well performance.</li>
+        <li><strong>Optimal Fracture Design</strong> - The model helps determine the ideal fracture dimensions for maximum productivity.</li>
+        <li><strong>Improved Diagnosis</strong> - When wells underperform, this model can help identify if the issue is related to fracture length, conductivity, or damage.</li>
+        <li><strong>Economic Optimization</strong> - By understanding the relationship between fracture parameters and productivity, companies can maximize their return on investment.</li>
+    </ol>
+    
+    <h2>Common Misconceptions Clarified</h2>
+    
+    <p>The paper also clarifies several misconceptions:</p>
+    
+    <ol>
+        <li><strong>Fracture Length Estimation</strong> - Traditional methods often underestimate the true fracture length. The paper shows that for a finite-conductivity fracture, the actual length is:</li>
+    </ol>
+    
+    <div class="equation-box">
+        <p>\[ x_f = \left.x_f\right|_{C_{fD}\to\infty}\left(\frac{\pi}{2C_{fD}g(\lambda)} + \frac{\zeta_\infty}{2}\right) \]</p>
+    </div>
+    
+    <ol start="2">
+        <li><strong>Average vs. Equivalent Conductivity</strong> - For variable conductivity fractures, the average conductivity may not represent the effective conductivity. For low-conductivity fractures, the equivalent conductivity is weighted more toward the wellbore conductivity.</li>
+        <li><strong>Transient vs. Pseudosteady Flow</strong> - The paper confirms that "what is good for maximizing pseudo-steady state flow is also good for maximizing transient flow."</li>
+    </ol>
+    
+    <h2>Conclusion: The Power of Mathematical Modeling</h2>
+    
+    <p>The paper we've explored today demonstrates the power of mathematical modeling in solving complex engineering problems. By representing a fractured well system as a set of resistivity domains and deriving analytical solutions, engineers can:</p>
+    
+    <ol>
+        <li>Predict well performance with high accuracy</li>
+        <li>Optimize fracture designs for maximum productivity</li>
+        <li>Account for real-world complications like variable conductivity</li>
+        <li>Make better economic decisions about well stimulation</li>
+    </ol>
+    
+    <p>Understanding these concepts doesn't require advanced mathematics—just a willingness to think about the problem in terms of fundamental principles like resistance to flow and effective radius.</p>
+    
+    <div class="glossary">
+        <h3>Glossary of Terms</h3>
+        <dl>
+            <dt>Vertical Fracture</dt>
+            <dd>A crack created in the reservoir rock that runs vertically through the formation layers.</dd>
+            
+            <dt>Conductivity</dt>
+            <dd>A measure of how easily fluids can flow through a medium.</dd>
+            
+            <dt>Dimensionless Conductivity (C<sub>fD</sub>)</dt>
+            <dd>The ratio of fracture conductivity to reservoir conductivity, normalized by fracture length.</dd>
+            
+            <dt>Effective Wellbore Radius (r'<sub>w</sub>)</dt>
+            <dd>The equivalent radius of an unfractured well that would have the same productivity as the fractured well.</dd>
+            
+            <dt>Productivity Index (J<sub>D</sub>)</dt>
+            <dd>A measure of how easily fluids flow into the well, normalized to remove the effects of fluid properties and reservoir thickness.</dd>
+            
+            <dt>Pseudo-skin Function (f)</dt>
+            <dd>A mathematical function that accounts for the additional resistance to flow caused by finite fracture conductivity.</dd>
+            
+            <dt>Resistivity Domain</dt>
+            <dd>A conceptual region where fluid flow encounters a specific type of resistance.</dd>
+        </dl>
+    </div>
+    
+    <script>
+        // Simulator functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const fractureLengthSlider = document.getElementById('fracture-length');
+            const fractureLengthValue = document.getElementById('fracture-length-value');
+            const fractureConductivitySlider = document.getElementById('fracture-conductivity');
+            const fractureConductivityValue = document.getElementById('fracture-conductivity-value');
+            const reservoirPermeabilitySlider = document.getElementById('reservoir-permeability');
+            const reservoirPermeabilityValue = document.getElementById('reservoir-permeability-value');
+            const aspectRatioSlider = document.getElementById('aspect-ratio');
+            const aspectRatioValue = document.getElementById('aspect-ratio-value');
+            
+            const effectiveRadiusOutput = document.getElementById('effective-radius');
+            const productivityRatioOutput = document.getElementById('productivity-ratio');
+            const productivityIndexOutput = document.getElementById('productivity-index');
+            
+            const canvas = document.getElementById('fracture-simulator');
+            const ctx = canvas.getContext('2d');
+            
+            // Update display values
+            fractureLengthSlider.addEventListener('input', function() {
+                fractureLengthValue.textContent = this.value;
+                updateSimulation();
+            });
+            
+            fractureConductivitySlider.addEventListener('input', function() {
+                fractureConductivityValue.textContent = this.value;
+                updateSimulation();
+            });
+            
+            reservoirPermeabilitySlider.addEventListener('input', function() {
+                reservoirPermeabilityValue.textContent = this.value;
+                updateSimulation();
+            });
+            
+            aspectRatioSlider.addEventListener('input', function() {
+                aspectRatioValue.textContent = this.value;
+                updateSimulation();
+            });
+            
+            function updateSimulation() {
+                const xf = parseFloat(fractureLengthSlider.value);
+                const CfD = parseFloat(fractureConductivitySlider.value);
+                const k = parseFloat(reservoirPermeabilitySlider.value);
+                const lambda = parseFloat(aspectRatioSlider.value);
+                
+                // Calculate effective wellbore radius
+                // For a uniform finite-conductivity fracture
+                const zeta_infinity = 2; // For low penetration
+                const g_lambda = 2 / (1 + 1/lambda); // Geometric parameter
+                
+                let rw_prime;
+                if (CfD >= 100) {
+                    // Infinite conductivity approximation
+                    rw_prime = xf / zeta_infinity;
+                } else {
+                    // Finite conductivity
+                    rw_prime = xf / ((Math.PI / (CfD * g_lambda)) + zeta_infinity);
+                }
+                
+                // Calculate productivity improvement ratio compared to unfractured well
+                const rw = 0.5; // Typical wellbore radius in feet
+                const re = 1000; // Typical drainage radius in feet
+                
+                // Dimensionless productivity index for unfractured well
+                const beta_re = 0.472; // For circular reservoir
+                const JD_unfractured = 1 / Math.log(beta_re * re / rw);
+                
+                // Dimensionless productivity index for fractured well
+                const JD_fractured = 1 / Math.log(beta_re * re / xf + Math.log((Math.PI / (CfD * g_lambda)) + zeta_infinity));
+                
+                // Productivity improvement ratio
+                const productivityRatio = JD_fractured / JD_unfractured;
+                
+                // Update outputs
+                effectiveRadiusOutput.textContent = rw_prime.toFixed(2) + ' ft';
+                productivityRatioOutput.textContent = productivityRatio.toFixed(2);
+                productivityIndexOutput.textContent = JD_fractured.toFixed(4);
+                
+                // Draw the simulation
+                drawSimulation(xf, CfD, lambda);
+            }
+            
+            function drawSimulation(xf, CfD, lambda) {
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw reservoir boundary
+                const margin = 50;
+                const reservoirWidth = width - 2 * margin;
+                const reservoirHeight = height - 2 * margin;
+                
+                // Adjust reservoir shape based on aspect ratio
+                let drawWidth, drawHeight;
+                if (lambda >= 1) {
+                    drawWidth = reservoirWidth;
+                    drawHeight = reservoirWidth / lambda;
+                } else {
+                    drawHeight = reservoirHeight;
+                    drawWidth = reservoirHeight * lambda;
+                }
+                
+                // Center the reservoir
+                const startX = (width - drawWidth) / 2;
+                const startY = (height - drawHeight) / 2;
+                
+                // Draw reservoir
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(startX, startY, drawWidth, drawHeight);
+                
+                // Draw wellbore at center
+                const centerX = width / 2;
+                const centerY = height / 2;
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Calculate fracture half-length in pixels
+                // Scale to fit within reservoir
+                const maxFractureLength = Math.min(drawWidth, drawHeight) / 2 - 10;
+                const scaleFactor = maxFractureLength / 500; // 500 is max slider value
+                const fractureLengthPixels = xf * scaleFactor;
+                
+                // Calculate fracture width based on conductivity
+                // This is for visualization only
+                const baseFractureWidth = 2;
+                const maxFractureWidth = 20;
+                let fractureWidth;
+                
+                if (CfD <= 0.1) {
+                    fractureWidth = baseFractureWidth;
+                } else if (CfD >= 100) {
+                    fractureWidth = maxFractureWidth;
+                } else {
+                    fractureWidth = baseFractureWidth + (maxFractureWidth - baseFractureWidth) * (Math.log10(CfD) + 1) / 3;
+                }
+                
+                // Draw fracture
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(centerX - fractureLengthPixels, centerY - fractureWidth/2, fractureLengthPixels * 2, fractureWidth);
+                
+                // Draw effective wellbore radius
+                const zeta_infinity = 2; // For low penetration
+                const g_lambda = 2 / (1 + 1/lambda); // Geometric parameter
+                let effectiveRadius;
+                
+                if (CfD >= 100) {
+                    // Infinite conductivity approximation
+                    effectiveRadius = fractureLengthPixels / zeta_infinity;
+                } else {
+                    // Finite conductivity
+                    effectiveRadius = fractureLengthPixels / ((Math.PI / (CfD * g_lambda)) + zeta_infinity);
+                }
+                
+                ctx.strokeStyle = '#27ae60';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, effectiveRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Add legend
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText('Reservoir Boundary', startX + 10, startY - 10);
+                ctx.fillText('Wellbore', centerX + 10, centerY - 10);
+                ctx.fillText('Fracture', centerX - fractureLengthPixels + 10, centerY + fractureWidth/2 + 15);
+                ctx.fillText('Effective Wellbore Radius', centerX + effectiveRadius + 5, centerY);
+            }
+            
+            // Initial simulation
+            updateSimulation();
+        });
+    </script>
+</body>
+</html>

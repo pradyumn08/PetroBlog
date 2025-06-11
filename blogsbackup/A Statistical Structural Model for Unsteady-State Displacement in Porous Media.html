@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Unsteady-State Displacement in Porous Media</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #simulation-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .slider {
+            width: 80%;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flow Through Porous Media: Understanding Unsteady-State Displacement from First Principles</h1>
+    
+    <p class="highlight">Have you ever wondered what happens when oil and water move through rocks deep underground? Or how we can predict the flow of groundwater through soil? These questions are at the heart of understanding fluid movement in porous media, a field with applications ranging from oil recovery to environmental remediation.</p>
+    
+    <p>Today, I'll break down the fascinating world of unsteady-state displacement in porous media, making a complex academic concept intuitive through first principles thinking. By the end, you'll understand how fluids behave when displacing each other in materials like rocks and sand, and why this matters for real-world applications.</p>
+
+    <h2>The Core Problem: What Happens When Fluids Displace Each Other?</h2>
+    
+    <p>Imagine pouring water onto a dry sponge. The water displaces the air in the sponge's pores. This seemingly simple process is actually governed by complex physics that engineers and scientists need to understand for applications like:</p>
+    
+    <ul>
+        <li>Extracting oil from underground reservoirs</li>
+        <li>Cleaning up groundwater contamination</li>
+        <li>Designing filters and separation processes</li>
+        <li>Understanding how medications disperse through tissues</li>
+    </ul>
+    
+    <p>The academic paper we're exploring investigates how fluids behave during <em>unsteady-state displacement</em> - when one fluid is actively pushing another out of a porous material, rather than both fluids flowing together in a steady state.</p>
+
+    <div class="analogy">
+        <h3>Think of it like this:</h3>
+        <p>Steady-state flow is like two lanes of traffic moving alongside each other at constant speeds. Unsteady-state displacement is like one lane of traffic pushing into the other lane, gradually taking over more of the road.</p>
+    </div>
+
+    <h2>First Principles: The Building Blocks of Fluid Flow in Porous Media</h2>
+    
+    <p>To understand this phenomenon from first principles, we need to start with the fundamental physics:</p>
+    
+    <h3>1. What is a porous medium?</h3>
+    
+    <p>A porous medium is any material containing tiny interconnected spaces (pores). Examples include:</p>
+    <ul>
+        <li>Rocks and soil</li>
+        <li>Biological tissues</li>
+        <li>Manufactured materials like filters and ceramics</li>
+    </ul>
+    
+    <p>The structure of these pores - their sizes, shapes, and connections - fundamentally determines how fluids move through the material.</p>
+    
+    <h3>2. Forces at play</h3>
+    
+    <p>Several forces govern fluid movement in porous media:</p>
+    
+    <ul>
+        <li><strong>Viscous forces</strong>: Resistance to flow due to fluid "thickness"</li>
+        <li><strong>Capillary forces</strong>: Arise from surface tension at fluid interfaces</li>
+        <li><strong>Pressure forces</strong>: Drive fluid from high to low pressure</li>
+        <li><strong>Gravitational forces</strong>: Pull fluids downward</li>
+        <li><strong>Interfacial forces</strong>: Act at the boundary between different fluids</li>
+    </ul>
+    
+    <h3>3. The concept of local volume averaging</h3>
+    
+    <p>One of the key insights from the paper is the use of "local volume averaging." This mathematical approach allows us to describe fluid behavior without needing to track every detail of the complex pore structure.</p>
+    
+    <p>Instead of looking at individual pores, we average fluid properties over small volumes that contain many pores. This gives us workable equations that capture the essential physics.</p>
+
+    <div class="equation-box">
+        <p>The local volume average of a quantity \(B^{(i)}\) for phase i is defined as:</p>
+        <p>
+            \[ \overline{{\mathtt{B}}}^{(\mathtt{i})}\equiv\frac{1}{\mathtt{V}}\int_{\mathtt{R}}(\mathtt{i})^{\mathtt{B}^{\mathtt{(i)}}\mathtt{d}\mathtt{V}} \]
+        </p>
+        <p>Where V is the volume of the region and \(R^{(i)}\) is the region occupied by phase i.</p>
+    </div>
+
+    <h2>The Mathematical Framework: Darcy's Law and Beyond</h2>
+    
+    <p>The foundation of fluid flow in porous media is Darcy's Law, which relates flow velocity to pressure gradient. For multiple fluid phases, it takes the form:</p>
+    
+    <div class="equation-box">
+        <p>
+            \[ -\nabla<_{\mathfrak{p}}>^{(\mathtt{i})}+\ \mathfrak{p}^{(\mathtt{i})}\overset{_{\mathtt{b}}}{\underset{\sim}{\sim}}=\frac{\mu^{(\mathtt{i})}}{\mathbf{k}\mathbf{k}^{(\mathtt{i})\star}}\overset{_{\overline{{\mathbf{v}}}}(\mathtt{i})}{\underset{\sim}{\sim}} \]
+        </p>
+    </div>
+    
+    <p>Breaking this down:</p>
+    <ul>
+        <li>\(-\nabla<_{\mathfrak{p}}>^{(\mathtt{i})}\): The pressure gradient in phase i</li>
+        <li>\(\mathfrak{p}^{(\mathtt{i})}\overset{_{\mathtt{b}}}{\underset{\sim}{\sim}}\): The gravitational force</li>
+        <li>\(\mu^{(\mathtt{i})}\): The viscosity of phase i</li>
+        <li>\(\mathbf{k}\): The absolute permeability of the medium</li>
+        <li>\(\mathbf{k}^{(\mathtt{i})\star}\): The relative permeability of phase i</li>
+        <li>\(\overset{_{\overline{{\mathbf{v}}}}(\mathtt{i})}{\underset{\sim}{\sim}}\): The average velocity of phase i</li>
+    </ul>
+    
+    <p>The key insight is that <strong>relative permeability</strong> (\(\mathbf{k}^{(\mathtt{i})\star}\)) describes how easily one fluid flows in the presence of another. It's this parameter that behaves differently in steady-state versus unsteady-state conditions.</p>
+
+    <h3>Capillary Pressure: The Interface Between Fluids</h3>
+    
+    <p>Another crucial concept is capillary pressure - the pressure difference between two fluid phases at their interface:</p>
+    
+    <div class="equation-box">
+        <p>
+            \[ \cos(n w)-\cos(w)=p_{c} \]
+        </p>
+        <p>Where \(p_c\) is the capillary pressure between the wetting (w) and non-wetting (nw) phases.</p>
+    </div>
+    
+    <p>This capillary pressure is influenced by pore size, interfacial tension, and contact angle. It plays a critical role in determining which fluid preferentially occupies which pores.</p>
+
+    <h2>The Statistical Structural Model: A Simplified View of Porous Media</h2>
+    
+    <p>The paper uses a statistical structural model to represent the complex pore structure. This approach:</p>
+    
+    <ul>
+        <li>Treats pores as randomly oriented cylinders</li>
+        <li>Uses a probability distribution to represent pore sizes</li>
+        <li>Assumes no direct pore interconnections</li>
+    </ul>
+    
+    <p>The distribution of pore radii follows a Beta probability density function:</p>
+    
+    <div class="equation-box">
+        <p>
+            \[ \mathbf{f}(\mathbf{\mathbb{R}}^{\star})=\frac{1}{\mathbf{\mathbb{B}}\langle\mathbf{\bar{\alpha}}+1,\mathbf{\bar{\alpha}},\mathbf{\beta}+1\rangle}\mathrm{\mathbb{R}}^{\star\mathbf{\bar{\alpha}}_{\mathbf{(}1-\mathbf{\alpha}_{\mathbf{R}}^{\star})}\mathbf{\beta}_{\mathbf{)}}} \]
+        </p>
+        <p>Where \(\mathbb{R}^{\star}\) is the normalized pore radius, and \(\alpha\) and \(\beta\) are shape parameters.</p>
+    </div>
+
+    <h2>The Key Finding: Steady-State vs. Unsteady-State Relative Permeabilities</h2>
+    
+    <p>The paper's most significant insight is that the relative permeabilities measured during unsteady-state flow can differ substantially from those measured in steady-state conditions, especially when the capillary number is large.</p>
+    
+    <p>The capillary number (\(N_{ca}\)) is a dimensionless ratio of viscous forces to capillary forces:</p>
+    
+    <div class="equation-box">
+        <p>
+            \[ N_{ca}\equiv\frac{k}{\gamma\mathrm{~\left[~cos~\right]~}}\mathrm{max}(|\nabla\mathrm{~<p>~}^{(n m)}|\:,|\nabla\mathrm{~<p>~}^{(w)}|\:) \]
+        </p>
+    </div>
+    
+    <p>The key findings are:</p>
+    
+    <ol>
+        <li>When \(N_{ca} \ll 1\), there's little difference between steady-state and unsteady-state relative permeabilities.</li>
+        <li>For larger values of \(N_{ca}\), during drainage (non-wetting phase displacing wetting phase), the unsteady-state relative permeability of the wetting phase decreases significantly.</li>
+        <li>During imbibition (wetting phase displacing non-wetting phase), the unsteady-state relative permeability of the wetting phase can be substantially larger than its steady-state value.</li>
+        <li>Interfacial viscosities significantly affect unsteady-state relative permeabilities.</li>
+    </ol>
+
+    <h2>Real-World Implications</h2>
+    
+    <p>These findings have profound implications for applications like oil recovery:</p>
+    
+    <ol>
+        <li>Simulations based on steady-state measurements might overestimate oil recovery efficiency.</li>
+        <li>The displacement process might be less stable than predicted, leading to "fingering" where the displacing fluid bypasses portions of the displaced fluid.</li>
+        <li>The effects are most significant near displacement fronts, where saturation gradients are largest.</li>
+    </ol>
+    
+    <p>This explains why traditional measurement techniques, which don't capture these effects, might lead to inaccurate predictions in real-world scenarios.</p>
+
+    <h2>Interactive Simulation: Explore Unsteady-State Displacement</h2>
+    
+    <div id="simulation-container">
+        <h3>Porous Media Flow Simulator</h3>
+        <p>Adjust the parameters below to see how they affect fluid displacement in porous media:</p>
+        
+        <div class="slider-container">
+            <label for="capillary-number">Capillary Number (N<sub>ca</sub>): <span id="capillary-number-value">0.05</span></label><br>
+            <input type="range" id="capillary-number" class="slider" min="0.001" max="1" step="0.001" value="0.05">
+        </div>
+        
+        <div class="slider-container">
+            <label for="interfacial-viscosity">Interfacial Viscosity (N<sub>κ+ε</sub>): <span id="interfacial-viscosity-value">0</span></label><br>
+            <input type="range" id="interfacial-viscosity" class="slider" min="0" max="1000000" step="1000" value="0">
+        </div>
+        
+        <div class="slider-container">
+            <label for="saturation">Wetting Phase Saturation (s<sup>(w)</sup>): <span id="saturation-value">0.5</span></label><br>
+            <input type="range" id="saturation" class="slider" min="0.05" max="0.95" step="0.01" value="0.5">
+        </div>
+        
+        <div>
+            <button id="drainage-btn">Drainage Process</button>
+            <button id="imbibition-btn">Imbibition Process</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+        
+        <div>
+            <canvas id="simulation-canvas" width="800" height="400"></canvas>
+        </div>
+        
+        <div class="note">
+            <p><strong>What you're seeing:</strong> The simulation shows pores of different sizes (represented by circles) and how they're filled with wetting (blue) and non-wetting (red) fluids. The graph on the right shows the relative permeability ratio (unsteady-state/steady-state) for both phases.</p>
+        </div>
+    </div>
+
+    <h2>Simplifying Complex Concepts: Key Takeaways</h2>
+    
+    <div class="analogy">
+        <h3>The Highway Analogy</h3>
+        <p>Think of porous media as a complex highway system with roads of different widths (pore sizes). The wetting fluid prefers the narrow roads, while the non-wetting fluid prefers the wide highways.</p>
+        <p>In steady-state flow, both fluids have established their preferred routes. In unsteady-state displacement, one fluid is actively taking over routes previously used by the other fluid.</p>
+        <p>The capillary number is like the aggressiveness of drivers - at high values, they'll push into lanes they wouldn't normally use, changing the efficiency of the overall traffic flow.</p>
+    </div>
+    
+    <h3>Key insights in simple terms:</h3>
+    
+    <ol>
+        <li><strong>Pore distribution matters</strong>: The range of pore sizes fundamentally determines how fluids move through the medium.</li>
+        <li><strong>Dynamic vs. static behavior</strong>: Fluids behave differently when actively displacing each other compared to flowing side by side.</li>
+        <li><strong>Interface effects</strong>: The properties of the boundary between fluids (interfacial tension, viscosity) significantly impact displacement efficiency.</li>
+        <li><strong>Location matters</strong>: The differences between steady-state and unsteady-state behavior are most pronounced near displacement fronts.</li>
+    </ol>
+
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>Understanding the differences between steady-state and unsteady-state displacement is crucial for accurately predicting fluid behavior in porous media. This has direct implications for:</p>
+    
+    <ul>
+        <li>Enhanced oil recovery techniques</li>
+        <li>Groundwater remediation strategies</li>
+        <li>Carbon sequestration efficiency</li>
+        <li>Medical applications like drug delivery</li>
+    </ul>
+    
+    <p>By recognizing when and where unsteady-state effects become significant (near displacement fronts and at high capillary numbers), engineers can develop more accurate models and more effective strategies for these applications.</p>
+    
+    <p>The statistical structural model presented in the paper, while simplified, provides valuable insights into these complex phenomena and offers a foundation for more sophisticated approaches to modeling multiphase flow in porous media.</p>
+
+    <script>
+        // Initialize the simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('simulation-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Get slider elements
+            const capillaryNumberSlider = document.getElementById('capillary-number');
+            const interfacialViscositySlider = document.getElementById('interfacial-viscosity');
+            const saturationSlider = document.getElementById('saturation');
+            
+            // Get value display elements
+            const capillaryNumberValue = document.getElementById('capillary-number-value');
+            const interfacialViscosityValue = document.getElementById('interfacial-viscosity-value');
+            const saturationValue = document.getElementById('saturation-value');
+            
+            // Get buttons
+            const drainageBtn = document.getElementById('drainage-btn');
+            const imbibitionBtn = document.getElementById('imbibition-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            
+            // Simulation state
+            let simulationMode = 'none'; // 'drainage', 'imbibition', or 'none'
+            let animationId = null;
+            let pores = [];
+            let time = 0;
+            
+            // Parameters
+            const numPores = 100;
+            const maxPoreRadius = 20;
+            const minPoreRadius = 3;
+            const alpha = 8.72; // From paper
+            const beta = 1.12;  // From paper
+            
+            // Initialize pores
+            function initializePores() {
+                pores = [];
+                for (let i = 0; i < numPores; i++) {
+                    // Generate pore radius using Beta distribution approximation
+                    // This is a simplification of the actual Beta distribution
+                    const u = Math.random();
+                    const v = Math.random();
+                    const betaRandom = Math.pow(u, 1/alpha) / (Math.pow(u, 1/alpha) + Math.pow(v, 1/beta));
+                    const radius = minPoreRadius + betaRandom * (maxPoreRadius - minPoreRadius);
+                    
+                    // Position pores randomly but avoid overlaps
+                    let x, y, overlap;
+                    do {
+                        overlap = false;
+                        x = radius + Math.random() * (400 - 2 * radius);
+                        y = radius + Math.random() * (400 - 2 * radius);
+                        
+                        for (const pore of pores) {
+                            const dx = pore.x - x;
+                            const dy = pore.y - y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            if (distance < pore.radius + radius + 2) {
+                                overlap = true;
+                                break;
+                            }
+                        }
+                    } while (overlap);
+                    
+                    pores.push({
+                        x, 
+                        y, 
+                        radius,
+                        fillRatio: 0, // 0 = fully non-wetting, 1 = fully wetting
+                        fillDirection: 'inward' // For animation: 'inward' or 'outward'
+                    });
+                }
+                
+                // Sort pores by radius (largest to smallest)
+                pores.sort((a, b) => b.radius - a.radius);
+            }
+            
+            // Draw the simulation
+            function drawSimulation() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw divider
+                ctx.beginPath();
+                ctx.moveTo(450, 0);
+                ctx.lineTo(450, canvas.height);
+                ctx.strokeStyle = '#ddd';
+                ctx.stroke();
+                
+                // Draw pores
+                for (const pore of pores) {
+                    // Draw pore boundary
+                    ctx.beginPath();
+                    ctx.arc(pore.x, pore.y, pore.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#666';
+                    ctx.stroke();
+                    
+                    // Draw fluid fill
+                    if (pore.fillRatio > 0) {
+                        ctx.beginPath();
+                        
+                        if (pore.fillDirection === 'inward') {
+                            // Fill from outside in (drainage)
+                            const innerRadius = pore.radius * (1 - pore.fillRatio);
+                            ctx.arc(pore.x, pore.y, pore.radius, 0, Math.PI * 2);
+                            ctx.arc(pore.x, pore.y, innerRadius, 0, Math.PI * 2, true);
+                            ctx.fillStyle = 'rgba(255, 0, 0, 0.7)'; // Non-wetting (red)
+                        } else {
+                            // Fill from inside out (imbibition)
+                            const filledRadius = pore.radius * pore.fillRatio;
+                            ctx.arc(pore.x, pore.y, filledRadius, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(0, 0, 255, 0.7)'; // Wetting (blue)
+                        }
+                        
+                        ctx.fill();
+                    }
+                }
+                
+                // Draw graph
+                drawRelativePermeabilityGraph();
+            }
+            
+            // Draw relative permeability graph
+            function drawRelativePermeabilityGraph() {
+                const graphX = 500;
+                const graphY = 50;
+                const graphWidth = 250;
+                const graphHeight = 300;
+                
+                // Draw axes
+                ctx.beginPath();
+                ctx.moveTo(graphX, graphY + graphHeight);
+                ctx.lineTo(graphX, graphY);
+                ctx.moveTo(graphX, graphY + graphHeight);
+                ctx.lineTo(graphX + graphWidth, graphY + graphHeight);
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+                
+                // Draw axis labels
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Saturation', graphX + graphWidth / 2, graphY + graphHeight + 30);
+                ctx.save();
+                ctx.translate(graphX - 30, graphY + graphHeight / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText('Relative Permeability Ratio', 0, 0);
+                ctx.restore();
+                
+                // Get current parameters
+                const Nca = parseFloat(capillaryNumberSlider.value);
+                const Nke = parseFloat(interfacialViscositySlider.value);
+                
+                // Draw curves
+                if (simulationMode === 'drainage' || simulationMode === 'imbibition') {
+                    // Draw wetting phase curve
+                    ctx.beginPath();
+                    ctx.moveTo(graphX, graphY + graphHeight);
+                    
+                    for (let s = 0.05; s <= 0.95; s += 0.05) {
+                        const x = graphX + s * graphWidth;
+                        let y;
+                        
+                        if (simulationMode === 'drainage') {
+                            // Approximate drainage curves from paper
+                            if (Nke > 0) {
+                                y = graphY + graphHeight - (0.8 - 0.6 * s - 0.2 * Math.pow(Nca, 0.5) * (1 - Math.pow(s, 2))) * graphHeight;
+                            } else {
+                                y = graphY + graphHeight - (1 - 0.3 * Math.pow(Nca, 0.5) * (1 - s)) * graphHeight;
+                            }
+                        } else { // imbibition
+                            // Approximate imbibition curves from paper
+                            if (Nke > 0) {
+                                if (s < 0.2) {
+                                    y = graphY + graphHeight - (0.8 + 1.5 * s) * graphHeight;
+                                } else {
+                                    y = graphY + graphHeight - (1.1 + 0.5 * Math.sin(Math.PI * (s - 0.2) / 0.8)) * graphHeight;
+                                }
+                            } else {
+                                if (s < 0.2) {
+                                    y = graphY + graphHeight - (1 + 2 * s) * graphHeight;
+                                } else {
+                                    y = graphY + graphHeight - (1.4 + 0.8 * Math.sin(Math.PI * (s - 0.2) / 0.8)) * graphHeight;
+                                }
+                            }
+                            
+                            // Scale by Nca
+                            const scale = 0.5 + 0.5 * Math.pow(Nca, 0.3);
+                            y = graphY + graphHeight - scale * (graphY + graphHeight - y);
+                        }
+                        
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    ctx.strokeStyle = 'blue';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw non-wetting phase curve
+                    ctx.beginPath();
+                    ctx.moveTo(graphX, graphY + graphHeight - 0.2 * graphHeight);
+                    
+                    for (let s = 0.05; s <= 0.95; s += 0.05) {
+                        const x = graphX + s * graphWidth;
+                        let y;
+                        
+                        if (simulationMode === 'drainage') {
+                            // Approximate drainage curves from paper for non-wetting
+                            if (Nke > 0) {
+                                y = graphY + graphHeight - (1 - 0.1 * s - 0.1 * Math.pow(Nca, 0.3) * s) * graphHeight;
+                            } else {
+                                y = graphY + graphHeight - (1 - 0.05 * Math.pow(Nca, 0.3) * s) * graphHeight;
+                            }
+                        } else { // imbibition
+                            // Approximate imbibition curves from paper for non-wetting
+                            if (Nke > 0) {
+                                if (s < 0.2) {
+                                    y = graphY + graphHeight - (1 - 0.5 * s) * graphHeight;
+                                } else {
+                                    y = graphY + graphHeight - (0.9 - 2 * (s - 0.2)) * graphHeight;
+                                }
+                            } else {
+                                if (s < 0.2) {
+                                    y = graphY + graphHeight - (1 - 0.2 * s) * graphHeight;
+                                } else {
+                                    y = graphY + graphHeight - (0.96 - 1.5 * (s - 0.2)) * graphHeight;
+                                }
+                            }
+                            
+                            // Scale by Nca
+                            const scale = 0.5 + 0.5 * Math.pow(Nca, 0.3);
+                            y = graphY + graphHeight - scale * (graphY + graphHeight - y);
+                        }
+                        
+                        y = Math.max(y, graphY); // Ensure curve stays within graph
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw current saturation indicator
+                    const currentS = parseFloat(saturationSlider.value);
+                    ctx.beginPath();
+                    ctx.moveTo(graphX + currentS * graphWidth, graphY);
+                    ctx.lineTo(graphX + currentS * graphWidth, graphY + graphHeight);
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
+                // Draw legend
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(graphX + 10, graphY + 10, 15, 15);
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'left';
+                ctx.fillText('Wetting phase', graphX + 30, graphY + 22);
+                
+                ctx.fillStyle = 'red';
+                ctx.fillRect(graphX + 10, graphY + 35, 15, 15);
+                ctx.fillStyle = 'black';
+                ctx.fillText('Non-wetting phase', graphX + 30, graphY + 47);
+            }
+            
+            // Update simulation based on current parameters
+            function updateSimulation() {
+                const Nca = parseFloat(capillaryNumberSlider.value);
+                const Nke = parseFloat(interfacialViscositySlider.value);
+                const targetSaturation = parseFloat(saturationSlider.value);
+                
+                // Calculate current saturation
+                let currentSaturation = 0;
+                let totalPoreVolume = 0;
+                
+                for (const pore of pores) {
+                    const poreVolume = Math.PI * pore.radius * pore.radius;
+                    totalPoreVolume += poreVolume;
+                    
+                    if (simulationMode === 'drainage') {
+                        // In drainage, wetting phase is being displaced
+                        currentSaturation += poreVolume * (1 - pore.fillRatio);
+                    } else if (simulationMode === 'imbibition') {
+                        // In imbibition, wetting phase is displacing
+                        currentSaturation += poreVolume * pore.fillRatio;
+                    }
+                }
+                
+                currentSaturation /= totalPoreVolume;
+                
+                // Adjust fill ratios to approach target saturation
+                if (simulationMode === 'drainage') {
+                    if (currentSaturation > targetSaturation) {
+                        // Need to displace more wetting fluid
+                        // Find smallest pore that's not fully filled with non-wetting
+                        for (let i = pores.length - 1; i >= 0; i--) {
+                            if (pores[i].fillRatio < 1) {
+                                // Increase fill ratio based on capillary number and interfacial viscosity
+                                const fillSpeed = 0.005 * Math.pow(Nca, 0.5) / (1 + Nke * 1e-6);
+                                pores[i].fillRatio = Math.min(1, pores[i].fillRatio + fillSpeed);
+                                break;
+                            }
+                        }
+                    }
+                } else if (simulationMode === 'imbibition') {
+                    if (currentSaturation < targetSaturation) {
+                        // Need to displace more non-wetting fluid
+                        // Find largest pore that's not fully filled with wetting
+                        for (let i = 0; i < pores.length; i++) {
+                            if (pores[i].fillRatio < 1) {
+                                // Increase fill ratio based on capillary number and interfacial viscosity
+                                const fillSpeed = 0.005 * Math.pow(Nca, 0.5) / (1 + Nke * 1e-6);
+                                pores[i].fillRatio = Math.min(1, pores[i].fillRatio + fillSpeed);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                time += 1;
+                drawSimulation();
+                
+                // Continue animation
+                animationId = requestAnimationFrame(updateSimulation);
+            }
+            
+            // Start drainage process
+            function startDrainage() {
+                stopAnimation();
+                simulationMode = 'drainage';
+                
+                // Reset pores
+                for (const pore of pores) {
+                    pore.fillRatio = 0;
+                    pore.fillDirection = 'inward'; // Non-wetting displacing wetting
+                }
+                
+                // Start animation
+                animationId = requestAnimationFrame(updateSimulation);
+            }
+            
+            // Start imbibition process
+            function startImbibition() {
+                stopAnimation();
+                simulationMode = 'imbibition';
+                
+                // Reset pores
+                for (const pore of pores) {
+                    pore.fillRatio = 0;
+                    pore.fillDirection = 'outward'; // Wetting displacing non-wetting
+                }
+                
+                // Start animation
+                animationId = requestAnimationFrame(updateSimulation);
+            }
+            
+            // Stop animation
+            function stopAnimation() {
+                if (animationId !== null) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+            
+            // Reset simulation
+            function resetSimulation() {
+                stopAnimation();
+                simulationMode = 'none';
+                time = 0;
+                initializePores();
+                drawSimulation();
+            }
+            
+            // Update displayed values when sliders change
+            capillaryNumberSlider.addEventListener('input', function() {
+                capillaryNumberValue.textContent = this.value;
+            });
+            
+            interfacialViscositySlider.addEventListener('input', function() {
+                interfacialViscosityValue.textContent = this.value;
+            });
+            
+            saturationSlider.addEventListener('input', function() {
+                saturationValue.textContent = this.value;
+            });
+            
+            // Button event listeners
+            drainageBtn.addEventListener('click', startDrainage);
+            imbibitionBtn.addEventListener('click', startImbibition);
+            resetBtn.addEventListener('click', resetSimulation);
+            
+            // Initialize
+            initializePores();
+            drawSimulation();
+        });
+    </script>
+</body>
+</html>

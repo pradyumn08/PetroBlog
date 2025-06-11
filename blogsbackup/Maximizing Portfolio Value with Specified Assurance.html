@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Uncertainty to Optimization: Understanding Portfolio Value Maximization</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .interactive-section {
+            background-color: #eaf2f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .note {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .key-takeaway {
+            background-color: #e8f8f5;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .project-dot {
+            cursor: pointer;
+        }
+        #projectInfo {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>From Uncertainty to Optimization: Understanding Portfolio Value Maximization</h1>
+    
+    <p>In today's post, we're diving deep into a fascinating approach to capital budgeting that balances risk, reward, and limited resources. If you've ever wondered how companies decide which projects to fund when they can't fund everything, you're about to discover the elegant mathematics behind those decisions.</p>
+    
+    <p>We'll break down a complex academic framework into understandable pieces, showing how organizations can maximize value while managing uncertainty. By the end, you'll not only understand the theory but also be able to experiment with it through our interactive simulator.</p>
+
+    <h2>The Core Problem: Balancing Risk and Reward with Limited Capital</h2>
+    
+    <p>Imagine you're the CFO of a company with $45 million to invest across dozens of potential projects. Each project has:</p>
+    <ul>
+        <li>An expected value (how much money it might make)</li>
+        <li>A capital requirement (how much it costs to implement)</li>
+        <li>Uncertainty (how sure you are about those numbers)</li>
+    </ul>
+    
+    <p>You can't fund everything, so how do you choose? Do you pick the projects with the highest expected returns? The lowest risk? Some combination?</p>
+
+    <div class="highlight">
+        <p>The academic paper we're exploring proposes a powerful answer: <strong>maximize the portfolio value at a specific confidence level</strong>. In other words, find the collection of projects that gives you the highest value you can be reasonably confident of achieving.</p>
+    </div>
+
+    <h2>First Principles: Understanding Portfolio Value Under Uncertainty</h2>
+    
+    <p>Let's start with the most fundamental concept. When we have uncertainty, we can't just look at the expected value - we need to consider the distribution of possible outcomes.</p>
+    
+    <p>If we assume our portfolio follows a normal distribution (thanks to the Central Limit Theorem, which we'll explain shortly), we can define our objective function as:</p>
+    
+    <div class="formula-box">
+        <p>\[ f = EPV_T - N\sigma_T \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(EPV_T\) is the total expected present value of the portfolio</li>
+            <li>\(\sigma_T\) is the standard deviation of the portfolio value</li>
+            <li>\(N\) is a factor related to our confidence level</li>
+        </ul>
+    </div>
+    
+    <p>This elegant formula has a powerful interpretation: it represents the value at a specific confidence level. For example, if N=1, we're looking at the value we can be 84% confident of achieving (the 16th percentile of a normal distribution).</p>
+
+    <h3>Why This Works: The Central Limit Theorem</h3>
+    
+    <p>The Central Limit Theorem tells us that when we combine many independent random variables, their sum tends toward a normal distribution, regardless of the original distributions. For our portfolio:</p>
+    
+    <div class="formula-box">
+        <p>\[ \mu_T = \sum_{i=1}^{n} \mu_i \]</p>
+        <p>\[ \sigma_T^2 \approx \sum_{i=1}^{n} \sigma_i^2 \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(\mu_i\) is the mean (expected value) of project i</li>
+            <li>\(\sigma_i^2\) is the variance of project i</li>
+        </ul>
+    </div>
+    
+    <p>This means we can simply add up the expected values and (approximately) the variances of our projects to get our portfolio statistics, making the math tractable.</p>
+
+    <h2>The Optimization Problem: Maximizing Value with Constraints</h2>
+    
+    <p>Now let's formalize our problem. We want to maximize our objective function subject to capital constraints:</p>
+    
+    <div class="formula-box">
+        <p>Maximize: \[ f = \sum_{i=1}^{n} EPV_i x_i - N\left(\sum_{i=1}^{n} \sigma_i^2 x_i^2\right)^{1/2} \]</p>
+        
+        <p>Subject to: \[ \sum_{i=1}^{n} CAP_i x_i \leq CAP_{MAX} \]</p>
+        
+        <p>And: \[ 0 \leq x_i \leq x_{iMAX} \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(x_i\) is the participation factor for project i (how much of it we do)</li>
+            <li>\(CAP_i\) is the capital required for project i</li>
+            <li>\(CAP_{MAX}\) is our total capital budget</li>
+            <li>\(x_{iMAX}\) is the maximum possible participation in project i</li>
+        </ul>
+    </div>
+
+    <h3>Solving with Karush-Kuhn-Tucker Conditions</h3>
+    
+    <p>To solve this optimization problem, we use the Karush-Kuhn-Tucker (KKT) conditions, which provide necessary and sufficient conditions for optimality in constrained optimization problems.</p>
+    
+    <p>First, we form the Lagrangian function:</p>
+    
+    <div class="formula-box">
+        <p>\[ \mathcal{L} = \sum_{i=1}^{n} EPV_i x_i - N\left(\sum_{i=1}^{n} \sigma_i^2 x_i^2\right)^{1/2} + \lambda_{CAP}\left(CAP_{MAX} - \sum_{i=1}^{n} CAP_i x_i\right) + \sum_{i=1}^{n} \lambda_{iMAX}(x_{iMAX} - x_i) + \sum_{i=1}^{n} \lambda_{iMIN}(x_i - 0) \]</p>
+    </div>
+    
+    <p>Taking the derivative with respect to each \(x_i\) and setting it to zero gives us our optimality conditions. After some algebraic manipulation, we get a remarkably elegant result:</p>
+    
+    <div class="formula-box">
+        <p>\[ 0 \leq \left(x_i = \frac{EPV_i - \lambda_{CAP}CAP_i}{\frac{N}{\sigma_T}\sigma_i^2}\right) \leq x_{iMAX} \]</p>
+    </div>
+    
+    <p>This formula tells us exactly how much to invest in each project at the optimum! It balances expected value, capital requirements, and risk in one elegant expression.</p>
+
+    <div class="key-takeaway">
+        <p><strong>Key insight:</strong> At the optimal solution, projects can fall into three categories:</p>
+        <ul>
+            <li>Fully funded (\(x_i = x_{iMAX}\))</li>
+            <li>Partially funded (\(0 < x_i < x_{iMAX}\))</li>
+            <li>Not funded (\(x_i = 0\))</li>
+        </ul>
+        <p>The formula above tells us exactly which category each project falls into and the exact participation level for partially funded projects.</p>
+    </div>
+
+    <h2>Real-World Meaning: What the Math Tells Us</h2>
+    
+    <p>Let's decode what this mathematical solution means in practical terms:</p>
+    
+    <ol>
+        <li><strong>The Lagrange multiplier \(\lambda_{CAP}\)</strong> represents the marginal value of capital. It's the incremental value you'd get from an extra dollar of budget.</li>
+        <li><strong>The term \(\frac{EPV_i - \lambda_{CAP}CAP_i}{\frac{N}{\sigma_T}\sigma_i^2}\)</strong> balances a project's expected value against its capital cost and risk.</li>
+        <li><strong>Projects with higher expected values</strong> relative to their capital requirements and risk are prioritized.</li>
+    </ol>
+    
+    <p>We can rearrange our conditions to get a clearer picture of which projects get funded:</p>
+    
+    <div class="formula-box">
+        <p>For \(x_i = 0\) (not funded): \[ \frac{CAP_i}{EPV_i} \geq \frac{1}{\lambda_{CAP}} \]</p>
+        
+        <p>For \(x_i = x_{iMAX}\) (fully funded): \[ \frac{CAP_i}{EPV_i} \leq \frac{1}{\lambda_{CAP}} - \frac{1}{\lambda_{CAP}}\frac{N}{\sigma_T}\frac{\sigma_i^2 x_{iMAX}}{EPV_i} \]</p>
+        
+        <p>For \(0 < x_i < x_{iMAX}\) (partially funded): \[ \frac{CAP_i}{EPV_i} = \frac{1}{\lambda_{CAP}} - \frac{1}{\lambda_{CAP}}\frac{N}{\sigma_T}\frac{\sigma_i^2 x_i}{EPV_i} \]</p>
+    </div>
+    
+    <p>This gives us a clear decision rule: plot \(\frac{CAP_i}{EPV_i}\) against \(\frac{\sigma_i^2 x_{iMAX}}{EPV_i}\) for each project, and you can visually see which projects should be funded.</p>
+
+    <h2>Incremental Project Value and Fair Market Value</h2>
+    
+    <p>One of the most useful applications of this framework is calculating the incremental value each project adds to the portfolio:</p>
+    
+    <div class="formula-box">
+        <p>\[ \Delta f_i \approx EPV_i x_i - \frac{N}{2\sigma_T}(\sigma_i^2 x_i^2) - \lambda_{CAP} CAP_i x_i \]</p>
+    </div>
+    
+    <p>This formula tells us the true contribution of each project to our portfolio value, accounting for its risk and capital consumption.</p>
+    
+    <p>We can extend this to determine the fair market value (FMV) of a project - what it's actually worth to our portfolio:</p>
+    
+    <div class="formula-box">
+        <p>\[ FMV_i \approx \frac{EPV_i x_i - \frac{N}{2\sigma_T}(\sigma_i^2 x_i^2) - \lambda_{CAP} CAP_i x_i}{1 + \lambda_{CAP}} \]</p>
+    </div>
+    
+    <p>This is incredibly valuable for acquisition and divestiture decisions - it tells us exactly how much a project is worth to us.</p>
+
+    <h2>Interactive Portfolio Optimizer</h2>
+    
+    <div class="interactive-section">
+        <p>Now let's put theory into practice! This interactive tool lets you experiment with different parameters and see how they affect the optimal portfolio.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Capital Budget ($M):</span>
+            <input type="range" id="capitalSlider" min="10" max="100" value="45" step="5">
+            <span class="output" id="capitalOutput">45</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Confidence Level (N):</span>
+            <input type="range" id="confidenceSlider" min="0" max="2" value="1" step="0.1">
+            <span class="output" id="confidenceOutput">1.0</span>
+        </div>
+        
+        <div id="projectChart" class="chart-container">
+            <!-- D3 chart will be rendered here -->
+        </div>
+        
+        <div id="projectInfo"></div>
+        
+        <div id="portfolioStats">
+            <h3>Portfolio Statistics</h3>
+            <table id="statsTable">
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Expected Portfolio Value ($M)</td>
+                    <td id="epvValue">0</td>
+                </tr>
+                <tr>
+                    <td>Portfolio Standard Deviation ($M)</td>
+                    <td id="stdValue">0</td>
+                </tr>
+                <tr>
+                    <td>Objective Function Value ($M)</td>
+                    <td id="objValue">0</td>
+                </tr>
+                <tr>
+                    <td>Capital Used ($M)</td>
+                    <td id="capValue">0</td>
+                </tr>
+                <tr>
+                    <td>Marginal Value of Capital (λ<sub>CAP</sub>)</td>
+                    <td id="lambdaValue">0</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2>Connecting to Other Financial Concepts</h2>
+    
+    <p>This framework elegantly connects to several established financial concepts:</p>
+    
+    <h3>Relationship to the Sharpe Ratio</h3>
+    
+    <p>The optimization parameter N is actually equivalent to the Sharpe Ratio:</p>
+    
+    <div class="formula-box">
+        <p>\[ N = \frac{\frac{EPV_T}{CAP_{MAX}} - \lambda_{CAP}}{\frac{\sigma_T}{CAP_{MAX}}} = \frac{\bar{r}_p - \bar{r}_f}{\sigma_p} = S \]</p>
+    </div>
+    
+    <p>This shows that our framework is consistent with modern portfolio theory - we're essentially maximizing the risk-adjusted return.</p>
+    
+    <h3>Connection to Discounted Return-on-Investment (DROI)</h3>
+    
+    <p>We can relate our Lagrange multiplier to the minimum acceptable DROI:</p>
+    
+    <div class="formula-box">
+        <p>\[ DROI_{MIN} = 1 + \lambda_{CAP} \]</p>
+    </div>
+    
+    <p>This gives us a clear hurdle rate for project selection that accounts for capital constraints.</p>
+
+    <h2>Real-World Applications</h2>
+    
+    <p>This framework has numerous practical applications:</p>
+    
+    <ul>
+        <li><strong>Capital Budgeting:</strong> Determine which projects to fund with limited capital</li>
+        <li><strong>Acquisition/Divestiture Valuation:</strong> Calculate the true value of projects to your portfolio</li>
+        <li><strong>Risk Management:</strong> Balance expected returns against uncertainty</li>
+        <li><strong>Portfolio Optimization:</strong> Find the optimal mix of projects</li>
+    </ul>
+    
+    <p>Industries from oil and gas to pharmaceuticals, venture capital, and R&D management can benefit from this approach.</p>
+
+    <h2>Summary: The Power of Portfolio Optimization</h2>
+    
+    <p>We've explored a sophisticated yet practical approach to portfolio optimization that:</p>
+    
+    <ol>
+        <li>Maximizes value at a specific confidence level</li>
+        <li>Balances expected returns against risk</li>
+        <li>Accounts for capital constraints</li>
+        <li>Provides clear decision rules for project selection</li>
+        <li>Enables accurate valuation of projects</li>
+    </ol>
+    
+    <p>The beauty of this approach is that it gives us not just a binary yes/no decision for each project, but the optimal level of participation in each one.</p>
+    
+    <div class="key-takeaway">
+        <p><strong>The big takeaway:</strong> By understanding the mathematical relationships between risk, return, and capital constraints, we can make optimal investment decisions that maximize value while managing uncertainty.</p>
+    </div>
+    
+    <p>I hope this breakdown has helped you understand this powerful approach to portfolio optimization. Try experimenting with the interactive tool above to develop your intuition for how these principles work in practice!</p>
+
+    <script>
+        // Sample project data
+        const projects = [
+            { id: 1, name: "Project A", epv: 12.5, cap: 5.0, sigma: 4.0, xMax: 1.0, binary: false },
+            { id: 2, name: "Project B", epv: 8.0, cap: 4.0, sigma: 2.5, xMax: 1.0, binary: false },
+            { id: 3, name: "Project C", epv: 15.0, cap: 10.0, sigma: 7.0, xMax: 1.0, binary: false },
+            { id: 4, name: "Project D", epv: 6.0, cap: 2.0, sigma: 1.5, xMax: 1.0, binary: false },
+            { id: 5, name: "Project E", epv: 20.0, cap: 15.0, sigma: 10.0, xMax: 1.0, binary: false },
+            { id: 6, name: "Project F", epv: 10.0, cap: 3.0, sigma: 3.0, xMax: 1.0, binary: false },
+            { id: 7, name: "Project G", epv: 7.5, cap: 5.0, sigma: 2.0, xMax: 1.0, binary: false },
+            { id: 8, name: "Project H", epv: 18.0, cap: 12.0, sigma: 8.0, xMax: 1.0, binary: false },
+            { id: 9, name: "Project I", epv: 5.0, cap: 1.5, sigma: 1.0, xMax: 1.0, binary: false },
+            { id: 10, name: "Project J", epv: 14.0, cap: 8.0, sigma: 6.0, xMax: 1.0, binary: false },
+            { id: 11, name: "Project K", epv: 9.0, cap: 7.0, sigma: 3.5, xMax: 1.0, binary: true },
+            { id: 12, name: "Project L", epv: 11.0, cap: 6.0, sigma: 4.5, xMax: 1.0, binary: true },
+            { id: 13, name: "Project M", epv: 13.0, cap: 9.0, sigma: 5.5, xMax: 1.0, binary: true },
+            { id: 14, name: "Project N", epv: 4.0, cap: 2.5, sigma: 1.2, xMax: 1.0, binary: true },
+            { id: 15, name: "Project O", epv: 16.0, cap: 11.0, sigma: 7.5, xMax: 1.0, binary: true }
+        ];
+
+        // Initialize UI
+        document.getElementById('capitalOutput').textContent = document.getElementById('capitalSlider').value;
+        document.getElementById('confidenceOutput').textContent = document.getElementById('confidenceSlider').value;
+
+        // Update output values when sliders change
+        document.getElementById('capitalSlider').addEventListener('input', function() {
+            document.getElementById('capitalOutput').textContent = this.value;
+            updateOptimization();
+        });
+
+        document.getElementById('confidenceSlider').addEventListener('input', function() {
+            document.getElementById('confidenceOutput').textContent = this.value;
+            updateOptimization();
+        });
+
+        // Portfolio optimization function
+        function optimizePortfolio(projects, capitalMax, N) {
+            // Initial guess for lambda
+            let lambdaMin = 0;
+            let lambdaMax = 1;
+            let lambda = 0.1;
+            let tolerance = 0.0001;
+            let maxIterations = 100;
+            
+            // Binary search to find the right lambda
+            for (let i = 0; i < maxIterations; i++) {
+                // Calculate total capital with current lambda
+                let sigmaT = 0.1; // Initial guess
+                
+                // Iterate a few times to stabilize sigmaT
+                for (let j = 0; j < 5; j++) {
+                    let totalVariance = 0;
+                    
+                    projects.forEach(project => {
+                        // Calculate x using the formula
+                        let x = (project.epv - lambda * project.cap) / ((N / sigmaT) * project.sigma * project.sigma);
+                        
+                        // Apply bounds
+                        x = Math.max(0, Math.min(project.xMax, x));
+                        
+                        // For binary projects, round to 0 or 1
+                        if (project.binary) {
+                            x = (x > 0.5) ? 1 : 0;
+                        }
+                        
+                        // Add to total variance
+                        totalVariance += project.sigma * project.sigma * x * x;
+                    });
+                    
+                    sigmaT = Math.sqrt(totalVariance);
+                }
+                
+                // Calculate participation factors and total capital
+                let totalCapital = 0;
+                
+                projects.forEach(project => {
+                    let x = (project.epv - lambda * project.cap) / ((N / sigmaT) * project.sigma * project.sigma);
+                    
+                    // Apply bounds
+                    x = Math.max(0, Math.min(project.xMax, x));
+                    
+                    // For binary projects, round to 0 or 1
+                    if (project.binary) {
+                        x = (x > 0.5) ? 1 : 0;
+                    }
+                    
+                    project.x = x;
+                    totalCapital += project.cap * x;
+                });
+                
+                // Check if we're close enough to the capital constraint
+                if (Math.abs(totalCapital - capitalMax) < tolerance * capitalMax) {
+                    break;
+                }
+                
+                // Update lambda using binary search
+                if (totalCapital > capitalMax) {
+                    lambdaMin = lambda;
+                    lambda = (lambda + lambdaMax) / 2;
+                } else {
+                    lambdaMax = lambda;
+                    lambda = (lambda + lambdaMin) / 2;
+                }
+            }
+            
+            // Calculate final portfolio statistics
+            let epvTotal = 0;
+            let capTotal = 0;
+            let varianceTotal = 0;
+            
+            projects.forEach(project => {
+                epvTotal += project.epv * project.x;
+                capTotal += project.cap * project.x;
+                varianceTotal += project.sigma * project.sigma * project.x * project.x;
+                
+                // Calculate incremental value
+                const sigmaT = Math.sqrt(varianceTotal);
+                project.incremental = project.epv * project.x - (N / (2 * sigmaT)) * (project.sigma * project.sigma * project.x * project.x) - lambda * project.cap * project.x;
+            });
+            
+            const sigmaT = Math.sqrt(varianceTotal);
+            const objectiveValue = epvTotal - N * sigmaT;
+            
+            return {
+                projects: projects,
+                epvTotal: epvTotal,
+                sigmaT: sigmaT,
+                objectiveValue: objectiveValue,
+                capTotal: capTotal,
+                lambda: lambda
+            };
+        }
+
+        // Update the visualization
+        function updateOptimization() {
+            const capitalMax = parseFloat(document.getElementById('capitalSlider').value);
+            const N = parseFloat(document.getElementById('confidenceSlider').value);
+            
+            // Deep copy projects to avoid modifying the original
+            const projectsCopy = JSON.parse(JSON.stringify(projects));
+            
+            // Run optimization
+            const result = optimizePortfolio(projectsCopy, capitalMax, N);
+            
+            // Update portfolio stats
+            document.getElementById('epvValue').textContent = result.epvTotal.toFixed(2);
+            document.getElementById('stdValue').textContent = result.sigmaT.toFixed(2);
+            document.getElementById('objValue').textContent = result.objectiveValue.toFixed(2);
+            document.getElementById('capValue').textContent = result.capTotal.toFixed(2);
+            document.getElementById('lambdaValue').textContent = result.lambda.toFixed(4);
+            
+            // Update visualization
+            updateVisualization(result.projects, result.lambda, N, result.sigmaT);
+        }
+
+        // Create the visualization
+        function updateVisualization(projects, lambda, N, sigmaT) {
+            // Clear previous chart
+            d3.select("#projectChart").html("");
+            
+            // Set up dimensions
+            const margin = {top: 40, right: 40, bottom: 60, left: 60};
+            const width = 700 - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+            
+            // Create SVG
+            const svg = d3.select("#projectChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // Define scales
+            const xMax = d3.max(projects, d => (d.sigma * d.sigma * d.xMax) / d.epv) * 1.2;
+            const yMax = d3.max(projects, d => d.cap / d.epv) * 1.2;
+            
+            const xScale = d3.scaleLinear()
+                .domain([0, xMax])
+                .range([0, width]);
+                
+            const yScale = d3.scaleLinear()
+                .domain([0, yMax])
+                .range([height, 0]);
+            
+            // Add X and Y axes
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+                
+            svg.append("g")
+                .call(d3.axisLeft(yScale));
+            
+            // Add axis labels
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", width / 2)
+                .attr("y", height + margin.bottom - 10)
+                .text("σ²ᵢxᵢₘₐₓ/EPVᵢ (Risk-to-Value Ratio)");
+                
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", `translate(${-margin.left + 20},${height/2}) rotate(-90)`)
+                .text("CAPᵢ/EPVᵢ (Capital-to-Value Ratio)");
+            
+            // Add title
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", width / 2)
+                .attr("y", -10)
+                .style("font-size", "16px")
+                .text("Project Selection Visualization");
+            
+            // Draw the decision boundary line
+            const x1 = 0;
+            const y1 = 1/lambda;
+            const x2 = xMax;
+            const y2 = 1/lambda - (1/lambda) * (N/sigmaT) * x2;
+            
+            svg.append("line")
+                .attr("x1", xScale(x1))
+                .attr("y1", yScale(y1))
+                .attr("x2", xScale(x2))
+                .attr("y2", yScale(y2))
+                .attr("stroke", "red")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "5,5");
+            
+            // Add projects as circles
+            svg.selectAll(".project-dot")
+                .data(projects)
+                .enter()
+                .append("circle")
+                .attr("class", "project-dot")
+                .attr("cx", d => xScale((d.sigma * d.sigma * d.xMax) / d.epv))
+                .attr("cy", d => yScale(d.cap / d.epv))
+                .attr("r", d => 5 + 10 * d.x) // Size based on participation
+                .attr("fill", d => {
+                    if (d.binary) {
+                        return d.x > 0.5 ? "green" : "red";
+                    } else {
+                        return d.x > 0 ? (d.x < d.xMax ? "orange" : "green") : "red";
+                    }
+                })
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("opacity", 0.7)
+                .on("mouseover", function(event, d) {
+                    // Show project info
+                    const projectInfo = document.getElementById("projectInfo");
+                    projectInfo.style.display = "block";
+                    projectInfo.innerHTML = `
+                        <strong>${d.name}</strong><br>
+                        EPV: $${d.epv.toFixed(1)}M | Capital: $${d.cap.toFixed(1)}M | Risk (σ): ${d.sigma.toFixed(1)}<br>
+                        Participation: ${(d.x * 100).toFixed(0)}% | Incremental Value: $${d.incremental.toFixed(2)}M
+                    `;
+                    
+                    // Highlight this circle
+                    d3.select(this)
+                        .attr("stroke-width", 3)
+                        .attr("opacity", 1);
+                })
+                .on("mouseout", function() {
+                    // Hide project info
+                    document.getElementById("projectInfo").style.display = "none";
+                    
+                    // Reset circle style
+                    d3.select(this)
+                        .attr("stroke-width", 1)
+                        .attr("opacity", 0.7);
+                });
+            
+            // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(${width - 120}, 20)`);
+                
+            legend.append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", 5)
+                .attr("fill", "green");
+                
+            legend.append("text")
+                .attr("x", 10)
+                .attr("y", 5)
+                .text("Fully Funded");
+                
+            legend.append("circle")
+                .attr("cx", 0)
+                .attr("cy", 20)
+                .attr("r", 5)
+                .attr("fill", "orange");
+                
+            legend.append("text")
+                .attr("x", 10)
+                .attr("y", 25)
+                .text("Partially Funded");
+                
+            legend.append("circle")
+                .attr("cx", 0)
+                .attr("cy", 40)
+                .attr("r", 5)
+                .attr("fill", "red");
+                
+            legend.append("text")
+                .attr("x", 10)
+                .attr("y", 45)
+                .text("Not Funded");
+        }
+
+        // Initialize the visualization
+        updateOptimization();
+    </script>
+</body>
+</html>

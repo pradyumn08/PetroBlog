@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Gas Diffusion in Liquids: First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 40px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #4a90e2;
+            margin: 20px 0;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+            background-color: #f5f5f5;
+        }
+        code {
+            font-family: Monaco, monospace;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        canvas {
+            background-color: white;
+            border: 1px solid #ddd;
+            display: block;
+            margin: 20px auto;
+        }
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #357abd;
+        }
+        .equation-box {
+            padding: 10px;
+            margin: 15px 0;
+            background: #f7f7f7;
+            border-left: 3px solid #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <h1>How Gases Dissolve in Liquids: Understanding Diffusion from First Principles</h1>
+    
+    <p>Have you ever wondered why a can of soda fizzes when opened, or how oxygen from the air dissolves in water for fish to breathe? These everyday phenomena are governed by the fascinating process of gas diffusion in liquids. Today, we'll break down a complex academic paper on this topic into digestible first principles, and even build an interactive model to see it in action.</p>
+    
+    <div class="note">
+        <strong>What we'll cover:</strong> How gases dissolve in liquids, the mathematical models that describe this process, and why this matters for everything from oil recovery to environmental science.
+    </div>
+    
+    <h2>The Basic Problem: Gas Dissolving in a Liquid</h2>
+    
+    <p>Imagine we have a closed tank with gas at the top and a liquid like oil at the bottom. Initially, the gas has a high pressure. Over time, some of this gas will dissolve into the liquid, causing the pressure to drop. By measuring how quickly the pressure drops, scientists can determine a crucial property called the <span class="highlight">diffusion coefficient</span> - essentially how quickly the gas molecules move through the liquid.</p>
+    
+    <p>This might sound academic, but it's vitally important for:</p>
+    <ul>
+        <li>Oil recovery operations where gases are injected into oil reservoirs</li>
+        <li>Understanding how pollutants move through groundwater</li>
+        <li>Designing drilling fluids for oil and gas wells</li>
+        <li>Modeling gas exchange in biological systems</li>
+    </ul>
+    
+    <h2>First Principles: What is Diffusion?</h2>
+    
+    <p>Diffusion is the movement of molecules from an area of high concentration to an area of low concentration. It's driven by random molecular motion - molecules are constantly bouncing around, and this statistical process leads to an overall movement from crowded areas to less crowded ones.</p>
+    
+    <p>Think about putting a drop of food coloring in water. Initially, the color is concentrated in one spot, but over time it spreads throughout the water. That's diffusion in action.</p>
+    
+    <h3>The Experimental Setup</h3>
+    
+    <p>The paper discusses a setup like this:</p>
+    
+    <div style="text-align: center;">
+        <svg width="400" height="300" style="background-color: white; border: 1px solid #ccc;">
+            <rect x="50" y="50" width="300" height="200" fill="none" stroke="black" stroke-width="2"/>
+            <rect x="50" y="150" width="300" height="100" fill="#ADD8E6" stroke="black" stroke-width="1"/>
+            <text x="200" y="100" text-anchor="middle" font-size="16">Gas Phase</text>
+            <text x="200" y="200" text-anchor="middle" font-size="16">Liquid Phase</text>
+            <line x1="50" y1="150" x2="350" y2="150" stroke="black" stroke-width="2" stroke-dasharray="5,5"/>
+            <text x="370" y="150" text-anchor="start" font-size="12">Interface</text>
+        </svg>
+    </div>
+    
+    <p>A closed tank contains gas at the top and a liquid at the bottom. Initially, the gas has a high pressure. As time passes, gas molecules dissolve into the liquid, causing the pressure to drop. By measuring this pressure drop over time, we can determine how quickly the gas diffuses.</p>
+    
+    <h2>The Mathematical Models</h2>
+    
+    <p>The paper presents two main models for this process:</p>
+    
+    <ol>
+        <li><strong>Equilibrium Diffusion Model</strong>: Assumes gas transport reaches equilibrium instantly</li>
+        <li><strong>Non-equilibrium Diffusion Model</strong>: Accounts for a delay in the gas transport process</li>
+    </ol>
+    
+    <h3>Core Equations: The Building Blocks</h3>
+    
+    <p>Let's start with the fundamental equation that describes the gas phase. The real gas equation of state gives us the gas density:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \rho_g = \frac{M_g p}{Z R T}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(M_g\) is the molecular weight of the gas</li>
+        <li>\(p\) is the pressure</li>
+        <li>\(T\) is the temperature</li>
+        <li>\(R\) is the universal gas constant</li>
+        <li>\(Z\) is the real gas deviation factor (how much the gas deviates from ideal behavior)</li>
+    </ul>
+    
+    <p>As gas dissolves into the liquid, its mass changes according to:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{d m}{d t} = -A J\big|_{x=0}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(m\) is the mass of gas</li>
+        <li>\(A\) is the cross-sectional area of the tank</li>
+        <li>\(J\big|_{x=0}\) is the mass flux of gas at the gas-liquid interface</li>
+    </ul>
+    
+    <p>This leads to a key equation relating pressure drop to gas dissolution:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \frac{M_g H}{R T}\left[\frac{p_o}{Z_o} - \frac{p}{Z}\right] = \mathcal{Q}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(H\) is the height of the gas column</li>
+        <li>\(p_o\) is the initial pressure</li>
+        <li>\(Z_o\) is the initial gas deviation factor</li>
+        <li>\(\mathcal{Q}\) is the cumulative mass of dissolved gas per unit area</li>
+    </ul>
+    
+    <h3>The Diffusion Equation</h3>
+    
+    <p>Now for the heart of the matter - how does the gas concentration change within the liquid? This is governed by the diffusion equation:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \tau\frac{\partial^2 c}{\partial t^2} + \frac{\partial c}{\partial t} = D\frac{\partial^2 c}{\partial x^2}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(c\) is the concentration of gas in the liquid</li>
+        <li>\(D\) is the diffusion coefficient (what we're trying to find)</li>
+        <li>\(\tau\) is a delay time parameter (zero for equilibrium diffusion)</li>
+        <li>\(x\) is the distance from the gas-liquid interface</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <p>This equation is known as a "damped wave equation" or "telegraph equation." When \(\tau = 0\), it simplifies to the classic diffusion equation (Fick's second law).</p>
+    
+    <h3>Boundary Conditions</h3>
+    
+    <p>To solve these equations, we need boundary conditions:</p>
+    
+    <ol>
+        <li>At the gas-liquid interface (\(x = 0\)): \(J|_{x=0} = k(c^* - c)\)
+            <ul>
+                <li>Where \(k\) is the interface mass-transfer coefficient</li>
+                <li>\(c^*\) is the equilibrium (saturation) gas concentration</li>
+            </ul>
+        </li>
+        <li>At the bottom of the liquid (\(x = L\)): \(J = 0\) (no gas flux through the bottom)</li>
+    </ol>
+    
+    <h2>Making It Simpler: Dimensionless Variables</h2>
+    
+    <p>To make these equations more manageable, scientists use dimensionless variables:</p>
+    
+    <div class="equation-box">
+        \begin{align}
+        c_D &= \frac{c - c_o}{c^* - c_o} \\
+        t_D &= \frac{D t}{L^2} \\
+        x_D &= \frac{x}{L} \\
+        \tau_D &= \frac{\tau D}{L^2} \\
+        k_D &= \frac{k L}{D}
+        \end{align}
+    </div>
+    
+    <p>Where \(k_D\) is known as the "mass-transfer Biot number" - a measure of the relative importance of interface resistance versus internal diffusion resistance.</p>
+    
+    <h2>Solutions: Short-Time vs. Long-Time</h2>
+    
+    <p>The paper presents different solutions for different time scales:</p>
+    
+    <h3>Short-Time Solution (Semi-Infinite Region)</h3>
+    
+    <p>When the diffusing gas hasn't reached the bottom of the liquid yet:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \mathcal{Q}_D(t_D) = \frac{1}{k_D}\left[\exp(k_D^2 t_D)\text{erfc}(k_D\sqrt{t_D})-1+2k_D\sqrt{\frac{t_D}{\pi}}\right]
+        \end{equation}
+    </div>
+    
+    <p>When \(k_D\) is very large (interface offers little resistance), this simplifies to:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \mathcal{Q}_D(t_D) = 2\sqrt{\frac{t_D}{\pi}}
+        \end{equation}
+    </div>
+    
+    <h3>Long-Time Solution (Finite-Length Region)</h3>
+    
+    <p>For longer times, when the gas concentration profile extends throughout the liquid:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \mathcal{Q}_D(t_D) = 1 - 4\sum_{m=1}^{\infty}\frac{\sin^2\lambda_m}{\lambda_m[2\lambda_m+\sin(2\lambda_m)]}e^{-\lambda_m^2 t_D}
+        \end{equation}
+    </div>
+    
+    <p>For very long times, this can be approximated as:</p>
+    
+    <div class="equation-box">
+        \begin{equation}
+        \mathcal{Q}_D(t_D) = 1 - \frac{4\sin^2\lambda_1}{\lambda_1[2\lambda_1+\sin(2\lambda_1)]}e^{-\lambda_1^2 t_D}
+        \end{equation}
+    </div>
+    
+    <p>Where \(\lambda_1\) is the smallest positive root of \(\lambda\tan\lambda = k_D\).</p>
+    
+    <h2>Real-World Application: Finding the Diffusion Coefficient</h2>
+    
+    <p>To determine the diffusion coefficient \(D\) from experimental data:</p>
+    
+    <ol>
+        <li>Measure the gas pressure \(p\) over time</li>
+        <li>Calculate \(\mathcal{Q}_D\) using the equation:
+            \begin{equation}
+            \mathcal{Q}_D = \frac{\frac{p_o}{Z_o} - \frac{p}{Z}}{\frac{p_o}{Z_o} - \frac{p^*}{Z^*}}
+            \end{equation}
+            where \(p^*\) is the equilibrium pressure
+        </li>
+        <li>For long-time data, plot \(\log(1-\mathcal{Q}_D)\) versus \(t\) to get a straight line</li>
+        <li>From the slope and intercept of this line, calculate \(D\) and \(k\)</li>
+    </ol>
+    
+    <h2>Equilibrium vs. Non-Equilibrium: What's the Difference?</h2>
+    
+    <p>The key difference between the two models is the parameter \(\tau\), the delay time:</p>
+    
+    <ul>
+        <li><strong>Equilibrium model</strong> (\(\tau = 0\)): Gas transport adjusts instantly to concentration changes</li>
+        <li><strong>Non-equilibrium model</strong> (\(\tau > 0\)): Gas transport has a delay, creating wave-like behavior</li>
+    </ul>
+    
+    <p>For most real-world cases, the equilibrium model is sufficient. However, for very fast processes or certain special materials, the non-equilibrium effects may be important.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Diffusion Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="diffusion-coefficient">Diffusion Coefficient (D): <span id="d-value">1.0</span> × 10<sup>-9</sup> m²/s</label>
+            <input type="range" id="diffusion-coefficient" min="0.1" max="10" step="0.1" value="1.0">
+        </div>
+        
+        <div class="slider-container">
+            <label for="biot-number">Mass-Transfer Biot Number (k<sub>D</sub>): <span id="k-value">5.0</span></label>
+            <input type="range" id="biot-number" min="0.1" max="20" step="0.1" value="5.0">
+        </div>
+        
+        <div class="slider-container">
+            <label for="delay-time">Delay Time Parameter (τ<sub>D</sub>): <span id="tau-value">0</span></label>
+            <input type="range" id="delay-time" min="0" max="0.5" step="0.01" value="0">
+        </div>
+        
+        <div class="slider-container">
+            <label for="simulation-time">Simulation Time: <span id="time-value">1.0</span> hours</label>
+            <input type="range" id="simulation-time" min="0.1" max="10" step="0.1" value="1.0">
+        </div>
+        
+        <button id="run-simulation" class="btn">Run Simulation</button>
+        
+        <div>
+            <canvas id="concentration-canvas" width="700" height="300"></canvas>
+            <div>Concentration Profile in Liquid</div>
+        </div>
+        
+        <div>
+            <canvas id="pressure-canvas" width="700" height="300"></canvas>
+            <div>Gas Pressure vs Time</div>
+        </div>
+        
+        <script>
+            // Get DOM elements
+            const dSlider = document.getElementById('diffusion-coefficient');
+            const kSlider = document.getElementById('biot-number');
+            const tauSlider = document.getElementById('delay-time');
+            const timeSlider = document.getElementById('simulation-time');
+            const dValue = document.getElementById('d-value');
+            const kValue = document.getElementById('k-value');
+            const tauValue = document.getElementById('tau-value');
+            const timeValue = document.getElementById('time-value');
+            const runButton = document.getElementById('run-simulation');
+            const concCanvas = document.getElementById('concentration-canvas');
+            const pressureCanvas = document.getElementById('pressure-canvas');
+            const concCtx = concCanvas.getContext('2d');
+            const pressureCtx = pressureCanvas.getContext('2d');
+            
+            // Update displayed values
+            dSlider.addEventListener('input', () => {
+                dValue.textContent = parseFloat(dSlider.value).toFixed(1);
+            });
+            
+            kSlider.addEventListener('input', () => {
+                kValue.textContent = parseFloat(kSlider.value).toFixed(1);
+            });
+            
+            tauSlider.addEventListener('input', () => {
+                tauValue.textContent = parseFloat(tauSlider.value).toFixed(2);
+            });
+            
+            timeSlider.addEventListener('input', () => {
+                timeValue.textContent = parseFloat(timeSlider.value).toFixed(1);
+            });
+            
+            // Run the simulation
+            runButton.addEventListener('click', runSimulation);
+            
+            function runSimulation() {
+                const D = parseFloat(dSlider.value) * 1e-9; // m²/s
+                const kD = parseFloat(kSlider.value);
+                const tauD = parseFloat(tauSlider.value);
+                const totalTime = parseFloat(timeSlider.value) * 3600; // hours to seconds
+                const L = 0.1; // liquid height in meters
+                
+                // Clear canvases
+                concCtx.clearRect(0, 0, concCanvas.width, concCanvas.height);
+                pressureCtx.clearRect(0, 0, pressureCanvas.width, pressureCanvas.height);
+                
+                // Draw axes for concentration profile
+                drawAxes(concCtx, 'Distance from interface (m)', 'Concentration (normalized)', concCanvas);
+                
+                // Draw axes for pressure profile
+                drawAxes(pressureCtx, 'Time (hours)', 'Pressure (normalized)', pressureCanvas);
+                
+                // Calculate and draw concentration profiles
+                const numPoints = 100;
+                const numTimeSteps = 5;
+                const colors = ['#FF0000', '#00AA00', '#0000FF', '#AA00AA', '#00AAAA'];
+                
+                for (let t = 0; t < numTimeSteps; t++) {
+                    const time = (t + 1) * totalTime / numTimeSteps;
+                    const tD = D * time / (L * L);
+                    
+                    // Draw concentration profile
+                    concCtx.beginPath();
+                    concCtx.strokeStyle = colors[t % colors.length];
+                    concCtx.lineWidth = 2;
+                    
+                    for (let i = 0; i <= numPoints; i++) {
+                        const x = i * L / numPoints;
+                        const xD = x / L;
+                        
+                        // Calculate concentration using short-time solution for semi-infinite medium
+                        let cD;
+                        if (tauD === 0) {
+                            // Equilibrium model
+                            cD = erfc(xD / (2 * Math.sqrt(tD))) - 
+                                 Math.exp(kD * xD + kD * kD * tD) * 
+                                 erfc(kD * Math.sqrt(tD) + xD / (2 * Math.sqrt(tD)));
+                        } else {
+                            // Non-equilibrium model (simplified approximation)
+                            const wavePos = Math.sqrt(tD / tauD);
+                            if (xD > wavePos) {
+                                cD = 0; // Beyond wave front
+                            } else {
+                                cD = erfc(xD / (2 * Math.sqrt(tD))) * Math.exp(-tD / (2 * tauD));
+                            }
+                        }
+                        
+                        // Ensure cD is within [0, 1]
+                        cD = Math.max(0, Math.min(1, cD));
+                        
+                        // Convert to canvas coordinates
+                        const canvasX = 50 + (i / numPoints) * (concCanvas.width - 100);
+                        const canvasY = concCanvas.height - 50 - cD * (concCanvas.height - 100);
+                        
+                        if (i === 0) {
+                            concCtx.moveTo(canvasX, canvasY);
+                        } else {
+                            concCtx.lineTo(canvasX, canvasY);
+                        }
+                    }
+                    
+                    concCtx.stroke();
+                    
+                    // Add time label
+                    const labelX = concCanvas.width - 150;
+                    const labelY = 70 + t * 20;
+                    concCtx.fillStyle = colors[t % colors.length];
+                    concCtx.fillText(`t = ${(time / 3600).toFixed(1)} hours`, labelX, labelY);
+                }
+                
+                // Calculate and draw pressure vs time
+                const numTimePointsP = 100;
+                pressureCtx.beginPath();
+                pressureCtx.strokeStyle = '#FF0000';
+                pressureCtx.lineWidth = 2;
+                
+                for (let i = 0; i <= numTimePointsP; i++) {
+                    const time = i * totalTime / numTimePointsP;
+                    const tD = D * time / (L * L);
+                    
+                    // Calculate Q_D using short-time or long-time solution
+                    let QD;
+                    if (tD < 0.2) {
+                        // Short-time solution
+                        if (tauD === 0) {
+                            // Equilibrium model
+                            if (kD > 10) { // Large kD approximation
+                                QD = 2 * Math.sqrt(tD / Math.PI);
+                            } else {
+                                QD = (1/kD) * (Math.exp(kD*kD*tD) * erfc(kD*Math.sqrt(tD)) - 1 + 2*kD*Math.sqrt(tD/Math.PI));
+                            }
+                        } else {
+                            // Non-equilibrium model (simplified)
+                            QD = 2 * Math.sqrt(tD / Math.PI) * Math.exp(-tD / (2 * tauD));
+                        }
+                    } else {
+                        // Long-time solution (approximate using first term)
+                        const lambda1 = findLambda1(kD);
+                        const QD0 = 4 * Math.pow(Math.sin(lambda1), 2) / 
+                                   (lambda1 * (2 * lambda1 + Math.sin(2 * lambda1)));
+                        QD = 1 - QD0 * Math.exp(-lambda1 * lambda1 * tD);
+                    }
+                    
+                    // Ensure QD is within [0, 1]
+                    QD = Math.max(0, Math.min(1, QD));
+                    
+                    // Calculate normalized pressure
+                    const normalizedP = 1 - QD;
+                    
+                    // Convert to canvas coordinates
+                    const canvasX = 50 + (i / numTimePointsP) * (pressureCanvas.width - 100);
+                    const canvasY = pressureCanvas.height - 50 - normalizedP * (pressureCanvas.height - 100);
+                    
+                    if (i === 0) {
+                        pressureCtx.moveTo(canvasX, canvasY);
+                    } else {
+                        pressureCtx.lineTo(canvasX, canvasY);
+                    }
+                }
+                
+                pressureCtx.stroke();
+            }
+            
+            // Helper function to draw axes
+            function drawAxes(ctx, xLabel, yLabel, canvas) {
+                ctx.strokeStyle = '#000000';
+                ctx.fillStyle = '#000000';
+                ctx.lineWidth = 1;
+                
+                // X-axis
+                ctx.beginPath();
+                ctx.moveTo(50, canvas.height - 50);
+                ctx.lineTo(canvas.width - 50, canvas.height - 50);
+                ctx.stroke();
+                
+                // Y-axis
+                ctx.beginPath();
+                ctx.moveTo(50, canvas.height - 50);
+                ctx.lineTo(50, 50);
+                ctx.stroke();
+                
+                // X-axis label
+                ctx.fillText(xLabel, canvas.width / 2, canvas.height - 20);
+                
+                // Y-axis label
+                ctx.save();
+                ctx.translate(20, canvas.height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(yLabel, 0, 0);
+                ctx.restore();
+                
+                // X-axis ticks
+                for (let i = 0; i <= 10; i++) {
+                    const x = 50 + i * (canvas.width - 100) / 10;
+                    ctx.beginPath();
+                    ctx.moveTo(x, canvas.height - 50);
+                    ctx.lineTo(x, canvas.height - 45);
+                    ctx.stroke();
+                    if (i % 2 === 0) {
+                        ctx.fillText((i / 10).toFixed(1), x - 10, canvas.height - 35);
+                    }
+                }
+                
+                // Y-axis ticks
+                for (let i = 0; i <= 10; i++) {
+                    const y = canvas.height - 50 - i * (canvas.height - 100) / 10;
+                    ctx.beginPath();
+                    ctx.moveTo(50, y);
+                    ctx.lineTo(55, y);
+                    ctx.stroke();
+                    if (i % 2 === 0) {
+                        ctx.fillText((i / 10).toFixed(1), 30, y + 5);
+                    }
+                }
+            }
+            
+            // Helper function for complementary error function
+            function erfc(x) {
+                const z = Math.abs(x);
+                const t = 1.0 / (1.0 + 0.5 * z);
+                const r = t * Math.exp(-z * z - 1.26551223 + 
+                                      t * (1.00002368 + 
+                                      t * (0.37409196 + 
+                                      t * (0.09678418 + 
+                                      t * (-0.18628806 + 
+                                      t * (0.27886807 + 
+                                      t * (-1.13520398 + 
+                                      t * (1.48851587 + 
+                                      t * (-0.82215223 + 
+                                      t * 0.17087277)))))))));
+                return x >= 0 ? r : 2.0 - r;
+            }
+            
+            // Helper function to find lambda1 (first root of lambda*tan(lambda) = kD)
+            function findLambda1(kD) {
+                if (kD >= 20) return Math.PI / 2; // Large kD approximation
+                
+                let lambda = 0.1;
+                const step = 0.01;
+                const tolerance = 0.001;
+                
+                while (lambda < Math.PI) {
+                    const f = lambda * Math.tan(lambda) - kD;
+                    if (Math.abs(f) < tolerance) {
+                        return lambda;
+                    }
+                    lambda += step;
+                }
+                
+                return Math.PI / 4; // Fallback value
+            }
+            
+            // Initial simulation
+            runSimulation();
+        </script>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>Understanding gas diffusion in liquids has numerous practical applications:</p>
+    
+    <h3>1. Enhanced Oil Recovery</h3>
+    <p>In oil fields, gases like CO₂ are injected into reservoirs to help extract more oil. The efficiency of this process depends on how quickly the gas dissolves in the oil. Using accurate diffusion models, engineers can optimize injection strategies and improve oil recovery.</p>
+    
+    <h3>2. Environmental Protection</h3>
+    <p>When gas leaks occur underground (like from a natural gas pipeline), understanding diffusion rates helps predict how quickly contaminants will spread in groundwater and develop effective cleanup strategies.</p>
+    
+    <h3>3. Drilling Operations</h3>
+    <p>During oil and gas drilling, gases can dissolve in drilling fluids. This can cause problems if the pressure suddenly drops (like when pulling the drill string out), as the gas can rapidly come out of solution - potentially causing a dangerous "kick" or blowout. Accurate diffusion models help prevent these hazards.</p>
+    
+    <h3>4. Carbon Capture and Storage</h3>
+    <p>When storing CO₂ underground to reduce greenhouse gas emissions, engineers need to understand how the gas will dissolve in underground fluids over time to ensure it stays safely trapped.</p>
+    
+    <h2>Analogies to Understand Diffusion</h2>
+    
+    <p>To better understand these complex concepts, consider these analogies:</p>
+    
+    <h3>The Concert Crowd Analogy</h3>
+    <p>Imagine a concert where everyone is packed tightly at the front (high concentration). When the doors open to a larger area, people naturally spread out (diffuse) from the crowded area to the empty space. The rate at which they spread depends on how easily they can move (diffusion coefficient) and any barriers at the entrance (interface resistance).</p>
+    
+    <h3>The Bank Account Analogy</h3>
+    <p>Think of the gas pressure as money in a bank account. Initially, you have a large amount (high pressure). As you spend money (gas dissolving), your balance (pressure) decreases. By tracking how quickly your balance drops, you can determine your spending rate (diffusion rate).</p>
+    
+    <h3>The Coffee and Cream Analogy</h3>
+    <p>When you pour cream into coffee, it initially stays concentrated but gradually spreads throughout the cup. If you stir (adding energy), it spreads faster. The equilibrium model is like assuming the cream spreads instantly when stirred, while the non-equilibrium model accounts for the actual time it takes to spread.</p>
+    
+    <h2>Key Insights from the Paper</h2>
+    
+    <ol>
+        <li><strong>Interface Resistance Matters:</strong> Previous models often assumed gas dissolves instantly at the interface (infinite \(k_D\)). This paper shows that accounting for interface resistance gives more accurate results.</li>
+        <li><strong>Time Scales Are Important:</strong> Different mathematical solutions apply at different time scales. Using the wrong solution for your time scale can lead to significant errors.</li>
+        <li><strong>Non-Equilibrium Effects:</strong> For some systems, the delay in gas transport (non-equilibrium effects) can be significant, creating wave-like behavior in the concentration profiles.</li>
+        <li><strong>Experimental Method:</strong> The paper provides a rigorous method to extract diffusion coefficients from pressure measurements, potentially improving accuracy by an order of magnitude compared to previous methods.</li>
+    </ol>
+    
+    <h2>Conclusion</h2>
+    
+    <p>Gas diffusion in liquids is a fundamental process that impacts numerous fields from energy production to environmental protection. By breaking down the complex mathematics into first principles, we can see that:</p>
+    
+    <ul>
+        <li>The process is governed by diffusion equations that describe how gas concentration changes over time and space</li>
+        <li>Both the resistance at the gas-liquid interface and the internal diffusion resistance affect the overall process</li>
+        <li>Different mathematical solutions apply depending on the time scale and whether equilibrium or non-equilibrium conditions prevail</li>
+        <li>With the right mathematical model, we can extract accurate diffusion coefficients from simple pressure measurements</li>
+    </ul>
+    
+    <p>The interactive simulation above helps visualize these concepts, showing how changes in the diffusion coefficient, interface resistance, and non-equilibrium effects impact the concentration profiles and pressure drop over time.</p>
+    
+    <p>Next time you open a carbonated drink or watch fish swimming in an aquarium, remember - you're witnessing the fascinating process of gas diffusion in liquids!</p>
+    
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fracture-Injection/Falloff Testing: A First Principles Approach to Diagnosing Refracture Candidates</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    h1 {
+      font-size: 2.2em;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    h2 {
+      font-size: 1.8em;
+      margin-top: 30px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    h3 {
+      font-size: 1.4em;
+      margin-top: 25px;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    .highlight {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .note {
+      background-color: #e7f4ff;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', monospace;
+      background-color: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .image-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    .caption {
+      font-style: italic;
+      color: #666;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .interactive {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin: 30px 0;
+      background-color: #f9f9f9;
+    }
+    .slider-container {
+      margin: 15px 0;
+    }
+    .slider-container label {
+      display: inline-block;
+      width: 150px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .equation {
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    .key-concept {
+      background-color: #e8f8f5;
+      border-left: 4px solid #1abc9c;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .analogy {
+      background-color: #fff5e6;
+      border-left: 4px solid #f39c12;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fracture-Injection/Falloff Testing: Unlocking the Secrets of Your Well's Performance</h1>
+  
+  <p class="highlight">In this post, we'll break down a complex but powerful technique called "fracture-injection/falloff testing" that helps petroleum engineers determine if a well needs to be refractured. By the end, you'll understand not just the math behind it, but also the practical implications for oil and gas production.</p>
+
+  <h2>The Problem: Underperforming Oil and Gas Wells</h2>
+  
+  <p>Imagine you've invested millions in drilling and completing an oil well, but it's not producing as much as you expected. What went wrong? How can you fix it? These questions plague the oil and gas industry daily.</p>
+  
+  <p>Studies show that between 10% and 40% of targeted layers in oil and gas wells are either completely bypassed or ineffectively stimulated during initial fracturing operations. That's a lot of untapped potential!</p>
+  
+  <div class="analogy">
+    <h3>Real-World Analogy</h3>
+    <p>Think of an oil reservoir like a multi-layer cake. When you initially stick straws (wells) into the cake to drink the filling (oil), you might miss some layers entirely. The fracture-injection/falloff test is like using a special tool to check which layers you missed, so you can put straws there too.</p>
+  </div>
+
+  <h2>Understanding Hydraulic Fractures: The Basics</h2>
+  
+  <p>Before diving into the test itself, let's understand what we're measuring. When a well is hydraulically fractured, high-pressure fluid creates cracks in the rock formation. These cracks are propped open with sand or ceramic particles to create pathways for oil and gas to flow.</p>
+  
+  <p>Over time, these fractures can:</p>
+  <ul>
+    <li>Close partially (reducing production)</li>
+    <li>Become damaged (blocking flow)</li>
+    <li>Heal completely (requiring refracturing)</li>
+  </ul>
+  
+  <div class="key-concept">
+    <h3>Key Concept: Fracture Storage</h3>
+    <p>A fracture has "storage" - it can hold fluid. The amount of storage changes when a fracture is open versus when it's closed or damaged. By measuring changes in storage during a pressure test, we can diagnose the fracture's condition.</p>
+  </div>
+
+  <h2>The Fracture-Injection/Falloff Test: First Principles</h2>
+  
+  <p>At its core, this test is based on a simple idea: inject fluid at high pressure for a short time, then shut in the well and watch how the pressure falls off. The pattern of pressure decline tells us about the fracture and reservoir properties.</p>
+  
+  <p>Let's break down the mathematical model step by step:</p>
+  
+  <h3>Step 1: Mass Balance During Injection</h3>
+  
+  <div class="equation">
+    <p>We start with a mass balance equation:</p>
+    $$\overbrace{q_{w}B\rho}^{m_{in}}-\overbrace{q_{\ell}B_{r}\rho_{r}}^{m_{out}}=\overbrace{V_{w b}\frac{d\rho_{w b}}{d t}+2\frac{d(V_{f}\rho_{f})}{d t}}^{m_{accumulation}}$$
+  </div>
+  
+  <p>This equation simply states: mass in - mass out = change in mass stored in the system.</p>
+  
+  <p>Where:</p>
+  <ul>
+    <li>\(q_w\) = injection rate</li>
+    <li>\(q_ℓ\) = leakoff rate into the reservoir</li>
+    <li>\(V_f\) = fracture volume</li>
+    <li>\(V_{wb}\) = wellbore volume</li>
+  </ul>
+
+  <h3>Step 2: Simplify for Constant Density</h3>
+  
+  <div class="equation">
+    <p>Assuming constant density and formation volume factor:</p>
+    $$q_{s f}=q_{w}-\frac{1}{B}\left(c_{w b}V_{w b}+2c_{f}V_{f}+2\frac{dV_{f}}{dp_{w}}\right)\frac{dp_{w}}{dt}$$
+  </div>
+  
+  <p>This equation introduces the concept of "storage coefficient" - the term in parentheses that represents how much fluid the system can store as pressure changes.</p>
+
+  <h3>Step 3: Define Storage Coefficients</h3>
+  
+  <div class="equation">
+    <p>The propagating-fracture storage coefficient is:</p>
+    $$C_{p f}(p_{w}(t))=c_{w b}V_{w b}+2c_{f}V_{f}(p_{w}(t))+2\frac{d V_{f}(p_{w}(t))}{d p_{w}}$$
+  </div>
+  
+  <p>This can be broken down into three components:</p>
+  <ul>
+    <li>Wellbore storage (\(c_{wb}V_{wb}\))</li>
+    <li>Fracture fluid compressibility storage (\(2c_fV_f\))</li>
+    <li>Fracture volume change with pressure (\(2\frac{dV_f}{dp_w}\))</li>
+  </ul>
+
+  <div class="note">
+    <p>The key insight: When a fracture closes, the storage coefficient changes significantly. This change is what allows us to diagnose the fracture condition.</p>
+  </div>
+
+  <h3>Step 4: Dimensionless Variables for Analysis</h3>
+  
+  <p>To make the analysis universal, we convert all variables to dimensionless form:</p>
+  
+  <div class="equation">
+    $$p_{w s D}(t_{L f D})=\frac{p_{w}(t_{L f D})-p_{i}}{p_{0}-p_{i}}$$
+    $$t_{L f D}=\frac{k t}{\phi\mu c_{t}L_{f}^{2}}$$
+    $$C_{f D}=\frac{C_{p f}(p_{w}(t))}{2\pi\phi c_{t}h L_{f}^{2}}$$
+  </div>
+  
+  <p>These transformations allow us to create universal type curves that can be applied to any well, regardless of its specific properties.</p>
+
+  <h2>The Diagnostic Solution: What Makes This Method Special</h2>
+  
+  <p>The breakthrough in this paper is recognizing that a fracture-injection/falloff test can be analyzed as a slug test when the injection time is short relative to the reservoir response.</p>
+  
+  <div class="equation">
+    <p>The before-closure limiting-case solution:</p>
+    $$p_{w s D}(t_{L f D})=p_{w s D}(0)C_{b c D}p_{b c D}^{\prime}(t_{L f D})$$
+  </div>
+  
+  <div class="equation">
+    <p>The after-closure limiting-case solution:</p>
+    $$p_{w s D}(t_{L f D})=\left[p_{w s D}(0)C_{b c D}-p_{w s D}\left((t_{c})_{L f D}\right)(C_{b c D}-C_{a c D})\right]p_{a c D}^{\prime}(t_{L f D})$$
+  </div>
+  
+  <p>These equations allow us to analyze the pressure response and determine if a pre-existing fracture exists and whether it's damaged.</p>
+
+  <div class="key-concept">
+    <h3>The Diagnostic Key</h3>
+    <p>The change in storage coefficient at fracture closure tells us:</p>
+    <ul>
+      <li>If storage decreases at closure: A non-damaged fracture exists</li>
+      <li>If storage appears to increase at closure: A damaged fracture exists</li>
+    </ul>
+  </div>
+
+  <h2>Interactive Visualization: Fracture-Injection/Falloff Test</h2>
+  
+  <div class="interactive">
+    <h3>Explore How Different Fracture Conditions Affect Pressure Response</h3>
+    <div class="slider-container">
+      <label for="fracture-condition">Fracture Condition:</label>
+      <select id="fracture-condition">
+        <option value="none">No Pre-existing Fracture</option>
+        <option value="undamaged">Undamaged Fracture</option>
+        <option value="damaged">Damaged Fracture</option>
+      </select>
+    </div>
+    <div class="slider-container">
+      <label for="fracture-length">Fracture Half-Length (ft):</label>
+      <input type="range" id="fracture-length" min="50" max="500" value="150" step="10">
+      <span id="fracture-length-value">150</span>
+    </div>
+    <div class="slider-container">
+      <label for="permeability">Permeability (md):</label>
+      <input type="range" id="permeability" min="0.01" max="10" value="0.5" step="0.01">
+      <span id="permeability-value">0.5</span>
+    </div>
+    <div class="slider-container">
+      <label for="skin-factor">Choked Fracture Skin:</label>
+      <input type="range" id="skin-factor" min="0" max="10" value="1" step="0.1">
+      <span id="skin-factor-value">1</span>
+    </div>
+    <canvas id="pressure-plot" width="700" height="400"></canvas>
+    <div class="caption">Log-log plot of dimensionless pressure and pressure derivative vs. dimensionless time</div>
+  </div>
+
+  <h2>Real-World Example: Diagnosing a Damaged Fracture</h2>
+  
+  <p>Let's look at a real field example from the paper:</p>
+  
+  <div class="image-container">
+    <img src="https://via.placeholder.com/700x400?text=Pressure+and+Rate+vs+Time+Graph" alt="Pressure and Rate vs Time Graph">
+    <div class="caption">Fig. 5 from the paper - Example refracture-candidate diagnostic test with a pre-existing hydraulic fracture</div>
+  </div>
+  
+  <p>In this case, a layer was initially stimulated with 250,000 lbs of proppant but was producing below expectations after 7 days. The diagnostic test involved:</p>
+  <ul>
+    <li>18.5 minute injection of 75.8 bbl of treated water</li>
+    <li>4 hour shut-in period with pressure monitoring</li>
+  </ul>
+  
+  <p>The pressure response showed the characteristic pattern of a damaged fracture with choked-fracture skin - the transition from the first unit-slope line to the second unit slope line began at hydraulic fracture closure.</p>
+  
+  <div class="image-container">
+    <img src="https://via.placeholder.com/700x400?text=Log-Log+Plot+of+Pressure+Response" alt="Log-Log Plot of Pressure Response">
+    <div class="caption">Fig. 6 from the paper - Log-log graph showing the characteristic response of a damaged pre-existing fracture</div>
+  </div>
+
+  <h2>Practical Application: The Step-by-Step Test Procedure</h2>
+  
+  <p>If you want to apply this technique, here's the procedure:</p>
+  
+  <ol>
+    <li><strong>Isolate the layer</strong> to be tested</li>
+    <li><strong>Inject fluid</strong> (liquid or gas) at a pressure exceeding fracture initiation and propagation pressure
+      <ul>
+        <li>Volume should be roughly equivalent to the proppant-pack pore volume</li>
+        <li>Injection time should be limited to a few minutes</li>
+      </ul>
+    </li>
+    <li><strong>Shut-in and record</strong> pressure falloff for several hours</li>
+    <li><strong>Analyze the data</strong>:
+      <ul>
+        <li>Identify hydraulic fracture closure</li>
+        <li>Transform the variable-rate pressure falloff data to equivalent constant-rate pressure</li>
+        <li>Prepare a log-log graph of pressure and derivative</li>
+        <li>Examine storage behavior before and after closure</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="note">
+    <p>The beauty of this test is that it can be performed quickly and cost-effectively, making it suitable for evaluating multiple layers in a well.</p>
+  </div>
+
+  <h2>Mathematical Deep Dive: Multiple Fracture Solutions</h2>
+  
+  <p>The paper also presents new solutions for wells with multiple fractures. These solutions allow for:</p>
+  <ul>
+    <li>Variable fracture half-length</li>
+    <li>Variable conductivity</li>
+    <li>Variable angle between fractures</li>
+  </ul>
+  
+  <div class="equation">
+    <p>The multiple finite-conductivity fracture solution:</p>
+    $$\left(\Bar{p}_{w D}\right)_{\ell}=\sum_{i=1}^{n_{f}}\frac{1}{2L_{f_{i}D}}\int_{0}^{L_{f i D}}\overline{q}_{i D}(x^{\prime},s)\left[K_{0}\left[\sqrt{u}\sqrt{\left[\hat{x}_{i D}\cos\left(\theta_{\ell}-\theta_{i}\right)-x^{\prime}\right]^{2}+\hat{x}_{i D}^{2}\sin^{2}\left(\theta_{\ell}-\theta_{i}\right)}\right]+K_{0}\left[\sqrt{u}\sqrt{\left[\hat{x}_{i D}\cos\left(\theta_{\ell}-\theta_{i}\right)+x^{\prime}\right]^{2}+\hat{x}_{i D}^{2}\sin^{2}\left(\theta_{\ell}-\theta_{i}\right)}\right]\right]dx^{\prime}$$
+  </div>
+  
+  <p>This complex equation allows for modeling multiple fractures at arbitrary orientations, which is crucial for understanding complex fracture networks.</p>
+
+  <h2>Putting It All Together: A Decision Framework</h2>
+  
+  <p>Based on the test results, you can make informed decisions about refracturing:</p>
+  
+  <table>
+    <tr>
+      <th>Test Result</th>
+      <th>Interpretation</th>
+      <th>Recommended Action</th>
+    </tr>
+    <tr>
+      <td>No change in storage at closure</td>
+      <td>No pre-existing fracture</td>
+      <td>Consider initial fracturing</td>
+    </tr>
+    <tr>
+      <td>Decreasing storage at closure</td>
+      <td>Undamaged pre-existing fracture</td>
+      <td>Refracturing may not be necessary</td>
+    </tr>
+    <tr>
+      <td>Increasing storage at closure</td>
+      <td>Damaged pre-existing fracture</td>
+      <td>Refracturing likely to improve production</td>
+    </tr>
+  </table>
+
+  <h2>Conclusion: The Power of Pressure Diagnostics</h2>
+  
+  <p>The fracture-injection/falloff test provides a powerful, cost-effective way to diagnose the condition of hydraulic fractures and determine if refracturing is necessary. By understanding the theoretical foundations and practical applications, engineers can make better decisions about well interventions.</p>
+  
+  <p>The key insights from this method are:</p>
+  <ol>
+    <li>A short injection followed by pressure monitoring can reveal fracture properties</li>
+    <li>Changes in storage coefficient at fracture closure diagnose fracture condition</li>
+    <li>Type-curve matching allows quantitative estimation of reservoir properties</li>
+    <li>The test is suitable for isolated-layer testing in multilayer completions</li>
+  </ol>
+  
+  <p>This approach has the potential to significantly improve the economics of oil and gas production by targeting refracturing operations where they will be most effective.</p>
+
+  <script>
+    // Interactive visualization
+    document.addEventListener('DOMContentLoaded', function() {
+      const canvas = document.getElementById('pressure-plot');
+      const ctx = canvas.getContext('2d');
+      
+      // Get DOM elements
+      const fractureCondition = document.getElementById('fracture-condition');
+      const fractureLength = document.getElementById('fracture-length');
+      const fractureLengthValue = document.getElementById('fracture-length-value');
+      const permeability = document.getElementById('permeability');
+      const permeabilityValue = document.getElementById('permeability-value');
+      const skinFactor = document.getElementById('skin-factor');
+      const skinFactorValue = document.getElementById('skin-factor-value');
+      
+      // Update value displays
+      fractureLength.addEventListener('input', function() {
+        fractureLengthValue.textContent = this.value;
+        drawPlot();
+      });
+      
+      permeability.addEventListener('input', function() {
+        permeabilityValue.textContent = this.value;
+        drawPlot();
+      });
+      
+      skinFactor.addEventListener('input', function() {
+        skinFactorValue.textContent = this.value;
+        drawPlot();
+      });
+      
+      fractureCondition.addEventListener('change', drawPlot);
+      
+      // Draw the plot
+      function drawPlot() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Set up plot area
+        const margin = { top: 40, right: 40, bottom: 60, left: 60 };
+        const width = canvas.width - margin.left - margin.right;
+        const height = canvas.height - margin.top - margin.bottom;
+        
+        // Draw axes
+        ctx.beginPath();
+        ctx.moveTo(margin.left, margin.top);
+        ctx.lineTo(margin.left, margin.top + height);
+        ctx.lineTo(margin.left + width, margin.top + height);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Axis labels
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('Dimensionless Time (tLfD)', margin.left + width/2, canvas.height - 15);
+        
+        ctx.save();
+        ctx.translate(15, margin.top + height/2);
+        ctx.rotate(-Math.PI/2);
+        ctx.textAlign = 'center';
+        ctx.fillText('Dimensionless Pressure & Derivative', 0, 0);
+        ctx.restore();
+        
+        // Title
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Fracture-Injection/Falloff Response', canvas.width/2, 20);
+        
+        // Generate data based on parameters
+        const condition = fractureCondition.value;
+        const lf = parseFloat(fractureLength.value);
+        const k = parseFloat(permeability.value);
+        const skin = parseFloat(skinFactor.value);
+        
+        // Log scale ticks
+        const xTicks = [0.001, 0.01, 0.1, 1, 10, 100];
+        const yTicks = [0.001, 0.01, 0.1, 1, 10, 100];
+        
+        // Draw tick marks and grid lines
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#666';
+        
+        // X-axis ticks (log scale)
+        xTicks.forEach(tick => {
+          const x = margin.left + width * (Math.log10(tick) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          if (x >= margin.left && x <= margin.left + width) {
+            ctx.beginPath();
+            ctx.moveTo(x, margin.top + height);
+            ctx.lineTo(x, margin.top + height + 5);
+            ctx.stroke();
+            
+            ctx.fillText(tick.toString(), x, margin.top + height + 20);
+            
+            // Grid line
+            ctx.beginPath();
+            ctx.moveTo(x, margin.top);
+            ctx.lineTo(x, margin.top + height);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        });
+        
+        // Y-axis ticks (log scale)
+        ctx.textAlign = 'right';
+        yTicks.forEach(tick => {
+          const y = margin.top + height - height * (Math.log10(tick) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          if (y >= margin.top && y <= margin.top + height) {
+            ctx.beginPath();
+            ctx.moveTo(margin.left - 5, y);
+            ctx.lineTo(margin.left, y);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillText(tick.toString(), margin.left - 10, y + 4);
+            
+            // Grid line
+            ctx.beginPath();
+            ctx.moveTo(margin.left, y);
+            ctx.lineTo(margin.left + width, y);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        });
+        
+        // Generate pressure and derivative data
+        const times = [];
+        for (let i = -3; i <= 2; i += 0.1) {
+          times.push(Math.pow(10, i));
+        }
+        
+        let pressures = [];
+        let derivatives = [];
+        
+        // Different curves based on fracture condition
+        if (condition === 'none') {
+          // No pre-existing fracture
+          pressures = times.map(t => 0.5 * Math.log(t) + 1);
+          derivatives = times.map(t => 0.5);
+        } else if (condition === 'undamaged') {
+          // Undamaged fracture (decreasing storage)
+          const closureTime = 0.1;
+          pressures = times.map(t => {
+            if (t < closureTime) return t * 0.8;
+            else return 0.08 + 0.4 * Math.log10(t/closureTime);
+          });
+          derivatives = times.map(t => {
+            if (t < closureTime) return 0.8;
+            else return 0.4;
+          });
+        } else if (condition === 'damaged') {
+          // Damaged fracture (increasing storage)
+          const closureTime = 0.1;
+          pressures = times.map(t => {
+            if (t < closureTime) return t * (0.5 + skin * 0.1);
+            else return closureTime * (0.5 + skin * 0.1) + (t - closureTime) * (1 + skin * 0.2);
+          });
+          derivatives = times.map(t => {
+            if (t < closureTime) return 0.5 + skin * 0.1;
+            else return 1 + skin * 0.2;
+          });
+        }
+        
+        // Plot pressure curve
+        ctx.beginPath();
+        times.forEach((t, i) => {
+          const x = margin.left + width * (Math.log10(t) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          const y = margin.top + height - height * (Math.log10(pressures[i]) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = 'blue';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Plot derivative curve
+        ctx.beginPath();
+        times.forEach((t, i) => {
+          const x = margin.left + width * (Math.log10(t) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          const y = margin.top + height - height * (Math.log10(derivatives[i]) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Add legend
+        ctx.font = '12px Arial';
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(margin.left + width - 150, margin.top + 10, 10, 10);
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'left';
+        ctx.fillText('Pressure', margin.left + width - 135, margin.top + 20);
+        
+        ctx.fillStyle = 'red';
+        ctx.fillRect(margin.left + width - 150, margin.top + 30, 10, 10);
+        ctx.fillStyle = '#000';
+        ctx.fillText('Derivative', margin.left + width - 135, margin.top + 40);
+        
+        // Mark closure time if applicable
+        if (condition !== 'none') {
+          const closureTime = 0.1;
+          const x = margin.left + width * (Math.log10(closureTime) - Math.log10(0.001)) / (Math.log10(100) - Math.log10(0.001));
+          
+          ctx.beginPath();
+          ctx.moveTo(x, margin.top);
+          ctx.lineTo(x, margin.top + height);
+          ctx.strokeStyle = 'green';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          ctx.fillStyle = 'green';
+          ctx.textAlign = 'center';
+          ctx.fillText('Fracture Closure', x, margin.top + 15);
+        }
+      }
+      
+      // Initial draw
+      drawPlot();
+    });
+  </script>
+</body>
+</html>

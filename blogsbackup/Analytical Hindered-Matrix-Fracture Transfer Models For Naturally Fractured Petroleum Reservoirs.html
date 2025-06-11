@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Matrix-Fracture Transfer in Petroleum Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            padding: 10px 0;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            margin-left: 10px;
+            width: 50px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: white;
+            margin: 20px auto;
+            display: block;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>The Hidden Flow: Understanding Matrix-Fracture Transfer in Petroleum Reservoirs</h1>
+    
+    <p class="highlight">
+        In this post, we'll break down the complex physics of fluid flow between matrix blocks and fractures in petroleum reservoirs. Using first principles, we'll explore how skin effects at fracture surfaces impact oil and gas recovery, and provide an interactive simulation to visualize these phenomena.
+    </p>
+    
+    <h2>The Problem: Why Aren't We Recovering All the Oil?</h2>
+    
+    <p>
+        Imagine oil trapped in a sponge-like rock (the matrix), with tiny cracks (fractures) running through it. To extract this oil, we need it to flow from the matrix into these fractures, where it can be pumped out. But there's a problem: the surfaces where matrix meets fracture often become damaged or clogged, creating a "skin effect" that hinders flow.
+    </p>
+    
+    <p>
+        Traditional models of oil recovery have overlooked this crucial factor, leading to overly optimistic predictions. The academic paper we're exploring today addresses this gap by developing a mathematical model that accounts for this hindered flow.
+    </p>
+    
+    <div class="note">
+        <h3>Why This Matters</h3>
+        <p>
+            Understanding matrix-fracture transfer is essential for accurate prediction of oil and gas recovery rates. Better models mean better extraction strategies, more efficient resource use, and improved economic outcomes for energy production.
+        </p>
+    </div>
+    
+    <h2>The Conceptual Model: Matrix Blocks and Fractures</h2>
+    
+    <p>
+        Let's start by visualizing the physical system. Naturally fractured reservoirs consist of:
+    </p>
+    
+    <ul>
+        <li><strong>Matrix blocks</strong>: The main rock volume containing most of the oil or gas</li>
+        <li><strong>Fractures</strong>: Natural cracks that form a network around these blocks</li>
+        <li><strong>Interface skin</strong>: A thin layer at the surface of matrix blocks that can restrict flow</li>
+    </ul>
+    
+    <p>
+        While real fracture networks are irregular, they can be idealized as rectangular blocks separated by intersecting fractures. This simplification allows us to model the system mathematically.
+    </p>
+    
+    <h2>First Principles: The Physics of Fluid Flow</h2>
+    
+    <p>
+        To understand this system, we need to start with the fundamental laws governing fluid flow in porous media:
+    </p>
+    
+    <h3>1. Conservation of Mass</h3>
+    
+    <p>
+        The basic principle is that matter cannot be created or destroyed. For fluid flow in porous media, this is expressed as:
+    </p>
+    
+    <div class="equation-container">
+        $$\frac{\partial(\rho\phi)}{\partial t} + \nabla\cdot(\rho\mathbf{u}) = 0$$
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(\rho\) is fluid density</li>
+        <li>\(\phi\) is porosity (fraction of void space)</li>
+        <li>\(\mathbf{u}\) is the fluid velocity vector</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <h3>2. Darcy's Law</h3>
+    
+    <p>
+        This empirical law describes how fluid flows through porous media in response to pressure gradients:
+    </p>
+    
+    <div class="equation-container">
+        $$\mathbf{u} = -\frac{1}{\mu}\mathbf{K}\cdot\nabla p$$
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(\mu\) is fluid viscosity</li>
+        <li>\(\mathbf{K}\) is the permeability tensor (describing how easily fluid flows through the rock)</li>
+        <li>\(\nabla p\) is the pressure gradient</li>
+    </ul>
+    
+    <h3>3. The Key Innovation: Skin-Hindered Flow</h3>
+    
+    <p>
+        The paper introduces a critical boundary condition at the matrix-fracture interface:
+    </p>
+    
+    <div class="equation-container">
+        $$-(\mathbf{K}\cdot\nabla P)\cdot\mathbf{n} = \rho\mathbf{u}\cdot\mathbf{n} = K_s\left[\frac{P-P_f}{b_s}\right]$$
+    </div>
+    
+    <p>
+        Where:
+    </p>
+    <ul>
+        <li>\(K_s\) is the skin permeability</li>
+        <li>\(b_s\) is the skin thickness</li>
+        <li>\(P\) is the fluid pressure in the matrix</li>
+        <li>\(P_f\) is the fluid pressure in the fracture</li>
+        <li>\(\mathbf{n}\) is the unit normal vector to the interface</li>
+    </ul>
+    
+    <p>
+        This is known as a <strong>Cauchy boundary condition</strong>, and it's analogous to Newton's law of cooling in heat transfer. It represents the resistance to flow created by the damaged surface layer.
+    </p>
+    
+    <h2>Simplifying the Complex: The Diffusion Analogy</h2>
+    
+    <p>
+        One of the key insights in the paper is that both single-phase flow (pressure depletion) and two-phase flow (water imbibition) can be transformed into the same mathematical form: a diffusion equation.
+    </p>
+    
+    <div class="equation-container">
+        $$\frac{\partial^2 C}{\partial X^2} + \frac{\partial^2 C}{\partial Y^2} + \frac{\partial^2 C}{\partial Z^2} = \frac{\partial C}{\partial T}$$
+    </div>
+    
+    <p>
+        Where \(C\) is a normalized variable (either pressure or saturation) and \(T\) is dimensionless time.
+    </p>
+    
+    <p>
+        This powerful transformation allows us to solve both problems using the same mathematical approach and to apply insights from one process to the other.
+    </p>
+    
+    <h3>The Hydraulic Diffusion Coefficient</h3>
+    
+    <p>
+        For both processes, we can define a diffusion coefficient:
+    </p>
+    
+    <div class="equation-container">
+        $$D = \frac{\bar{K}}{(c-\alpha c_\phi)\bar{\phi}\mu}$$
+    </div>
+    
+    <p>
+        For single-phase flow, and:
+    </p>
+    
+    <div class="equation-container">
+        $$D = F_w\frac{k_{ro}}{\mu_o}\left(-\frac{dp_c}{dS_w}\right)\frac{\bar{K}}{\bar{\phi}}$$
+    </div>
+    
+    <p>
+        For two-phase flow (capillary imbibition).
+    </p>
+    
+    <p>
+        This coefficient determines how quickly pressure or saturation changes propagate through the matrix block.
+    </p>
+    
+    <h2>Analytical Solutions: Long-Term vs. Short-Term Behavior</h2>
+    
+    <p>
+        The paper derives analytical solutions for fluid transfer between matrix and fractures for both short and long time periods.
+    </p>
+    
+    <h3>The Long-Time Approximation</h3>
+    
+    <p>
+        For long time periods, the solution for the average normalized concentration in a cubic matrix block is:
+    </p>
+    
+    <div class="equation-container">
+        $$\bar{C}(T) = \bar{C}_o^{LT}(K_o)e^{-12K_o^2T}$$
+    </div>
+    
+    <p>
+        Where \(K_o\) is related to the Biot number \(\beta\) (which represents the ratio of internal to surface resistance to flow) by:
+    </p>
+    
+    <div class="equation-container">
+        $$2K_o\tan K_o = \beta$$
+    </div>
+    
+    <h3>The Short-Time Approximation</h3>
+    
+    <p>
+        For short time periods, the solution is more complex:
+    </p>
+    
+    <div class="equation-container">
+        $$\bar{C}(T) = [I(T;\beta,1)]^3$$
+    </div>
+    
+    <p>
+        Where \(I(T;\beta,1)\) involves error functions and exponentials (see the paper for the full expression).
+    </p>
+    
+    <h2>The Recovery Factor: What Matters Most</h2>
+    
+    <p>
+        The recovery factor (RF) tells us what fraction of the original oil in place has been extracted:
+    </p>
+    
+    <div class="equation-container">
+        $$RF = 1 - \bar{C}(T)$$
+    </div>
+    
+    <p>
+        When we plot \(\log(1-RF)\) versus time, we get a straight line for the long-time approximation:
+    </p>
+    
+    <div class="equation-container">
+        $$\log[1-RF(t)] = \log[\bar{C}_o^{LT}(\beta)] - 5.212K_o^2(\beta)\frac{\bar{D}}{L^2}t$$
+    </div>
+    
+    <p>
+        This is a powerful result because it allows us to determine two critical parameters from experimental data:
+    </p>
+    
+    <ol>
+        <li>The Biot number \(\beta\), which characterizes the skin effect</li>
+        <li>The diffusion coefficient \(\bar{D}\), which determines how fast fluid flows through the matrix</li>
+    </ol>
+    
+    <h2>Real-World Implications: The Skin Effect Matters</h2>
+    
+    <p>
+        The paper analyzes experimental data and reveals that:
+    </p>
+    
+    <ol>
+        <li>The skin effect significantly reduces petroleum recovery rates</li>
+        <li>Previous models could only accurately predict either early or late time behavior, not both</li>
+        <li>There's a strong relationship between recovery factor and diffusion coefficient</li>
+        <li>Temperature has a significant effect on both the Biot number and diffusion coefficient</li>
+    </ol>
+    
+    <p>
+        These findings have important implications for oil and gas recovery strategies. By accounting for the skin effect, engineers can develop more accurate predictions and better recovery methods.
+    </p>
+    
+    <h2>Interactive Simulation: Visualize Matrix-Fracture Transfer</h2>
+    
+    <div class="simulator">
+        <h3>Matrix-Fracture Transfer Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="biot">Biot Number (β):</label>
+            <input type="range" id="biot" class="slider" min="0.1" max="10" step="0.1" value="1">
+            <span id="biot-value" class="output">1.0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="diffusion">Diffusion Coefficient (D):</label>
+            <input type="range" id="diffusion" class="slider" min="0.001" max="0.1" step="0.001" value="0.01">
+            <span id="diffusion-value" class="output">0.010</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skin-thickness">Skin Thickness (bs):</label>
+            <input type="range" id="skin-thickness" class="slider" min="0.001" max="0.05" step="0.001" value="0.01">
+            <span id="skin-thickness-value" class="output">0.010</span>
+        </div>
+        
+        <div class="grid-container">
+            <div>
+                <canvas id="matrix-canvas" width="400" height="400"></canvas>
+                <div style="text-align: center;">Matrix Block with Fractures</div>
+            </div>
+            <div>
+                <canvas id="recovery-canvas" width="400" height="400"></canvas>
+                <div style="text-align: center;">Recovery Factor vs. Time</div>
+            </div>
+        </div>
+        
+        <button id="start-button">Start Simulation</button>
+        <button id="reset-button">Reset</button>
+    </div>
+    
+    <h2>Connecting the Dots: Practical Applications</h2>
+    
+    <p>
+        The analytical model developed in this paper has several practical applications:
+    </p>
+    
+    <ol>
+        <li><strong>Reservoir Simulation</strong>: More accurate prediction of oil and gas recovery from naturally fractured reservoirs</li>
+        <li><strong>Enhanced Oil Recovery</strong>: Better design of waterflooding and other recovery techniques</li>
+        <li><strong>Reservoir Characterization</strong>: Improved methods for determining reservoir properties from production data</li>
+        <li><strong>Analogous Problems</strong>: Applications to similar diffusion processes like contaminant transport or radionuclide migration</li>
+    </ol>
+    
+    <h2>Beyond Petroleum: Broader Applications</h2>
+    
+    <p>
+        The mathematics of matrix-fracture transfer extends beyond oil and gas. The same principles apply to:
+    </p>
+    
+    <ul>
+        <li>Diffusion of solvents into coal</li>
+        <li>Chemical comminution (breaking down) of materials</li>
+        <li>Contaminant transport in fractured aquifers</li>
+        <li>Drug delivery through porous materials</li>
+    </ul>
+    
+    <h2>Key Takeaways</h2>
+    
+    <ol>
+        <li>The condition of matrix block surfaces significantly impacts fluid flow between matrix and fractures</li>
+        <li>Both pressure depletion and capillary imbibition can be modeled with the same mathematical framework</li>
+        <li>The skin effect can be characterized by the Biot number (β)</li>
+        <li>Recovery behavior follows different patterns in early and late time periods</li>
+        <li>Semi-log plots of recovery data reveal crucial parameters for predicting performance</li>
+    </ol>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>
+        By returning to the fundamental physics of fluid flow and carefully analyzing boundary conditions, the researchers have developed a more accurate model of matrix-fracture transfer. This approach demonstrates the power of first principles in solving complex engineering problems.
+    </p>
+    
+    <p>
+        The hindered-flow model provides a unified framework for understanding both pressure-driven and capillary-driven recovery processes, offering valuable insights for the petroleum industry and beyond.
+    </p>
+    
+    <script>
+        // JavaScript for the interactive simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            const biotSlider = document.getElementById('biot');
+            const biotValue = document.getElementById('biot-value');
+            const diffusionSlider = document.getElementById('diffusion');
+            const diffusionValue = document.getElementById('diffusion-value');
+            const skinThicknessSlider = document.getElementById('skin-thickness');
+            const skinThicknessValue = document.getElementById('skin-thickness-value');
+            const startButton = document.getElementById('start-button');
+            const resetButton = document.getElementById('reset-button');
+            const matrixCanvas = document.getElementById('matrix-canvas');
+            const recoveryCanvas = document.getElementById('recovery-canvas');
+            const matrixCtx = matrixCanvas.getContext('2d');
+            const recoveryCtx = recoveryCanvas.getContext('2d');
+            
+            let simulationRunning = false;
+            let animationId = null;
+            let timeStep = 0;
+            let recoveryData = [];
+            
+            // Matrix block properties
+            const blockSize = 300;
+            const blockX = (matrixCanvas.width - blockSize) / 2;
+            const blockY = (matrixCanvas.height - blockSize) / 2;
+            
+            // Update slider value displays
+            biotSlider.addEventListener('input', function() {
+                biotValue.textContent = parseFloat(this.value).toFixed(1);
+            });
+            
+            diffusionSlider.addEventListener('input', function() {
+                diffusionValue.textContent = parseFloat(this.value).toFixed(3);
+            });
+            
+            skinThicknessSlider.addEventListener('input', function() {
+                skinThicknessValue.textContent = parseFloat(this.value).toFixed(3);
+            });
+            
+            // Initialize the canvas
+            function initCanvas() {
+                // Clear both canvases
+                matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                recoveryCtx.clearRect(0, 0, recoveryCanvas.width, recoveryCanvas.height);
+                
+                // Draw matrix block
+                matrixCtx.fillStyle = '#f8d7da'; // Initial color (oil-filled)
+                matrixCtx.fillRect(blockX, blockY, blockSize, blockSize);
+                
+                // Draw fractures
+                matrixCtx.strokeStyle = '#007bff';
+                matrixCtx.lineWidth = 3;
+                matrixCtx.strokeRect(blockX, blockY, blockSize, blockSize);
+                
+                // Draw skin layer
+                const skinThickness = parseFloat(skinThicknessSlider.value) * 1000;
+                matrixCtx.strokeStyle = '#6c757d';
+                matrixCtx.lineWidth = skinThickness;
+                matrixCtx.strokeRect(
+                    blockX + skinThickness/2, 
+                    blockY + skinThickness/2, 
+                    blockSize - skinThickness, 
+                    blockSize - skinThickness
+                );
+                
+                // Setup recovery graph
+                recoveryCtx.fillStyle = '#f8f9fa';
+                recoveryCtx.fillRect(0, 0, recoveryCanvas.width, recoveryCanvas.height);
+                
+                // Draw axes
+                recoveryCtx.strokeStyle = '#000';
+                recoveryCtx.lineWidth = 2;
+                recoveryCtx.beginPath();
+                recoveryCtx.moveTo(50, 350);
+                recoveryCtx.lineTo(350, 350); // x-axis
+                recoveryCtx.moveTo(50, 350);
+                recoveryCtx.lineTo(50, 50);   // y-axis
+                recoveryCtx.stroke();
+                
+                // Axis labels
+                recoveryCtx.fillStyle = '#000';
+                recoveryCtx.font = '12px Arial';
+                recoveryCtx.fillText('Time', 200, 380);
+                recoveryCtx.save();
+                recoveryCtx.translate(20, 200);
+                recoveryCtx.rotate(-Math.PI/2);
+                recoveryCtx.fillText('Recovery Factor', 0, 0);
+                recoveryCtx.restore();
+                
+                // Reset data
+                timeStep = 0;
+                recoveryData = [];
+            }
+            
+            // Calculate recovery factor based on time and parameters
+            function calculateRecoveryFactor(t) {
+                const beta = parseFloat(biotSlider.value);
+                const D = parseFloat(diffusionSlider.value);
+                
+                // Approximate solution for Ko based on beta
+                let Ko = Math.PI/4; // Initial guess
+                const tolerance = 0.0001;
+                let delta = 1;
+                
+                // Solve 2*Ko*tan(Ko) = beta using Newton's method
+                while (Math.abs(delta) > tolerance) {
+                    const f = 2 * Ko * Math.tan(Ko) - beta;
+                    const df = 2 * Math.tan(Ko) + 2 * Ko / Math.pow(Math.cos(Ko), 2);
+                    delta = f / df;
+                    Ko = Ko - delta;
+                    if (Ko <= 0) Ko = 0.01; // Prevent negative values
+                }
+                
+                // Long-time approximation for recovery factor
+                const C0 = Math.pow(4 * Math.sin(Ko) / (Math.sin(2*Ko) + 2*Ko), 3);
+                const C = C0 * Math.exp(-12 * Ko * Ko * D * t);
+                return 1 - C;
+            }
+            
+            // Update the simulation for each time step
+            function updateSimulation() {
+                if (!simulationRunning) return;
+                
+                timeStep += 1;
+                const t = timeStep * 0.05;
+                const recoveryFactor = calculateRecoveryFactor(t);
+                recoveryData.push({t, rf: recoveryFactor});
+                
+                // Update matrix block visualization
+                const saturation = recoveryFactor;
+                const red = Math.floor(248 - saturation * 100);
+                const green = Math.floor(215 - saturation * 150);
+                const blue = Math.floor(218 - saturation * 150);
+                matrixCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+                matrixCtx.fillRect(blockX, blockY, blockSize, blockSize);
+                
+                // Redraw fractures and skin
+                matrixCtx.strokeStyle = '#007bff';
+                matrixCtx.lineWidth = 3;
+                matrixCtx.strokeRect(blockX, blockY, blockSize, blockSize);
+                
+                const skinThickness = parseFloat(skinThicknessSlider.value) * 1000;
+                matrixCtx.strokeStyle = '#6c757d';
+                matrixCtx.lineWidth = skinThickness;
+                matrixCtx.strokeRect(
+                    blockX + skinThickness/2, 
+                    blockY + skinThickness/2, 
+                    blockSize - skinThickness, 
+                    blockSize - skinThickness
+                );
+                
+                // Update recovery graph
+                recoveryCtx.fillStyle = '#f8f9fa';
+                recoveryCtx.fillRect(0, 0, recoveryCanvas.width, recoveryCanvas.height);
+                
+                // Draw axes
+                recoveryCtx.strokeStyle = '#000';
+                recoveryCtx.lineWidth = 2;
+                recoveryCtx.beginPath();
+                recoveryCtx.moveTo(50, 350);
+                recoveryCtx.lineTo(350, 350); // x-axis
+                recoveryCtx.moveTo(50, 350);
+                recoveryCtx.lineTo(50, 50);   // y-axis
+                recoveryCtx.stroke();
+                
+                // Axis labels
+                recoveryCtx.fillStyle = '#000';
+                recoveryCtx.font = '12px Arial';
+                recoveryCtx.fillText('Time', 200, 380);
+                recoveryCtx.save();
+                recoveryCtx.translate(20, 200);
+                recoveryCtx.rotate(-Math.PI/2);
+                recoveryCtx.fillText('Recovery Factor', 0, 0);
+                recoveryCtx.restore();
+                
+                // Plot recovery data
+                if (recoveryData.length > 1) {
+                    recoveryCtx.strokeStyle = '#28a745';
+                    recoveryCtx.lineWidth = 2;
+                    recoveryCtx.beginPath();
+                    
+                    // Scale factors for plotting
+                    const xScale = 300 / (recoveryData[recoveryData.length-1].t);
+                    const yScale = 300;
+                    
+                    recoveryCtx.moveTo(50 + recoveryData[0].t * xScale, 350 - recoveryData[0].rf * yScale);
+                    
+                    for (let i = 1; i < recoveryData.length; i++) {
+                        recoveryCtx.lineTo(
+                            50 + recoveryData[i].t * xScale, 
+                            350 - recoveryData[i].rf * yScale
+                        );
+                    }
+                    recoveryCtx.stroke();
+                }
+                
+                // Add current recovery factor text
+                recoveryCtx.fillStyle = '#000';
+                recoveryCtx.font = '14px Arial';
+                recoveryCtx.fillText(`Recovery Factor: ${recoveryFactor.toFixed(3)}`, 100, 30);
+                
+                // Stop if we reach high recovery or max time
+                if (recoveryFactor > 0.95 || timeStep > 200) {
+                    simulationRunning = false;
+                    return;
+                }
+                
+                animationId = requestAnimationFrame(updateSimulation);
+            }
+            
+            // Start button handler
+            startButton.addEventListener('click', function() {
+                if (simulationRunning) return;
+                
+                simulationRunning = true;
+                updateSimulation();
+            });
+            
+            // Reset button handler
+            resetButton.addEventListener('click', function() {
+                simulationRunning = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                initCanvas();
+            });
+            
+            // Initialize on load
+            initCanvas();
+        });
+    </script>
+</body>
+</html>

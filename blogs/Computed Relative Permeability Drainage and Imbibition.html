@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Relative Permeability in Porous Media: From First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .formula {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .slider-container {
+            margin: 10px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        .slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .column {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        .column > div {
+            flex: 1;
+        }
+        @media (max-width: 700px) {
+            .column {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Relative Permeability in Porous Media: From First Principles</h1>
+    
+    <p class="highlight">
+        Have you ever wondered how oil and water flow through rocks deep underground? This seemingly simple question involves complex physics that petroleum engineers must understand to efficiently extract oil from reservoirs. Today, we'll break down the concept of "relative permeability" from first principles, making it accessible even if you've never studied fluid dynamics.
+    </p>
+    
+    <h2>The Problem: Two Fluids in a Rock</h2>
+    
+    <p>
+        Imagine a rock with tiny interconnected pores (like a sponge). When two fluids - like oil and water - occupy these pores simultaneously, they compete for flow paths. The ability of each fluid to flow depends not just on the rock's properties, but on how much of each fluid is present. This relationship is described by "relative permeability."
+    </p>
+    
+    <p>
+        Ashford's 1969 paper tackles a fundamental challenge: how can we predict the relative permeability of fluids during both <strong>drainage</strong> (when a non-wetting fluid like oil displaces a wetting fluid like water) and <strong>imbibition</strong> (when water flows back into the rock, displacing some oil)?
+    </p>
+    
+    <div class="interactive">
+        <h3>Interactive Visualization: Porous Media Flow</h3>
+        <div class="column">
+            <div>
+                <canvas id="porousMediaCanvas" width="350" height="350"></canvas>
+            </div>
+            <div>
+                <div class="slider-container">
+                    <label for="waterSaturation">Water Saturation:</label>
+                    <input type="range" id="waterSaturation" class="slider" min="0" max="1" step="0.01" value="0.5">
+                    <span id="waterSaturationValue" class="value-display">50%</span>
+                </div>
+                <div class="slider-container">
+                    <label for="flowDirection">Process:</label>
+                    <select id="flowDirection">
+                        <option value="drainage">Drainage (Oil Displacing Water)</option>
+                        <option value="imbibition">Imbibition (Water Displacing Oil)</option>
+                    </select>
+                </div>
+                <div class="slider-container">
+                    <label for="matrixCoefficient">Matrix Leakage Coefficient:</label>
+                    <input type="range" id="matrixCoefficient" class="slider" min="0" max="1" step="0.01" value="0.5">
+                    <span id="matrixCoefficientValue" class="value-display">0.5</span>
+                </div>
+                <p>
+                    <strong>Water Relative Permeability:</strong> <span id="krw">0</span><br>
+                    <strong>Oil Relative Permeability:</strong> <span id="kro">0</span><br>
+                    <strong>Blocked Oil Saturation:</strong> <span id="sob">0</span>
+                </p>
+                <p class="note">
+                    Notice how during imbibition, some oil becomes "trapped" and cannot flow, 
+                    reducing the overall recovery efficiency.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <h2>The Core Concept: Relative Permeability</h2>
+    
+    <p>
+        Before diving into the mathematics, let's understand what relative permeability actually means. In simple terms:
+    </p>
+    
+    <div class="note">
+        <p>
+            <strong>Relative permeability</strong> is the ratio of the effective permeability of a fluid at a given saturation to the absolute permeability of the rock. It ranges from 0 to 1 and depends on how much of each fluid is present.
+        </p>
+    </div>
+    
+    <p>
+        When a rock is fully saturated with water, water's relative permeability is 1. As oil enters the rock (drainage), water's relative permeability decreases. Similarly, as water re-enters the rock (imbibition), oil's relative permeability decreases - but importantly, it follows a different path than during drainage. This hysteresis effect is critical for understanding oil recovery.
+    </p>
+    
+    <h2>First Principles: The Physics of Fluid Flow in Porous Media</h2>
+    
+    <p>
+        To understand relative permeability, we need to start with four fundamental physical principles:
+    </p>
+    
+    <ol>
+        <li><strong>Laminar flow</strong> within the porous matrix (no turbulence)</li>
+        <li><strong>Darcy's Law</strong> relating fluid velocity to pressure gradient</li>
+        <li><strong>Tortuous flow paths</strong> through the porous network</li>
+        <li><strong>Capillary pressure</strong> inversely proportional to pore size</li>
+    </ol>
+    
+    <h3>1. Poiseuille's Law for Flow Through Capillaries</h3>
+    
+    <p>
+        Let's begin with Poiseuille's Law, which describes fluid flow through small tubes (like the pores in a rock):
+    </p>
+    
+    <div class="formula">
+        $$V_e = \frac{m^2}{k_o} \frac{\Delta P}{\mu L_e}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(V_e\) = effective fluid velocity</li>
+        <li>\(m\) = hydraulic radius of the media</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(\Delta P\) = pressure difference</li>
+        <li>\(L_e\) = effective flow path length</li>
+        <li>\(k_o\) = proportionality constant</li>
+    </ul>
+    
+    <h3>2. Darcy's Law for Macroscopic Flow</h3>
+    
+    <p>
+        At a larger scale, we use Darcy's Law to describe flow through the entire rock:
+    </p>
+    
+    <div class="formula">
+        $$V = -\frac{k}{\mu}\frac{\Delta P}{L}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(V\) = macroscopic (approach) fluid velocity</li>
+        <li>\(k\) = permeability of the rock</li>
+        <li>\(L\) = apparent length of the sample</li>
+    </ul>
+    
+    <h3>3. Relating Microscopic to Macroscopic Flow</h3>
+    
+    <p>
+        The actual fluid path through the rock is tortuous (winding), so we need to relate the effective velocity to the approach velocity:
+    </p>
+    
+    <div class="formula">
+        $$V_e = \frac{V}{\Phi}\frac{L_e}{L}$$
+    </div>
+    
+    <p>Where \(\Phi\) is the porosity of the rock.</p>
+    
+    <h3>4. Capillary Pressure Relationship</h3>
+    
+    <p>
+        Finally, we need to understand how capillary pressure relates to pore size:
+    </p>
+    
+    <div class="formula">
+        $$P_c = \frac{\gamma \cos\theta}{m} = \frac{\gamma \cos\theta}{\Phi/S} = \frac{\gamma \cos\theta}{r_e/2}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(P_c\) = capillary pressure</li>
+        <li>\(\gamma\) = interfacial tension between fluids</li>
+        <li>\(\theta\) = contact angle</li>
+        <li>\(S\) = specific surface area</li>
+        <li>\(r_e\) = equivalent pore radius</li>
+    </ul>
+    
+    <h2>Deriving the Drainage Relative Permeability Model</h2>
+    
+    <p>
+        Now we can derive a model for the relative permeability during drainage. Combining the equations above and applying them to a bundle of capillary tubes of varying sizes, we get:
+    </p>
+    
+    <div class="formula">
+        $$k_{rw,dr} = \frac{Sw_{dr} - Sw_{p,dr}}{1 - Sw_{p,dr}}^{m,dr}$$
+    </div>
+    
+    <p>
+        And for the non-wetting phase (oil):
+    </p>
+    
+    <div class="formula">
+        $$k_{rnw,dr} = S_{nw,dr}^{*2}(1 - \frac{Sw_{dr}^{*m,dr}}{2})$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(Sw_{dr}\) = drainage wetting phase saturation</li>
+        <li>\(Sw_{p,dr}\) = pseudo-irreducible water saturation</li>
+        <li>\(m,dr\) = drainage saturation exponent</li>
+        <li>\(S_{nw,dr}^*\) = normalized non-wetting phase saturation</li>
+    </ul>
+    
+    <p>
+        The key innovation in Ashford's paper is the introduction of the <strong>pseudo-irreducible water saturation</strong> (\(Sw_{p,dr}\)). This is different from the traditional irreducible water saturation (\(Sw_i\)). The pseudo value represents the saturation at which the wetting phase effectively stops flowing, which is typically higher than the true irreducible saturation.
+    </p>
+    
+    <h2>The Leverett J-Function: A Powerful Tool</h2>
+    
+    <p>
+        To simplify calculations, Ashford uses the Leverett J-function, which normalizes capillary pressure data:
+    </p>
+    
+    <div class="formula">
+        $$J = \frac{P_c}{\gamma \cos\theta} \left(\frac{k}{\Phi}\right)^{1/2}$$
+    </div>
+    
+    <p>
+        The logarithmic relationship between J and saturation gives us:
+    </p>
+    
+    <div class="formula">
+        $$\ln(J) = \ln(J_o) + \left(\frac{3-m,dr}{2}\right)\ln Sw_{dr}$$
+    </div>
+    
+    <p>
+        This relationship allows us to determine the drainage saturation exponent \(m,dr\) from capillary pressure data, which is crucial for calculating relative permeability.
+    </p>
+    
+    <div class="interactive">
+        <h3>Interactive J-Function Calculator</h3>
+        <div class="column">
+            <div>
+                <canvas id="jFunctionCanvas" width="350" height="350"></canvas>
+            </div>
+            <div>
+                <div class="slider-container">
+                    <label for="permeability">Permeability (mD):</label>
+                    <input type="range" id="permeability" class="slider" min="1" max="1000" step="1" value="100">
+                    <span id="permeabilityValue" class="value-display">100</span>
+                </div>
+                <div class="slider-container">
+                    <label for="porosity">Porosity (%):</label>
+                    <input type="range" id="porosity" class="slider" min="1" max="40" step="0.1" value="20">
+                    <span id="porosityValue" class="value-display">20</span>
+                </div>
+                <div class="slider-container">
+                    <label for="interfacialTension">Interfacial Tension (dynes/cm):</label>
+                    <input type="range" id="interfacialTension" class="slider" min="1" max="50" step="0.1" value="23">
+                    <span id="interfacialTensionValue" class="value-display">23</span>
+                </div>
+                <div class="slider-container">
+                    <label for="swi">Irreducible Water Saturation:</label>
+                    <input type="range" id="swi" class="slider" min="0" max="0.5" step="0.01" value="0.15">
+                    <span id="swiValue" class="value-display">0.15</span>
+                </div>
+                <p>
+                    <strong>Drainage Saturation Exponent (m,dr):</strong> <span id="mdr">0</span><br>
+                    <strong>J-Function Slope:</strong> <span id="jmdr">0</span>
+                </p>
+                <p class="note">
+                    The slope of the J-Function plot on a log-log scale gives us \(\frac{3-m,dr}{2}\), 
+                    which we can use to calculate the drainage saturation exponent.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <h2>The Imbibition Challenge: Trapped Oil</h2>
+    
+    <p>
+        The real innovation in Ashford's paper comes when addressing imbibition (water displacing oil). During this process, some oil becomes trapped in the pores - a phenomenon known as "hysteresis."
+    </p>
+    
+    <p>
+        Naar and Henderson had previously developed a theory for this trapped oil, but Ashford introduces a crucial refinement: the <strong>matrix leakage coefficient</strong> (\(\alpha_m^o\)).
+    </p>
+    
+    <h3>The Matrix Leakage Coefficient</h3>
+    
+    <p>
+        The matrix leakage coefficient quantifies how much trapped oil can escape during imbibition. It's defined as:
+    </p>
+    
+    <div class="formula">
+        $$\alpha_m = \frac{\alpha_m^o}{(1-Sw_i)}\left(1-\frac{Sw_i}{Sw}\right)$$
+    </div>
+    
+    <p>
+        This leads to a relationship between imbibition and drainage saturations:
+    </p>
+    
+    <div class="formula">
+        $$Sw_{imb} = Sw_{dr} - S_{ob}$$
+    </div>
+    
+    <p>Where \(S_{ob}\) is the blocked oil saturation:</p>
+    
+    <div class="formula">
+        $$S_{ob} = \frac{\alpha_m^o}{(1-Sw_i)^2}\left(\frac{(Sw_{dr}-Sw_i)^2}{2} - Sw_i(Sw_{dr}-Sw_i-Sw_i\ln(\frac{Sw_{dr}}{Sw_i}))\right)$$
+    </div>
+    
+    <p>
+        The relative permeabilities during imbibition can then be calculated as:
+    </p>
+    
+    <div class="formula">
+        $$k_{rw,imb} = \frac{Sw_{imb} - Sw_{p,imb}}{1 - Sw_{p,imb}}^{m,imb}$$
+    </div>
+    
+    <div class="formula">
+        $$k_{rnw,imb} = \left(\frac{1-Sw_i-S_{ob}}{1-Sw_i}\right)^3 \cdot k_{rnw,dr}$$
+    </div>
+    
+    <h2>Practical Significance: Why This Matters</h2>
+    
+    <p>
+        Understanding relative permeability hysteresis is crucial for:
+    </p>
+    
+    <ol>
+        <li><strong>Predicting oil recovery</strong>: The trapped oil represents unrecoverable resources</li>
+        <li><strong>Designing enhanced oil recovery techniques</strong>: Methods to reduce trapped oil</li>
+        <li><strong>Reservoir simulation</strong>: Accurate modeling of fluid flow in reservoirs</li>
+        <li><strong>Water flooding operations</strong>: Optimizing water injection for maximum oil recovery</li>
+    </ol>
+    
+    <p>
+        Ashford's model provides a way to calculate these effects from basic rock properties, without requiring extensive laboratory measurements for every sample.
+    </p>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>
+        By starting with fundamental physical laws and building up to a comprehensive model, Ashford created a powerful tool for petroleum engineers. The introduction of the pseudo-irreducible water saturation and the matrix leakage coefficient addressed key limitations in previous models.
+    </p>
+    
+    <p>
+        What makes this approach powerful is that it connects microscopic pore-level physics to macroscopic flow behavior that engineers can measure and use in practical applications. This is the essence of first-principles thinking - understanding complex phenomena by breaking them down to their fundamental components.
+    </p>
+    
+    <p class="highlight">
+        Next time you fill your car with gasoline, remember that the journey of that oil from deep underground to your tank was understood and optimized using these elegant mathematical models that connect the microscopic world of pores to the macroscopic world of oil wells.
+    </p>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Porous Media Simulation
+            const porousMediaCanvas = document.getElementById('porousMediaCanvas');
+            const porousMediaCtx = porousMediaCanvas.getContext('2d');
+            const waterSaturationSlider = document.getElementById('waterSaturation');
+            const waterSaturationValue = document.getElementById('waterSaturationValue');
+            const flowDirectionSelect = document.getElementById('flowDirection');
+            const matrixCoefficientSlider = document.getElementById('matrixCoefficient');
+            const matrixCoefficientValue = document.getElementById('matrixCoefficientValue');
+            const krwSpan = document.getElementById('krw');
+            const kroSpan = document.getElementById('kro');
+            const sobSpan = document.getElementById('sob');
+            
+            // J-Function Calculator
+            const jFunctionCanvas = document.getElementById('jFunctionCanvas');
+            const jFunctionCtx = jFunctionCanvas.getContext('2d');
+            const permeabilitySlider = document.getElementById('permeability');
+            const permeabilityValue = document.getElementById('permeabilityValue');
+            const porositySlider = document.getElementById('porosity');
+            const porosityValue = document.getElementById('porosityValue');
+            const interfacialTensionSlider = document.getElementById('interfacialTension');
+            const interfacialTensionValue = document.getElementById('interfacialTensionValue');
+            const swiSlider = document.getElementById('swi');
+            const swiValue = document.getElementById('swiValue');
+            const mdrSpan = document.getElementById('mdr');
+            const jmdrSpan = document.getElementById('jmdr');
+            
+            // Create pores for visualization
+            class Pore {
+                constructor(x, y, radius) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = radius;
+                    this.filled = 'water'; // 'water', 'oil', or 'blocked'
+                }
+                
+                draw(ctx) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    
+                    if (this.filled === 'water') {
+                        ctx.fillStyle = '#3498db';
+                    } else if (this.filled === 'oil') {
+                        ctx.fillStyle = '#e67e22';
+                    } else if (this.filled === 'blocked') {
+                        ctx.fillStyle = '#c0392b';
+                    }
+                    
+                    ctx.fill();
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+            
+            // Create connections between pores
+            class Connection {
+                constructor(pore1, pore2, width) {
+                    this.pore1 = pore1;
+                    this.pore2 = pore2;
+                    this.width = width;
+                    this.filled = 'water'; // 'water', 'oil', or 'blocked'
+                }
+                
+                draw(ctx) {
+                    const dx = this.pore2.x - this.pore1.x;
+                    const dy = this.pore2.y - this.pore1.y;
+                    const angle = Math.atan2(dy, dx);
+                    
+                    const x1 = this.pore1.x + Math.cos(angle) * this.pore1.radius;
+                    const y1 = this.pore1.y + Math.sin(angle) * this.pore1.radius;
+                    const x2 = this.pore2.x - Math.cos(angle) * this.pore2.radius;
+                    const y2 = this.pore2.y - Math.sin(angle) * this.pore2.radius;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    
+                    if (this.filled === 'water') {
+                        ctx.strokeStyle = '#3498db';
+                    } else if (this.filled === 'oil') {
+                        ctx.strokeStyle = '#e67e22';
+                    } else if (this.filled === 'blocked') {
+                        ctx.strokeStyle = '#c0392b';
+                    }
+                    
+                    ctx.lineWidth = this.width;
+                    ctx.stroke();
+                }
+            }
+            
+            // Generate random porous media network
+            function generatePorousMedia(numPores, minRadius, maxRadius, width, height) {
+                const pores = [];
+                const connections = [];
+                
+                // Generate pores
+                for (let i = 0; i < numPores; i++) {
+                    let x, y, radius, overlapping;
+                    do {
+                        overlapping = false;
+                        radius = minRadius + Math.random() * (maxRadius - minRadius);
+                        x = radius + Math.random() * (width - 2 * radius);
+                        y = radius + Math.random() * (height - 2 * radius);
+                        
+                        // Check for overlap with existing pores
+                        for (const pore of pores) {
+                            const dx = x - pore.x;
+                            const dy = y - pore.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            if (distance < radius + pore.radius + 5) {
+                                overlapping = true;
+                                break;
+                            }
+                        }
+                    } while (overlapping);
+                    
+                    pores.push(new Pore(x, y, radius));
+                }
+                
+                // Generate connections
+                for (let i = 0; i < pores.length; i++) {
+                    const pore1 = pores[i];
+                    
+                    // Connect to 2-4 closest pores
+                    const numConnections = 2 + Math.floor(Math.random() * 3);
+                    
+                    // Calculate distances to all other pores
+                    const distances = [];
+                    for (let j = 0; j < pores.length; j++) {
+                        if (i !== j) {
+                            const pore2 = pores[j];
+                            const dx = pore2.x - pore1.x;
+                            const dy = pore2.y - pore1.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            distances.push({ index: j, distance });
+                        }
+                    }
+                    
+                    // Sort by distance
+                    distances.sort((a, b) => a.distance - b.distance);
+                    
+                    // Connect to closest pores
+                    for (let k = 0; k < Math.min(numConnections, distances.length); k++) {
+                        const pore2 = pores[distances[k].index];
+                        
+                        // Create connection with width proportional to pore sizes
+                        const width = 1 + Math.min(pore1.radius, pore2.radius) / 4;
+                        connections.push(new Connection(pore1, pore2, width));
+                    }
+                }
+                
+                return { pores, connections };
+            }
+            
+            // Generate the porous media
+            const porousMedia = generatePorousMedia(30, 5, 15, porousMediaCanvas.width, porousMediaCanvas.height);
+            
+            // Sort pores by size (smallest to largest)
+            porousMedia.pores.sort((a, b) => a.radius - b.radius);
+            
+            // Calculate relative permeability
+            function calculateRelativePermeability(Sw, Swi, mdr, flowDirection, alphaMO) {
+                // Drainage
+                const Swp = Swi * 1.1; // Pseudo-irreducible water saturation
+                const krwDr = Math.pow((Sw - Swp) / (1 - Swp), mdr);
+                const kroStar = Math.pow((1 - Sw) / (1 - Swi), 2);
+                const kroDr = kroStar * (1 - Math.pow((Sw - Swi) / (1 - Swi), mdr) / 2);
+                
+                // Return drainage values if that's the selected flow direction
+                if (flowDirection === 'drainage') {
+                    return {
+                        krw: Math.max(0, Math.min(1, krwDr)),
+                        kro: Math.max(0, Math.min(1, kroDr)),
+                        sob: 0
+                    };
+                }
+                
+                // Imbibition - calculate blocked oil
+                const Sob = (alphaMO / Math.pow(1 - Swi, 2)) * (
+                    (Math.pow(Sw - Swi, 2) / 2) - 
+                    Swi * (Sw - Swi - Swi * Math.log(Sw / Swi))
+                );
+                
+                // Imbibition saturations
+                const SwImb = Sw - Sob;
+                const SwpImb = Swp * 1.05; // Slightly higher for imbibition
+                
+                // Imbibition relative permeabilities
+                const mimb = mdr * 0.8; // Imbibition exponent is typically lower
+                const krwImb = Math.pow((SwImb - SwpImb) / (1 - SwpImb), mimb);
+                const kroImb = Math.pow((1 - Swi - Sob) / (1 - Swi), 3) * kroDr;
+                
+                return {
+                    krw: Math.max(0, Math.min(1, krwImb)),
+                    kro: Math.max(0, Math.min(1, kroImb)),
+                    sob: Math.max(0, Math.min(1, Sob))
+                };
+            }
+            
+            // Update porous media visualization based on saturation
+            function updatePorousMedia(Sw, flowDirection, alphaMO) {
+                const Swi = 0.15; // Irreducible water saturation
+                const mdr = 8.0; // Drainage saturation exponent
+                
+                // Calculate relative permeability
+                const { krw, kro, sob } = calculateRelativePermeability(Sw, Swi, mdr, flowDirection, alphaMO);
+                
+                // Update display values
+                krwSpan.textContent = krw.toFixed(3);
+                kroSpan.textContent = kro.toFixed(3);
+                sobSpan.textContent = sob.toFixed(3);
+                
+                // Calculate water-filled pores based on saturation
+                const numWaterPores = Math.round(Sw * porousMedia.pores.length);
+                
+                // Reset all pores and connections to oil
+                porousMedia.pores.forEach(pore => pore.filled = 'oil');
+                porousMedia.connections.forEach(conn => conn.filled = 'oil');
+                
+                // Fill smallest pores with water (wetting phase preference)
+                for (let i = 0; i < numWaterPores; i++) {
+                    porousMedia.pores[i].filled = 'water';
+                }
+                
+                // Fill connections based on connected pores
+                porousMedia.connections.forEach(conn => {
+                    if (conn.pore1.filled === 'water' && conn.pore2.filled === 'water') {
+                        conn.filled = 'water';
+                    }
+                });
+                
+                // If imbibition, mark some oil as blocked
+                if (flowDirection === 'imbibition' && sob > 0) {
+                    const numBlockedPores = Math.round(sob * porousMedia.pores.length);
+                    let blockedCount = 0;
+                    
+                    // Start from larger pores (oil phase) and mark some as blocked
+                    for (let i = porousMedia.pores.length - 1; i >= numWaterPores && blockedCount < numBlockedPores; i--) {
+                        if (porousMedia.pores[i].filled === 'oil') {
+                            porousMedia.pores[i].filled = 'blocked';
+                            blockedCount++;
+                        }
+                    }
+                    
+                    // Update connections to blocked pores
+                    porousMedia.connections.forEach(conn => {
+                        if (conn.pore1.filled === 'blocked' || conn.pore2.filled === 'blocked') {
+                            conn.filled = 'blocked';
+                        }
+                    });
+                }
+                
+                // Draw the updated porous media
+                porousMediaCtx.clearRect(0, 0, porousMediaCanvas.width, porousMediaCanvas.height);
+                porousMedia.connections.forEach(conn => conn.draw(porousMediaCtx));
+                porousMedia.pores.forEach(pore => pore.draw(porousMediaCtx));
+            }
+            
+            // Update J-Function visualization
+            function updateJFunction(k, phi, gamma, Swi) {
+                // Clear canvas
+                jFunctionCtx.clearRect(0, 0, jFunctionCanvas.width, jFunctionCanvas.height);
+                
+                // Calculate J-Function slope
+                const jmdr = 0.5 + 0.7 * (1 - Swi); // Approximation based on paper correlations
+                const mdr = 3 - 2 * jmdr;
+                
+                // Update display values
+                mdrSpan.textContent = mdr.toFixed(2);
+                jmdrSpan.textContent = jmdr.toFixed(2);
+                
+                // Draw coordinate system
+                jFunctionCtx.strokeStyle = '#2c3e50';
+                jFunctionCtx.lineWidth = 1;
+                
+                // X-axis
+                jFunctionCtx.beginPath();
+                jFunctionCtx.moveTo(50, jFunctionCanvas.height - 50);
+                jFunctionCtx.lineTo(jFunctionCanvas.width - 20, jFunctionCanvas.height - 50);
+                jFunctionCtx.stroke();
+                
+                // Y-axis
+                jFunctionCtx.beginPath();
+                jFunctionCtx.moveTo(50, jFunctionCanvas.height - 50);
+                jFunctionCtx.lineTo(50, 20);
+                jFunctionCtx.stroke();
+                
+                // Axis labels
+                jFunctionCtx.fillStyle = '#2c3e50';
+                jFunctionCtx.font = '12px Arial';
+                jFunctionCtx.fillText('ln(Sw)', jFunctionCanvas.width - 40, jFunctionCanvas.height - 30);
+                jFunctionCtx.fillText('ln(J)', 30, 20);
+                
+                // Draw J-Function curve
+                jFunctionCtx.beginPath();
+                jFunctionCtx.strokeStyle = '#3498db';
+                jFunctionCtx.lineWidth = 2;
+                
+                const Jo = 0.2 + 0.3 * Math.sqrt(k / phi) / gamma; // Approximation
+                
+                for (let i = 0; i <= 100; i++) {
+                    const Sw = Swi + (i / 100) * (1 - Swi);
+                    
+                    // Calculate J value
+                    const J = Jo * Math.pow(Sw, jmdr);
+                    
+                    // Convert to log scale and map to canvas
+                    const x = 50 + (jFunctionCanvas.width - 70) * (Math.log(Sw) - Math.log(Swi)) / (Math.log(1) - Math.log(Swi));
+                    const y = jFunctionCanvas.height - 50 - (jFunctionCanvas.height - 70) * (Math.log(J) - Math.log(Jo * Math.pow(Swi, jmdr))) / (Math.log(Jo) - Math.log(Jo * Math.pow(Swi, jmdr)));
+                    
+                    if (i === 0) {
+                        jFunctionCtx.moveTo(x, y);
+                    } else {
+                        jFunctionCtx.lineTo(x, y);
+                    }
+                }
+                jFunctionCtx.stroke();
+                
+                // Draw slope line
+                jFunctionCtx.beginPath();
+                jFunctionCtx.strokeStyle = '#e74c3c';
+                jFunctionCtx.lineWidth = 1;
+                jFunctionCtx.setLineDash([5, 3]);
+                
+                const x1 = 50 + (jFunctionCanvas.width - 70) * 0.3;
+                const y1 = jFunctionCanvas.height - 50 - (jFunctionCanvas.height - 70) * 0.3 * jmdr;
+                const x2 = 50 + (jFunctionCanvas.width - 70) * 0.7;
+                const y2 = jFunctionCanvas.height - 50 - (jFunctionCanvas.height - 70) * 0.7 * jmdr;
+                
+                jFunctionCtx.moveTo(x1, y1);
+                jFunctionCtx.lineTo(x2, y2);
+                jFunctionCtx.stroke();
+                jFunctionCtx.setLineDash([]);
+                
+                // Add slope annotation
+                jFunctionCtx.fillStyle = '#e74c3c';
+                jFunctionCtx.fillText(`Slope = ${jmdr.toFixed(2)} = (3-m,dr)/2`, x2 + 5, y2);
+            }
+            
+            // Event listeners
+            waterSaturationSlider.addEventListener('input', () => {
+                const Sw = parseFloat(waterSaturationSlider.value);
+                waterSaturationValue.textContent = `${(Sw * 100).toFixed(0)}%`;
+                updatePorousMedia(
+                    Sw, 
+                    flowDirectionSelect.value, 
+                    parseFloat(matrixCoefficientSlider.value)
+                );
+            });
+            
+            flowDirectionSelect.addEventListener('change', () => {
+                updatePorousMedia(
+                    parseFloat(waterSaturationSlider.value), 
+                    flowDirectionSelect.value, 
+                    parseFloat(matrixCoefficientSlider.value)
+                );
+            });
+            
+            matrixCoefficientSlider.addEventListener('input', () => {
+                const alphaMO = parseFloat(matrixCoefficientSlider.value);
+                matrixCoefficientValue.textContent = alphaMO.toFixed(2);
+                updatePorousMedia(
+                    parseFloat(waterSaturationSlider.value), 
+                    flowDirectionSelect.value, 
+                    alphaMO
+                );
+            });
+            
+            permeabilitySlider.addEventListener('input', () => {
+                const k = parseFloat(permeabilitySlider.value);
+                permeabilityValue.textContent = k.toFixed(0);
+                updateJFunction(
+                    k, 
+                    parseFloat(porositySlider.value) / 100, 
+                    parseFloat(interfacialTensionSlider.value),
+                    parseFloat(swiSlider.value)
+                );
+            });
+            
+            porositySlider.addEventListener('input', () => {
+                const phi = parseFloat(porositySlider.value);
+                porosityValue.textContent = phi.toFixed(1);
+                updateJFunction(
+                    parseFloat(permeabilitySlider.value), 
+                    phi / 100, 
+                    parseFloat(interfacialTensionSlider.value),
+                    parseFloat(swiSlider.value)
+                );
+            });
+            
+            interfacialTensionSlider.addEventListener('input', () => {
+                const gamma = parseFloat(interfacialTensionSlider.value);
+                interfacialTensionValue.textContent = gamma.toFixed(1);
+                updateJFunction(
+                    parseFloat(permeabilitySlider.value), 
+                    parseFloat(porositySlider.value) / 100, 
+                    gamma,
+                    parseFloat(swiSlider.value)
+                );
+            });
+            
+            swiSlider.addEventListener('input', () => {
+                const Swi = parseFloat(swiSlider.value);
+                swiValue.textContent = Swi.toFixed(2);
+                updateJFunction(
+                    parseFloat(permeabilitySlider.value), 
+                    parseFloat(porositySlider.value) / 100, 
+                    parseFloat(interfacialTensionSlider.value),
+                    Swi
+                );
+            });
+            
+            // Initial updates
+            updatePorousMedia(
+                parseFloat(waterSaturationSlider.value), 
+                flowDirectionSelect.value, 
+                parseFloat(matrixCoefficientSlider.value)
+            );
+            
+            updateJFunction(
+                parseFloat(permeabilitySlider.value), 
+                parseFloat(porositySlider.value) / 100, 
+                parseFloat(interfacialTensionSlider.value),
+                parseFloat(swiSlider.value)
+            );
+});
+</script>
+</body>
+</html>

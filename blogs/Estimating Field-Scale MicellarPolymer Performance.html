@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Micellar/Polymer Flooding from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .key-concept {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive {
+            background-color: #f0f7fa;
+            border: 1px solid #bedceb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .footnote {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+            padding-top: 10px;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .output {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Science of Sweeping Oil: Understanding Micellar/Polymer Flooding from First Principles</h1>
+    
+    <p class="highlight">In this post, we'll break down the complex world of enhanced oil recovery (EOR) by exploring how pattern selection and surfactant properties affect oil recovery. Using the groundbreaking research from Giordano's paper, we'll transform mathematical models into intuitive understanding and provide an interactive tool to visualize these concepts.</p>
+    
+    <h2>The Challenge: Getting More Oil from Depleted Fields</h2>
+    
+    <p>Imagine you have a sponge soaked with oil, and you've already squeezed it as hard as you can. There's still oil trapped in the tiny pores that won't come out with simple pressure. This is exactly the challenge petroleum engineers face with mature oil fields.</p>
+    
+    <p>After primary recovery (natural pressure) and secondary recovery (water flooding), up to 60-70% of the original oil can still remain trapped in the reservoir. This is where <strong>micellar/polymer flooding</strong> comes in - a technique that uses special surfactants (like advanced dish soap) to release oil that's stuck at the pore level.</p>
+    
+    <div class="key-concept">
+        <h3>Key Concept: Micellar/Polymer Flooding</h3>
+        <p>This enhanced oil recovery technique involves injecting a solution containing surfactants (to reduce interfacial tension between oil and water) followed by polymer (to improve sweep efficiency) to mobilize and recover residual oil after conventional water flooding.</p>
+    </div>
+    
+    <h2>The Fundamental Questions</h2>
+    
+    <p>When designing a micellar/polymer flood, petroleum engineers face several critical questions:</p>
+    
+    <ol>
+        <li>Which <strong>pattern of wells</strong> (five-spot, seven-spot, nine-spot, or staggered line drive) will recover the most oil?</li>
+        <li>How much <strong>surfactant</strong> should be injected?</li>
+        <li>How does reservoir <strong>heterogeneity</strong> affect the process?</li>
+        <li>What <strong>interfacial tension</strong> values are needed for effective recovery?</li>
+    </ol>
+    
+    <p>Giordano's paper addresses these questions by developing a simplified model that captures the essential physics while avoiding the complexity of full reservoir simulations.</p>
+    
+    <h2>First Principles: The Physics Behind Oil Recovery</h2>
+    
+    <h3>Capillary Number: The Master Parameter</h3>
+    
+    <p>At the heart of micellar/polymer flooding is a dimensionless parameter called the <strong>capillary number</strong>. This number represents the ratio of viscous forces (that push the oil) to capillary forces (that trap the oil):</p>
+    
+    <p>\[ N_{ca} = \frac{\mu v_D}{\gamma} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\mu\) = viscosity of the displacing fluid</li>
+        <li>\(v_D\) = Darcy velocity (flow rate per unit area)</li>
+        <li>\(\gamma\) = interfacial tension between oil and water</li>
+    </ul>
+    
+    <p>When the capillary number exceeds a critical value, oil that was previously trapped can be mobilized and recovered.</p>
+    
+    <h3>Capillary Desaturation Curve: How Oil Releases</h3>
+    
+    <p>The relationship between capillary number and residual oil is described by the capillary desaturation curve:</p>
+    
+    <p>\[ S_{or}^* = \frac{S_{or}}{S_{or}^{wf}} = \beta \log_{10}\left(\frac{N_{ca}}{N_{ca,0}}\right) \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(S_{or}^*\) = normalized residual oil saturation</li>
+        <li>\(S_{or}\) = residual oil saturation</li>
+        <li>\(S_{or}^{wf}\) = waterflood residual oil saturation</li>
+        <li>\(\beta\) = slope of the curve (typically negative)</li>
+        <li>\(N_{ca,0}\) = critical capillary number</li>
+    </ul>
+    
+    <div class="interactive">
+        <h3>Interactive Tool: Capillary Desaturation Curve</h3>
+        <p>Move the sliders to see how different parameters affect oil recovery. This shows the fundamental relationship between capillary number and residual oil saturation.</p>
+        
+        <div class="slider-container">
+            <label for="beta">β (slope): </label>
+            <input type="range" id="beta" min="-1" max="-0.2" step="0.01" value="-0.617">
+            <span id="betaValue">-0.617</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="nca0">N<sub>ca,0</sub>: </label>
+            <input type="range" id="nca0" min="0.001" max="0.02" step="0.0001" value="0.0113">
+            <span id="nca0Value">0.0113</span>
+        </div>
+        
+        <canvas id="desaturationCurve" width="700" height="400"></canvas>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
+                const betaSlider = document.getElementById('beta');
+                const nca0Slider = document.getElementById('nca0');
+                const betaValue = document.getElementById('betaValue');
+                const nca0Value = document.getElementById('nca0Value');
+                const canvas = document.getElementById('desaturationCurve');
+                const ctx = canvas.getContext('2d');
+                
+                // Update display values
+                betaSlider.addEventListener('input', function() {
+                    betaValue.textContent = this.value;
+                    drawCurve();
+                });
+                
+                nca0Slider.addEventListener('input', function() {
+                    nca0Value.textContent = this.value;
+                    drawCurve();
+                });
+                
+                // Function to calculate normalized residual oil saturation
+                function calculateSor(Nca, beta, Nca0) {
+                    if (Nca <= Nca0) return 1.0;
+                    
+                    const ratio = Nca / Nca0;
+                    const logTerm = Math.log10(ratio);
+                    let Sor = 1.0 + beta * logTerm;
+                    
+                    return Math.max(0, Math.min(1, Sor));
+                }
+                
+                // Function to draw the capillary desaturation curve
+                function drawCurve() {
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Get current parameter values
+                    const beta = parseFloat(betaSlider.value);
+                    const Nca0 = parseFloat(nca0Slider.value);
+                    
+                    // Set up graph dimensions
+                    const padding = 50;
+                    const graphWidth = canvas.width - 2 * padding;
+                    const graphHeight = canvas.height - 2 * padding;
+                    
+                    // Draw axes
+                    ctx.beginPath();
+                    ctx.moveTo(padding, padding);
+                    ctx.lineTo(padding, canvas.height - padding);
+                    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw axis labels
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Capillary Number (Nca)', canvas.width / 2, canvas.height - 10);
+                    
+                    ctx.save();
+                    ctx.translate(15, canvas.height / 2);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Normalized Residual Oil Saturation (Sor*)', 0, 0);
+                    ctx.restore();
+                    
+                    // Draw grid lines
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    
+                    // Horizontal grid lines
+                    for (let i = 0; i <= 10; i++) {
+                        const y = padding + (graphHeight * i / 10);
+                        ctx.beginPath();
+                        ctx.moveTo(padding, y);
+                        ctx.lineTo(canvas.width - padding, y);
+                        ctx.stroke();
+                        
+                        // Add y-axis labels
+                        ctx.fillText((1 - i / 10).toFixed(1), padding - 20, y + 5);
+                    }
+                    
+                    // Calculate x-axis points (logarithmic scale)
+                    const xPoints = [];
+                    for (let i = -5; i <= 0; i += 0.5) {
+                        xPoints.push(Math.pow(10, i));
+                    }
+                    
+                    // Vertical grid lines for logarithmic scale
+                    xPoints.forEach((x, i) => {
+                        const xPos = padding + graphWidth * (Math.log10(x) + 5) / 5;
+                        ctx.beginPath();
+                        ctx.moveTo(xPos, padding);
+                        ctx.lineTo(xPos, canvas.height - padding);
+                        ctx.stroke();
+                        
+                        // Add x-axis labels for powers of 10
+                        if (Math.log10(x) % 1 === 0) {
+                            ctx.fillText(`10^${Math.log10(x)}`, xPos, canvas.height - padding + 20);
+                        }
+                    });
+                    
+                    // Draw the capillary desaturation curve
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#3498db';
+                    ctx.lineWidth = 3;
+                    
+                    const numPoints = 200;
+                    for (let i = 0; i <= numPoints; i++) {
+                        const Nca = Math.pow(10, -5 + (5 * i / numPoints));
+                        const Sor = calculateSor(Nca, beta, Nca0);
+                        
+                        const x = padding + graphWidth * (Math.log10(Nca) + 5) / 5;
+                        const y = padding + graphHeight * (1 - Sor);
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    
+                    ctx.stroke();
+                    
+                    // Mark the critical capillary number
+                    const xCritical = padding + graphWidth * (Math.log10(Nca0) + 5) / 5;
+                    const yCritical = padding + graphHeight * (1 - 1.0);
+                    
+                    ctx.beginPath();
+                    ctx.arc(xCritical, yCritical, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                    
+                    // Add label for critical point
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(`Nca,0 = ${Nca0}`, xCritical, yCritical - 10);
+                }
+                
+                // Initial draw
+                drawCurve();
+});
+</script>
+    </div>
+    
+    <h3>Field-Scale Capillary Number: Scaling to Real Fields</h3>
+    
+    <p>For practical field applications, Giordano introduces a "field-scale capillary number" that accounts for field-specific parameters:</p>
+    
+    <p>\[ N_{ca,f} = \frac{\mu k \Delta P_{max}}{\gamma h \sqrt{A_w}} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(k\) = permeability</li>
+        <li>\(\Delta P_{max}\) = maximum pressure drop between injector and producer</li>
+        <li>\(h\) = reservoir thickness</li>
+        <li>\(A_w\) = area per well</li>
+    </ul>
+    
+    <p>This parameter allows engineers to compare different field conditions and pattern types on an equal basis.</p>
+    
+    <h3>Normalized Micellar Slug Size</h3>
+    
+    <p>Another key parameter is the normalized slug size, which represents how much of the reservoir can be contacted by surfactant before it's all adsorbed:</p>
+    
+    <p>\[ PV_S^* = \frac{\text{Volume of surfactant injected}}{\text{Volume required to satisfy adsorption}} \]</p>
+    
+    <p>This dimensionless parameter helps determine the optimal amount of surfactant to inject.</p>
+    
+    <h2>Pattern Selection: The Geometry of Recovery</h2>
+    
+    <p>One of the most significant findings from Giordano's work concerns which well pattern is most effective for micellar/polymer flooding.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Tool: Pattern Comparison</h3>
+        <p>This simulation shows how different well patterns perform under equal conditions. Compare five-spot, seven-spot, and nine-spot patterns to see which recovers more oil.</p>
+        
+        <div class="slider-container">
+            <label for="fieldCapillary">Field Capillary Number: </label>
+            <input type="range" id="fieldCapillary" min="0.1" max="10" step="0.1" value="3.0">
+            <span id="fieldCapillaryValue">3.0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="slugSize">Normalized Slug Size: </label>
+            <input type="range" id="slugSize" min="0.1" max="1.5" step="0.05" value="0.9">
+            <span id="slugSizeValue">0.9</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="discountRate">Discount Rate (%): </label>
+            <input type="range" id="discountRate" min="0" max="25" step="1" value="10">
+            <span id="discountRateValue">10%</span>
+        </div>
+        
+        <canvas id="patternComparison" width="700" height="400"></canvas>
+        
+        <div>
+            <p>Residual Oil Saturations:</p>
+            <p>Five-spot: <span id="fiveSpotResult" class="output">-</span></p>
+            <p>Seven-spot: <span id="sevenSpotResult" class="output">-</span></p>
+            <p>Nine-spot: <span id="nineSpotResult" class="output">-</span></p>
+        </div>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
+                const fieldCapillarySlider = document.getElementById('fieldCapillary');
+                const slugSizeSlider = document.getElementById('slugSize');
+                const discountRateSlider = document.getElementById('discountRate');
+                const fieldCapillaryValue = document.getElementById('fieldCapillaryValue');
+                const slugSizeValue = document.getElementById('slugSizeValue');
+                const discountRateValue = document.getElementById('discountRateValue');
+                const patternCanvas = document.getElementById('patternComparison');
+                const fiveSpotResult = document.getElementById('fiveSpotResult');
+                const sevenSpotResult = document.getElementById('sevenSpotResult');
+                const nineSpotResult = document.getElementById('nineSpotResult');
+                const patternCtx = patternCanvas.getContext('2d');
+                
+                // Update display values
+                fieldCapillarySlider.addEventListener('input', function() {
+                    fieldCapillaryValue.textContent = this.value;
+                    updatePatternComparison();
+                });
+                
+                slugSizeSlider.addEventListener('input', function() {
+                    slugSizeValue.textContent = this.value;
+                    updatePatternComparison();
+                });
+                
+                discountRateSlider.addEventListener('input', function() {
+                    discountRateValue.textContent = this.value + '%';
+                    updatePatternComparison();
+                });
+                
+                // Simplified model for pattern performance based on Giordano's paper
+                function calculateResidualOil(patternType, fieldCapillary, slugSize, discountRate) {
+                    // Base performance (approximated from paper's figures)
+                    let baseResidual;
+                    
+                    // Adjust for slug size (simplified from paper's results)
+                    if (slugSize >= 1.0) {
+                        // Full sweep
+                        if (patternType === 'five-spot') baseResidual = 0.10;
+                        else if (patternType === 'seven-spot') baseResidual = 0.11;
+                        else if (patternType === 'nine-spot') baseResidual = 0.15;
+                    } else {
+                        // Partial sweep based on slug size
+                        if (patternType === 'five-spot') baseResidual = 0.10 + (1.0 - slugSize) * 0.9;
+                        else if (patternType === 'seven-spot') baseResidual = 0.11 + (1.0 - slugSize) * 0.89;
+                        else if (patternType === 'nine-spot') baseResidual = 0.15 + (1.0 - slugSize) * 0.85;
+                    }
+                    
+                    // Adjust for field capillary number (simplified from paper's results)
+                    const capillaryFactor = Math.max(0, 1.0 - 0.15 * Math.log10(fieldCapillary));
+                    baseResidual *= capillaryFactor;
+                    
+                    // Adjust for discount rate
+                    let discountFactor = 1.0;
+                    if (discountRate > 0) {
+                        // Project timing differences between patterns
+                        let timingFactor = 1.0;
+                        if (patternType === 'seven-spot') timingFactor = 1.15;
+                        else if (patternType === 'nine-spot') timingFactor = 1.38;
+                        
+                        // Simple discount model
+                        discountFactor = 1.0 + (discountRate / 100) * timingFactor;
+                    }
+                    
+                    return Math.min(1.0, baseResidual * discountFactor);
+                }
+                
+                function updatePatternComparison() {
+                    const fieldCapillary = parseFloat(fieldCapillarySlider.value);
+                    const slugSize = parseFloat(slugSizeSlider.value);
+                    const discountRate = parseFloat(discountRateSlider.value);
+                    
+                    // Calculate residual oil for each pattern
+                    const fiveSpotOil = calculateResidualOil('five-spot', fieldCapillary, slugSize, discountRate);
+                    const sevenSpotOil = calculateResidualOil('seven-spot', fieldCapillary, slugSize, discountRate);
+                    const nineSpotOil = calculateResidualOil('nine-spot', fieldCapillary, slugSize, discountRate);
+                    
+                    // Update result displays
+                    fiveSpotResult.textContent = fiveSpotOil.toFixed(3);
+                    sevenSpotResult.textContent = sevenSpotOil.toFixed(3);
+                    nineSpotResult.textContent = nineSpotOil.toFixed(3);
+                    
+                    // Draw the comparison chart
+                    patternCtx.clearRect(0, 0, patternCanvas.width, patternCanvas.height);
+                    
+                    // Set up graph dimensions
+                    const padding = 50;
+                    const graphWidth = patternCanvas.width - 2 * padding;
+                    const graphHeight = patternCanvas.height - 2 * padding;
+                    const barWidth = graphWidth / 4;
+                    
+                    // Draw axes
+                    patternCtx.beginPath();
+                    patternCtx.moveTo(padding, padding);
+                    patternCtx.lineTo(padding, patternCanvas.height - padding);
+                    patternCtx.lineTo(patternCanvas.width - padding, patternCanvas.height - padding);
+                    patternCtx.strokeStyle = '#000';
+                    patternCtx.lineWidth = 2;
+                    patternCtx.stroke();
+                    
+                    // Draw axis labels
+                    patternCtx.font = '14px Arial';
+                    patternCtx.fillStyle = '#000';
+                    patternCtx.textAlign = 'center';
+                    patternCtx.fillText('Well Pattern', patternCanvas.width / 2, patternCanvas.height - 10);
+                    
+                    patternCtx.save();
+                    patternCtx.translate(15, patternCanvas.height / 2);
+                    patternCtx.rotate(-Math.PI / 2);
+                    patternCtx.textAlign = 'center';
+                    patternCtx.fillText('Residual Oil Saturation', 0, 0);
+                    patternCtx.restore();
+                    
+                    // Draw grid lines
+                    patternCtx.strokeStyle = '#ddd';
+                    patternCtx.lineWidth = 1;
+                    
+                    // Horizontal grid lines
+                    for (let i = 0; i <= 10; i++) {
+                        const y = padding + (graphHeight * i / 10);
+                        patternCtx.beginPath();
+                        patternCtx.moveTo(padding, y);
+                        patternCtx.lineTo(patternCanvas.width - padding, y);
+                        patternCtx.stroke();
+                        
+                        // Add y-axis labels
+                        patternCtx.fillText((1 - i / 10).toFixed(1), padding - 20, y + 5);
+                    }
+                    
+                    // Draw bars for each pattern
+                    const patterns = ['Five-spot', 'Seven-spot', 'Nine-spot'];
+                    const values = [fiveSpotOil, sevenSpotOil, nineSpotOil];
+                    const colors = ['#3498db', '#e74c3c', '#2ecc71'];
+                    
+                    patterns.forEach((pattern, i) => {
+                        const x = padding + barWidth * (i + 0.5);
+                        const barHeight = graphHeight * values[i];
+                        const y = patternCanvas.height - padding - barHeight;
+                        
+                        // Draw bar
+                        patternCtx.fillStyle = colors[i];
+                        patternCtx.fillRect(x, y, barWidth * 0.8, barHeight);
+                        
+                        // Add pattern label
+                        patternCtx.fillStyle = '#000';
+                        patternCtx.fillText(pattern, x + barWidth * 0.4, patternCanvas.height - padding + 25);
+                        
+                        // Add value label
+                        patternCtx.fillStyle = '#fff';
+                        patternCtx.fillText(values[i].toFixed(3), x + barWidth * 0.4, y + barHeight / 2);
+                    });
+                    
+                    // Add legend for parameters
+                    patternCtx.fillStyle = '#000';
+                    patternCtx.textAlign = 'left';
+                    patternCtx.fillText(`Field Capillary Number: ${fieldCapillary}`, padding, padding - 25);
+                    patternCtx.fillText(`Normalized Slug Size: ${slugSize}`, padding, padding - 10);
+                    patternCtx.fillText(`Discount Rate: ${discountRate}%`, padding + 300, padding - 25);
+                }
+                
+                // Initial update
+                updatePatternComparison();
+});
+</script>
+    </div>
+    
+    <h3>The Surprising Winner: Five-Spot Pattern</h3>
+    
+    <p>Giordano's analysis shows that, contrary to what one might expect, the five-spot pattern (one injection well surrounded by four production wells) generally outperforms more complex patterns like the seven-spot and nine-spot. This is true even though the nine-spot has more wells per pattern.</p>
+    
+    <p>The reasons for this are subtle but important:</p>
+    
+    <ol>
+        <li><strong>Injectivity vs. Sweep Efficiency Trade-off</strong>: While the nine-spot has better injectivity (ability to inject fluid), this advantage is offset by poorer sweep efficiency (ability to contact all parts of the reservoir).</li>
+        
+        <li><strong>Project Timing</strong>: The five-spot recovers oil faster than the nine-spot, which matters significantly when economic discounting is considered.</li>
+        
+        <li><strong>Flow Dynamics</strong>: The velocity distribution in the five-spot creates more favorable capillary numbers throughout the pattern.</li>
+    </ol>
+    
+    <p>This finding has significant practical implications for field development planning.</p>
+    
+    <h2>Optimal Slug Size: How Much Surfactant is Enough?</h2>
+    
+    <p>Another key finding concerns how much surfactant to inject. Giordano's analysis shows that the optimal slug size is approximately 90% of what would be required to satisfy the total adsorption capacity of the reservoir.</p>
+    
+    <p>This makes intuitive sense: if you inject enough surfactant to contact 90% of the reservoir, you get the majority of the benefit without wasting expensive chemicals.</p>
+    
+    <p>Interestingly, as reservoir heterogeneity increases, the optimal slug size decreases. This happens because in heterogeneous reservoirs, more surfactant gets channeled through high-permeability layers, making larger slugs increasingly inefficient.</p>
+    
+    <h2>The Impact of Interfacial Tension</h2>
+    
+    <p>One of the most practical findings from Giordano's work concerns the required interfacial tension for effective recovery. The analysis shows that for many field conditions, an interfacial tension of 10<sup>-3</sup> dynes/cm is not low enough to reach optimal recovery.</p>
+    
+    <p>For fields with low permeability or large well spacing, interfacial tensions in the 10<sup>-4</sup> to 10<sup>-5</sup> dynes/cm range are required for effective recovery. This insight helps explain why some micellar/polymer projects have underperformed and points to the importance of surfactant formulation in project success.</p>
+    
+    <h2>Economics and Timing: The Practical Realities</h2>
+    
+    <p>No engineering analysis is complete without considering economics. Giordano incorporates discounting to account for the time value of money:</p>
+    
+    <p>\[ D_f \equiv \frac{\int_{0}^{t_p} e^{-rt} Q_o dt}{\int_{0}^{t_p} Q_o dt} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(D_f\) = discount factor</li>
+        <li>\(r\) = discount rate</li>
+        <li>\(Q_o\) = oil production rate</li>
+        <li>\(t_p\) = project life</li>
+    </ul>
+    
+    <p>This leads to a "discounted normalized residual oil saturation":</p>
+    
+    <p>\[ \overline{S}_{or,d}^* = 1 - D_f (1 - \int_A \overline{S}_{or}^* dA) \]</p>
+    
+    <p>When economic factors are considered, the advantages of the five-spot pattern become even more pronounced. The five-spot recovers oil faster than other patterns, which is critical when future cash flows are discounted.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Game: Design Your Own Micellar/Polymer Flood</h3>
+        <p>In this simulation, you'll design a micellar/polymer flood for a 20-acre reservoir. Your goal is to maximize the net present value of oil recovery while minimizing costs.</p>
+        
+        <div class="slider-container">
+            <label for="gamePattern">Well Pattern: </label>
+            <select id="gamePattern">
+                <option value="five-spot">Five-spot</option>
+                <option value="seven-spot">Seven-spot</option>
+                <option value="nine-spot">Nine-spot</option>
+                <option value="line-drive">Staggered Line Drive</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gameSlugSize">Slug Size (PV): </label>
+            <input type="range" id="gameSlugSize" min="0.1" max="1.5" step="0.05" value="0.9">
+            <span id="gameSlugSizeValue">0.9</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gameIFT">Interfacial Tension (dynes/cm): </label>
+            <select id="gameIFT">
+                <option value="0.001">10^-3</option>
+                <option value="0.0001">10^-4</option>
+                <option value="0.00001">10^-5</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gameDykstra">Dykstra-Parsons Coefficient: </label>
+            <input type="range" id="gameDykstra" min="0" max="0.9" step="0.1" value="0.5">
+            <span id="gameDykstraValue">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gameOilPrice">Oil Price ($/bbl): </label>
+            <input type="range" id="gameOilPrice" min="30" max="100" step="5" value="60">
+            <span id="gameOilPriceValue">$60</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gameDiscount">Discount Rate (%): </label>
+            <input type="range" id="gameDiscount" min="0" max="20" step="1" value="10">
+            <span id="gameDiscountValue">10%</span>
+        </div>
+        
+        <button id="runSimulation">Run Simulation</button>
+        
+        <div id="simulationResults" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <h4>Simulation Results</h4>
+            <p>Oil Recovery: <span id="oilRecovery" class="output">-</span> % of waterflood residual</p>
+            <p>Project Life: <span id="projectLife" class="output">-</span> years</p>
+            <p>Surfactant Cost: <span id="surfactantCost" class="output">-</span></p>
+            <p>Net Present Value: <span id="npv" class="output">-</span></p>
+            <p id="recommendation" style="font-weight: bold; margin-top: 10px;"></p>
+        </div>
+        
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
+                const gamePattern = document.getElementById('gamePattern');
+                const gameSlugSize = document.getElementById('gameSlugSize');
+                const gameSlugSizeValue = document.getElementById('gameSlugSizeValue');
+                const gameIFT = document.getElementById('gameIFT');
+                const gameDykstra = document.getElementById('gameDykstra');
+                const gameDykstraValue = document.getElementById('gameDykstraValue');
+                const gameOilPrice = document.getElementById('gameOilPrice');
+                const gameOilPriceValue = document.getElementById('gameOilPriceValue');
+                const gameDiscount = document.getElementById('gameDiscount');
+                const gameDiscountValue = document.getElementById('gameDiscountValue');
+                const runSimulationBtn = document.getElementById('runSimulation');
+                const oilRecovery = document.getElementById('oilRecovery');
+                const projectLife = document.getElementById('projectLife');
+                const surfactantCost = document.getElementById('surfactantCost');
+                const npv = document.getElementById('npv');
+                const recommendation = document.getElementById('recommendation');
+                
+                // Update display values
+                gameSlugSize.addEventListener('input', function() {
+                    gameSlugSizeValue.textContent = this.value;
+                });
+                
+                gameDykstra.addEventListener('input', function() {
+                    gameDykstraValue.textContent = this.value;
+                });
+                
+                gameOilPrice.addEventListener('input', function() {
+                    gameOilPriceValue.textContent = '$' + this.value;
+                });
+                
+                gameDiscount.addEventListener('input', function() {
+                    gameDiscountValue.textContent = this.value + '%';
+                });
+                
+                // Run simulation
+                runSimulationBtn.addEventListener('click', function() {
+                    const pattern = gamePattern.value;
+                    const slugSize = parseFloat(gameSlugSize.value);
+                    const ift = parseFloat(gameIFT.value);
+                    const dykstra = parseFloat(gameDykstra.value);
+                    const oilPrice = parseFloat(gameOilPrice.value);
+                    const discountRate = parseFloat(gameDiscount.value);
+                    
+                    // Calculate field-scale capillary number (simplified)
+                    const permeability = 100; // md
+                    const depth = 5000; // ft
+                    const pressureGradient = 0.6; // psi/ft
+                    const thickness = 20; // ft
+                    
+                    let areaPerWell;
+                    if (pattern === 'five-spot') areaPerWell = 5; // acres
+                    else if (pattern === 'seven-spot') areaPerWell = 5 * 1.5;
+                    else if (pattern === 'nine-spot') areaPerWell = 5 * 2;
+                    else areaPerWell = 5; // staggered line drive
+                    
+                    // Convert to consistent units
+                    const areaInSqFt = areaPerWell * 43560; // ft²
+                    
+                    // Calculate field capillary number
+                    const pressureDrop = depth * pressureGradient; // psi
+                    const fieldCapillary = (permeability * pressureDrop) / (ift * thickness * Math.sqrt(areaInSqFt));
+                    const normalizedFieldCapillary = fieldCapillary / 0.0113; // Normalized by Nca,0
+                    
+                    // Calculate timing factor based on pattern
+                    let timingFactor = 1.0;
+                    if (pattern === 'seven-spot') timingFactor = 1.15;
+                    else if (pattern === 'nine-spot') timingFactor = 1.38;
+                    else if (pattern === 'line-drive') timingFactor = 0.95;
+                    
+                    // Calculate base recovery (simplified from paper's results)
+                    let baseRecovery = 0;
+                    
+                    if (pattern === 'five-spot') {
+                        baseRecovery = 0.90 - 0.15 * dykstra;
+                    } else if (pattern === 'seven-spot') {
+                        baseRecovery = 0.89 - 0.18 * dykstra;
+                    } else if (pattern === 'nine-spot') {
+                        baseRecovery = 0.85 - 0.20 * dykstra;
+                    } else { // staggered line drive
+                        baseRecovery = 0.92 - 0.14 * dykstra;
+                    }
+                    
+                    // Adjust for slug size
+                    const optimalSlug = 0.9 - 0.3 * dykstra;
+                    let slugFactor = Math.min(1.0, slugSize / optimalSlug);
+                    if (slugSize > optimalSlug * 1.2) {
+                        slugFactor = Math.max(0.8, 1.0 - 0.1 * (slugSize - optimalSlug * 1.2) / optimalSlug);
+                    }
+                    
+                    // Adjust for capillary number
+                    const capillaryFactor = Math.min(1.0, 0.2 + 0.8 * Math.log10(normalizedFieldCapillary + 1) / Math.log10(11));
+                    
+                    // Calculate final recovery
+                    const recovery = baseRecovery * slugFactor * capillaryFactor;
+                    
+                    // Calculate project life (simplified)
+                    const baseProjectLife = 5; // years for 1 PV in five-spot
+                    const projectLifeYears = baseProjectLife * timingFactor * (1 + slugSize);
+                    
+                    // Calculate economics (simplified)
+                    const reservoirPV = 20 * 43560 * thickness * 0.25; // acre-ft * ft² * ft * porosity
+                    const oilInPlace = reservoirPV * 0.3 * 7758 / 5.615; // bbl (assuming 30% waterflood residual)
+                    const recoveredOil = oilInPlace * recovery;
+                    
+                    // Surfactant cost (simplified)
+                    const surfactantCostPerBbl = 5; // $ per barrel of PV
+                    const totalSurfactantCost = reservoirPV * slugSize * surfactantCostPerBbl / 5.615;
+                    
+                    // Calculate NPV
+                    const annualCashFlow = (recoveredOil * oilPrice - totalSurfactantCost) / projectLifeYears;
+                    let npvValue = 0;
+                    for (let year = 0; year < projectLifeYears; year++) {
+                        npvValue += annualCashFlow / Math.pow(1 + discountRate / 100, year);
+                    }
+                    
+                    // Update results
+                    oilRecovery.textContent = (recovery * 100).toFixed(1);
+                    projectLife.textContent = projectLifeYears.toFixed(1);
+                    surfactantCost.textContent = '$' + totalSurfactantCost.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    npv.textContent = '$' + npvValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    
+                    // Generate recommendation
+                    let recommendationText = '';
+                    if (npvValue < 0) {
+                        recommendationText = 'This project is not economically viable. Consider reducing costs or improving technical parameters.';
+                    } else if (slugSize > optimalSlug * 1.2) {
+                        recommendationText = 'Your slug size is larger than optimal. Consider reducing it to improve economics.';
+                    } else if (normalizedFieldCapillary < 1.0) {
+                        recommendationText = 'The capillary number is too low. Consider using a surfactant with lower interfacial tension.';
+                    } else if (dykstra > 0.7 && slugSize > optimalSlug) {
+                        recommendationText = 'In this heterogeneous reservoir, a smaller slug size would be more efficient.';
+                    } else if (npvValue > 0) {
+                        recommendationText = 'This project looks promising! The selected parameters are well-optimized.';
+                    }
+                    
+                    recommendation.textContent = recommendationText;
+                });
+});
+</script>
+    </div>
+    
+    <h2>Reservoir Heterogeneity: The Real-World Complication</h2>
+    
+    <p>Real reservoirs are rarely homogeneous. They typically consist of layers with different permeabilities, which complicates the micellar/polymer flooding process.</p>
+    
+    <p>Giordano models heterogeneity using the Dykstra-Parsons coefficient, which measures the variation in permeability. His findings show that:</p>
+    
+    <ol>
+        <li>As heterogeneity increases, oil recovery decreases because injected fluids preferentially flow through high-permeability layers.</li>
+        
+        <li>The optimal slug size decreases with increasing heterogeneity, as larger slugs just result in more surfactant being produced from high-permeability layers.</li>
+        
+        <li>Process performance is relatively insensitive to heterogeneity for Dykstra-Parsons coefficients between 0 and 0.25, but deteriorates significantly for values above 0.5.</li>
+    </ol>
+    
+    <p>This helps explain why many field projects have underperformed relative to laboratory predictions - laboratory cores are typically more homogeneous than actual reservoirs.</p>
+    
+    <h2>Connecting the Dots: Practical Implications</h2>
+    
+    <p>So what does all this mean for petroleum engineers designing micellar/polymer floods? Here are the key takeaways:</p>
+    
+    <ol>
+        <li><strong>Pattern Selection</strong>: Five-spot and staggered line drive patterns generally outperform seven-spot and nine-spot patterns on an equal well-density basis.</li>
+        
+        <li><strong>Surfactant Amount</strong>: The optimal slug size is approximately 90% of what would be required to satisfy total adsorption in a homogeneous reservoir, and less in heterogeneous reservoirs.</li>
+        
+        <li><strong>Surfactant Quality</strong>: For many field conditions, surfactants that can achieve interfacial tensions below 10<sup>-3</sup> dynes/cm are necessary for effective recovery.</li>
+        
+        <li><strong>Heterogeneity Impact</strong>: Reservoir heterogeneity significantly reduces process performance and should be carefully characterized before implementation.</li>
+    </ol>
+    
+    <h2>Conclusion: The Power of Simplified Models</h2>
+    
+    <p>Giordano's work demonstrates the value of simplified models that capture the essential physics of complex processes. While not a substitute for detailed reservoir simulations, his approach provides quick, first-order estimates that can guide initial screening and design decisions.</p>
+    
+    <p>By understanding the fundamental principles behind micellar/polymer flooding - capillary number, pattern flow dynamics, adsorption, and economic timing - engineers can make better decisions about where and how to implement this enhanced oil recovery technique.</p>
+    
+    <p>The next time you're faced with a complex engineering problem, consider whether a first-principles approach like Giordano's might help you see the forest for the trees. Sometimes, simplifying complexity is the key to deeper understanding.</p>
+    
+    <div class="footnote">
+        <p>This blog post is based on SPE 16731: "Estimating Field-Scale Micellar/Polymer Performance" by R.M. Giordano, ARCO Oil & Gas Co. (1987). The interactive tools are simplified representations of the concepts and should not be used for actual field design without proper engineering analysis.</p>
+    </div>
+</body>
+</html>

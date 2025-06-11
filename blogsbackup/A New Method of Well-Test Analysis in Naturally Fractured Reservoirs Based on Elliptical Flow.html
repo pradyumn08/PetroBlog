@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Elliptical Flow in Naturally Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #2980b9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .formula-block {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .interactive-container {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+        }
+        .slider {
+            width: 300px;
+        }
+        .value-display {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        canvas {
+            margin: 20px auto;
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .figure {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .figure img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+        }
+        .figure-caption {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        #elliptical-flow-simulator {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cracking the Code of Naturally Fractured Reservoirs: Understanding Elliptical Flow</h1>
+    
+    <p>Welcome, curious minds! Today we're diving deep into the fascinating world of petroleum engineering to understand how fluids move through naturally fractured reservoirs. While traditional models assume a nice, uniform radial flow pattern, the reality is much more complex. In this post, we'll break down a groundbreaking approach from a 2008 SPE paper that uses elliptical flow models to better understand these complex systems.</p>
+    
+    <div class="note">
+        <p><strong>Why this matters:</strong> Accurate reservoir characterization is crucial for efficient oil and gas production. Traditional radial flow models often fail to capture the true behavior of naturally fractured reservoirs, leading to suboptimal production strategies and potentially leaving significant resources in the ground.</p>
+    </div>
+    
+    <h2>Understanding Naturally Fractured Reservoirs: The Basics</h2>
+    
+    <p>Before we dive into the mathematics, let's establish what we're talking about. Naturally fractured reservoirs (NFRs) are rock formations containing networks of cracks or fractures that significantly affect fluid flow. Unlike homogeneous reservoirs where fluid moves uniformly in all directions, NFRs exhibit directional preferences - fluid flows more easily in some directions than others.</p>
+    
+    <p>According to Nelson (2001), NFRs come in four flavors:</p>
+    
+    <ul>
+        <li><strong>Type 1:</strong> Fractures provide both the essential porosity and permeability</li>
+        <li><strong>Type 2:</strong> Fractures provide the essential permeability while the matrix provides the essential porosity</li>
+        <li><strong>Type 3:</strong> Fractures assist permeability in an already producible reservoir</li>
+        <li><strong>Type 4:</strong> Fractures create significant reservoir anisotropy (barriers) due to mineral filling</li>
+    </ul>
+    
+    <div class="figure">
+        <div id="reservoir-diagram"></div>
+        <div class="figure-caption">Figure 1: Simplified representation of a naturally fractured reservoir with directional permeability</div>
+    </div>
+    
+    <h2>The Problem with Radial Flow Models</h2>
+    
+    <p>Traditional well test analysis assumes radial flow - fluid moving uniformly toward the wellbore from all directions. But in NFRs, this assumption breaks down because:</p>
+    
+    <ol>
+        <li>Fractures create preferential flow paths in specific directions</li>
+        <li>Permeability can vary dramatically between different directions</li>
+        <li>The matrix and fracture systems interact in complex ways</li>
+    </ol>
+    
+    <p>This directional preference is called <strong>anisotropy</strong>, and it's a critical characteristic we need to quantify to properly understand these reservoirs.</p>
+    
+    <h2>Elliptical Flow: A First Principles Approach</h2>
+    
+    <p>The key insight of the paper is that in anisotropic systems, pressure doesn't propagate in circles (radial flow) but in ellipses. The shape of these ellipses reflects the directional permeability of the reservoir.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Demonstration: Radial vs. Elliptical Flow</h3>
+        <div class="slider-container">
+            <label for="anisotropy-ratio">Anisotropy Ratio (kmax/kmin):</label>
+            <input type="range" id="anisotropy-ratio" class="slider" min="1" max="100" value="10">
+            <span id="anisotropy-value" class="value-display">10</span>
+        </div>
+        <div id="flow-pattern-canvas-container">
+            <canvas id="flow-pattern-canvas" width="600" height="400"></canvas>
+        </div>
+        <p>This visualization shows how pressure propagates in a reservoir. With an anisotropy ratio of 1 (isotropic), the flow is perfectly radial. As anisotropy increases, the flow pattern becomes increasingly elliptical.</p>
+    </div>
+    
+    <h2>The Mathematical Foundation</h2>
+    
+    <p>Let's build our understanding from first principles. The behavior of fluid flow in a naturally fractured reservoir is governed by diffusion equations that describe how pressure changes over time and space.</p>
+    
+    <h3>The Governing Equations</h3>
+    
+    <p>The Warren and Root "sugar cube" model represents a naturally fractured reservoir with two interacting continua: the fracture system and the matrix system. The diffusivity equation in such a system is:</p>
+    
+    <div class="formula-block">
+        $$\frac{k_{fx}}{\mu}\frac{\partial^{2}P_{f}}{\partial x^{2}}+\frac{k_{fy}}{\mu}\frac{\partial^{2}P_{f}}{\partial y^{2}}-\phi_{m}c_{m}\frac{\partial P_{m}}{\partial t}=\phi_{f}c_{f}\frac{\partial P_{f}}{\partial t}$$
+    </div>
+    
+    <p>For the matrix with pseudo-steady state flow:</p>
+    
+    <div class="formula-block">
+        $$\phi_{m}c_{m}\frac{\partial P_{m}}{\partial t}=\frac{\beta k_{m}}{\mu}\left(P_{f}-P_{m}\right)$$
+        
+        $$\beta=\frac{4m\left(m+2\right)}{{l}^{2}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(k_{fx}\) and \(k_{fy}\) are fracture permeabilities in x and y directions (md)</li>
+        <li>\(\mu\) is fluid viscosity (cp)</li>
+        <li>\(P_f\) and \(P_m\) are pressures in fracture and matrix systems (psi)</li>
+        <li>\(\phi_f\) and \(\phi_m\) are fracture and matrix porosities</li>
+        <li>\(c_f\) and \(c_m\) are fracture and matrix compressibilities (psi⁻¹)</li>
+        <li>\(m\) is the number of normal sets of fractures</li>
+        <li>\(l\) is the characteristic length in Warren & Root model</li>
+    </ul>
+    
+    <h3>Transforming to Dimensionless Form</h3>
+    
+    <p>To simplify the analysis, we transform these equations using dimensionless variables:</p>
+    
+    <div class="formula-block">
+        $$P_{D}=\frac{k_{f}h\left(\stackrel{\leftarrow}{P_{i}}-P\left(x,y,t\right)\right)}{141.2Q\mu B}$$
+        
+        $$t_{D}=\frac{0.000264k_{f}t}{\left(\phi_{t}c_{t}\right)_{f+m}\mu L^{2}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(P_D\) is dimensionless pressure</li>
+        <li>\(t_D\) is dimensionless time</li>
+        <li>\(k_f\) is the average fracture permeability, defined as \(\sqrt{k_{xf}k_{yf}}\)</li>
+        <li>\(h\) is formation thickness (ft)</li>
+        <li>\(Q\) is flow rate (STB/day)</li>
+        <li>\(B\) is formation volume factor (RB/STB)</li>
+        <li>\(L\) is a characteristic length (ft)</li>
+    </ul>
+    
+    <h3>The Elliptical Transformation</h3>
+    
+    <p>The key mathematical insight is transforming our coordinate system from Cartesian to elliptical coordinates. This transformation makes the anisotropic system appear isotropic, simplifying the analysis.</p>
+    
+    <div class="formula-block">
+        $$x'=x\sqrt{\frac{k_f}{k_{xf}}} \text{ and } y'=y\sqrt{\frac{k_f}{k_{yf}}}$$
+        
+        $$x'=L\cosh\xi\cos\eta \text{ and } y'=L\sinh\xi\sin\eta$$
+    </div>
+    
+    <p>After this transformation and solving in Laplace space, the dimensionless wellbore pressure becomes:</p>
+    
+    <div class="formula-block">
+        $$\overline{{P}}D_{wf}=\frac{-1}{\displaystyle2s\sum_{n=0}^{\infty}\frac{\left(A_{0}^{2n}\right)^{2}F e\dot{k_{2n}}(\xi_{w},-q)}{F e k_{2n}(\xi_{w},-q)}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\xi_w\) is the radius vector of the permeability ellipse at the wellbore</li>
+        <li>\(A_0^{2n}\) are Fourier coefficients</li>
+        <li>\(Fek_{2n}\) are Mathieu functions</li>
+        <li>\(q\) is related to the Laplace variable and transfer function</li>
+    </ul>
+    
+    <h2>Quantifying Anisotropy: The Key Insight</h2>
+    
+    <p>The most valuable contribution of the elliptical flow model is its ability to quantify reservoir anisotropy. The ratio of maximum to minimum permeability is directly related to the parameter \(\xi_w\):</p>
+    
+    <div class="formula-block">
+        $$\sqrt{\frac{k_{\max}}{k_{\min}}}=\coth\left(\xi_{w}\right)$$
+    </div>
+    
+    <p>From this, we can calculate the maximum and minimum permeabilities:</p>
+    
+    <div class="formula-block">
+        $$k_{\min}=\frac{\overline{{k}}}{\coth\xi_{w}} \text{ and } k_{\max}=\overline{{k}}\coth\left(\xi_{w}\right)$$
+    </div>
+    
+    <p>Where \(\overline{k}\) is the average permeability, calculated as:</p>
+    
+    <div class="formula-block">
+        $$\overline{{k}}=\sqrt{k_{\max}k_{\min}}$$
+    </div>
+    
+    <div class="interactive-container">
+        <h3>Interactive Calculator: Permeability Anisotropy</h3>
+        <div class="slider-container">
+            <label for="xi-w">Radius vector (ξw):</label>
+            <input type="range" id="xi-w" class="slider" min="0.01" max="2" step="0.01" value="0.5">
+            <span id="xi-w-value" class="value-display">0.5</span>
+        </div>
+        <div class="slider-container">
+            <label for="k-avg">Average permeability (md):</label>
+            <input type="range" id="k-avg" class="slider" min="1" max="100" value="20">
+            <span id="k-avg-value" class="value-display">20</span>
+        </div>
+        <div id="permeability-results">
+            <p><strong>Maximum permeability (kmax):</strong> <span id="k-max">36.63 md</span></p>
+            <p><strong>Minimum permeability (kmin):</strong> <span id="k-min">10.92 md</span></p>
+            <p><strong>Anisotropy ratio (kmax/kmin):</strong> <span id="k-ratio">3.35</span></p>
+        </div>
+        <canvas id="permeability-ellipse" width="400" height="300"></canvas>
+    </div>
+    
+    <h2>Flow Regimes in Naturally Fractured Reservoirs</h2>
+    
+    <p>One of the most powerful aspects of this model is its ability to identify different flow regimes from pressure transient data. Let's understand what these flow regimes tell us about the reservoir.</p>
+    
+    <h3>Early Linear Flow</h3>
+    
+    <p>During early times, flow is dominated by the high-permeability fracture system. The pressure drop equation during this period is:</p>
+    
+    <div class="formula-block">
+        $$\Delta P_{f}=\frac{3.66Q B}{h L\sqrt{\left(k_{xf}\omega\right)}\sqrt{\left(\cosh^{2}{\xi_{w}}+\sinh^{2}{\xi_{w}}\right)}}\left(\frac{\mu}{\left(\phi c_{t}\right)_{f+m}}\right)^{\frac{1}{2}}\sqrt{t}$$
+    </div>
+    
+    <p>On a log-log plot of pressure derivative vs. time, this appears as a straight line with a 1/2 slope. This behavior indicates flow dominated by the high-permeability fracture system.</p>
+    
+    <h3>Transition Period</h3>
+    
+    <p>As pressure depletes in the fractures, fluid begins to flow from the matrix into the fracture system. This creates a characteristic "dip" in the pressure derivative curve.</p>
+    
+    <h3>Late-Time Radial Flow</h3>
+    
+    <p>Eventually, the system reaches a state where both matrix and fracture systems contribute to flow, behaving as a single equivalent medium. The pressure equation becomes:</p>
+    
+    <div class="formula-block">
+        $$P_{fw}=P_{i}-\frac{70.6Q\mu B}{k_{f}h}\left\{\ln t+\ln\left(\frac{k}{\left(\phi_{t}c_{t}\right)_{f+m}\mu r_{w}^{2}}\right)\right\}$$
+    </div>
+    
+    <p>On a log-log plot, this appears as a horizontal line, indicating radial flow.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Simulation: Pressure Transient Behavior</h3>
+        <div class="slider-container">
+            <label for="omega-slider">Storativity ratio (ω):</label>
+            <input type="range" id="omega-slider" class="slider" min="0.01" max="0.3" step="0.01" value="0.1">
+            <span id="omega-value" class="value-display">0.1</span>
+        </div>
+        <div class="slider-container">
+            <label for="lambda-slider">Interporosity flow coefficient (λ):</label>
+            <input type="range" id="lambda-slider" class="slider" min="1e-7" max="1e-3" step="1e-7" value="1e-5">
+            <span id="lambda-value" class="value-display">1e-5</span>
+        </div>
+        <div class="slider-container">
+            <label for="xi-w-slider">Radius vector (ξw):</label>
+            <input type="range" id="xi-w-slider" class="slider" min="0.01" max="2" step="0.01" value="0.5">
+            <span id="xi-w-slider-value" class="value-display">0.5</span>
+        </div>
+        <canvas id="pressure-derivative-chart" width="600" height="400"></canvas>
+        <p>This simulation shows how the pressure derivative curve changes with different reservoir parameters. The early linear flow (1/2 slope), transition period (dip), and late-time radial flow (horizontal line) are all visible.</p>
+    </div>
+    
+    <h2>Practical Application: The Direct Method</h2>
+    
+    <p>Now that we understand the theory, let's see how to apply it in practice. The paper presents a direct method for interpreting well test data using the Tiab Direct Synthesis (TDS) technique:</p>
+    
+    <ol>
+        <li>Plot pressure and pressure derivative on a log-log graph</li>
+        <li>Calculate average permeability from the late-time radial flow: \(\overline{k}=\frac{70.6Q\mu B}{h(t\times\Delta P')_r}\)</li>
+        <li>Calculate apparent skin factor</li>
+        <li>Calculate storativity ratio (ω) from the minimum of the pressure derivative</li>
+        <li>Calculate ξw by iteration</li>
+        <li>Calculate interporosity flow coefficient (λ)</li>
+        <li>Calculate effective apparent skin and hydraulic equivalent length</li>
+        <li>Calculate maximum permeability</li>
+        <li>Calculate minimum permeability</li>
+        <li>Calculate fracture conductivity</li>
+    </ol>
+    
+    <div class="note">
+        <p><strong>Key insight:</strong> By analyzing the shape and characteristics of the pressure derivative curve, we can extract detailed information about both the fracture network and matrix properties of the reservoir.</p>
+    </div>
+    
+    <h2>The Elliptical Flow Game: Test Your Understanding</h2>
+    
+    <div class="interactive-container">
+        <h3>Reservoir Engineer Challenge</h3>
+        <p>Now it's your turn! In this game, you'll analyze pressure transient data from a naturally fractured reservoir. Your goal is to determine the reservoir properties by adjusting parameters to match the observed pressure behavior.</p>
+        
+        <div id="game-container">
+            <div id="game-instructions">
+                <p>Adjust the sliders to match the target pressure derivative curve (shown in red). The closer your match, the higher your score!</p>
+            </div>
+            
+            <div class="slider-container">
+                <label for="game-k-avg">Average permeability (md):</label>
+                <input type="range" id="game-k-avg" class="slider" min="1" max="100" value="20">
+                <span id="game-k-avg-value" class="value-display">20</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="game-xi-w">Radius vector (ξw):</label>
+                <input type="range" id="game-xi-w" class="slider" min="0.01" max="2" step="0.01" value="0.5">
+                <span id="game-xi-w-value" class="value-display">0.5</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="game-omega">Storativity ratio (ω):</label>
+                <input type="range" id="game-omega" class="slider" min="0.01" max="0.3" step="0.01" value="0.1">
+                <span id="game-omega-value" class="value-display">0.1</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="game-lambda">Interporosity flow coefficient (λ):</label>
+                <input type="range" id="game-lambda" class="slider" min="-7" max="-3" step="0.1" value="-5">
+                <span id="game-lambda-value" class="value-display">1e-5</span>
+            </div>
+            
+            <canvas id="game-chart" width="600" height="400"></canvas>
+            
+            <div id="game-score-container">
+                <p>Match quality: <span id="game-score">0%</span></p>
+                <button id="submit-answer">Submit Answer</button>
+                <button id="new-challenge">New Challenge</button>
+                <p id="game-feedback"></p>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Real-World Applications and Implications</h2>
+    
+    <p>The elliptical flow model has significant practical implications for reservoir management:</p>
+    
+    <ol>
+        <li><strong>Well Placement Optimization:</strong> By understanding directional permeability, engineers can place wells to maximize production.</li>
+        <li><strong>Enhanced Oil Recovery (EOR):</strong> Injection patterns can be designed to account for preferential flow paths.</li>
+        <li><strong>Reservoir Simulation:</strong> More accurate models lead to better production forecasts.</li>
+        <li><strong>Hydraulic Fracturing Design:</strong> Understanding natural fracture networks helps optimize artificial fracturing operations.</li>
+    </ol>
+    
+    <p>The paper demonstrated the model's effectiveness with four field examples, showing excellent agreement with conventional interference test methods.</p>
+    
+    <h2>Conclusion: Why Elliptical Flow Matters</h2>
+    
+    <p>Traditional radial flow models, while simpler, often fail to capture the true complexity of naturally fractured reservoirs. The elliptical flow model provides a more accurate representation by:</p>
+    
+    <ul>
+        <li>Quantifying permeability anisotropy</li>
+        <li>Distinguishing between matrix and fracture contributions</li>
+        <li>Identifying flow patterns (narrow vs. wide)</li>
+        <li>Providing a more complete characterization with a single well test</li>
+    </ul>
+    
+    <p>By understanding these principles, reservoir engineers can make better decisions about field development, ultimately leading to more efficient and economical resource extraction.</p>
+    
+    <div class="note">
+        <p><strong>Final thought:</strong> The beauty of the elliptical flow model lies in its ability to extract complex information from relatively simple pressure transient data. It's a perfect example of how mathematical modeling can provide insights that would be impossible to obtain through direct observation.</p>
+    </div>
+    
+    <script>
+        // Reservoir diagram using D3.js
+        function createReservoirDiagram() {
+            const width = 600;
+            const height = 400;
+            
+            const svg = d3.select("#reservoir-diagram")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+                
+            // Draw background
+            svg.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("fill", "#f5f5f5");
+                
+            // Draw matrix
+            svg.append("rect")
+                .attr("x", 50)
+                .attr("y", 50)
+                .attr("width", width - 100)
+                .attr("height", height - 100)
+                .attr("fill", "#d9c8b4")
+                .attr("stroke", "#a89985")
+                .attr("stroke-width", 2);
+                
+            // Draw fractures
+            const fractures = [];
+            // Horizontal primary fractures
+            for (let y = 100; y < height - 50; y += 50) {
+                fractures.push({x1: 70, y1: y, x2: width - 70, y2: y, primary: true});
+            }
+            // Vertical secondary fractures
+            for (let x = 100; x < width - 50; x += 80) {
+                fractures.push({x1: x, y1: 70, x2: x, y2: height - 70, primary: false});
+            }
+            
+            svg.selectAll(".fracture")
+                .data(fractures)
+                .enter()
+                .append("line")
+                .attr("x1", d => d.x1)
+                .attr("y1", d => d.y1)
+                .attr("x2", d => d.x2)
+                .attr("y2", d => d.y2)
+                .attr("stroke", d => d.primary ? "#3498db" : "#7f8c8d")
+                .attr("stroke-width", d => d.primary ? 3 : 1.5);
+                
+            // Draw well
+            const wellX = width / 2;
+            const wellY = height / 2;
+            
+            svg.append("circle")
+                .attr("cx", wellX)
+                .attr("cy", wellY)
+                .attr("r", 15)
+                .attr("fill", "#e74c3c");
+                
+            svg.append("text")
+                .attr("x", wellX)
+                .attr("y", wellY + 5)
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold")
+                .text("WELL");
+                
+            // Add labels
+            svg.append("text")
+                .attr("x", 80)
+                .attr("y", 30)
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .text("Naturally Fractured Reservoir");
+                
+            svg.append("text")
+                .attr("x", width - 200)
+                .attr("y", height - 20)
+                .attr("font-size", "12px")
+                .text("Primary fractures (high permeability)");
+                
+            // Legend
+            svg.append("line")
+                .attr("x1", width - 220)
+                .attr("y1", height - 25)
+                .attr("x2", width - 205)
+                .attr("y2", height - 25)
+                .attr("stroke", "#3498db")
+                .attr("stroke-width", 3);
+        }
+        
+        // Flow pattern visualization
+        function updateFlowPattern() {
+            const canvas = document.getElementById('flow-pattern-canvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // Get anisotropy ratio
+            const anisotropyRatio = parseFloat(document.getElementById('anisotropy-ratio').value);
+            document.getElementById('anisotropy-value').textContent = anisotropyRatio;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw well
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw pressure contours (ellipses)
+            const maxRadius = Math.min(width, height) * 0.4;
+            const numContours = 10;
+            
+            for (let i = 1; i <= numContours; i++) {
+                const radius = maxRadius * (i / numContours);
+                const a = radius; // semi-major axis
+                const b = radius / Math.sqrt(anisotropyRatio); // semi-minor axis
+                
+                ctx.strokeStyle = `rgba(52, 152, 219, ${0.3 + 0.7 * (i / numContours)})`;
+                ctx.lineWidth = 2;
+                
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, a, b, 0, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+            
+            // Add labels
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Pressure Contours in Anisotropic Reservoir', centerX, 30);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText('High Permeability Direction', centerX + maxRadius + 20, centerY);
+            
+            // Draw arrows to indicate permeability directions
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            
+            // X-direction (high perm)
+            ctx.beginPath();
+            ctx.moveTo(centerX + 20, centerY);
+            ctx.lineTo(centerX + maxRadius + 10, centerY);
+            ctx.stroke();
+            
+            // Arrow head
+            ctx.beginPath();
+            ctx.moveTo(centerX + maxRadius + 10, centerY);
+            ctx.lineTo(centerX + maxRadius, centerY - 5);
+            ctx.lineTo(centerX + maxRadius, centerY + 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Y-direction (low perm)
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY + 20);
+            ctx.lineTo(centerX, centerY + maxRadius / Math.sqrt(anisotropyRatio) + 10);
+            ctx.stroke();
+            
+            // Arrow head
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY + maxRadius / Math.sqrt(anisotropyRatio) + 10);
+            ctx.lineTo(centerX - 5, centerY + maxRadius / Math.sqrt(anisotropyRatio));
+            ctx.lineTo(centerX + 5, centerY + maxRadius / Math.sqrt(anisotropyRatio));
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillText('Low Permeability Direction', centerX, centerY + maxRadius / Math.sqrt(anisotropyRatio) + 25);
+        }
+        
+        // Permeability anisotropy calculator
+        function updatePermeabilityCalculations() {
+            const xiW = parseFloat(document.getElementById('xi-w').value);
+            const kAvg = parseFloat(document.getElementById('k-avg').value);
+            
+            document.getElementById('xi-w-value').textContent = xiW.toFixed(2);
+            document.getElementById('k-avg-value').textContent = kAvg;
+            
+            // Calculate permeabilities
+            const cothXiW = 1 / Math.tanh(xiW);
+            const kMax = kAvg * cothXiW;
+            const kMin = kAvg / cothXiW;
+            const kRatio = kMax / kMin;
+            
+            document.getElementById('k-max').textContent = kMax.toFixed(2) + ' md';
+            document.getElementById('k-min').textContent = kMin.toFixed(2) + ' md';
+            document.getElementById('k-ratio').textContent = kRatio.toFixed(2);
+            
+            // Draw permeability ellipse
+            const canvas = document.getElementById('permeability-ellipse');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw axes
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, height);
+            ctx.stroke();
+            
+            // Draw permeability ellipse
+            const maxRadius = Math.min(width, height) * 0.4;
+            const a = maxRadius; // semi-major axis (scaled to fit)
+            const b = a / Math.sqrt(kRatio); // semi-minor axis
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, a, b, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Add labels
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Permeability Ellipse', centerX, 30);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText('kmax = ' + kMax.toFixed(2) + ' md', centerX + a + 10, centerY);
+            ctx.fillText('kmin = ' + kMin.toFixed(2) + ' md', centerX, centerY - b - 10);
+        }
+        
+        // Pressure derivative chart
+        function updatePressureDerivativeChart() {
+            const omega = parseFloat(document.getElementById('omega-slider').value);
+            const lambda = parseFloat(document.getElementById('lambda-slider').value);
+            const xiW = parseFloat(document.getElementById('xi-w-slider').value);
+            
+            document.getElementById('omega-value').textContent = omega.toFixed(2);
+            document.getElementById('lambda-value').textContent = lambda.toExponential(1);
+            document.getElementById('xi-w-slider-value').textContent = xiW.toFixed(2);
+            
+            // Generate pressure derivative data
+            const timeData = [];
+            const derivativeData = [];
+            
+            // Generate logarithmically spaced time points
+            for (let i = -2; i <= 6; i += 0.1) {
+                timeData.push(Math.pow(10, i));
+            }
+            
+            // Generate pressure derivative data based on simplified model
+            for (let i = 0; i < timeData.length; i++) {
+                const t = timeData[i];
+                let derivative;
+                
+                // Early linear flow (1/2 slope)
+                if (t < 1 / lambda * 0.01) {
+                    derivative = 0.5 * Math.pow(t, -0.5) * Math.pow(omega, -0.5) * Math.pow(cosh(xiW) * cosh(xiW) + sinh(xiW) * sinh(xiW), -0.5);
+                }
+                // Transition period
+                else if (t < 1 / lambda) {
+                    const logFactor = Math.log10(t * lambda);
+                    derivative = 0.5 - 0.4 * Math.exp(-Math.pow(logFactor + 2, 2)) * (1 - omega);
+                }
+                // Late-time radial flow
+                else {
+                    derivative = 0.5;
+                }
+                
+                // Scale based on anisotropy
+                const anisotropyFactor = Math.pow(coth(xiW), 0.5);
+                derivative *= anisotropyFactor;
+                
+                derivativeData.push(derivative);
+            }
+            
+            // Create chart
+            const ctx = document.getElementById('pressure-derivative-chart').getContext('2d');
+            
+            // Check if chart already exists and destroy it
+            if (window.pressureDerivativeChart) {
+                window.pressureDerivativeChart.destroy();
+            }
+            
+            window.pressureDerivativeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeData,
+                    datasets: [{
+                        label: 'Pressure Derivative',
+                        data: derivativeData,
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Pressure Derivative'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Log-Log Plot of Pressure Derivative'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Game logic
+        function initGame() {
+            // Generate target parameters
+            const targetKAvg = Math.floor(Math.random() * 80) + 10;
+            const targetXiW = Math.random() * 1.5 + 0.1;
+            const targetOmega = Math.random() * 0.25 + 0.03;
+            const targetLambdaExp = Math.random() * 3 - 6; // Between 10^-6 and 10^-3
+            const targetLambda = Math.pow(10, targetLambdaExp);
+            
+            // Store target values
+            window.gameTargets = {
+                kAvg: targetKAvg,
+                xiW: targetXiW,
+                omega: targetOmega,
+                lambda: targetLambda
+            };
+            
+            // Generate target pressure derivative data
+            const timeData = [];
+            const targetDerivativeData = [];
+            
+            // Generate logarithmically spaced time points
+            for (let i = -2; i <= 6; i += 0.1) {
+                timeData.push(Math.pow(10, i));
+            }
+            
+            // Generate pressure derivative data based on simplified model
+            for (let i = 0; i < timeData.length; i++) {
+                const t = timeData[i];
+                let derivative;
+                
+                // Early linear flow (1/2 slope)
+                if (t < 1 / targetLambda * 0.01) {
+                    derivative = 0.5 * Math.pow(t, -0.5) * Math.pow(targetOmega, -0.5) * 
+                                Math.pow(cosh(targetXiW) * cosh(targetXiW) + sinh(targetXiW) * sinh(targetXiW), -0.5);
+                }
+                // Transition period
+                else if (t < 1 / targetLambda) {
+                    const logFactor = Math.log10(t * targetLambda);
+                    derivative = 0.5 - 0.4 * Math.exp(-Math.pow(logFactor + 2, 2)) * (1 - targetOmega);
+                }
+                // Late-time radial flow
+                else {
+                    derivative = 0.5;
+                }
+                
+                // Scale based on anisotropy and permeability
+                const anisotropyFactor = Math.pow(coth(targetXiW), 0.5);
+                derivative *= anisotropyFactor * (targetKAvg / 20); // Normalize to kAvg = 20
+                
+                targetDerivativeData.push(derivative);
+            }
+            
+            // Store for comparison
+            window.gameTargetData = targetDerivativeData;
+            
+            // Create chart
+            const ctx = document.getElementById('game-chart').getContext('2d');
+            
+            // Check if chart already exists and destroy it
+            if (window.gameChart) {
+                window.gameChart.destroy();
+            }
+            
+            window.gameChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeData,
+                    datasets: [
+                        {
+                            label: 'Target Curve',
+                            data: targetDerivativeData,
+                            borderColor: '#e74c3c',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Your Match',
+                            data: Array(timeData.length).fill(0),
+                            borderColor: '#3498db',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Pressure Derivative'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Match the Pressure Derivative Curve'
+                        }
+                    }
+                }
+            });
+            
+            // Reset feedback
+            document.getElementById('game-feedback').textContent = '';
+            document.getElementById('game-score').textContent = '0%';
+        }
+        
+        function updateGameChart() {
+            const kAvg = parseFloat(document.getElementById('game-k-avg').value);
+            const xiW = parseFloat(document.getElementById('game-xi-w').value);
+            const omega = parseFloat(document.getElementById('game-omega').value);
+            const lambdaExp = parseFloat(document.getElementById('game-lambda').value);
+            const lambda = Math.pow(10, lambdaExp);
+            
+            document.getElementById('game-k-avg-value').textContent = kAvg;
+            document.getElementById('game-xi-w-value').textContent = xiW.toFixed(2);
+            document.getElementById('game-omega-value').textContent = omega.toFixed(2);
+            document.getElementById('game-lambda-value').textContent = lambda.toExponential(1);
+            
+            // Generate user's pressure derivative data
+            const timeData = [];
+            const derivativeData = [];
+            
+            // Generate logarithmically spaced time points
+            for (let i = -2; i <= 6; i += 0.1) {
+                timeData.push(Math.pow(10, i));
+            }
+            
+            // Generate pressure derivative data based on simplified model
+            for (let i = 0; i < timeData.length; i++) {
+                const t = timeData[i];
+                let derivative;
+                
+                // Early linear flow (1/2 slope)
+                if (t < 1 / lambda * 0.01) {
+                    derivative = 0.5 * Math.pow(t, -0.5) * Math.pow(omega, -0.5) * 
+                                Math.pow(cosh(xiW) * cosh(xiW) + sinh(xiW) * sinh(xiW), -0.5);
+                }
+                // Transition period
+                else if (t < 1 / lambda) {
+                    const logFactor = Math.log10(t * lambda);
+                    derivative = 0.5 - 0.4 * Math.exp(-Math.pow(logFactor + 2, 2)) * (1 - omega);
+                }
+                // Late-time radial flow
+                else {
+                    derivative = 0.5;
+                }
+                
+                // Scale based on anisotropy and permeability
+                const anisotropyFactor = Math.pow(coth(xiW), 0.5);
+                derivative *= anisotropyFactor * (kAvg / 20); // Normalize to kAvg = 20
+                
+                derivativeData.push(derivative);
+            }
+            
+            // Update chart
+            window.gameChart.data.datasets[1].data = derivativeData;
+            window.gameChart.update();
+            
+            // Calculate match quality
+            const targetData = window.gameTargetData;
+            let sumSquaredError = 0;
+            let sumSquaredTarget = 0;
+            
+            for (let i = 0; i < targetData.length; i++) {
+                const error = targetData[i] - derivativeData[i];
+                sumSquaredError += error * error;
+                sumSquaredTarget += targetData[i] * targetData[i];
+            }
+            
+            const matchQuality = 100 * (1 - Math.sqrt(sumSquaredError / sumSquaredTarget));
+            document.getElementById('game-score').textContent = Math.max(0, matchQuality.toFixed(1)) + '%';
+        }
+        
+        function submitGameAnswer() {
+            const kAvg = parseFloat(document.getElementById('game-k-avg').value);
+            const xiW = parseFloat(document.getElementById('game-xi-w').value);
+            const omega = parseFloat(document.getElementById('game-omega').value);
+            const lambdaExp = parseFloat(document.getElementById('game-lambda').value);
+            
+            const targets = window.gameTargets;
+            
+            const kAvgError = Math.abs((kAvg - targets.kAvg) / targets.kAvg);
+            const xiWError = Math.abs((xiW - targets.xiW) / targets.xiW);
+            const omegaError = Math.abs((omega - targets.omega) / targets.omega);
+            const lambdaError = Math.abs((lambdaExp - Math.log10(targets.lambda)) / Math.log10(targets.lambda));
+            
+            let feedback = '<strong>Results:</strong><br>';
+            feedback += `Average permeability: ${kAvg} md (Target: ${targets.kAvg.toFixed(1)} md)<br>`;
+            feedback += `Radius vector (ξw): ${xiW.toFixed(2)} (Target: ${targets.xiW.toFixed(2)})<br>`;
+            feedback += `Storativity ratio (ω): ${omega.toFixed(2)} (Target: ${targets.omega.toFixed(2)})<br>`;
+            feedback += `Interporosity flow coefficient (λ): ${Math.pow(10, lambdaExp).toExponential(1)} (Target: ${targets.lambda.toExponential(1)})<br><br>`;
+            
+            if (kAvgError < 0.1 && xiWError < 0.1 && omegaError < 0.1 && lambdaError < 0.1) {
+                feedback += 'Excellent! Your interpretation is very accurate!';
+            } else if (kAvgError < 0.2 && xiWError < 0.2 && omegaError < 0.2 && lambdaError < 0.2) {
+                feedback += 'Good job! Your interpretation is close to the correct values.';
+            } else {
+                feedback += 'Keep trying! Your interpretation needs improvement.';
+            }
+            
+            document.getElementById('game-feedback').innerHTML = feedback;
+        }
+        
+        // Helper functions
+        function cosh(x) {
+            return (Math.exp(x) + Math.exp(-x)) / 2;
+        }
+        
+        function sinh(x) {
+            return (Math.exp(x) - Math.exp(-x)) / 2;
+        }
+        
+        function coth(x) {
+            return cosh(x) / sinh(x);
+        }
+        
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createReservoirDiagram();
+            
+            // Flow pattern visualization
+            updateFlowPattern();
+            document.getElementById('anisotropy-ratio').addEventListener('input', updateFlowPattern);
+            
+            // Permeability anisotropy calculator
+            updatePermeabilityCalculations();
+            document.getElementById('xi-w').addEventListener('input', updatePermeabilityCalculations);
+            document.getElementById('k-avg').addEventListener('input', updatePermeabilityCalculations);
+            
+            // Pressure derivative chart
+            updatePressureDerivativeChart();
+            document.getElementById('omega-slider').addEventListener('input', updatePressureDerivativeChart);
+            document.getElementById('lambda-slider').addEventListener('input', updatePressureDerivativeChart);
+            document.getElementById('xi-w-slider').addEventListener('input', updatePressureDerivativeChart);
+            
+            // Game
+            initGame();
+            document.getElementById('game-k-avg').addEventListener('input', updateGameChart);
+            document.getElementById('game-xi-w').addEventListener('input', updateGameChart);
+            document.getElementById('game-omega').addEventListener('input', updateGameChart);
+            document.getElementById('game-lambda').addEventListener('input', updateGameChart);
+            document.getElementById('submit-answer').addEventListener('click', submitGameAnswer);
+            document.getElementById('new-challenge').addEventListener('click', initGame);
+        });
+    </script>
+</body>
+</html>
