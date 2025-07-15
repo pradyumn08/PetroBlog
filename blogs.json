@@ -1,107 +1,424 @@
-[
-    "blogs/A Compendium of Directional Calculations Based on the Minimum Curvature Method.html",
-    "blogs/A General Formulation for Compositional Reservoir Simulation.html",
-    "blogs/A Mathematical Model of Horizontal Wells Pressure Drawdown and Buildup.html",
-    "blogs/A Mechanistic Model to Predict Flow Pattern Transitions in Electrical Submersible Pump under Gassy Flow Condition.html",
-    "blogs/A Method for Improving Line Successive Overrelaxation in Anisotropic Problems\u2014A Theoretical Analysis.html",
-    "blogs/A Method for Pressure Buildup Analysis of Drillstem Tests.html",
-    "blogs/A Model for the Performance of Solution Gas-Drive Reservoirs with Gravity Segregation.html",
-    "blogs/A Multi-Purpose Formation Damage Model.html",
-    "blogs/A New Approach to Multiphase Well Test Analysis.html",
-    "blogs/A New MatrixFracture Multiscale Coupled Model for Flow in Shale-Gas Reservoirs.html",
-    "blogs/A New Method of Well-Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow.html",
-    "blogs/A New Refracture-Candidate Diagnostic Test Determines Reservoir Properties and Identifies Existing Conductive or Damaged Fractures.html",
-    "blogs/A New Test for Determination of Individual Layer Properties in a Multilayered Reservoir.html",
-    "blogs/A Nonlinear Approximation for the Pressure Behavior of Heterogeneous Reservoirs.html",
-    "blogs/A Physics-Based Data-Driven Model for History-Matching, Prediction and Characterization of Waterflooding Performance.html",
-    "blogs/A Polynomial Approach to the van Everdingen-Hurst Dimensionless Variables for Water Encroachment.html",
-    "blogs/A Practical Workflow for Characterizing Stress-Dependent Behaviour of Coal from Changes in Well Productivity.html",
-    "blogs/A Semi-Analytic (pz) Rate-Time Relation for the Analysis and Prediction of Gas Well Performance.html",
-    "blogs/A Simple Method for Predicting the Performance of a Sucker-Rod Pumping System.html",
-    "blogs/A Simultaneous Matrix-Depletion Model for Charaterizing Fractured Reservoirs.html",
-    "blogs/A Statistical Structural Model for Unsteady-State Displacement in Porous Media.html",
-    "blogs/A Study of the Behavior of Partially Penetrating Wells.html",
-    "blogs/A Systems Approach to Reservoir Engineering Optimum Development Planning.html",
-    "blogs/A Theoretical Study of Pressure Distribution and Fluid Flux in Bounded Stratified Porous Systems with Crossflow.html",
-    "blogs/A Two-Dimensional Theory of Fracture Propagation.html",
-    "blogs/Advanced Equations for Natural Gas Flow Prediction.html",
-    "blogs/An Approximate Method for Transient Radial Flow.html",
-    "blogs/Analysis and Interpretation of Gas Diffusion in Quiescent Reservoir, Drilling, and Completion Fluids Equilibrium vs. Non-equilibrium Models.html",
-    "blogs/Analysis of InjectionFalloff Data From Horizontal Wells.html",
-    "blogs/Analytical Hindered-Matrix-Fracture Transfer Models For Naturally Fractured Petroleum Reservoirs.html",
-    "blogs/Analytical Model for Multi-Fractured Horizontal Wells in Tight Sand Reservoir with Threshold Pressure Gradient.html",
-    "blogs/Analytical Model for Multifractured Horizontal Wells in Heterogeneous Shale Reservoirs.html",
-    "blogs/Analyzing Pressure Transient and Steady State Drawdown Data From Current Formation Tester Tools in Vertical and Deviated Wells With a Consistent Approach.html",
-    "blogs/Approximate Analytical Solutions for the Pressure Response at a Water Injection Well.html",
-    "blogs/Approximate Analytical Solutions for the Pressure Response at a Water-Injection Well.html",
-    "blogs/Automatic Type-Curve Matching for Horizontal Wells.html",
-    "blogs/Bridging the Gap Between Deterministic and Probabilistic Uncertainty Quantification Using Advanced Proxy Based Methods.html",
-    "blogs/Combined Effects of Shut-In and Production Solution With a New Inner Boundary Condition.html",
-    "blogs/Comparison of Vertex- and Cell-Centered Methods for Flow and Transport Simulation in 3D.html",
-    "blogs/Computed Relative Permeability Drainage and Imbibition.html",
-    "blogs/Convergence of MPFA on hexahedra.html",
-    "blogs/DARCY'S LAW and the FIELD EQUATIONS of the FLOW of UNDERGROUND FLUIDS.html",
-    "blogs/Decline Curve Analysis Considering Non Laminar Flow in Two Porosity Systems.html",
-    "blogs/Decline Curve Analysis of Fractured Reservoirs With Fractal Geometry.html",
-    "blogs/Determination Of Formation Properties From Long-Term Gas Well Production Affected By Non-Darcy Flow.html",
-    "blogs/Determination of Parameters for Individual Layers in Multilayer Reservoirs by Transient Well Tests.html",
-    "blogs/Determining Barrier Distance from Transient Well Test Data.html",
-    "blogs/Development of Specialized Plots for Production Data Analysis of Tight Reservoirs with Secondary Fractures.html",
-    "blogs/Development of a Trilinear-Flow Model for Carbon Sequestration in Depleted Shale.html",
-    "blogs/Dynamic Behavior of the Sucker Rod String in the Inclined Well.html",
-    "blogs/Effects of Stress on Fracture Properties of Naturally Fractured Reservoirs.html",
-    "blogs/Estimating Field-Scale MicellarPolymer Performance.html",
-    "blogs/Evaluation and Comparison of the Formation Damage Models.html",
-    "blogs/Evaluation of Pressure-Transient Behavior of Unfractured Vertical, Vertically Fractured, and Horizontal Wells in a Composite Reservoir with an Active Aquifer and Moving Fluid Interfaces.html",
-    "blogs/Experimental Study of Two-Phase Pumping in a Progressive Cavity Pump Metal to Metal.html",
-    "blogs/Flow in Composite Slabs.html",
-    "blogs/Formulation of a General Multiphase, Multicomponent Chemical Flood Model.html",
-    "blogs/Fractional Flow Theory for Suspension Flow in Petroleum Reservoirs.html",
-    "blogs/In-Place Determination of Reservoir Relative Permeability Using Well Test Analysis.html",
-    "blogs/Interference Between Oil Fields.html",
-    "blogs/Interference Pressure Behavior in Multilayered Composite Reservoirs.html",
-    "blogs/Interpretation and Analysis of Transient Sandface and Wellbore Temperature Data.html",
-    "blogs/Interpretation of Well-Block Pressures in Numerical Reservoir Simulation With Nonsquare Grid Blocks and Anisotropic Permeability.html",
-    "blogs/Interpretation of Well-Block Pressures in Numerical Reservoir Simulation.html",
-    "blogs/Maximizing Portfolio Value with Specified Assurance.html",
-    "blogs/New Advances in Production Data Analysis of Hydraulically Fractured Tight Reservoirs.html",
-    "blogs/New Method of Well Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow.html",
-    "blogs/New Productivity Formulae of Horizontal Wells.html",
-    "blogs/New Semi-Analytical Solutions for Multilayer Reservoirs.html",
-    "blogs/New Solutions for Well-Test-Analysis Problems Part III\u2014Additional Algorithms.html",
-    "blogs/Nonlinear Theory for Frontal Stability and Viscous Fingering in Porous Media.html",
-    "blogs/Performance of Layered Reservoirs with Crossflow\u2014Single-Compressible-Fluid Case.html",
-    "blogs/Practical Analysis of InjectionFalloff Data of Horizontal Wells.html",
-    "blogs/Pressure Buildup Analysis for a Well Produced at a Constant Pressure in a Naturally Fractured Reservoir.html",
-    "blogs/Pressure Drawdown and Buildup Analysis of Horizontal Wells in Anisotropic Media.html",
-    "blogs/Pressure Transient Analysis of Vertically Fractured Well in Tight Oil Reservoirs with Rectangle Stimulated Reservoir Volume.html",
-    "blogs/Pseudo-Pressure and Pseudo-Time Analysis for Unconventional Oil Reservoirs With New Expressions for Average Reservoir Pressure During Transient Radial and Linear Flow.html",
-    "blogs/Pseudosteady-State Analysis of Finite-Conductivity Vertical Fractures.html",
-    "blogs/Rate Behavior of Composite Dual-Porosity Reservoirs.html",
-    "blogs/Reduction of Light Oil Usage as Power Fluid for Jet Pumping in Deep Heavy Oil Reservoirs.html",
-    "blogs/Representing Wells in Numerical Reservoir Simulation Part 1 \u2013 Theory.html",
-    "blogs/Scaling Parameters for Characterizing Gravity Drainage in Naturally Fractured Reservoirs.html",
-    "blogs/Sizing an Electrical Submersible Pump in a Solution-Gas-Drive Horizontal Well.html",
-    "blogs/Some Invariant Solutions to Two-Phase Fluid Displacement Problems Including Capillary Effect.html",
-    "blogs/Stability Analysis of Miscible Displacement Processes.html",
-    "blogs/State-of-the-Art Modeling for Unconventional Gas Recovery, Part II Recent Developments (1989-1994).html",
-    "blogs/Sucker Rod Pumping Systems Design - Another Look.html",
-    "blogs/Sucker-Rod Pump Diagnosis With Fluid Inertia Considerations.html",
-    "blogs/Suspension Flow in Petroleum Reservoirs Fractional Flow Theory.html",
-    "blogs/Temperature Transient Analysis of Slightly Compressible, Single-Phase Reservoirs.html",
-    "blogs/The Application of the Laplace Transformation to Flow Problems in Reservoirs.html",
-    "blogs/The Effect of High-Pressure Gradients on Gas Flow.html",
-    "blogs/The Response of Interwell Tracer Tests in Watered-Out Reservoirs.html",
-    "blogs/Theory of Sand Transport in Thin Fluids.html",
-    "blogs/Transient Flow Behavior of Horizontal Wells, Pressure Drawdown, and Buildup Analysis.html",
-    "blogs/Transient Volume of Investigation Definition, Theory, and Applications.html",
-    "blogs/Understanding the Thermo-Hydro-Mechanical Pressurization in Two-Phase (SteamWater) Flow and its Application in Low-Perm Caprock Formations in SAGD Projects.html",
-    "blogs/Understanding the Thermo-Hydromechanical Pressurization in Two-Phase (SteamWater) Flow and Its Application in Low-Permeability Caprock Formations in Steam-Assisted-Gravity-Drainage.html",
-    "blogs/Unrestricted Pressure-Transient Solutions for Homogeneous and Composite Elliptical Flow Models with Limited and Full Height Inner Boundary.html",
-    "blogs/Unsteady-State Spherical Flow With Storage and Skin.html",
-    "blogs/Vertical Interference Testing Across a Low-Permeability Zone.html",
-    "blogs/Well Index Calculation for Arbitrary Trajectory, Perforation, Hydraulic Fracturing and Geological Properties.html",
-    "blogs/Well Test Analysis of Heterogeneous Reservoirs.html",
-    "blogs/Well Test Analysis of a Multilayered Reservoir With Formation Crossflow.html",
-    "blogs/Wells Producing Commingled Zones with Unequal Initial Pressures and Reservoir Properties.html"
-]
+{
+  "blogs": [
+    {
+      "title": "A Compendium of Directional Calculations Based on the Minimum Curvature Method",
+      "url": "blogs/A Compendium of Directional Calculations Based on the Minimum Curvature Method.html"
+    },
+    {
+      "title": "A General Formulation for Compositional Reservoir Simulation",
+      "url": "blogs/A General Formulation for Compositional Reservoir Simulation.html"
+    },
+    {
+      "title": "A Mathematical Model of Horizontal Wells Pressure Drawdown and Buildup",
+      "url": "blogs/A Mathematical Model of Horizontal Wells Pressure Drawdown and Buildup.html"
+    },
+    {
+      "title": "A Mechanistic Model to Predict Flow Pattern Transitions in Electrical Submersible Pump under Gassy Flow Condition",
+      "url": "blogs/A Mechanistic Model to Predict Flow Pattern Transitions in Electrical Submersible Pump under Gassy Flow Condition.html"
+    },
+    {
+      "title": "A Method for Improving Line Successive Overrelaxation in Anisotropic Problems—A Theoretical Analysis",
+      "url": "blogs/A Method for Improving Line Successive Overrelaxation in Anisotropic Problems—A Theoretical Analysis.html"
+    },
+    {
+      "title": "A Method for Pressure Buildup Analysis of Drillstem Tests",
+      "url": "blogs/A Method for Pressure Buildup Analysis of Drillstem Tests.html"
+    },
+    {
+      "title": "A Model for the Performance of Solution Gas Drive Reservoirs with Gravity Segregation",
+      "url": "blogs/A Model for the Performance of Solution Gas-Drive Reservoirs with Gravity Segregation.html"
+    },
+    {
+      "title": "A Multi Purpose Formation Damage Model",
+      "url": "blogs/A Multi-Purpose Formation Damage Model.html"
+    },
+    {
+      "title": "A New Approach to Multiphase Well Test Analysis",
+      "url": "blogs/A New Approach to Multiphase Well Test Analysis.html"
+    },
+    {
+      "title": "A New MatrixFracture Multiscale Coupled Model for Flow in Shale Gas Reservoirs",
+      "url": "blogs/A New MatrixFracture Multiscale Coupled Model for Flow in Shale-Gas Reservoirs.html"
+    },
+    {
+      "title": "A New Method of Well Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow",
+      "url": "blogs/A New Method of Well-Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow.html"
+    },
+    {
+      "title": "A New Refracture Candidate Diagnostic Test Determines Reservoir Properties and Identifies Existing Conductive or Damaged Fractures",
+      "url": "blogs/A New Refracture-Candidate Diagnostic Test Determines Reservoir Properties and Identifies Existing Conductive or Damaged Fractures.html"
+    },
+    {
+      "title": "A New Test for Determination of Individual Layer Properties in a Multilayered Reservoir",
+      "url": "blogs/A New Test for Determination of Individual Layer Properties in a Multilayered Reservoir.html"
+    },
+    {
+      "title": "A Nonlinear Approximation for the Pressure Behavior of Heterogeneous Reservoirs",
+      "url": "blogs/A Nonlinear Approximation for the Pressure Behavior of Heterogeneous Reservoirs.html"
+    },
+    {
+      "title": "A Physics Based Data Driven Model for History Matching, Prediction and Characterization of Waterflooding Performance",
+      "url": "blogs/A Physics-Based Data-Driven Model for History-Matching, Prediction and Characterization of Waterflooding Performance.html"
+    },
+    {
+      "title": "A Polynomial Approach to the van Everdingen Hurst Dimensionless Variables for Water Encroachment",
+      "url": "blogs/A Polynomial Approach to the van Everdingen-Hurst Dimensionless Variables for Water Encroachment.html"
+    },
+    {
+      "title": "A Practical Workflow for Characterizing Stress Dependent Behaviour of Coal from Changes in Well Productivity",
+      "url": "blogs/A Practical Workflow for Characterizing Stress-Dependent Behaviour of Coal from Changes in Well Productivity.html"
+    },
+    {
+      "title": "A Semi Analytic (pz) Rate Time Relation for the Analysis and Prediction of Gas Well Performance",
+      "url": "blogs/A Semi-Analytic (pz) Rate-Time Relation for the Analysis and Prediction of Gas Well Performance.html"
+    },
+    {
+      "title": "A Simple Method for Predicting the Performance of a Sucker Rod Pumping System",
+      "url": "blogs/A Simple Method for Predicting the Performance of a Sucker-Rod Pumping System.html"
+    },
+    {
+      "title": "A Simultaneous Matrix Depletion Model for Charaterizing Fractured Reservoirs",
+      "url": "blogs/A Simultaneous Matrix-Depletion Model for Charaterizing Fractured Reservoirs.html"
+    },
+    {
+      "title": "A Statistical Structural Model for Unsteady State Displacement in Porous Media",
+      "url": "blogs/A Statistical Structural Model for Unsteady-State Displacement in Porous Media.html"
+    },
+    {
+      "title": "A Study of the Behavior of Partially Penetrating Wells",
+      "url": "blogs/A Study of the Behavior of Partially Penetrating Wells.html"
+    },
+    {
+      "title": "A Systems Approach to Reservoir Engineering Optimum Development Planning",
+      "url": "blogs/A Systems Approach to Reservoir Engineering Optimum Development Planning.html"
+    },
+    {
+      "title": "A Theoretical Study of Pressure Distribution and Fluid Flux in Bounded Stratified Porous Systems with Crossflow",
+      "url": "blogs/A Theoretical Study of Pressure Distribution and Fluid Flux in Bounded Stratified Porous Systems with Crossflow.html"
+    },
+    {
+      "title": "A Two Dimensional Theory of Fracture Propagation",
+      "url": "blogs/A Two-Dimensional Theory of Fracture Propagation.html"
+    },
+    {
+      "title": "Advanced Equations for Natural Gas Flow Prediction",
+      "url": "blogs/Advanced Equations for Natural Gas Flow Prediction.html"
+    },
+    {
+      "title": "An Approximate Method for Transient Radial Flow",
+      "url": "blogs/An Approximate Method for Transient Radial Flow.html"
+    },
+    {
+      "title": "Analysis and Interpretation of Gas Diffusion in Quiescent Reservoir, Drilling, and Completion Fluids Equilibrium vs. Non equilibrium Models",
+      "url": "blogs/Analysis and Interpretation of Gas Diffusion in Quiescent Reservoir, Drilling, and Completion Fluids Equilibrium vs. Non-equilibrium Models.html"
+    },
+    {
+      "title": "Analysis of InjectionFalloff Data From Horizontal Wells",
+      "url": "blogs/Analysis of InjectionFalloff Data From Horizontal Wells.html"
+    },
+    {
+      "title": "Analytical Hindered Matrix Fracture Transfer Models For Naturally Fractured Petroleum Reservoirs",
+      "url": "blogs/Analytical Hindered-Matrix-Fracture Transfer Models For Naturally Fractured Petroleum Reservoirs.html"
+    },
+    {
+      "title": "Analytical Model for Multi Fractured Horizontal Wells in Tight Sand Reservoir with Threshold Pressure Gradient",
+      "url": "blogs/Analytical Model for Multi-Fractured Horizontal Wells in Tight Sand Reservoir with Threshold Pressure Gradient.html"
+    },
+    {
+      "title": "Analytical Model for Multifractured Horizontal Wells in Heterogeneous Shale Reservoirs",
+      "url": "blogs/Analytical Model for Multifractured Horizontal Wells in Heterogeneous Shale Reservoirs.html"
+    },
+    {
+      "title": "Analyzing Pressure Transient and Steady State Drawdown Data From Current Formation Tester Tools in Vertical and Deviated Wells With a Consistent Approach",
+      "url": "blogs/Analyzing Pressure Transient and Steady State Drawdown Data From Current Formation Tester Tools in Vertical and Deviated Wells With a Consistent Approach.html"
+    },
+    {
+      "title": "Approximate Analytical Solutions for the Pressure Response at a Water Injection Well",
+      "url": "blogs/Approximate Analytical Solutions for the Pressure Response at a Water Injection Well.html"
+    },
+    {
+      "title": "Approximate Analytical Solutions for the Pressure Response at a Water Injection Well",
+      "url": "blogs/Approximate Analytical Solutions for the Pressure Response at a Water-Injection Well.html"
+    },
+    {
+      "title": "Automatic Type Curve Matching for Horizontal Wells",
+      "url": "blogs/Automatic Type-Curve Matching for Horizontal Wells.html"
+    },
+    {
+      "title": "Bridging the Gap Between Deterministic and Probabilistic Uncertainty Quantification Using Advanced Proxy Based Methods",
+      "url": "blogs/Bridging the Gap Between Deterministic and Probabilistic Uncertainty Quantification Using Advanced Proxy Based Methods.html"
+    },
+    {
+      "title": "Combined Effects of Shut In and Production Solution With a New Inner Boundary Condition",
+      "url": "blogs/Combined Effects of Shut-In and Production Solution With a New Inner Boundary Condition.html"
+    },
+    {
+      "title": "Comparison of Vertex  and Cell Centered Methods for Flow and Transport Simulation in 3D",
+      "url": "blogs/Comparison of Vertex- and Cell-Centered Methods for Flow and Transport Simulation in 3D.html"
+    },
+    {
+      "title": "Computed Relative Permeability Drainage and Imbibition",
+      "url": "blogs/Computed Relative Permeability Drainage and Imbibition.html"
+    },
+    {
+      "title": "Convergence of MPFA on hexahedra",
+      "url": "blogs/Convergence of MPFA on hexahedra.html"
+    },
+    {
+      "title": "DARCY'S LAW and the FIELD EQUATIONS of the FLOW of UNDERGROUND FLUIDS",
+      "url": "blogs/DARCY'S LAW and the FIELD EQUATIONS of the FLOW of UNDERGROUND FLUIDS.html"
+    },
+    {
+      "title": "Decline Curve Analysis Considering Non Laminar Flow in Two Porosity Systems",
+      "url": "blogs/Decline Curve Analysis Considering Non Laminar Flow in Two Porosity Systems.html"
+    },
+    {
+      "title": "Decline Curve Analysis of Fractured Reservoirs With Fractal Geometry",
+      "url": "blogs/Decline Curve Analysis of Fractured Reservoirs With Fractal Geometry.html"
+    },
+    {
+      "title": "Determination Of Formation Properties From Long Term Gas Well Production Affected By Non Darcy Flow",
+      "url": "blogs/Determination Of Formation Properties From Long-Term Gas Well Production Affected By Non-Darcy Flow.html"
+    },
+    {
+      "title": "Determination of Parameters for Individual Layers in Multilayer Reservoirs by Transient Well Tests",
+      "url": "blogs/Determination of Parameters for Individual Layers in Multilayer Reservoirs by Transient Well Tests.html"
+    },
+    {
+      "title": "Determining Barrier Distance from Transient Well Test Data",
+      "url": "blogs/Determining Barrier Distance from Transient Well Test Data.html"
+    },
+    {
+      "title": "Development of a Trilinear Flow Model for Carbon Sequestration in Depleted Shale",
+      "url": "blogs/Development of a Trilinear-Flow Model for Carbon Sequestration in Depleted Shale.html"
+    },
+    {
+      "title": "Development of Specialized Plots for Production Data Analysis of Tight Reservoirs with Secondary Fractures",
+      "url": "blogs/Development of Specialized Plots for Production Data Analysis of Tight Reservoirs with Secondary Fractures.html"
+    },
+    {
+      "title": "Dynamic Behavior of the Sucker Rod String in the Inclined Well",
+      "url": "blogs/Dynamic Behavior of the Sucker Rod String in the Inclined Well.html"
+    },
+    {
+      "title": "Effects of Stress on Fracture Properties of Naturally Fractured Reservoirs",
+      "url": "blogs/Effects of Stress on Fracture Properties of Naturally Fractured Reservoirs.html"
+    },
+    {
+      "title": "Estimating Field Scale MicellarPolymer Performance",
+      "url": "blogs/Estimating Field-Scale MicellarPolymer Performance.html"
+    },
+    {
+      "title": "Evaluation and Comparison of the Formation Damage Models",
+      "url": "blogs/Evaluation and Comparison of the Formation Damage Models.html"
+    },
+    {
+      "title": "Evaluation of Pressure Transient Behavior of Unfractured Vertical, Vertically Fractured, and Horizontal Wells in a Composite Reservoir with an Active Aquifer and Moving Fluid Interfaces",
+      "url": "blogs/Evaluation of Pressure-Transient Behavior of Unfractured Vertical, Vertically Fractured, and Horizontal Wells in a Composite Reservoir with an Active Aquifer and Moving Fluid Interfaces.html"
+    },
+    {
+      "title": "Experimental Study of Two Phase Pumping in a Progressive Cavity Pump Metal to Metal",
+      "url": "blogs/Experimental Study of Two-Phase Pumping in a Progressive Cavity Pump Metal to Metal.html"
+    },
+    {
+      "title": "Flow in Composite Slabs",
+      "url": "blogs/Flow in Composite Slabs.html"
+    },
+    {
+      "title": "Formulation of a General Multiphase, Multicomponent Chemical Flood Model",
+      "url": "blogs/Formulation of a General Multiphase, Multicomponent Chemical Flood Model.html"
+    },
+    {
+      "title": "Fractional Flow Theory for Suspension Flow in Petroleum Reservoirs",
+      "url": "blogs/Fractional Flow Theory for Suspension Flow in Petroleum Reservoirs.html"
+    },
+    {
+      "title": "In Place Determination of Reservoir Relative Permeability Using Well Test Analysis",
+      "url": "blogs/In-Place Determination of Reservoir Relative Permeability Using Well Test Analysis.html"
+    },
+    {
+      "title": "Interference Between Oil Fields",
+      "url": "blogs/Interference Between Oil Fields.html"
+    },
+    {
+      "title": "Interference Pressure Behavior in Multilayered Composite Reservoirs",
+      "url": "blogs/Interference Pressure Behavior in Multilayered Composite Reservoirs.html"
+    },
+    {
+      "title": "Interpretation and Analysis of Transient Sandface and Wellbore Temperature Data",
+      "url": "blogs/Interpretation and Analysis of Transient Sandface and Wellbore Temperature Data.html"
+    },
+    {
+      "title": "Interpretation of Well Block Pressures in Numerical Reservoir Simulation With Nonsquare Grid Blocks and Anisotropic Permeability",
+      "url": "blogs/Interpretation of Well-Block Pressures in Numerical Reservoir Simulation With Nonsquare Grid Blocks and Anisotropic Permeability.html"
+    },
+    {
+      "title": "Interpretation of Well Block Pressures in Numerical Reservoir Simulation",
+      "url": "blogs/Interpretation of Well-Block Pressures in Numerical Reservoir Simulation.html"
+    },
+    {
+      "title": "Maximizing Portfolio Value with Specified Assurance",
+      "url": "blogs/Maximizing Portfolio Value with Specified Assurance.html"
+    },
+    {
+      "title": "New Advances in Production Data Analysis of Hydraulically Fractured Tight Reservoirs",
+      "url": "blogs/New Advances in Production Data Analysis of Hydraulically Fractured Tight Reservoirs.html"
+    },
+    {
+      "title": "New Method of Well Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow",
+      "url": "blogs/New Method of Well Test Analysis in Naturally Fractured Reservoirs Based on Elliptical Flow.html"
+    },
+    {
+      "title": "New Productivity Formulae of Horizontal Wells",
+      "url": "blogs/New Productivity Formulae of Horizontal Wells.html"
+    },
+    {
+      "title": "New Semi Analytical Solutions for Multilayer Reservoirs",
+      "url": "blogs/New Semi-Analytical Solutions for Multilayer Reservoirs.html"
+    },
+    {
+      "title": "New Solutions for Well Test Analysis Problems Part III—Additional Algorithms",
+      "url": "blogs/New Solutions for Well-Test-Analysis Problems Part III—Additional Algorithms.html"
+    },
+    {
+      "title": "Nonlinear Theory for Frontal Stability and Viscous Fingering in Porous Media",
+      "url": "blogs/Nonlinear Theory for Frontal Stability and Viscous Fingering in Porous Media.html"
+    },
+    {
+      "title": "Performance of Layered Reservoirs with Crossflow—Single Compressible Fluid Case",
+      "url": "blogs/Performance of Layered Reservoirs with Crossflow—Single-Compressible-Fluid Case.html"
+    },
+    {
+      "title": "Practical Analysis of InjectionFalloff Data of Horizontal Wells",
+      "url": "blogs/Practical Analysis of InjectionFalloff Data of Horizontal Wells.html"
+    },
+    {
+      "title": "Pressure Buildup Analysis for a Well Produced at a Constant Pressure in a Naturally Fractured Reservoir",
+      "url": "blogs/Pressure Buildup Analysis for a Well Produced at a Constant Pressure in a Naturally Fractured Reservoir.html"
+    },
+    {
+      "title": "Pressure Drawdown and Buildup Analysis of Horizontal Wells in Anisotropic Media",
+      "url": "blogs/Pressure Drawdown and Buildup Analysis of Horizontal Wells in Anisotropic Media.html"
+    },
+    {
+      "title": "Pressure Transient Analysis of Vertically Fractured Well in Tight Oil Reservoirs with Rectangle Stimulated Reservoir Volume",
+      "url": "blogs/Pressure Transient Analysis of Vertically Fractured Well in Tight Oil Reservoirs with Rectangle Stimulated Reservoir Volume.html"
+    },
+    {
+      "title": "Pseudo Pressure and Pseudo Time Analysis for Unconventional Oil Reservoirs With New Expressions for Average Reservoir Pressure During Transient Radial and Linear Flow",
+      "url": "blogs/Pseudo-Pressure and Pseudo-Time Analysis for Unconventional Oil Reservoirs With New Expressions for Average Reservoir Pressure During Transient Radial and Linear Flow.html"
+    },
+    {
+      "title": "Pseudosteady State Analysis of Finite Conductivity Vertical Fractures",
+      "url": "blogs/Pseudosteady-State Analysis of Finite-Conductivity Vertical Fractures.html"
+    },
+    {
+      "title": "Rate Behavior of Composite Dual Porosity Reservoirs",
+      "url": "blogs/Rate Behavior of Composite Dual-Porosity Reservoirs.html"
+    },
+    {
+      "title": "Reduction of Light Oil Usage as Power Fluid for Jet Pumping in Deep Heavy Oil Reservoirs",
+      "url": "blogs/Reduction of Light Oil Usage as Power Fluid for Jet Pumping in Deep Heavy Oil Reservoirs.html"
+    },
+    {
+      "title": "Representing Wells in Numerical Reservoir Simulation Part 1 – Theory",
+      "url": "blogs/Representing Wells in Numerical Reservoir Simulation Part 1 – Theory.html"
+    },
+    {
+      "title": "Scaling Parameters for Characterizing Gravity Drainage in Naturally Fractured Reservoirs",
+      "url": "blogs/Scaling Parameters for Characterizing Gravity Drainage in Naturally Fractured Reservoirs.html"
+    },
+    {
+      "title": "Sizing an Electrical Submersible Pump in a Solution Gas Drive Horizontal Well",
+      "url": "blogs/Sizing an Electrical Submersible Pump in a Solution-Gas-Drive Horizontal Well.html"
+    },
+    {
+      "title": "Some Invariant Solutions to Two Phase Fluid Displacement Problems Including Capillary Effect",
+      "url": "blogs/Some Invariant Solutions to Two-Phase Fluid Displacement Problems Including Capillary Effect.html"
+    },
+    {
+      "title": "Stability Analysis of Miscible Displacement Processes",
+      "url": "blogs/Stability Analysis of Miscible Displacement Processes.html"
+    },
+    {
+      "title": "State of the Art Modeling for Unconventional Gas Recovery, Part II Recent Developments (1989 1994)",
+      "url": "blogs/State-of-the-Art Modeling for Unconventional Gas Recovery, Part II Recent Developments (1989-1994).html"
+    },
+    {
+      "title": "Sucker Rod Pumping Systems Design   Another Look",
+      "url": "blogs/Sucker Rod Pumping Systems Design - Another Look.html"
+    },
+    {
+      "title": "Sucker Rod Pump Diagnosis With Fluid Inertia Considerations",
+      "url": "blogs/Sucker-Rod Pump Diagnosis With Fluid Inertia Considerations.html"
+    },
+    {
+      "title": "Suspension Flow in Petroleum Reservoirs Fractional Flow Theory",
+      "url": "blogs/Suspension Flow in Petroleum Reservoirs Fractional Flow Theory.html"
+    },
+    {
+      "title": "Temperature Transient Analysis of Slightly Compressible, Single Phase Reservoirs",
+      "url": "blogs/Temperature Transient Analysis of Slightly Compressible, Single-Phase Reservoirs.html"
+    },
+    {
+      "title": "The Application of the Laplace Transformation to Flow Problems in Reservoirs",
+      "url": "blogs/The Application of the Laplace Transformation to Flow Problems in Reservoirs.html"
+    },
+    {
+      "title": "The Effect of High Pressure Gradients on Gas Flow",
+      "url": "blogs/The Effect of High-Pressure Gradients on Gas Flow.html"
+    },
+    {
+      "title": "The Response of Interwell Tracer Tests in Watered Out Reservoirs",
+      "url": "blogs/The Response of Interwell Tracer Tests in Watered-Out Reservoirs.html"
+    },
+    {
+      "title": "Theory of Sand Transport in Thin Fluids",
+      "url": "blogs/Theory of Sand Transport in Thin Fluids.html"
+    },
+    {
+      "title": "Transient Flow Behavior of Horizontal Wells, Pressure Drawdown, and Buildup Analysis",
+      "url": "blogs/Transient Flow Behavior of Horizontal Wells, Pressure Drawdown, and Buildup Analysis.html"
+    },
+    {
+      "title": "Transient Volume of Investigation Definition, Theory, and Applications",
+      "url": "blogs/Transient Volume of Investigation Definition, Theory, and Applications.html"
+    },
+    {
+      "title": "Understanding the Thermo Hydro Mechanical Pressurization in Two Phase (SteamWater) Flow and its Application in Low Perm Caprock Formations in SAGD Projects",
+      "url": "blogs/Understanding the Thermo-Hydro-Mechanical Pressurization in Two-Phase (SteamWater) Flow and its Application in Low-Perm Caprock Formations in SAGD Projects.html"
+    },
+    {
+      "title": "Understanding the Thermo Hydromechanical Pressurization in Two Phase (SteamWater) Flow and Its Application in Low Permeability Caprock Formations in Steam Assisted Gravity Drainage",
+      "url": "blogs/Understanding the Thermo-Hydromechanical Pressurization in Two-Phase (SteamWater) Flow and Its Application in Low-Permeability Caprock Formations in Steam-Assisted-Gravity-Drainage.html"
+    },
+    {
+      "title": "Unrestricted Pressure Transient Solutions for Homogeneous and Composite Elliptical Flow Models with Limited and Full Height Inner Boundary",
+      "url": "blogs/Unrestricted Pressure-Transient Solutions for Homogeneous and Composite Elliptical Flow Models with Limited and Full Height Inner Boundary.html"
+    },
+    {
+      "title": "Unsteady State Spherical Flow With Storage and Skin",
+      "url": "blogs/Unsteady-State Spherical Flow With Storage and Skin.html"
+    },
+    {
+      "title": "Vertical Interference Testing Across a Low Permeability Zone",
+      "url": "blogs/Vertical Interference Testing Across a Low-Permeability Zone.html"
+    },
+    {
+      "title": "Well Index Calculation for Arbitrary Trajectory, Perforation, Hydraulic Fracturing and Geological Properties",
+      "url": "blogs/Well Index Calculation for Arbitrary Trajectory, Perforation, Hydraulic Fracturing and Geological Properties.html"
+    },
+    {
+      "title": "Well Test Analysis of a Multilayered Reservoir With Formation Crossflow",
+      "url": "blogs/Well Test Analysis of a Multilayered Reservoir With Formation Crossflow.html"
+    },
+    {
+      "title": "Well Test Analysis of Heterogeneous Reservoirs",
+      "url": "blogs/Well Test Analysis of Heterogeneous Reservoirs.html"
+    },
+    {
+      "title": "Wells Producing Commingled Zones with Unequal Initial Pressures and Reservoir Properties",
+      "url": "blogs/Wells Producing Commingled Zones with Unequal Initial Pressures and Reservoir Properties.html"
+    }
+  ]
+}
