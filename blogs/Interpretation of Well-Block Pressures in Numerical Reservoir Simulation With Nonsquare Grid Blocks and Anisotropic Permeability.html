@@ -1,0 +1,419 @@
+<html>
+<head>
+    <title>Understanding Well-Block Pressures in Numerical Reservoir Simulation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .author {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .highlight {
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .simulation-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+        .note {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 4px solid #f1c40f;
+            margin: 15px 0;
+        }
+        .formula {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .conclusion {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 30px 0 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Well-Block Pressures in Numerical Reservoir Simulation</h1>
+    <p class="author">From Peaceman's Groundbreaking Work to Interactive Visualization</p>
+
+    <div class="highlight">
+        <p>In this post, we'll break down Donald W. Peaceman's seminal work on well-block pressures in numerical reservoir simulation. We'll explore how to correctly interpret the pressure calculated for a grid block containing a well, especially when dealing with nonsquare grid blocks and anisotropic permeability. By the end, you'll have a clear understanding of the "Peaceman radius" and be able to visualize it through our interactive simulation.</p>
+    </div>
+
+    <h2>The Problem: Grid Blocks vs. Actual Wells</h2>
+
+    <p>When engineers simulate oil and gas reservoirs using numerical methods, they face a fundamental challenge: the grid blocks used in simulations are much larger than actual wellbores. Consider this: a typical wellbore might be a few inches in diameter, while simulation grid blocks could be tens or hundreds of feet wide.</p>
+
+    <p>This creates a critical problem: the pressure calculated for a grid block containing a well (the well-block pressure or WBP) is significantly different from the actual flowing pressure at the wellbore (bottomhole pressure or BHP). How do we relate these two pressures?</p>
+
+    <h2>First Principles: The Peaceman Radius</h2>
+
+    <p>Peaceman introduced a brilliant solution: define an "equivalent radius" for the well block. This radius, now known as the "Peaceman radius" (\(r_o\)), is the distance from the center of the well at which the steady-state flowing pressure equals the numerically calculated pressure for the well block.</p>
+
+    <p>Mathematically, this gives us:</p>
+
+    <div class="formula">
+        \[ p_{wf} - p_o = \frac{q\mu}{2\pi kh} \ln\frac{r_w}{r_o} \]
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(p_{wf}\) = flowing bottomhole pressure at the well</li>
+        <li>\(p_o\) = numerically calculated pressure for the well block</li>
+        <li>\(q\) = production/injection rate</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(k\) = permeability</li>
+        <li>\(h\) = reservoir thickness</li>
+        <li>\(r_w\) = actual wellbore radius</li>
+        <li>\(r_o\) = equivalent well-block radius (Peaceman radius)</li>
+    </ul>
+
+    <p>For square grid blocks (\(\Delta x = \Delta y\)), Peaceman previously found that:</p>
+
+    <div class="formula">
+        \[ r_o = 0.2 \Delta x \]
+    </div>
+
+    <p>But what happens when grid blocks aren't square or when permeability varies with direction?</p>
+
+    <h2>Extending to Nonsquare Grid Blocks</h2>
+
+    <p>Let's think about this problem from first principles. When grid blocks aren't square (\(\Delta x \neq \Delta y\)), how does the equivalent radius change?</p>
+
+    <p>Two competing theories existed:</p>
+
+    <ol>
+        <li>The radius is proportional to the geometric mean: \(r_o = C(\Delta x \Delta y)^{1/2}\)</li>
+        <li>The radius follows a more complex relationship based on pressures in adjacent blocks</li>
+    </ol>
+
+    <p>Through careful numerical experiments on a five-spot pattern (a common well arrangement in petroleum engineering), Peaceman discovered something surprising. The equivalent radius is actually proportional to the diagonal of the grid block:</p>
+
+    <div class="formula">
+        \[ r_o = 0.14(\Delta x^2 + \Delta y^2)^{1/2} \]
+    </div>
+
+    <p>This elegant formula works for any aspect ratio \(\Delta y/\Delta x\)!</p>
+
+    <h2>The Mathematical Derivation</h2>
+
+    <p>Peaceman didn't just discover this formula empirically - he derived it mathematically. The derivation is complex, involving Fourier series, conformal mapping, and careful limit analysis. Let's break down the key steps:</p>
+
+    <ol>
+        <li>Start with the difference equation for steady-state pressure distribution</li>
+        <li>Represent the solution as a finite Fourier series</li>
+        <li>Take the limit as the grid size becomes infinite</li>
+        <li>Evaluate the resulting integral along the horizontal axis</li>
+        <li>Analyze the behavior as distance from the well increases</li>
+    </ol>
+
+    <p>The constant 0.14 turns out to be exactly \(e^{-\gamma}/4\), where \(\gamma = 0.5772157\) is Euler's constant.</p>
+
+    <h2>Anisotropic Permeability: The Final Piece</h2>
+
+    <p>In real reservoirs, permeability often varies with direction (anisotropic permeability). When \(k_x \neq k_y\), Peaceman derived an extended formula:</p>
+
+    <div class="formula">
+        \[ r_o = 0.28 \frac{\left[(k_y/k_x)^{1/2}\Delta x^2 + (k_x/k_y)^{1/2}\Delta y^2\right]^{1/2}}{(k_y/k_x)^{1/4} + (k_x/k_y)^{1/4}} \]
+    </div>
+
+    <p>This formula reduces to our simpler formula when \(k_x = k_y\).</p>
+
+    <p>The derivation involves transforming the anisotropic problem into an isotropic one in a transformed coordinate system, solving it there, and then transforming back.</p>
+
+    <h2>Interactive Visualization: Explore the Peaceman Radius</h2>
+
+    <div class="simulation-container">
+        <h3>Well-Block Pressure Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="deltaX">Grid block width (Δx):</label>
+            <input type="range" id="deltaX" min="10" max="200" value="100" step="10">
+            <span id="deltaXValue">100 ft</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="deltaY">Grid block height (Δy):</label>
+            <input type="range" id="deltaY" min="10" max="200" value="100" step="10">
+            <span id="deltaYValue">100 ft</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="kxky">Permeability ratio (k<sub>y</sub>/k<sub>x</sub>):</label>
+            <input type="range" id="kxky" min="0.1" max="10" value="1" step="0.1">
+            <span id="kxkyValue">1.0</span>
+        </div>
+        
+        <canvas id="simulationCanvas" width="600" height="400"></canvas>
+        
+        <div>
+            <p><strong>Equivalent radius (r<sub>o</sub>):</strong> <span id="roValue">0.0</span> ft</p>
+            <p><strong>Square grid formula:</strong> <span id="squareFormula">0.0</span> ft</p>
+            <p><strong>Geometric mean formula:</strong> <span id="geoMeanFormula">0.0</span> ft</p>
+            <p><strong>Peaceman formula:</strong> <span id="peacemanFormula">0.0</span> ft</p>
+        </div>
+    </div>
+
+    <h2>Real-World Applications</h2>
+
+    <p>Why does this matter? Accurate well modeling is crucial for:</p>
+
+    <ul>
+        <li><strong>Production forecasting:</strong> Predicting how much oil or gas a well will produce</li>
+        <li><strong>Reservoir management:</strong> Deciding where to place wells and how to operate them</li>
+        <li><strong>History matching:</strong> Calibrating simulation models to match observed production data</li>
+        <li><strong>Enhanced oil recovery:</strong> Planning injection strategies for maximum recovery</li>
+    </ul>
+
+    <p>Using the wrong formula for \(r_o\) can lead to significant errors in these calculations, potentially costing millions of dollars in misguided decisions.</p>
+
+    <div class="note">
+        <p><strong>Example:</strong> Consider a simulation with grid blocks of 100 ft × 50 ft. Using the square grid formula would give \(r_o = 0.2 \times 100 = 20\) ft. The geometric mean formula would give \(r_o = 0.2 \times \sqrt{100 \times 50} = 14.14\) ft. But Peaceman's correct formula gives \(r_o = 0.14 \times \sqrt{100^2 + 50^2} = 15.65\) ft. This difference affects all pressure calculations for the well.</p>
+    </div>
+
+    <h2>Breaking Down the Mathematics</h2>
+
+    <p>Let's examine the pressure distribution around a well in more detail. For steady-state flow, the pressure satisfies Laplace's equation:</p>
+
+    <div class="formula">
+        \[ k_x \frac{\partial^2 p}{\partial x^2} + k_y \frac{\partial^2 p}{\partial y^2} = 0 \]
+    </div>
+
+    <p>In numerical simulation, we discretize this equation using finite differences:</p>
+
+    <div class="formula">
+        \[ \frac{k_x h \Delta y}{\mu \Delta x}(p_{i+1,j} - 2p_{i,j} + p_{i-1,j}) + \frac{k_y h \Delta x}{\mu \Delta y}(p_{i,j+1} - 2p_{i,j} + p_{i,j-1}) = q_{i,j} \]
+    </div>
+
+    <p>Where \(q_{i,j}\) is non-zero only at well locations.</p>
+
+    <p>For a well at the center of a block, we can analyze how the numerical solution relates to the analytical solution for radial flow:</p>
+
+    <div class="formula">
+        \[ p = p_o + \frac{q\mu}{2\pi kh} \ln\frac{r}{r_o} \]
+    </div>
+
+    <p>By comparing these solutions at various distances from the well, we can determine the value of \(r_o\) that makes them match.</p>
+
+    <h2>From Theory to Practice: Implementing the Formula</h2>
+
+    <p>How do we use this in a reservoir simulator? The process is straightforward:</p>
+
+    <ol>
+        <li>For each well block, calculate \(r_o\) using Peaceman's formula</li>
+        <li>Use the relationship between \(p_{wf}\) and \(p_o\) to correctly model well behavior</li>
+        <li>Update this calculation at each timestep if using dynamic grid refinement</li>
+    </ol>
+
+    <p>The formula applies to both production and injection wells, and can be extended to horizontal wells with appropriate modifications.</p>
+
+    <div class="conclusion">
+        <h3>Key Takeaways</h3>
+        <ol>
+            <li>The pressure calculated for a well block in reservoir simulation is not the actual wellbore pressure</li>
+            <li>The Peaceman radius (\(r_o\)) relates these two pressures through a logarithmic relationship</li>
+            <li>For nonsquare grid blocks, \(r_o = 0.14(\Delta x^2 + \Delta y^2)^{1/2}\)</li>
+            <li>For anisotropic permeability, use the extended formula that accounts for \(k_x\) and \(k_y\)</li>
+            <li>Using the correct formula is essential for accurate reservoir simulation</li>
+        </ol>
+    </div>
+
+    <script>
+        // Initialize values and update display
+        const deltaXSlider = document.getElementById('deltaX');
+        const deltaYSlider = document.getElementById('deltaY');
+        const kxkySlider = document.getElementById('kxky');
+        const deltaXValue = document.getElementById('deltaXValue');
+        const deltaYValue = document.getElementById('deltaYValue');
+        const kxkyValue = document.getElementById('kxkyValue');
+        const roValue = document.getElementById('roValue');
+        const squareFormula = document.getElementById('squareFormula');
+        const geoMeanFormula = document.getElementById('geoMeanFormula');
+        const peacemanFormula = document.getElementById('peacemanFormula');
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Update display when sliders change
+        deltaXSlider.addEventListener('input', updateSimulation);
+        deltaYSlider.addEventListener('input', updateSimulation);
+        kxkySlider.addEventListener('input', updateSimulation);
+
+        function updateSimulation() {
+            const deltaX = parseFloat(deltaXSlider.value);
+            const deltaY = parseFloat(deltaYSlider.value);
+            const kxky = parseFloat(kxkySlider.value);
+            
+            deltaXValue.textContent = `${deltaX} ft`;
+            deltaYValue.textContent = `${deltaY} ft`;
+            kxkyValue.textContent = kxky.toFixed(1);
+            
+            // Calculate different ro formulas
+            const squareRo = 0.2 * deltaX;
+            const geoMeanRo = 0.2 * Math.sqrt(deltaX * deltaY);
+            const peacemanRo = 0.14 * Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+            
+            // Calculate anisotropic ro
+            const kx = 1.0;  // Base permeability
+            const ky = kx * kxky;
+            const anisotropicRo = 0.28 * 
+                Math.sqrt((ky/kx)*deltaX*deltaX + (kx/ky)*deltaY*deltaY) / 
+                (Math.pow(ky/kx, 0.25) + Math.pow(kx/ky, 0.25));
+            
+            squareFormula.textContent = `${squareRo.toFixed(2)} ft`;
+            geoMeanFormula.textContent = `${geoMeanRo.toFixed(2)} ft`;
+            peacemanFormula.textContent = `${peacemanRo.toFixed(2)} ft`;
+            roValue.textContent = `${anisotropicRo.toFixed(2)} ft`;
+            
+            drawSimulation(deltaX, deltaY, kxky, anisotropicRo);
+        }
+
+        function drawSimulation(deltaX, deltaY, kxky, ro) {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate scaling to fit everything
+            const margin = 50;
+            const maxDimension = Math.max(deltaX, deltaY);
+            const scale = Math.min((canvas.width - 2*margin) / deltaX, 
+                                  (canvas.height - 2*margin) / deltaY);
+            
+            // Center of canvas
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Draw grid block
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(
+                centerX - (deltaX * scale) / 2,
+                centerY - (deltaY * scale) / 2,
+                deltaX * scale,
+                deltaY * scale
+            );
+            
+            // Draw well at center
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw ro circle
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, ro * scale, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw pressure contours (simplified)
+            ctx.strokeStyle = 'rgba(52, 152, 219, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Draw elliptical contours for anisotropic case
+            if (kxky !== 1.0) {
+                for (let i = 1; i <= 4; i++) {
+                    const radius = ro * i * 1.5;
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        centerX, 
+                        centerY, 
+                        radius * scale / Math.sqrt(kxky), 
+                        radius * scale * Math.sqrt(kxky), 
+                        0, 0, 2 * Math.PI
+                    );
+                    ctx.stroke();
+                }
+            } else {
+                // Draw circular contours for isotropic case
+                for (let i = 1; i <= 4; i++) {
+                    const radius = ro * i * 1.5;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius * scale, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+            }
+            
+            // Add labels
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Δx = ${deltaX} ft`, centerX, centerY + (deltaY * scale) / 2 + 20);
+            ctx.fillText(`Δy = ${deltaY} ft`, centerX - (deltaX * scale) / 2 - 30, centerY);
+            ctx.fillText(`ro = ${ro.toFixed(2)} ft`, centerX, centerY - (deltaY * scale) / 2 - 15);
+            
+            // Draw legend
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(canvas.width - 150, 20, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'left';
+            ctx.fillText('Equivalent radius (ro)', canvas.width - 130, 33);
+            
+            ctx.strokeStyle = 'rgba(52, 152, 219, 0.3)';
+            ctx.beginPath();
+            ctx.arc(canvas.width - 142, 60, 7, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.fillText('Pressure contours', canvas.width - 130, 63);
+        }
+
+        // Initialize simulation
+        updateSimulation();
+    </script>
+</body>
+</html>

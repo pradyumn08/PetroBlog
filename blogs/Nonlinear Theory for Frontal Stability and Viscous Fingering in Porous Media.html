@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Viscous Fingering in Porous Media: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #ffffd0;
+            padding: 2px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #5bc0de;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .reference {
+            font-size: 0.9em;
+            border-left: 3px solid #ddd;
+            padding-left: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Viscous Fingering in Porous Media: When Fluids Don't Mix Nicely</h1>
+    
+    <p>When one fluid displaces another in porous media like oil reservoirs, fascinating instabilities can arise. One of the most important is <strong>viscous fingering</strong> – where the displacing fluid creates finger-like intrusions into the displaced fluid. Understanding this phenomenon is crucial for predicting oil recovery rates and designing effective extraction strategies.</p>
+    
+    <p>Today, we'll break down Outmans' groundbreaking nonlinear theory of viscous fingering from first principles, making this complex concept accessible and interactive.</p>
+
+    <div class="note">
+        <p><strong>Key Insight:</strong> While previous linear theories could predict when instabilities begin, they failed to accurately describe how these fingers evolve over time. By incorporating nonlinear terms, Outmans developed a more complete model that explains the asymmetric finger growth observed in experiments.</p>
+    </div>
+
+    <h2>The Physical Problem: What's Happening Here?</h2>
+
+    <p>Imagine oil trapped in porous rock. We inject a less viscous fluid (like gas or water) to push the oil out. If the displacing fluid is less viscous than the oil, the interface between them can become unstable, forming fingers that bypass much of the oil, reducing recovery efficiency.</p>
+
+    <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Viscous_fingering_in_a_Hele-Shaw_cell.jpg/640px-Viscous_fingering_in_a_Hele-Shaw_cell.jpg" alt="Viscous fingering example" width="400">
+        <figcaption>Viscous fingering pattern when a less viscous fluid displaces a more viscous one</figcaption>
+    </figure>
+
+    <h2>First Principles: The Governing Physics</h2>
+
+    <p>To understand viscous fingering, we need to consider:</p>
+    <ol>
+        <li>Fluid flow in porous media (Darcy's law)</li>
+        <li>Conservation of mass</li>
+        <li>Pressure differences across the interface</li>
+        <li>Effects of gravity and interfacial tension</li>
+    </ol>
+
+    <h3>Darcy's Law: How Fluids Move Through Porous Media</h3>
+
+    <p>The velocity of fluids in porous media follows Darcy's law:</p>
+
+    <p>\[ \mathbf{v}_i^* + \mathbf{V} = -\lambda_i' \nabla(p_i + \rho_i g_n y^*) \]</p>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(\mathbf{v}_i^*\) is the velocity of fluid \(i\) relative to the mean interface</li>
+        <li>\(\mathbf{V}\) is the velocity of the undisturbed interface</li>
+        <li>\(\lambda_i'\) is the mobility of fluid \(i\) (related to permeability and viscosity)</li>
+        <li>\(p_i\) is the pressure in fluid \(i\)</li>
+        <li>\(\rho_i\) is the density of fluid \(i\)</li>
+        <li>\(g_n\) is the component of gravity in the flow plane</li>
+    </ul>
+
+    <h3>The Interface Condition: Where the Magic Happens</h3>
+
+    <p>At the interface between fluids, the pressure difference is related to curvature:</p>
+
+    <p>\[ p_1 - p_2 = T_e \eta^*_{xx}(1 + \eta^*_x{}^2)^{-3/2} + P_c \]</p>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(T_e\) is the effective interfacial tension</li>
+        <li>\(\eta^*\) is the displacement of the interface from its mean position</li>
+        <li>\(P_c\) is the capillary pressure</li>
+    </ul>
+
+    <p>This equation contains the crucial nonlinear term \((1 + \eta^*_x{}^2)^{-3/2}\) that previous theories simplified.</p>
+
+    <h2>Linear vs. Nonlinear Theory: Why It Matters</h2>
+
+    <p>The linear theory approximates the interface equation by assuming small disturbances, neglecting terms with powers of disturbance greater than one. This works for predicting when instability begins, but fails to capture how fingers evolve.</p>
+
+    <p>The key differences between linear and nonlinear theories:</p>
+
+    <table border="1" style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+        <tr>
+            <th style="padding: 8px; text-align: left;">Feature</th>
+            <th style="padding: 8px; text-align: left;">Linear Theory</th>
+            <th style="padding: 8px; text-align: left;">Nonlinear Theory</th>
+        </tr>
+        <tr>
+            <td style="padding: 8px;">Shape evolution</td>
+            <td style="padding: 8px;">Predicts symmetric growth</td>
+            <td style="padding: 8px;">Correctly predicts asymmetric "spike and bulb" pattern</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;">Growth rate</td>
+            <td style="padding: 8px;">Increases indefinitely with wave number</td>
+            <td style="padding: 8px;">More complex relationship with wave number</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;">"Critical" disturbances</td>
+            <td style="padding: 8px;">Predicts neutral stability</td>
+            <td style="padding: 8px;">Shows they actually grow uniformly with time</td>
+        </tr>
+    </table>
+
+    <h2>The Mathematical Framework: Building the Nonlinear Model</h2>
+
+    <h3>The Boundary Value Problem</h3>
+
+    <p>Outmans formulated the problem with these key equations:</p>
+
+    <p>The Laplace equation (from continuity):</p>
+    <p>\[ \nabla^2 \Phi^{*(i)} = 0 \]</p>
+
+    <p>The interface condition (from pressure balance):</p>
+    <p>\[ \Phi^{*(1)}/\lambda_1' - \Phi^{*(2)}/\lambda_2' - \eta^*[(\rho_1-\rho_2)g_n + V(1/\lambda_1'-1/\lambda_2')] = T_e\eta_{xx}^*(1+\eta_x^{*2})^{-3/2} + P_c(t^*) \]</p>
+
+    <p>The kinematic condition (fluid particles stay at the interface):</p>
+    <p>\[ \Phi_y^{*(i)} + \eta_t^* - \Phi_x^{*(i)}\eta_x^* = 0 \]</p>
+
+    <p>Initial condition (a sinusoidal disturbance):</p>
+    <p>\[ \eta^*(x^*,0) = a^* \cos n^*x^* \]</p>
+
+    <h3>Dimensionless Transformation</h3>
+
+    <p>To simplify analysis, Outmans introduced dimensionless variables:</p>
+
+    <p>\[ x = n^*x^*, \quad y = n^*y^*, \quad t = \frac{1-M}{1+M}n^*V^*t^* \]</p>
+
+    <p>Where \(M = \lambda_1'/\lambda_2'\) is the mobility ratio.</p>
+
+    <h3>The Method of Higher-Order Approximations</h3>
+
+    <p>The key innovation was using a perturbation approach to find approximate solutions:</p>
+
+    <p>\[ \eta = \sum_{r=1}^{\infty} a^r \eta_r \]</p>
+    <p>\[ \Phi = \sum_{r=1}^{\infty} a^r \Phi_r \]</p>
+
+    <p>By substituting these expansions into the governing equations and collecting terms of equal powers of \(a\), we get a sequence of simpler problems that can be solved successively.</p>
+
+    <h3>Growth Rate Formula</h3>
+
+    <p>The growth rate of a disturbance with wave number \(r\) is:</p>
+
+    <p>\[ \sigma_r = r(1-r^2n^2) \]</p>
+
+    <p>In physical variables:</p>
+
+    <p>\[ \sigma_r = \frac{r}{V^*(1/\lambda_2'+1/\lambda_1')}[\Delta V^*(1/\lambda_2'-1/\lambda_1')+T_e r^2 n^{*2}] \]</p>
+
+    <div class="simulator">
+        <h3>Interactive Viscous Fingering Simulator</h3>
+        
+        <p>See how different parameters affect the evolution of viscous fingers. Adjust the sliders to explore the nonlinear behavior.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="mobilityRatio">Mobility Ratio (M): <span id="mobilityRatioValue">2.0</span></label><br>
+                    <input type="range" id="mobilityRatio" min="1" max="10" step="0.1" value="2.0">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="waveNumber">Wave Number (n): <span id="waveNumberValue">0.5</span></label><br>
+                    <input type="range" id="waveNumber" min="0.1" max="1.0" step="0.05" value="0.5">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="amplitude">Initial Amplitude (a): <span id="amplitudeValue">0.3</span></label><br>
+                    <input type="range" id="amplitude" min="0.05" max="0.5" step="0.05" value="0.3">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="surfaceTension">Surface Tension (Te): <span id="surfaceTensionValue">0.0</span></label><br>
+                    <input type="range" id="surfaceTension" min="0" max="1" step="0.1" value="0.0">
+                </div>
+            </div>
+        </div>
+        
+        <button id="startSimulation">Start Simulation</button>
+        <button id="resetSimulation">Reset</button>
+        
+        <canvas id="fingeringCanvas" width="700" height="400"></canvas>
+        
+        <script>
+            const canvas = document.getElementById('fingeringCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Parameters
+            let mobilityRatio = 2.0;
+            let waveNumber = 0.5;
+            let amplitude = 0.3;
+            let surfaceTension = 0.0;
+            let time = 0;
+            let animationId = null;
+            let isRunning = false;
+            
+            // Update parameter display values
+            document.getElementById('mobilityRatio').addEventListener('input', function() {
+                mobilityRatio = parseFloat(this.value);
+                document.getElementById('mobilityRatioValue').textContent = mobilityRatio.toFixed(1);
+                if (!isRunning) drawInitialState();
+            });
+            
+            document.getElementById('waveNumber').addEventListener('input', function() {
+                waveNumber = parseFloat(this.value);
+                document.getElementById('waveNumberValue').textContent = waveNumber.toFixed(2);
+                if (!isRunning) drawInitialState();
+            });
+            
+            document.getElementById('amplitude').addEventListener('input', function() {
+                amplitude = parseFloat(this.value);
+                document.getElementById('amplitudeValue').textContent = amplitude.toFixed(2);
+                if (!isRunning) drawInitialState();
+            });
+            
+            document.getElementById('surfaceTension').addEventListener('input', function() {
+                surfaceTension = parseFloat(this.value);
+                document.getElementById('surfaceTensionValue').textContent = surfaceTension.toFixed(1);
+                if (!isRunning) drawInitialState();
+            });
+            
+            // Buttons
+            document.getElementById('startSimulation').addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    animate();
+                    this.textContent = "Pause Simulation";
+                } else {
+                    isRunning = false;
+                    cancelAnimationFrame(animationId);
+                    this.textContent = "Resume Simulation";
+                }
+            });
+            
+            document.getElementById('resetSimulation').addEventListener('click', function() {
+                isRunning = false;
+                cancelAnimationFrame(animationId);
+                time = 0;
+                document.getElementById('startSimulation').textContent = "Start Simulation";
+                drawInitialState();
+            });
+            
+            // Calculate interface position using nonlinear theory
+            function calculateInterface(x, t) {
+                const n = waveNumber;
+                const a = amplitude;
+                
+                // First-order term
+                const sigma1 = 1 - n*n;
+                const eta1 = Math.exp(sigma1 * t) * Math.cos(x);
+                
+                // Third-order term (simplified from paper)
+                let eta3 = 0;
+                if (t > 0) {
+                    const sigma3 = 3 * (1 - 9 * n*n);
+                    eta3 = ((3 - 5*sigma1) * (Math.exp(3*sigma1*t) - Math.exp(sigma1*t)) / (16*sigma1)) * Math.cos(x);
+                    
+                    if (sigma3 !== 3*sigma1) {
+                        eta3 += ((9 * (sigma1 - 1)) / (8 * (3*sigma1 - sigma3))) * 
+                                (Math.exp(3*sigma1*t) - Math.exp(sigma3*t)) * Math.cos(3*x);
+                    }
+                }
+                
+                // Fourth-order term (very simplified)
+                let eta4 = 0;
+                if (t > 0) {
+                    const sigma2 = 2 * (1 - 4 * n*n);
+                    eta4 = -((1 / 12) * a * (Math.exp(4*sigma1*t) - Math.exp(sigma2*t))) * Math.cos(2*x);
+                }
+                
+                // Surface tension effect (simplified)
+                const tensionFactor = 1 - surfaceTension * n*n;
+                
+                return a * eta1 * tensionFactor + a*a*a * eta3 + a*a*a*a * eta4;
+            }
+            
+            // Draw the interface
+            function drawInterface(t) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background - oil region
+                ctx.fillStyle = '#D4A76A'; // Light brown for oil
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Parameters for drawing
+                const centerY = canvas.height / 2;
+                const scaleY = canvas.height / 4;
+                const wavelength = canvas.width;
+                
+                // Draw the interface
+                ctx.beginPath();
+                ctx.moveTo(0, centerY);
+                
+                for (let x = 0; x <= canvas.width; x++) {
+                    const xNormalized = (2 * Math.PI * x) / wavelength;
+                    const y = centerY - calculateInterface(xNormalized, t) * scaleY;
+                    ctx.lineTo(x, y);
+                }
+                
+                // Complete the path to make a closed shape
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.closePath();
+                
+                // Fill the gas/water region
+                ctx.fillStyle = '#87CEEB'; // Light blue for gas/water
+                ctx.fill();
+                
+                // Draw the interface line
+                ctx.beginPath();
+                for (let x = 0; x <= canvas.width; x++) {
+                    const xNormalized = (2 * Math.PI * x) / wavelength;
+                    const y = centerY - calculateInterface(xNormalized, t) * scaleY;
+                    
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw time
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText(`Time: ${t.toFixed(2)}`, 10, 30);
+                
+                // Growth rate formula
+                const sigma = waveNumber * (1 - waveNumber*waveNumber);
+                ctx.fillText(`Growth Rate (σ): ${sigma.toFixed(3)}`, 10, 60);
+            }
+            
+            function drawInitialState() {
+                drawInterface(0);
+            }
+            
+            function animate() {
+                time += 0.02;
+                drawInterface(time);
+                
+                // Stop if fingers reach edge
+                const maxValue = calculateInterface(0, time);
+                if (Math.abs(maxValue) * canvas.height/4 > canvas.height/2 - 20) {
+                    isRunning = false;
+                    document.getElementById('startSimulation').textContent = "Start Simulation";
+                    return;
+                }
+                
+                if (isRunning) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            
+            // Initial draw
+            drawInitialState();
+        </script>
+    </div>
+
+    <h2>Key Insights from Nonlinear Theory</h2>
+
+    <h3>1. Asymmetric Growth Pattern</h3>
+    
+    <p>The fourth-order approximation reveals why fingers develop an asymmetric "spike and bulb" pattern:</p>
+    
+    <p>\[ \eta_{n=0} = ae^t\cos x - \frac{1}{8}a^3(e^{3t}-e^t)\cos x - \frac{1}{24}a^4(e^{4t}-e^{2t})\cos 2x \]</p>
+    
+    <p>The term with \(\cos 2x\) creates the asymmetry, with sharp "spikes" of the displacing fluid advancing into the displaced fluid.</p>
+
+    <h3>2. Growth Rate Complexity</h3>
+    
+    <p>Unlike linear theory's simple growth rate formula, the nonlinear theory shows that growth depends on position and higher-order terms:</p>
+    
+    <p>\[ \eta_t^*(x^*,0) = \frac{1-M}{1+M}V^*\left[n^*a^*(1-n^{*2}/n_c^{*2}) + \frac{1}{8}n^*a^{*3}(5n^{*2}/n_c^{*2}-2) + ... \right]\cos n^*x^* + ... \]</p>
+    
+    <p>This explains why no single wave number grows fastest along its entire length.</p>
+
+    <h3>3. Critical Wave Number Behavior</h3>
+    
+    <p>At the "critical" wave number \(n = 1\) (or \(n^* = n_c^*\)), linear theory predicts neutral stability. Nonlinear theory shows these disturbances actually grow:</p>
+    
+    <p>\[ \eta_{n=1} = \left(a + \frac{3}{8}a^3t\right)\cos x \]</p>
+    
+    <p>This linear growth with time is crucial for understanding long-term behavior.</p>
+
+    <h2>Practical Implications: Scaling Laws for Model Studies</h2>
+
+    <p>Outmans derived important scaling laws for laboratory models of viscous fingering:</p>
+
+    <ol>
+        <li><strong>Velocity Independence:</strong> If gravity and interfacial tension are negligible, the shape of fingers after a given displacement is independent of velocity.</li>
+        <li><strong>Mobility Ratio Scaling:</strong> The front has the same shape for different mobility ratios if \(\frac{M-1}{M+1}t\) is constant.</li>
+        <li><strong>Geometric Similarity:</strong> For complete similarity between model and reservoir, initial disturbances must be geometrically similar with the same scale factor as the dimensions.</li>
+    </ol>
+
+    <p>These scaling laws explain why laboratory models often fail to accurately predict reservoir behavior - interfacial tension that's negligible in reservoirs can dominate in small-scale models.</p>
+
+    <h2>The Game: Maximize Your Oil Recovery</h2>
+
+    <div class="simulator">
+        <h3>Oil Recovery Challenge</h3>
+        <p>Your goal is to extract as much oil as possible before breakthrough (when the injected fluid reaches the production well). Adjust parameters to maximize recovery efficiency.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="gameM">Mobility Ratio (M): <span id="gameMValue">3.0</span></label><br>
+                    <input type="range" id="gameM" min="1.5" max="10" step="0.5" value="3.0">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="gameV">Injection Rate: <span id="gameVValue">1.0</span></label><br>
+                    <input type="range" id="gameV" min="0.2" max="2.0" step="0.1" value="1.0">
+                </div>
+            </div>
+        </div>
+        
+        <button id="startGame">Start Extraction</button>
+        <button id="resetGame">Reset</button>
+        
+        <canvas id="gameCanvas" width="700" height="300"></canvas>
+        
+        <div id="gameStats" style="margin-top: 15px;">
+            <p>Recovery Efficiency: <span id="recoveryEfficiency">0%</span></p>
+            <p>Time to Breakthrough: <span id="breakthroughTime">0.00</span></p>
+        </div>
+        
+        <script>
+            const gameCanvas = document.getElementById('gameCanvas');
+            const gameCtx = gameCanvas.getContext('2d');
+            
+            // Game parameters
+            let gameM = 3.0;
+            let gameV = 1.0;
+            let gameTime = 0;
+            let gameAnimationId = null;
+            let gameIsRunning = false;
+            let gameBreakthrough = false;
+            
+            // Update game parameter display values
+            document.getElementById('gameM').addEventListener('input', function() {
+                gameM = parseFloat(this.value);
+                document.getElementById('gameMValue').textContent = gameM.toFixed(1);
+                if (!gameIsRunning) drawGameInitialState();
+            });
+            
+            document.getElementById('gameV').addEventListener('input', function() {
+                gameV = parseFloat(this.value);
+                document.getElementById('gameVValue').textContent = gameV.toFixed(1);
+                if (!gameIsRunning) drawGameInitialState();
+            });
+            
+            // Buttons
+            document.getElementById('startGame').addEventListener('click', function() {
+                if (!gameIsRunning && !gameBreakthrough) {
+                    gameIsRunning = true;
+                    animateGame();
+                    this.textContent = "Pause Extraction";
+                } else if (gameIsRunning) {
+                    gameIsRunning = false;
+                    cancelAnimationFrame(gameAnimationId);
+                    this.textContent = "Resume Extraction";
+                }
+            });
+            
+            document.getElementById('resetGame').addEventListener('click', function() {
+                gameIsRunning = false;
+                gameBreakthrough = false;
+                cancelAnimationFrame(gameAnimationId);
+                gameTime = 0;
+                document.getElementById('startGame').textContent = "Start Extraction";
+                document.getElementById('recoveryEfficiency').textContent = "0%";
+                document.getElementById('breakthroughTime').textContent = "0.00";
+                drawGameInitialState();
+            });
+            
+            // Calculate interface position for the game
+            function calculateGameInterface(x, t, amplitude) {
+                // Use a simplified model based on mobility ratio and time
+                const baseFreq = 2 * Math.PI / gameCanvas.width;
+                const n = 0.5; // Fixed wave number for the game
+                const growthRate = (gameM - 1) / (gameM + 1);
+                
+                // First-order approximation
+                let eta = amplitude * Math.exp(growthRate * t) * Math.cos(baseFreq * x);
+                
+                // Add some nonlinearity for visual effect
+                if (t > 0) {
+                    eta += 0.05 * amplitude * amplitude * amplitude * 
+                           Math.exp(3 * growthRate * t) * Math.cos(3 * baseFreq * x);
+                    
+                    // Fourth-order term for asymmetry
+                    eta -= 0.02 * amplitude * amplitude * amplitude * amplitude * 
+                           Math.exp(4 * growthRate * t) * Math.cos(2 * baseFreq * x);
+                }
+                
+                return eta;
+            }
+            
+            // Draw the game state
+            function drawGameState(t) {
+                gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Draw reservoir
+                gameCtx.fillStyle = '#D4A76A'; // Oil
+                gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Parameters
+                const baseY = 50; // Initial position
+                const amplitude = 15;
+                const displacement = gameV * t; // Displacement based on injection rate
+                
+                // Calculate and draw the interface
+                gameCtx.beginPath();
+                gameCtx.moveTo(0, baseY + displacement);
+                
+                let maxY = 0;
+                for (let x = 0; x <= gameCanvas.width; x += 5) {
+                    const y = baseY + displacement + calculateGameInterface(x, t, amplitude);
+                    gameCtx.lineTo(x, y);
+                    maxY = Math.max(maxY, y);
+                }
+                
+                // Complete the path
+                gameCtx.lineTo(gameCanvas.width, baseY + displacement);
+                gameCtx.lineTo(gameCanvas.width, 0);
+                gameCtx.lineTo(0, 0);
+                gameCtx.closePath();
+                
+                // Fill the injected fluid area
+                gameCtx.fillStyle = '#87CEEB'; // Injected fluid
+                gameCtx.fill();
+                
+                // Draw the interface line
+                gameCtx.beginPath();
+                for (let x = 0; x <= gameCanvas.width; x += 5) {
+                    const y = baseY + displacement + calculateGameInterface(x, t, amplitude);
+                    
+                    if (x === 0) {
+                        gameCtx.moveTo(x, y);
+                    } else {
+                        gameCtx.lineTo(x, y);
+                    }
+                }
+                gameCtx.strokeStyle = '#000';
+                gameCtx.lineWidth = 2;
+                gameCtx.stroke();
+                
+                // Draw injection and production wells
+                gameCtx.fillStyle = '#333';
+                gameCtx.fillRect(50, 0, 20, 30);
+                gameCtx.fillRect(gameCanvas.width - 70, 0, 20, 30);
+                
+                // Labels
+                gameCtx.fillStyle = '#000';
+                gameCtx.font = '14px Arial';
+                gameCtx.fillText("Injection", 30, 45);
+                gameCtx.fillText("Production", gameCanvas.width - 90, 45);
+                
+                // Draw time and displacement
+                gameCtx.fillText(`Time: ${t.toFixed(2)}`, 10, gameCanvas.height - 10);
+                gameCtx.fillText(`Displacement: ${displacement.toFixed(2)}`, 150, gameCanvas.height - 10);
+                
+                // Check for breakthrough
+                if (maxY >= 30 && !gameBreakthrough) {
+                    gameBreakthrough = true;
+                    gameIsRunning = false;
+                    document.getElementById('startGame').textContent = "Breakthrough!";
+                    document.getElementById('breakthroughTime').textContent = t.toFixed(2);
+                    
+                    // Calculate recovery efficiency (simplified model)
+                    const efficiency = Math.min(100, Math.round((displacement / gameCanvas.height) * 100 * 
+                                             (1 - 0.3 * (gameM - 1) / gameM)));
+                    document.getElementById('recoveryEfficiency').textContent = efficiency + "%";
+                    
+                    // Give feedback
+                    if (efficiency > 70) {
+                        gameCtx.fillStyle = '#006400';
+                        gameCtx.fillText("Excellent recovery! You balanced the parameters well.", 
+                                        gameCanvas.width/2 - 180, gameCanvas.height - 40);
+                    } else if (efficiency > 50) {
+                        gameCtx.fillStyle = '#DAA520';
+                        gameCtx.fillText("Good recovery. Try adjusting your parameters for better results.", 
+                                        gameCanvas.width/2 - 180, gameCanvas.height - 40);
+                    } else {
+                        gameCtx.fillStyle = '#8B0000';
+                        gameCtx.fillText("Poor recovery. Fingering caused significant bypassing.", 
+                                        gameCanvas.width/2 - 150, gameCanvas.height - 40);
+                    }
+                }
+            }
+            
+            function drawGameInitialState() {
+                drawGameState(0);
+            }
+            
+            function animateGame() {
+                gameTime += 0.05 * gameV; // Time increment scales with injection rate
+                drawGameState(gameTime);
+                
+                if (gameIsRunning && !gameBreakthrough) {
+                    gameAnimationId = requestAnimationFrame(animateGame);
+                }
+            }
+            
+            // Initial game draw
+            drawGameInitialState();
+        </script>
+    </div>
+
+    <h2>Practical Applications and Implications</h2>
+
+    <p>Understanding viscous fingering has important applications in:</p>
+
+    <ol>
+        <li><strong>Enhanced Oil Recovery:</strong> By controlling injection rates and using polymer flooding to modify mobility ratios, engineers can reduce fingering and improve sweep efficiency.</li>
+        <li><strong>Carbon Capture and Storage:</strong> When CO₂ is injected into geological formations, viscous fingering can affect storage security and capacity.</li>
+        <li><strong>Groundwater Remediation:</strong> When chemicals are injected to treat contaminated aquifers, fingering can reduce treatment effectiveness.</li>
+        <li><strong>Microfluidic Devices:</strong> In lab-on-a-chip applications, controlling or utilizing fingering patterns can enhance mixing or separation processes.</li>
+    </ol>
+
+    <h2>Summary: The Power of Nonlinear Theory</h2>
+
+    <p>Outmans' nonlinear theory of viscous fingering provides crucial insights that linear theory missed:</p>
+
+    <ol>
+        <li>Fingers naturally develop asymmetric shapes with sharp "spikes" of the displacing fluid.</li>
+        <li>Growth rates are more complex than previously thought, with no single wavelength growing fastest everywhere.</li>
+        <li>Even "critical" disturbances grow over time, though at a slower rate.</li>
+        <li>Scaling laws explain why laboratory models often fail to predict reservoir behavior accurately.</li>
+    </ol>
+
+    <p>By incorporating nonlinear terms in the boundary conditions, this theory better matches experimental observations and provides a more complete understanding of this fascinating fluid dynamic phenomenon.</p>
+
+    <div class="reference">
+        <p><strong>Reference:</strong> Outmans, H. D. (1962). Nonlinear Theory for Frontal Stability and Viscous Fingering in Porous Media. Society of Petroleum Engineers Journal, 2(02), 165-176.</p>
+    </div>
+
+</body>
+</html>

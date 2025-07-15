@@ -1,0 +1,607 @@
+<html>
+<head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .highlight {
+            background-color: #ffffd0;
+            padding: 2px;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #5bc0de;
+            margin-bottom: 20px;
+        }
+        .formula-block {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .slider-container label {
+            width: 150px;
+        }
+        .slider-container input {
+            flex-grow: 1;
+        }
+        .slider-value {
+            width: 50px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        #visualization {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+        }
+        .caption {
+            font-style: italic;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Formation Testing: How We Model Fluid Flow Near Wellbores</h1>
+    
+    <p>Have you ever wondered how petroleum engineers determine the properties of underground reservoirs without seeing them directly? Today, we're diving into the fascinating world of formation testing - a critical technique that helps us understand what's happening beneath the surface by analyzing how fluids flow near wellbores.</p>
+    
+    <p>In this post, I'll break down a complex academic paper by Larsen and Allain about formation testing into first principles that anyone can understand. We'll explore how engineers model fluid flow to tiny probes on wellbore surfaces, and how these models help determine crucial reservoir properties.</p>
+    
+    <h2>What is Formation Testing and Why Does it Matter?</h2>
+    
+    <p>Imagine drilling miles into the earth and wanting to know what kind of fluids are down there and how easily they flow. Formation testing tools are specialized instruments lowered into wellbores that can draw in small amounts of fluid and measure pressure responses. By analyzing these responses, engineers can determine:</p>
+    
+    <ul>
+        <li>Permeability (how easily fluids flow through the rock)</li>
+        <li>Reservoir boundaries</li>
+        <li>Fluid properties</li>
+        <li>Formation damage</li>
+    </ul>
+    
+    <p>This information is crucial for deciding whether a reservoir is commercially viable and how best to develop it.</p>
+    
+    <h2>The Core Problem: Modeling Fluid Flow to Probes</h2>
+    
+    <p>When a formation tester draws fluid from a reservoir, it creates a pressure disturbance that propagates through the rock. The way this pressure changes over time contains valuable information about the reservoir. But to interpret this correctly, we need mathematical models that accurately represent the physical situation.</p>
+    
+    <p>The paper by Larsen and Allain presents a comprehensive approach to modeling fluid flow to various types of formation tester probes in both vertical and deviated wells.</p>
+    
+    <h3>The Basic Physical Setup</h3>
+    
+    <div class="image-container">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDwhLS0gV2VsbGJvcmUgY3lsaW5kZXIgLS0+CiAgICA8Y3lsaW5kZXIgaWQ9IndlbGxib3JlIiBjeD0iMzAwIiBjeT0iMjAwIiByPSI4MCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlMGUwZTAiIHN0cm9rZT0iIzY2NiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICAKICAgIDwhLS0gUHJvYmUgLS0+CiAgICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSIyMDAiIHI9IjIwIiBmaWxsPSIjZmY2MzQ3IiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgCiAgICA8IS0tIEZsb3cgbGluZXMgLS0+CiAgICA8cGF0aCBkPSJNIDM1MCAxNTAgQyA0MDAgMTUwIDQwMCAxNTAgNDUwIDE3MCIgc3Ryb2tlPSIjMDA3OGQ3IiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1kYXNoYXJyYXk9IjUsMSIvPgogICAgPHBhdGggZD0iTSAzNTAgMjAwIEMgNDAwIDIwMCA0MDAgMjAwIDQ1MCAyMDAiIHN0cm9rZT0iIzAwNzhkNyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI1LDEiLz4KICAgIDxwYXRoIGQ9Ik0gMzUwIDI1MCBDIDQwMCAyNTAgNDAwIDI1MCA0NTAgMjMwIiBzdHJva2U9IiMwMDc4ZDciIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwxIi8+CiAgICAKICAgIDxwYXRoIGQ9Ik0gMjUwIDE1MCBDIDIwMCAxNTAgMjAwIDE1MCAxNTAgMTcwIiBzdHJva2U9IiMwMDc4ZDciIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWRhc2hhcnJheT0iNSwxIi8+CiAgICA8cGF0aCBkPSJNIDI1MCAyMDAgQyAyMDAgMjAwIDIwMCAyMDAgMTUwIDIwMCIgc3Ryb2tlPSIjMDA3OGQ3IiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1kYXNoYXJyYXk9IjUsMSIvPgogICAgPHBhdGggZD0iTSAyNTAgMjUwIEMgMjAwIDI1MCAyMDAgMjUwIDE1MCAyMzAiIHN0cm9rZT0iIzAwNzhkNyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI1LDEiLz4KICAgIAogICAgPHBhdGggZD0iTSAzMDAgMjUwIEMgMzAwIDMwMCAzMDAgMzAwIDI4MCAzNTAiIHN0cm9rZT0iIzAwNzhkNyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI1LDEiLz4KICAgIDxwYXRoIGQ9Ik0gMzAwIDE1MCBDIDMwMCAxMDAgMzAwIDEwMCAyODAgNTAiIHN0cm9rZT0iIzAwNzhkNyIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI1LDEiLz4KICAgIAogICAgPCEtLSBBcnJvd3MgaW5kaWNhdGluZyBmbG93IGRpcmVjdGlvbiAtLT4KICAgIDxwb2x5Z29uIHBvaW50cz0iMzEwLDE5MCAzMDAsMTcwIDI5MCwxOTAiIGZpbGw9IiMwMDc4ZDciLz4KICAgIDx0ZXh0IHg9IjMwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmaWxsPSIjZmZmIj5Qcm9iZTwvdGV4dD4KICAgIDx0ZXh0IHg9IjMwMCIgeT0iNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMzMzMiPkZsdWlkIEZsb3cgdG8gYSBQcm9iZSBvbiBXZWxsYm9yZSBTdXJmYWNlPC90ZXh0PgogICAgPHRleHQgeD0iMzAwIiB5PSIzODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzMzMiPkZsdWlkIGZsb3dzIGZyb20gdGhlIGZvcm1hdGlvbiB0b3dhcmQgdGhlIHByb2JlPC90ZXh0PgogICAgCiAgICA8IS0tIEZvcm1hdGlvbiBsYWJlbCAtLT4KICAgIDx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzMzIj5Gb3JtYXRpb248L3RleHQ+CiAgICA8dGV4dCB4PSI0NTAiIHk9IjEwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzMzMyI+Rm9ybWF0aW9uPC90ZXh0PgogICAgCiAgICA8IS0tIFdlbGxib3JlIGxhYmVsIC0tPgogICAgPHRleHQgeD0iMjAwIiB5PSIyMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzMzMiPldlbGxib3JlPC90ZXh0PgogICAgCjwvc3ZnPg==" alt="Basic formation testing setup showing fluid flow to a probe on wellbore surface">
+        <p class="caption">Figure 1: Fluid flow to a probe on an otherwise sealed wellbore surface</p>
+    </div>
+    
+    <p>The key elements are:</p>
+    <ul>
+        <li>A wellbore (cylindrical hole) drilled into the formation</li>
+        <li>A probe or multiple probes placed against the wellbore wall</li>
+        <li>Fluid flowing from the formation into the probe</li>
+        <li>Pressure measurements taken at the probe</li>
+    </ul>
+    
+    <h2>First Principles: The Mathematical Foundation</h2>
+    
+    <p>Let's break down the core mathematical concepts that govern fluid flow to formation tester probes.</p>
+    
+    <h3>1. The Point-Source Solution</h3>
+    
+    <p>The foundation of the paper's approach is a mathematical solution for flow to a point on an otherwise sealed wellbore surface. This is given by:</p>
+    
+    <div class="formula-block">
+        $$p_{D}(t_{D},\theta,z_{D})=\frac{h_{D}}{4\sqrt{\pi}}\int\frac{e^{-z_D^{2}/4\beta}}{\beta^{3/2}}G(\theta,\beta)d\beta$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_D\) is dimensionless pressure (scaled pressure drop)</li>
+        <li>\(t_D\) is dimensionless time (scaled time)</li>
+        <li>\(\theta\) is the angle around the wellbore</li>
+        <li>\(z_D\) is the dimensionless vertical distance</li>
+        <li>\(h_D\) is dimensionless thickness</li>
+        <li>\(G(\theta,\beta)\) is a geometry function that accounts for wellbore effects</li>
+    </ul>
+    
+    <p>This may look intimidating, but it's essentially describing how pressure changes around a point where fluid is being extracted from a wellbore.</p>
+    
+    <h3>2. The Geometry Function</h3>
+    
+    <p>The geometry function \(G(\theta,\beta)\) is what makes this model account for the wellbore's presence:</p>
+    
+    <div class="formula-block">
+        $$G(\theta,\beta)=\frac{8}{\pi^{2}}\sum_{n=-\infty}^{\infty}\int_{0}^{\infty}\frac{\cos(n\theta)\beta e^{-\alpha^{2}\beta}}{\alpha\Big[J_{n}^{\prime}(\alpha)^{2}+Y_{n}^{\prime}(\alpha)^{2}\Big]}d\alpha$$
+    </div>
+    
+    <p>This complex expression is computationally intensive, so the authors developed simpler correlations for the most important angles:</p>
+    
+    <div class="formula-block">
+        $$G(0,\beta)=1+e^{-0.84\sqrt{\beta}}$$
+        $$G(\pi,\beta)=e^{-3.45\beta^{-0.93}}$$
+        $$G(\pi/2,\beta)=e^{-0.86\beta^{-0.78}}$$
+    </div>
+    
+    <p>These correlations make calculations much more manageable while maintaining accuracy.</p>
+    
+    <h3>3. From Points to Real Probes</h3>
+    
+    <p>Real probes aren't points - they're circular or oval areas on the wellbore surface. To model these, the paper extends the point-source solution to line sources and then uses these to represent probe areas.</p>
+    
+    <p>For a line source of length \(L_p\), the solution becomes:</p>
+    
+    <div class="formula-block">
+        $$p_D(t_D,\theta,z_D)=\frac{h_{D}}{4L_{p D}}\int_{0}^{t_{D}}\left[\mathrm{erf}\left(\frac{z_{D}+L_{p D}/2}{2\sqrt{\beta}}\right)-\mathrm{erf}\left(\frac{z_{D}-L_{p D}/2}{2\sqrt{\beta}}\right)\right]G(\theta,\beta)\frac{d\beta}{\beta}$$
+    </div>
+    
+    <p>Where \(\mathrm{erf}\) is the error function, a special mathematical function that appears in probability and diffusion problems.</p>
+    
+    <h2>Steady-State Solutions: The Key to Mobility Estimation</h2>
+    
+    <p>One of the most practical applications of formation testing is estimating mobility (\(k/\mu\)) - a measure of how easily fluids flow through the rock. This is often done using steady-state data, where pressure stabilizes after an initial transient period.</p>
+    
+    <p>For circular probes, the steady-state pressure is:</p>
+    
+    <div class="formula-block">
+        $$p_{s s D}(0,r_{p D}/\sqrt{2})=\frac{h_{D}}{\sqrt{2}r_{p D}}\Big[1+\sigma(r_{p D}/\sqrt{2})\Big]$$
+    </div>
+    
+    <p>Where \(\sigma(z_D)\) is a correction function that accounts for wellbore effects:</p>
+    
+    <div class="formula-block">
+        $$\sigma(z_{D})=\frac{z_{D}}{\sqrt{\pi}}\int_{0}^{\infty}e^{-(z_{D}^{2}x^{2}/4+0.84/x)}dx$$
+    </div>
+    
+    <p>This function transitions from hemispherical flow near the wellbore to spherical flow far from it.</p>
+    
+    <h3>The Probe Flow Coefficient</h3>
+    
+    <p>The paper introduces a practical parameter called the "probe flow coefficient" (\(C_{pf}\)) that relates mobility to pressure drop:</p>
+    
+    <div class="formula-block">
+        $$\frac{k}{\mu}=\frac{1}{2\pi h}p_{s s D}\frac{q}{\Delta p_{d d}}=C_{p f}\frac{q}{\Delta p_{d d}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(k\) is permeability (md)</li>
+        <li>\(\mu\) is viscosity (cp)</li>
+        <li>\(q\) is flow rate (cm³/s)</li>
+        <li>\(\Delta p_{dd}\) is pressure drawdown (psi)</li>
+    </ul>
+    
+    <p>For practical field units, the probe flow coefficient becomes:</p>
+    
+    <div class="formula-block">
+        $$C_{pf}=\frac{920.8397}{h}p_{s s D}$$
+    </div>
+    
+    <p>With \(h\) in inches and \(C_{pf}\) in the unit [(md·psi)/(cp·cm³/s)].</p>
+    
+    <h2>Interactive Visualization: Formation Testing Simulator</h2>
+    
+    <div class="interactive">
+        <h3>Formation Testing Probe Simulator</h3>
+        <p>Adjust the parameters below to see how they affect pressure response and mobility calculations.</p>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (md):</label>
+            <input type="range" id="permeability" min="0.1" max="100" step="0.1" value="10">
+            <span id="permeability-value" class="slider-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="probe-radius">Probe Radius (in):</label>
+            <input type="range" id="probe-radius" min="0.1" max="2" step="0.1" value="0.5">
+            <span id="probe-radius-value" class="slider-value">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="probe-type">Probe Type:</label>
+            <select id="probe-type">
+                <option value="circular">Circular</option>
+                <option value="oval">Oval</option>
+            </select>
+        </div>
+        
+        <div class="slider-container" id="oval-length-container" style="display:none;">
+            <label for="oval-length">Oval Length (in):</label>
+            <input type="range" id="oval-length" min="1" max="10" step="0.5" value="4">
+            <span id="oval-length-value" class="slider-value">4</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="anisotropy">Anisotropy (kv/kh):</label>
+            <input type="range" id="anisotropy" min="0.01" max="1" step="0.01" value="0.1">
+            <span id="anisotropy-value" class="slider-value">0.1</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="well-deviation">Well Deviation (deg):</label>
+            <input type="range" id="well-deviation" min="0" max="90" step="5" value="0">
+            <span id="well-deviation-value" class="slider-value">0</span>
+        </div>
+        
+        <div id="results">
+            <h4>Results:</h4>
+            <p>Probe Flow Coefficient (Cpf): <span id="cpf-value">--</span></p>
+            <p>Steady-State Pressure Drop (psi): <span id="pressure-drop">--</span></p>
+            <p>Estimated Mobility (md/cp): <span id="mobility">--</span></p>
+        </div>
+        
+        <div id="visualization">
+            <!-- Canvas for pressure response visualization -->
+            <canvas id="pressure-canvas" width="700" height="350"></canvas>
+        </div>
+        
+        <script>
+            // Simulator code
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get DOM elements
+                const permeabilitySlider = document.getElementById('permeability');
+                const permeabilityValue = document.getElementById('permeability-value');
+                const probeRadiusSlider = document.getElementById('probe-radius');
+                const probeRadiusValue = document.getElementById('probe-radius-value');
+                const probeTypeSelect = document.getElementById('probe-type');
+                const ovalLengthContainer = document.getElementById('oval-length-container');
+                const ovalLengthSlider = document.getElementById('oval-length');
+                const ovalLengthValue = document.getElementById('oval-length-value');
+                const anisotropySlider = document.getElementById('anisotropy');
+                const anisotropyValue = document.getElementById('anisotropy-value');
+                const wellDeviationSlider = document.getElementById('well-deviation');
+                const wellDeviationValue = document.getElementById('well-deviation-value');
+                const cpfValue = document.getElementById('cpf-value');
+                const pressureDrop = document.getElementById('pressure-drop');
+                const mobilityValue = document.getElementById('mobility');
+                const canvas = document.getElementById('pressure-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Show/hide oval length based on probe type
+                probeTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'oval') {
+                        ovalLengthContainer.style.display = 'flex';
+                    } else {
+                        ovalLengthContainer.style.display = 'none';
+                    }
+                    updateCalculations();
+                });
+                
+                // Update value displays
+                permeabilitySlider.addEventListener('input', function() {
+                    permeabilityValue.textContent = this.value;
+                    updateCalculations();
+                });
+                
+                probeRadiusSlider.addEventListener('input', function() {
+                    probeRadiusValue.textContent = this.value;
+                    updateCalculations();
+                });
+                
+                ovalLengthSlider.addEventListener('input', function() {
+                    ovalLengthValue.textContent = this.value;
+                    updateCalculations();
+                });
+                
+                anisotropySlider.addEventListener('input', function() {
+                    anisotropyValue.textContent = this.value;
+                    updateCalculations();
+                });
+                
+                wellDeviationSlider.addEventListener('input', function() {
+                    wellDeviationValue.textContent = this.value;
+                    updateCalculations();
+                });
+                
+                // Main calculation function
+                function updateCalculations() {
+                    const k = parseFloat(permeabilitySlider.value);
+                    const rp = parseFloat(probeRadiusSlider.value);
+                    const probeType = probeTypeSelect.value;
+                    const Lp = parseFloat(ovalLengthSlider.value);
+                    const kvkh = parseFloat(anisotropySlider.value);
+                    const theta = parseFloat(wellDeviationSlider.value) * Math.PI / 180;
+                    
+                    let cpf;
+                    
+                    // Calculate effective parameters based on probe type
+                    if (probeType === 'circular') {
+                        // Simplified calculation for circular probe
+                        const rpe = rp / Math.sqrt(2);
+                        const sigma = 0.9 + 0.1 * Math.exp(-3 * rpe); // Approximation of sigma function
+                        
+                        // Apply anisotropy and deviation effects
+                        const kFactor = Math.pow(kvkh, 1/3);
+                        const deviationFactor = 1 - 0.2 * Math.sin(theta) * (1 - kvkh);
+                        
+                        cpf = (460.4199 / rpe) * (1 + sigma) * kFactor * deviationFactor;
+                    } else {
+                        // Simplified calculation for oval probe
+                        const aspect = Lp / (2 * rp);
+                        const Lpe = Lp * (0.9 + 0.1 * Math.exp(-aspect)); // Approximation
+                        const rpe = rp * (0.2 + 0.1 * Math.exp(-aspect)); // Approximation
+                        
+                        // Apply anisotropy and deviation effects
+                        const kFactor = Math.pow(kvkh, 1/3);
+                        const deviationFactor = 1 - 0.3 * Math.sin(theta) * (1 - kvkh);
+                        
+                        const sigmaLS = 0.8 * Math.log(1 + Lpe/rpe); // Approximation
+                        cpf = (460.4199 / Lpe) * (Math.log(1 + Lpe/rpe) + sigmaLS) * kFactor * deviationFactor;
+                    }
+                    
+                    // Calculate pressure drop for a fixed rate of 1 cc/s and viscosity of 1 cp
+                    const q = 1; // cc/s
+                    const mu = 1; // cp
+                    const mobility = k / mu;
+                    const deltaP = q / (cpf * mobility);
+                    
+                    // Update results
+                    cpfValue.textContent = cpf.toFixed(2);
+                    pressureDrop.textContent = deltaP.toFixed(2);
+                    mobilityValue.textContent = mobility.toFixed(2);
+                    
+                    // Draw pressure response
+                    drawPressureResponse(k, probeType, rp, Lp, kvkh, theta);
+                }
+                
+                // Draw pressure response curve
+                function drawPressureResponse(k, probeType, rp, Lp, kvkh, theta) {
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Set up axes
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(50, 50);
+                    ctx.lineTo(50, 300);
+                    ctx.lineTo(650, 300);
+                    ctx.stroke();
+                    
+                    // Axis labels
+                    ctx.fillStyle = '#333';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Time (seconds)', 350, 330);
+                    
+                    ctx.save();
+                    ctx.translate(20, 175);
+                    ctx.rotate(-Math.PI/2);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Pressure (psi)', 0, 0);
+                    ctx.restore();
+                    
+                    // Calculate pressure response curve
+                    const diffusivity = k * 6894.76 / (0.2 * 1e-3 * 1e-9); // Simplified diffusivity in mm²/s
+                    const timeScale = Math.pow(rp * 25.4, 2) / diffusivity; // Characteristic time scale
+                    
+                    // Draw steady-state line
+                    let steadyStatePressure;
+                    if (probeType === 'circular') {
+                        steadyStatePressure = 10 / (k * Math.sqrt(rp));
+                    } else {
+                        steadyStatePressure = 8 / (k * Math.log(1 + Lp/rp));
+                    }
+                    
+                    // Apply anisotropy and deviation effects
+                    steadyStatePressure *= Math.pow(kvkh, -1/3);
+                    steadyStatePressure *= (1 + 0.2 * Math.sin(theta) * (1 - kvkh));
+                    
+                    const yScale = 250 / (steadyStatePressure * 1.2);
+                    const steadyStateY = 300 - steadyStatePressure * yScale;
+                    
+                    ctx.strokeStyle = '#999';
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(50, steadyStateY);
+                    ctx.lineTo(650, steadyStateY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // Draw pressure curve
+                    ctx.strokeStyle = '#0078d7';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(50, 300);
+                    
+                    for (let x = 1; x <= 600; x++) {
+                        const t = x / 600 * 100; // Time up to 100 seconds
+                        let p;
+                        
+                        if (probeType === 'circular') {
+                            // Simplified spherical flow model
+                            p = steadyStatePressure * (1 - Math.exp(-t / timeScale));
+                        } else {
+                            // Simplified line source model
+                            p = steadyStatePressure * (1 - Math.exp(-t / (timeScale * (1 + Lp/rp))));
+                        }
+                        
+                        const y = 300 - p * yScale;
+                        ctx.lineTo(50 + x, y);
+                    }
+                    ctx.stroke();
+                    
+                    // Add time markers
+                    ctx.fillStyle = '#333';
+                    for (let i = 0; i <= 10; i++) {
+                        const x = 50 + i * 60;
+                        ctx.beginPath();
+                        ctx.moveTo(x, 300);
+                        ctx.lineTo(x, 305);
+                        ctx.stroke();
+                        ctx.fillText((i * 10).toString(), x, 320);
+                    }
+                    
+                    // Add pressure markers
+                    const maxPressure = Math.ceil(steadyStatePressure * 1.2);
+                    for (let i = 0; i <= 5; i++) {
+                        const p = i * maxPressure / 5;
+                        const y = 300 - p * yScale;
+                        ctx.beginPath();
+                        ctx.moveTo(45, y);
+                        ctx.lineTo(50, y);
+                        ctx.stroke();
+                        ctx.textAlign = 'right';
+                        ctx.fillText(p.toFixed(1), 40, y + 5);
+                    }
+                    
+                    // Add annotation for steady state
+                    ctx.fillStyle = '#0078d7';
+                    ctx.textAlign = 'right';
+                    ctx.fillText('Steady-state: ' + steadyStatePressure.toFixed(2) + ' psi', 640, steadyStateY - 10);
+                }
+                
+                // Initial calculation
+                updateCalculations();
+            });
+        </script>
+    </div>
+    
+    <h2>Handling Complex Scenarios: Anisotropy and Well Deviation</h2>
+    
+    <p>Real-world reservoirs are rarely as simple as our basic models assume. Two key complications addressed in the paper are:</p>
+    
+    <h3>Anisotropy</h3>
+    
+    <p>Most formations have different permeabilities in different directions - typically, horizontal permeability (\(k_r\)) is higher than vertical permeability (\(k_z\)). The paper handles this by transforming the anisotropic system into an equivalent isotropic system using coordinate transformations:</p>
+    
+    <div class="formula-block">
+        $$x'=x(k_z/k_r)^{1/6}, y'=y(k_z/k_r)^{1/6}, z'=z(k_r/k_z)^{1/3}$$
+    </div>
+    
+    <p>This transformation changes the shapes of the wellbore and probes, which must be accounted for in the calculations.</p>
+    
+    <h3>Well Deviation</h3>
+    
+    <p>Wells are often drilled at an angle rather than perfectly vertical. This affects how probes interact with the formation, especially in anisotropic conditions. The paper provides transformations to handle deviated wells:</p>
+    
+    <div class="formula-block">
+        $$h_w'=h_w(k_r/k_z)^{1/3}\sqrt{\cos^2\theta+(k_z/k_r)\sin^2\theta}$$
+    </div>
+    
+    <p>Where \(h_w\) is a wellbore segment length and \(\theta\) is the deviation angle from vertical.</p>
+    
+    <h2>Real-World Applications: From Theory to Practice</h2>
+    
+    <p>Let's connect these mathematical models to practical applications:</p>
+    
+    <h3>1. Estimating Reservoir Properties</h3>
+    
+    <p>The primary use of formation testing is to estimate mobility (\(k/\mu\)). Using the probe flow coefficient (\(C_{pf}\)), engineers can calculate mobility from measured pressure and flow rate:</p>
+    
+    <div class="formula-block">
+        $$\frac{k}{\mu} = C_{pf}\frac{q}{\Delta p_{dd}}$$
+    </div>
+    
+    <p>This tells us how easily fluids will flow through the formation, which is crucial for production forecasting.</p>
+    
+    <h3>2. Detecting Reservoir Boundaries</h3>
+    
+    <p>By analyzing pressure transient data (how pressure changes over time), engineers can detect reservoir boundaries and estimate their distance from the wellbore.</p>
+    
+    <h3>3. Assessing Formation Damage</h3>
+    
+    <p>By comparing mobility measurements at different depths, engineers can identify zones with reduced permeability due to drilling damage.</p>
+    
+    <h3>4. Fluid Sampling Optimization</h3>
+    
+    <p>Understanding flow dynamics helps optimize fluid sampling operations, ensuring representative samples are collected efficiently.</p>
+    
+    <h2>The Difference Between Transient and Steady-State Analysis</h2>
+    
+    <p>The paper discusses both transient analysis (how pressure changes over time) and steady-state analysis (using stabilized pressure values). Each has advantages:</p>
+    
+    <ul>
+        <li><strong>Steady-state analysis</strong> is simpler but requires waiting for pressure to stabilize, which may take too long in low-permeability formations.</li>
+        <li><strong>Transient analysis</strong> can provide information more quickly and yield additional reservoir properties, but requires more complex interpretation.</li>
+    </ul>
+    
+    <p>The paper provides this important insight: you can verify if steady-state conditions have been reached by modeling the transient response using interpreted parameters.</p>
+    
+    <h2>Analogies to Help Understand the Physics</h2>
+    
+    <p>To better grasp what's happening during formation testing, consider these analogies:</p>
+    
+    <h3>The Sponge Analogy</h3>
+    
+    <p>Imagine a large, water-soaked sponge (the formation). If you place a straw (the probe) against it and suck, water flows toward the straw. How quickly the water flows depends on the sponge's properties (permeability) and the water's thickness (viscosity).</p>
+    
+    <p>Initially, you're only drawing water from nearby. As time passes, you're affecting water farther away. Eventually, you reach a balance where the pressure drop stabilizes - this is the steady state.</p>
+    
+    <h3>The Traffic Analogy</h3>
+    
+    <p>Think of fluid flow like traffic. Permeability is like road capacity - higher permeability means more lanes. Viscosity is like how difficult the vehicles are to move - higher viscosity means slower-moving vehicles.</p>
+    
+    <p>When you open a probe, it's like opening an exit on a highway. Cars (fluid molecules) start moving toward it, creating a traffic pattern (pressure distribution). The rate at which cars can exit depends on both road capacity and vehicle speed.</p>
+    
+    <h2>Conclusion: The Power of Mathematical Modeling</h2>
+    
+    <p>Larsen and Allain's paper provides a comprehensive framework for analyzing formation tester data using consistent mathematical models. By breaking down complex physical situations into manageable equations, they've created tools that help engineers extract maximum information from formation tests.</p>
+    
+    <p>The key takeaways are:</p>
+    
+    <ol>
+        <li>Point-source and line-source solutions can be adapted to model various probe configurations</li>
+        <li>Steady-state solutions provide a direct path to estimating mobility</li>
+        <li>Anisotropy and well deviation can be handled through coordinate transformations</li>
+        <li>Both transient and steady-state analyses have their place in formation testing interpretation</li>
+    </ol>
+    
+    <p>This approach ensures that engineers can make the most of formation testing data, leading to better reservoir characterization and ultimately more efficient hydrocarbon recovery.</p>
+    
+    <p>Next time you see a formation testing tool being lowered into a well, remember the elegant mathematics working behind the scenes to unlock the secrets of what lies beneath!</p>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Multilayer Reservoir Analysis from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #simulation-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .layer {
+            width: 100%;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unlocking the Secrets of Multilayer Reservoirs: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how petroleum engineers determine what's happening deep underground in complex oil reservoirs? Today, we're going to break down a fascinating paper by Cheng-tai Gao that revolutionized how we analyze multilayer reservoirs - those underground formations with multiple producing zones separated by impermeable or low-permeability layers.</p>
+    
+    <div class="box">
+        <strong>Key Takeaway:</strong> This post explains how to determine the individual properties of each layer in a multilayer reservoir using pressure transient tests, even when those layers are communicating with each other through crossflow.
+    </div>
+    
+    <h2>The Problem: Seeing the Invisible</h2>
+    
+    <p>Imagine you're trying to understand a cake with multiple layers, but you can only stick a single straw through it. How would you determine the properties of each individual layer? That's essentially the challenge petroleum engineers face with multilayer reservoirs.</p>
+    
+    <p>Traditional well testing methods only give us the <em>average</em> properties of all layers combined. But what if we need to know the specific characteristics of each layer to optimize production?</p>
+    
+    <h2>Understanding Multilayer Reservoirs from First Principles</h2>
+    
+    <p>Let's start with the basics. A multilayer reservoir consists of several porous rock layers separated by thin, less permeable layers called shales. When we drill a well through these layers, oil or gas can flow from all layers into the wellbore.</p>
+    
+    <figure>
+        <img src="https://i.ibb.co/zPXQ2Jc/multilayer-reservoir.png" alt="Diagram of a multilayer reservoir with a well" style="max-width:100%;">
+        <figcaption>Simplified representation of a multilayer reservoir with three layers</figcaption>
+    </figure>
+    
+    <p>There are two main types of multilayer reservoirs:</p>
+    
+    <ol>
+        <li><strong>Commingled systems</strong> (no crossflow) - Layers are completely separated by impermeable barriers</li>
+        <li><strong>Communicating systems</strong> (with crossflow) - Layers can exchange fluids through semi-permeable barriers</li>
+    </ol>
+    
+    <h2>The Mathematical Foundation</h2>
+    
+    <p>Let's examine the key equations that describe fluid flow in multilayer reservoirs. Don't worry if the math looks intimidating at first - we'll break it down step by step.</p>
+    
+    <h3>Key Dimensionless Variables</h3>
+    
+    <p>First, we need to define some dimensionless variables that make our equations more elegant:</p>
+    
+    <div class="formula-box">
+        <p>Dimensionless radius: \(r_D = \frac{r}{r_w}\)</p>
+        <p>Dimensionless time: \(t_D = \frac{\eta_e t}{r_w^2}\)</p>
+        <p>Dimensionless pressure: \(p_{Di} = (p_0 - p_i) \Big/ \frac{q\mu B}{2\pi(kh)_t}\)</p>
+        <p>Dimensionless permeability: \(\tilde{k}_{Di} = \frac{\tilde{k}_i r_w^2}{(kh)_t}\)</p>
+        <p>Dimensionless layer contribution: \(w_{Di} = \frac{k_i h_i}{(kh)_t}\)</p>
+        <p>Dimensionless flow rate: \(q_{Di} = \frac{q_i}{q}\)</p>
+        <p>Dimensionless diffusivity: \(\eta_{Di} = \frac{\eta_i}{\eta_e}\)</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(r\) = radial distance from wellbore</li>
+        <li>\(r_w\) = wellbore radius</li>
+        <li>\(t\) = time</li>
+        <li>\(\eta_i\) = diffusivity of layer \(i\)</li>
+        <li>\(\eta_e\) = effective diffusivity</li>
+        <li>\(p_0\) = initial reservoir pressure</li>
+        <li>\(p_i\) = pressure in layer \(i\)</li>
+        <li>\(q\) = total flow rate</li>
+        <li>\(q_i\) = flow rate from layer \(i\)</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(B\) = formation volume factor</li>
+        <li>\(k_i\) = permeability of layer \(i\)</li>
+        <li>\(h_i\) = thickness of layer \(i\)</li>
+        <li>\((kh)_t\) = total flow capacity (sum of \(k_i h_i\) for all layers)</li>
+        <li>\(\tilde{k}_i\) = semipermeability between layers (measures crossflow potential)</li>
+    </ul>
+    
+    <h3>The Flow Rate Equation - A Key Insight</h3>
+    
+    <p>One of Gao's most important contributions is the equation for calculating the flow rate from each layer in a commingled system:</p>
+    
+    <div class="formula-box">
+        <p>\[q_{Di} = \frac{w_{Di}/(2s_i + \ln\frac{4\eta_{Di}t_D}{\gamma})}{\sum_{j=1}^{n} w_{Dj}/(2s_j + \ln\frac{4\eta_{Dj}t_D}{\gamma})}\]</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(s_i\) = skin factor of layer \(i\) (damage or stimulation near the wellbore)</li>
+        <li>\(\gamma\) = Euler's constant (1.781)</li>
+        <li>\(n\) = number of layers</li>
+    </ul>
+    
+    <p>This equation tells us something fascinating: the flow rate from each layer changes with time! Even though the total flow rate is constant, the contribution from each layer shifts until it eventually stabilizes.</p>
+    
+    <h3>The Wellbore Pressure Equation</h3>
+    
+    <p>The pressure at the wellbore can be expressed as:</p>
+    
+    <div class="formula-box">
+        <p>\[p_{wfD} = \frac{1}{\sum_{i=1}^{n} w_{Di}/(s_i + \frac{1}{2}\ln\frac{4\eta_{Di}t_D}{\gamma})}\]</p>
+        
+        <p>Or for a specific layer:</p>
+        
+        <p>\[p_{wfD} = \frac{q_{Di}(t_D)}{w_{Di}}(s_i + \frac{1}{2}\ln\frac{4\eta_{Di}t_D}{\gamma})\]</p>
+    </div>
+    
+    <p>In dimensional form (actual physical units):</p>
+    
+    <div class="formula-box">
+        <p>\[p_{wf} = p_0 - \frac{B\mu q_i(t)}{4\pi k_i h_i}(\ln\frac{4\eta_i t}{r_w^2} - 0.5772 + 2s_i)\]</p>
+    </div>
+    
+    <h2>The Three Flow Periods - A Key Conceptual Framework</h2>
+    
+    <p>When analyzing multilayer reservoirs with crossflow, Gao identified three distinct time periods:</p>
+    
+    <ol>
+        <li><strong>Small Time Period</strong>: Layers behave as if there's no crossflow between them</li>
+        <li><strong>Middle Time Period</strong>: Transition phase where crossflow effects become significant</li>
+        <li><strong>Large Time Period</strong>: System behaves as if it were a single layer</li>
+    </ol>
+    
+    <p>This insight is crucial because it explains why traditional well test analysis methods only give us the total properties - they typically analyze data from the large time period when individual layer characteristics are masked.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Simulation: Visualizing Multilayer Flow</h3>
+        
+        <p>Adjust the sliders below to see how different layer properties affect flow behavior in a multilayer reservoir.</p>
+        
+        <div class="control-panel">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Layer 1 Permeability (mD)</span>
+                    <span id="k1-value">100</span>
+                </div>
+                <input type="range" id="k1-slider" min="10" max="1000" value="100" class="slider">
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Layer 2 Permeability (mD)</span>
+                    <span id="k2-value">50</span>
+                </div>
+                <input type="range" id="k2-slider" min="10" max="1000" value="50" class="slider">
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Layer 1 Skin Factor</span>
+                    <span id="s1-value">0</span>
+                </div>
+                <input type="range" id="s1-slider" min="-5" max="20" value="0" class="slider">
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Layer 2 Skin Factor</span>
+                    <span id="s2-value">0</span>
+                </div>
+                <input type="range" id="s2-slider" min="-5" max="20" value="0" class="slider">
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Crossflow Factor</span>
+                    <span id="crossflow-value">0.0001</span>
+                </div>
+                <input type="range" id="crossflow-slider" min="0" max="0.001" step="0.0001" value="0.0001" class="slider">
+            </div>
+            
+            <button id="start-simulation">Run Simulation</button>
+            <button id="reset-simulation">Reset</button>
+        </div>
+        
+        <div id="simulation-container">
+            <canvas id="pressure-plot" width="750" height="350"></canvas>
+        </div>
+        
+        <div id="result-container">
+            <p id="simulation-results">Adjust parameters and run the simulation to see results.</p>
+        </div>
+    </div>
+    
+    <h2>The Breakthrough: Determining Individual Layer Properties</h2>
+    
+    <p>Now we come to the heart of Gao's contribution. How can we determine the properties of individual layers?</p>
+    
+    <h3>Method 1: Using Flow Rate and Pressure Measurements</h3>
+    
+    <p>If we can measure both the wellbore pressure and the flow rate from each layer simultaneously, we can use the equation:</p>
+    
+    <div class="formula-box">
+        <p>\[\frac{p_0 - p_{wf}}{q_i(t)} \text{ vs. } \ln(t)\]</p>
+        
+        <p>This will yield a straight line with slope:</p>
+        
+        <p>\[m_i' = \frac{B\mu}{4\pi k_i h_i}\]</p>
+        
+        <p>And intercept:</p>
+        
+        <p>\[b_i' = m_i'(\ln\frac{4\eta_i}{r_w^2} - 0.5772 + 2s_i)\]</p>
+    </div>
+    
+    <p>From these, we can calculate:</p>
+    <ul>
+        <li>The flow capacity of each layer: \(k_i h_i\) from the slope</li>
+        <li>The skin factor of each layer: \(s_i\) from the intercept</li>
+    </ul>
+    
+    <h3>Method 2: The Crosspoint Method</h3>
+    
+    <p>Gao's most elegant contribution is what I call the "crosspoint method." When we run drawdown or buildup tests with only certain layers producing, the pressure vs. time plot shows two straight lines with different slopes. The time at which these lines intersect (the crosspoint) gives us valuable information about vertical permeability between layers.</p>
+    
+    <div class="formula-box">
+        <p>For a two-layer system:</p>
+        
+        <p>\[\tilde{k}_{D1} = \frac{w_{D1}w_{D2}}{\gamma t_{cD1}}\eta_{D1}^{-1/w_{D2}}\]</p>
+        
+        <p>Where \(t_{cD1}\) is the dimensionless time at the crosspoint.</p>
+    </div>
+    
+    <p>This elegant equation allows us to calculate the vertical permeability between layers without needing to measure pressures in both producing and non-producing layers simultaneously.</p>
+    
+    <h2>The Crossflow Phenomenon - A Deeper Understanding</h2>
+    
+    <p>Gao identified four causes of crossflow in multilayer reservoirs:</p>
+    
+    <ol>
+        <li>Different boundary pressures for different layers</li>
+        <li>Nonproportional distribution of permeabilities</li>
+        <li>Different diffusivities for different layers</li>
+        <li>Different initial pressures for different layers</li>
+    </ol>
+    
+    <p>Most interestingly, he showed that different skin factors (damage or stimulation) in different layers can cause significant crossflow. This means that if one layer is more damaged than others, fluid will naturally redistribute between layers.</p>
+    
+    <h2>Practical Application: A Step-by-Step Guide</h2>
+    
+    <p>Let's walk through how you would apply Gao's methods in practice:</p>
+    
+    <ol>
+        <li><strong>Run a series of drawdown tests</strong> with different combinations of open and closed layers</li>
+        <li><strong>Plot pressure vs. logarithm of time</strong> for each test</li>
+        <li><strong>Identify the two straight-line portions</strong> and their crosspoint</li>
+        <li><strong>Calculate layer properties</strong> using the equations we've discussed</li>
+    </ol>
+    
+    <p>For a two-layer reservoir, you would need to run two tests:</p>
+    <ul>
+        <li>Test 1: Layer 1 open, Layer 2 closed</li>
+        <li>Test 2: Layer 1 closed, Layer 2 open</li>
+    </ul>
+    
+    <p>From these tests, you can determine:</p>
+    <ul>
+        <li>The permeability-thickness product (\(k_i h_i\)) of each layer</li>
+        <li>The skin factor (\(s_i\)) of each layer</li>
+        <li>The vertical permeability between layers</li>
+    </ul>
+    
+    <h2>Why This Matters: Real-World Impact</h2>
+    
+    <p>Understanding individual layer properties allows engineers to:</p>
+    
+    <ul>
+        <li><strong>Optimize production strategies</strong> - Target high-permeability, low-skin layers</li>
+        <li><strong>Design better stimulation treatments</strong> - Focus on damaged layers</li>
+        <li><strong>Improve reservoir models</strong> - More accurate predictions of future performance</li>
+        <li><strong>Make better completion decisions</strong> - Determine which layers to perforate</li>
+    </ul>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>Gao's approach to multilayer reservoir analysis demonstrates the power of first principles thinking. By breaking down the complex problem into fundamental components and relationships, he developed methods that reveal what was previously hidden.</p>
+    
+    <p>The next time you encounter a complex system where you can only observe aggregate behavior, remember Gao's approach: find ways to selectively stimulate parts of the system and observe how the responses differ from the whole. The crosspoints and transitions between different regimes often hold the key to understanding the individual components.</p>
+    
+    <script>
+        // Update slider value displays
+        document.getElementById('k1-slider').addEventListener('input', function() {
+            document.getElementById('k1-value').textContent = this.value;
+        });
+        
+        document.getElementById('k2-slider').addEventListener('input', function() {
+            document.getElementById('k2-value').textContent = this.value;
+        });
+        
+        document.getElementById('s1-slider').addEventListener('input', function() {
+            document.getElementById('s1-value').textContent = this.value;
+        });
+        
+        document.getElementById('s2-slider').addEventListener('input', function() {
+            document.getElementById('s2-value').textContent = this.value;
+        });
+        
+        document.getElementById('crossflow-slider').addEventListener('input', function() {
+            document.getElementById('crossflow-value').textContent = this.value;
+        });
+        
+        // Canvas for pressure plot
+        const canvas = document.getElementById('pressure-plot');
+        const ctx = canvas.getContext('2d');
+        
+        // Simulation parameters
+        let simulationRunning = false;
+        let timeStep = 0;
+        let pressureData = [];
+        let flowRateData = [];
+        
+        // Initialize canvas
+        function initCanvas() {
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // X-axis
+            ctx.moveTo(50, 300);
+            ctx.lineTo(700, 300);
+            
+            // Y-axis
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 300);
+            ctx.stroke();
+            
+            // Axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Time (logarithmic scale)', 350, 330);
+            ctx.save();
+            ctx.translate(20, 175);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Pressure / Flow Rate', 0, 0);
+            ctx.restore();
+            
+            // X-axis ticks
+            ctx.font = '10px Arial';
+            for (let i = 0; i < 6; i++) {
+                const x = 50 + i * 130;
+                ctx.beginPath();
+                ctx.moveTo(x, 300);
+                ctx.lineTo(x, 305);
+                ctx.stroke();
+                const logValue = Math.pow(10, i-1).toFixed(i === 0 ? 1 : 0);
+                ctx.fillText(logValue, x - 10, 315);
+            }
+            
+            // Y-axis ticks
+            for (let i = 0; i < 6; i++) {
+                const y = 300 - i * 50;
+                ctx.beginPath();
+                ctx.moveTo(45, y);
+                ctx.lineTo(50, y);
+                ctx.stroke();
+                ctx.fillText(i * 0.2, 30, y + 5);
+            }
+        }
+        
+        // Calculate pressure and flow rate based on parameters
+        function calculatePressureAndFlow(time, k1, k2, s1, s2, crossflow) {
+            const w1 = k1 / (k1 + k2);
+            const w2 = k2 / (k1 + k2);
+            const eta1 = k1;
+            const eta2 = k2;
+            const etaD1 = eta1 / ((w1/eta1 + w2/eta2) * (k1 + k2));
+            const etaD2 = eta2 / ((w1/eta1 + w2/eta2) * (k1 + k2));
+            
+            // Small time period flow rates
+            const gamma = 1.781;
+            const tD = time;
+            
+            let q1, q2, p;
+            
+            if (crossflow === 0) {
+                // No crossflow case
+                const denominator = w1/(2*s1 + Math.log(4*etaD1*tD/gamma)) + 
+                                   w2/(2*s2 + Math.log(4*etaD2*tD/gamma));
+                
+                q1 = (w1/(2*s1 + Math.log(4*etaD1*tD/gamma))) / denominator;
+                q2 = (w2/(2*s2 + Math.log(4*etaD2*tD/gamma))) / denominator;
+                
+                // Pressure
+                p = 1 / (w1/(s1 + 0.5*Math.log(4*etaD1*tD/gamma)) + 
+                         w2/(s2 + 0.5*Math.log(4*etaD2*tD/gamma)));
+            } else {
+                // With crossflow
+                // Simplification for small time
+                if (tD < 0.4/crossflow) {
+                    // Small time behavior (same as no crossflow)
+                    const denominator = w1/(2*s1 + Math.log(4*etaD1*tD/gamma)) + 
+                                       w2/(2*s2 + Math.log(4*etaD2*tD/gamma));
+                    
+                    q1 = (w1/(2*s1 + Math.log(4*etaD1*tD/gamma))) / denominator;
+                    q2 = (w2/(2*s2 + Math.log(4*etaD2*tD/gamma))) / denominator;
+                    
+                    p = 1 / (w1/(s1 + 0.5*Math.log(4*etaD1*tD/gamma)) + 
+                             w2/(s2 + 0.5*Math.log(4*etaD2*tD/gamma)));
+                } else if (tD > 20/crossflow) {
+                    // Large time behavior
+                    // If skin factors are the same, flow rates stabilize at w values
+                    if (Math.abs(s1 - s2) < 0.1) {
+                        q1 = w1;
+                        q2 = w2;
+                    } else {
+                        // Approximate steady-state flow rates with different skins
+                        const factor = Math.exp(-crossflow * tD * 0.1);
+                        q1 = w1 * (1 + (s2 - s1) * 0.1 * (1 - factor));
+                        q2 = w2 * (1 + (s1 - s2) * 0.1 * (1 - factor));
+                        
+                        // Normalize to ensure q1 + q2 = 1
+                        const total = q1 + q2;
+                        q1 /= total;
+                        q2 /= total;
+                    }
+                    
+                    // Large time pressure
+                    p = 0.5 * Math.log(4*tD/gamma) + q1*s1 + q2*s2;
+                } else {
+                    // Middle time (transition) behavior - interpolate
+                    const smallTimeDenominator = w1/(2*s1 + Math.log(4*etaD1*tD/gamma)) + 
+                                               w2/(2*s2 + Math.log(4*etaD2*tD/gamma));
+                    
+                    const smallTimeQ1 = (w1/(2*s1 + Math.log(4*etaD1*tD/gamma))) / smallTimeDenominator;
+                    const smallTimeQ2 = (w2/(2*s2 + Math.log(4*etaD2*tD/gamma))) / smallTimeDenominator;
+                    
+                    let largeTimeQ1, largeTimeQ2;
+                    if (Math.abs(s1 - s2) < 0.1) {
+                        largeTimeQ1 = w1;
+                        largeTimeQ2 = w2;
+                    } else {
+                        // Approximate steady-state flow rates with different skins
+                        const factor = Math.exp(-crossflow * 20/crossflow * 0.1);
+                        largeTimeQ1 = w1 * (1 + (s2 - s1) * 0.1 * (1 - factor));
+                        largeTimeQ2 = w2 * (1 + (s1 - s2) * 0.1 * (1 - factor));
+                        
+                        // Normalize
+                        const total = largeTimeQ1 + largeTimeQ2;
+                        largeTimeQ1 /= total;
+                        largeTimeQ2 /= total;
+                    }
+                    
+                    // Interpolation factor
+                    const x = (tD - 0.4/crossflow) / (20/crossflow - 0.4/crossflow);
+                    const interpolationFactor = Math.max(0, Math.min(1, x));
+                    
+                    q1 = smallTimeQ1 * (1 - interpolationFactor) + largeTimeQ1 * interpolationFactor;
+                    q2 = smallTimeQ2 * (1 - interpolationFactor) + largeTimeQ2 * interpolationFactor;
+                    
+                    // Interpolate pressure
+                    const smallTimeP = 1 / (w1/(s1 + 0.5*Math.log(4*etaD1*tD/gamma)) + 
+                                          w2/(s2 + 0.5*Math.log(4*etaD2*tD/gamma)));
+                    const largeTimeP = 0.5 * Math.log(4*tD/gamma) + largeTimeQ1*s1 + largeTimeQ2*s2;
+                    
+                    p = smallTimeP * (1 - interpolationFactor) + largeTimeP * interpolationFactor;
+                }
+            }
+            
+            return { pressure: p, flowRate1: q1, flowRate2: q2 };
+        }
+        
+        // Plot pressure and flow rate data
+        function plotData() {
+            initCanvas();
+            
+            if (pressureData.length === 0) return;
+            
+            // Plot pressure curve
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < pressureData.length; i++) {
+                // Log scale for x-axis
+                const x = 50 + 130 * Math.log10(i + 1);
+                const y = 300 - pressureData[i] * 250;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Plot flow rate curves
+            // Layer 1
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < flowRateData.length; i++) {
+                const x = 50 + 130 * Math.log10(i + 1);
+                const y = 300 - flowRateData[i].q1 * 250;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Layer 2
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < flowRateData.length; i++) {
+                const x = 50 + 130 * Math.log10(i + 1);
+                const y = 300 - flowRateData[i].q2 * 250;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Legend
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(600, 60, 15, 15);
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(600, 85, 15, 15);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(600, 110, 15, 15);
+            
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.fillText('Pressure', 625, 72);
+            ctx.fillText('Layer 1 Flow', 625, 97);
+            ctx.fillText('Layer 2 Flow', 625, 122);
+        }
+        
+        // Run simulation
+        function runSimulation() {
+            if (simulationRunning) return;
+            
+            simulationRunning = true;
+            timeStep = 0;
+            pressureData = [];
+            flowRateData = [];
+            
+            const k1 = parseInt(document.getElementById('k1-slider').value);
+            const k2 = parseInt(document.getElementById('k2-slider').value);
+            const s1 = parseInt(document.getElementById('s1-slider').value);
+            const s2 = parseInt(document.getElementById('s2-slider').value);
+            const crossflow = parseFloat(document.getElementById('crossflow-slider').value);
+            
+            document.getElementById('simulation-results').textContent = 'Simulation running...';
+            
+            const simulationInterval = setInterval(() => {
+                // Use logarithmic time steps for better visualization
+                const time = Math.pow(10, timeStep/10 - 1);
+                
+                const result = calculatePressureAndFlow(time, k1, k2, s1, s2, crossflow);
+                
+                pressureData.push(result.pressure);
+                flowRateData.push({ q1: result.flowRate1, q2: result.flowRate2 });
+                
+                plotData();
+                
+                timeStep++;
+                
+                if (timeStep > 50) {
+                    clearInterval(simulationInterval);
+                    simulationRunning = false;
+                    
+                    // Display results
+                    let resultText = 'Simulation complete! ';
+                    
+                    if (crossflow === 0) {
+                        resultText += 'Without crossflow, flow rates converge to proportional to kh values. ';
+                    } else {
+                        if (Math.abs(s1 - s2) < 0.1) {
+                            resultText += 'With crossflow and similar skin factors, flow rates converge to proportional to kh values. ';
+                        } else {
+                            resultText += 'With crossflow and different skin factors, flow rates do NOT converge to proportional to kh values. ';
+                        }
+                    }
+                    
+                    const finalQ1 = flowRateData[flowRateData.length - 1].q1.toFixed(2);
+                    const finalQ2 = flowRateData[flowRateData.length - 1].q2.toFixed(2);
+                    const w1 = (k1 / (k1 + k2)).toFixed(2);
+                    const w2 = (k2 / (k1 + k2)).toFixed(2);
+                    
+                    resultText += `Final flow proportions: Layer 1 = ${finalQ1} (vs. kh proportion ${w1}), Layer 2 = ${finalQ2} (vs. kh proportion ${w2})`;
+                    
+                    document.getElementById('simulation-results').textContent = resultText;
+                }
+            }, 100);
+        }
+        
+        // Reset simulation
+        function resetSimulation() {
+            simulationRunning = false;
+            timeStep = 0;
+            pressureData = [];
+            flowRateData = [];
+            
+            initCanvas();
+            document.getElementById('simulation-results').textContent = 'Adjust parameters and run the simulation to see results.';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initCanvas();
+            
+            document.getElementById('start-simulation').addEventListener('click', runSimulation);
+            document.getElementById('reset-simulation').addEventListener('click', resetSimulation);
+        });
+    </script>
+</body>
+</html>

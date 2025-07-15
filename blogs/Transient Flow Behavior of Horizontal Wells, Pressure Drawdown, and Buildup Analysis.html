@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Horizontal Well Flow Behavior From First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #f0f7ff;
+            border: 1px solid #c8e1ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .slider-value {
+            font-weight: bold;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .analogy {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Four Flow Periods of Horizontal Wells: A First Principles Approach</h1>
+    
+    <p>Horizontal wells have revolutionized the oil and gas industry, allowing engineers to access reservoirs that would otherwise be challenging to produce efficiently. However, understanding their flow behavior is considerably more complex than that of vertical wells. Today, we'll break down a fascinating aspect of petroleum engineering: the transient flow behavior of horizontal wells.</p>
+    
+    <div class="highlight">
+        <p>While vertical wells typically exhibit just one flow period (radial flow), horizontal wells can experience up to <strong>four distinct flow periods</strong>. Understanding these periods is crucial for accurately analyzing well test data and determining reservoir properties.</p>
+    </div>
+    
+    <h2>The Physical Model: What Are We Working With?</h2>
+    
+    <p>Before diving into the mathematics, let's visualize what we're dealing with:</p>
+    
+    <ul>
+        <li>A horizontal well with radius \(r_w\) and length \(L\)</li>
+        <li>Drilled in a box-shaped drainage volume with dimensions:
+            <ul>
+                <li>Thickness = \(h\) (z-direction)</li>
+                <li>Length = \(a\) (x-direction)</li>
+                <li>Width = \(b\) (y-direction)</li>
+            </ul>
+        </li>
+        <li>The well is parallel to the y-direction</li>
+        <li>The permeabilities in the x, y, and z directions are \(k_x\), \(k_y\), and \(k_z\) (anisotropic reservoir)</li>
+        <li>Uniform initial pressure \(p_i\) throughout the reservoir</li>
+    </ul>
+    
+    <div class="interactive">
+        <h3>Interactive Horizontal Well Model</h3>
+        <div>
+            <label for="wellLength">Well Length (L): <span id="wellLengthValue" class="slider-value">1000</span> ft</label>
+            <input type="range" id="wellLength" class="slider" min="500" max="2000" value="1000">
+        </div>
+        <div>
+            <label for="thickness">Reservoir Thickness (h): <span id="thicknessValue" class="slider-value">150</span> ft</label>
+            <input type="range" id="thickness" class="slider" min="50" max="300" value="150">
+        </div>
+        <div>
+            <label for="permeabilityRatio">Permeability Ratio (kx/kz): <span id="permeabilityRatioValue" class="slider-value">10</span></label>
+            <input type="range" id="permeabilityRatio" class="slider" min="1" max="50" value="10">
+        </div>
+        <div>
+            <label for="wellPosition">Well Vertical Position (z₀/h): <span id="wellPositionValue" class="slider-value">0.5</span></label>
+            <input type="range" id="wellPosition" class="slider" min="0.1" max="0.9" value="0.5" step="0.1">
+        </div>
+        <canvas id="wellCanvas" width="700" height="400"></canvas>
+        <div id="flowPeriodMessage" style="font-weight: bold; margin-top: 10px;"></div>
+    </div>
+    
+    <h2>The Governing Equation: From Physics to Mathematics</h2>
+    
+    <p>The pressure distribution in the reservoir is governed by the diffusivity equation, which for an anisotropic reservoir takes the form:</p>
+    
+    <div class="formula">
+        \[
+        k_x\frac{\partial^2p}{\partial x^2}+k_y\frac{\partial^2p}{\partial y^2}+k_z\frac{\partial^2p}{\partial z^2}=\phi\mu c_t\frac{\partial p}{\partial t}
+        \]
+    </div>
+    
+    <p>This partial differential equation describes how pressure changes in space and time within the reservoir. The solution to this equation, subject to appropriate boundary conditions, gives us the pressure distribution.</p>
+    
+    <div class="analogy">
+        <h3>Water Tank Analogy</h3>
+        <p>Think of the reservoir as a water tank filled with a sponge. The horizontal well is like a straw inserted into this tank. When you suck through the straw (produce the well), water flows toward it. The rate at which water can flow depends on how easily it moves through the sponge (permeability) in different directions.</p>
+        <p>Initially, water near the straw flows in. As time passes, water from farther away begins to move. Eventually, the boundaries of the tank start to influence the flow pattern. The four flow periods we'll discuss are essentially describing how this flow pattern evolves over time.</p>
+    </div>
+    
+    <h2>The Four Flow Periods: Understanding Transient Behavior</h2>
+    
+    <p>Let's break down each of the four potential flow periods that can occur in a horizontal well:</p>
+    
+    <h3>1. Early Radial Flow Period</h3>
+    
+    <p>This is the first flow period that occurs immediately after the well is put on production.</p>
+    
+    <div class="note">
+        <p><strong>Physical Interpretation:</strong> During this period, flow is primarily perpendicular to the well axis in the x-z plane. The well behaves like a vertical well with a length equal to the horizontal well length.</p>
+    </div>
+    
+    <p>The pressure drawdown equation during this period is:</p>
+    
+    <div class="formula">
+        \[
+        p_{wt} = p_i - \frac{162.6q\mu B}{\sqrt{k_x k_z}L}\left[\log\frac{108\sqrt{k_x k_z}t}{\phi\mu c_t r_w^2} - 3.23 + s_A\right]
+        \]
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_{wt}\) = well pressure at time t (psi)</li>
+        <li>\(p_i\) = initial reservoir pressure (psi)</li>
+        <li>\(q\) = flow rate (STB/day)</li>
+        <li>\(\mu\) = viscosity (cp)</li>
+        <li>\(B\) = formation volume factor (RB/STB)</li>
+        <li>\(s_A\) = skin factor due to permeability alteration</li>
+    </ul>
+    
+    <p>This period ends at the earlier of:</p>
+    
+    <div class="formula">
+        \[
+        t_{end} = \frac{1800 d_z^2 \phi\mu c_t}{k_z} \quad \text{or} \quad t_{end} = \frac{125 L^2 \phi\mu c_t}{k_y}
+        \]
+    </div>
+    
+    <h3>2. Early Linear Flow Period</h3>
+    
+    <p>This period may occur if the well length is significantly longer than the formation thickness.</p>
+    
+    <div class="note">
+        <p><strong>Physical Interpretation:</strong> Flow is predominantly perpendicular to the well in the x-z plane, but now the flow pattern has reached the upper and lower boundaries, creating a linear flow pattern toward the well.</p>
+    </div>
+    
+    <p>For this period to occur, the well length must satisfy:</p>
+    
+    <div class="formula">
+        \[
+        L > 3.33 D_z\sqrt{\frac{k_y}{k_z}}
+        \]
+    </div>
+    
+    <p>The pressure drawdown equation during this period is:</p>
+    
+    <div class="formula">
+        \[
+        p_{wt} = p_i - \frac{8.13q\mu B}{Lh}\left[\sqrt{\frac{t}{\phi\mu c_t k_x}} + \frac{17.37h}{\sqrt{k_x k_z}}\left[\ln\frac{h}{r_w} + 0.25\ln\frac{k_x}{k_z} - \ln\sin\frac{180^{\circ}z_0}{h} - 1.838 + s_A\right]\right]
+        \]
+    </div>
+    
+    <h3>3. Late Pseudo-Radial Flow Period</h3>
+    
+    <p>This period occurs after the pressure transient has reached the boundaries in the z-direction and has traveled far enough in the y-direction.</p>
+    
+    <div class="note">
+        <p><strong>Physical Interpretation:</strong> Flow is now predominantly in the x-y plane, creating a radial-like pattern around the well in this plane.</p>
+    </div>
+    
+    <p>For this period to occur, the penetration ratio must be:</p>
+    
+    <div class="formula">
+        \[
+        \frac{L}{b} < 0.45
+        \]
+    </div>
+    
+    <p>The pressure drawdown equation during this period is:</p>
+    
+    <div class="formula">
+        \[
+        p_{wt} = p_i - \frac{162.6q\mu B}{h\sqrt{k_x k_y}}\left[\log\frac{k_y t}{\phi\mu c_t L^2} - 1.76 + \frac{k_z}{k_y}\frac{L}{h}s_A\right]
+        \]
+    </div>
+    
+    <h3>4. Late Linear Flow Period</h3>
+    
+    <p>This period occurs after the pressure transient has reached the boundaries in both the z and y directions.</p>
+    
+    <div class="note">
+        <p><strong>Physical Interpretation:</strong> Flow is now predominantly in the x-direction, creating a linear flow pattern.</p>
+    </div>
+    
+    <p>The pressure drawdown equation during this period is:</p>
+    
+    <div class="formula">
+        \[
+        p_{wt} = p_i - \frac{8.13q\mu B}{bh}\left[\sqrt{\frac{t}{\phi\mu c_t k_x}} + \frac{17.37h}{\sqrt{k_x k_z}}\left[\ln\frac{h}{r_w} + 0.25\ln\frac{k_x}{k_z} - \ln\sin\frac{180^{\circ}z_0}{h} - 1.838 + s_t\right]\right]
+        \]
+    </div>
+    
+    <p>Where \(s_t = s_A' + s_R\) is the total skin, including the partial penetration skin \(s_R\).</p>
+    
+    <h2>Practical Application: Analyzing Well Test Data</h2>
+    
+    <p>Now that we understand the theory, let's see how to apply it to real well test data. The key is to identify which flow period the well is experiencing, then use the appropriate equation to analyze the data.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Well Test Analyzer</h3>
+        <p>Select a flow period and enter test data to analyze:</p>
+        <select id="flowPeriod">
+            <option value="early-radial">Early Radial Flow</option>
+            <option value="early-linear">Early Linear Flow</option>
+            <option value="late-radial">Late Pseudo-Radial Flow</option>
+            <option value="late-linear">Late Linear Flow</option>
+        </select>
+        
+        <div id="dataInputArea">
+            <h4>Input Parameters</h4>
+            <table>
+                <tr>
+                    <td>Flow Rate (q):</td>
+                    <td><input type="number" id="flowRate" value="800" step="10"> STB/day</td>
+                </tr>
+                <tr>
+                    <td>Well Length (L):</td>
+                    <td><input type="number" id="wellLengthInput" value="1000" step="10"> ft</td>
+                </tr>
+                <tr>
+                    <td>Reservoir Thickness (h):</td>
+                    <td><input type="number" id="reservoirThickness" value="150" step="10"> ft</td>
+                </tr>
+                <tr>
+                    <td>Viscosity (μ):</td>
+                    <td><input type="number" id="viscosity" value="1" step="0.1"> cp</td>
+                </tr>
+                <tr>
+                    <td>Formation Volume Factor (B):</td>
+                    <td><input type="number" id="formationVolumeFactor" value="1.25" step="0.05"> RB/STB</td>
+                </tr>
+                <tr>
+                    <td>Porosity (φ):</td>
+                    <td><input type="number" id="porosity" value="0.2" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>Total Compressibility (ct):</td>
+                    <td><input type="number" id="compressibility" value="0.000015" step="0.000001"> 1/psi</td>
+                </tr>
+            </table>
+            
+            <h4>Pressure Data</h4>
+            <div id="pressureDataInputs">
+                <table id="pressureDataTable">
+                    <tr>
+                        <th>Time (hrs)</th>
+                        <th>Pressure Drop (psi)</th>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="time-input" value="0.24" step="0.1"></td>
+                        <td><input type="number" class="pressure-input" value="33.96" step="0.01"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="time-input" value="0.48" step="0.1"></td>
+                        <td><input type="number" class="pressure-input" value="36.41" step="0.01"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="time-input" value="0.96" step="0.1"></td>
+                        <td><input type="number" class="pressure-input" value="38.85" step="0.01"></td>
+                    </tr>
+                </table>
+                <button id="addDataRow">Add Row</button>
+            </div>
+            
+            <button id="analyzeData">Analyze Data</button>
+            
+            <div id="analysisResults" style="margin-top: 20px; display: none;">
+                <h4>Analysis Results</h4>
+                <canvas id="dataPlotCanvas" width="600" height="400"></canvas>
+                <div id="resultsText"></div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Key Insights and Practical Implications</h2>
+    
+    <div class="highlight">
+        <h3>Important Takeaways</h3>
+        <ol>
+            <li><strong>Not All Flow Periods Will Occur:</strong> Depending on reservoir and well parameters, some flow periods may be too short to be observed or may not occur at all.</li>
+            <li><strong>Preliminary Calculations Are Crucial:</strong> Before running a well test, it's advisable to calculate the expected duration of each flow period to design an appropriate test.</li>
+            <li><strong>Permeability Anisotropy:</strong> The ratio of horizontal to vertical permeability significantly impacts flow behavior.</li>
+            <li><strong>Well Length and Placement:</strong> The length of the well relative to reservoir dimensions and its vertical position affect which flow periods will be dominant.</li>
+        </ol>
+    </div>
+    
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>Understanding the four potential flow periods of horizontal wells is not just an academic exercise—it has profound practical implications:</p>
+    
+    <ul>
+        <li>It allows engineers to accurately determine reservoir properties from well test data</li>
+        <li>It helps in optimizing well length and placement for maximum productivity</li>
+        <li>It provides insights into how to interpret pressure responses during production</li>
+        <li>It enables better reservoir management and production forecasting</li>
+    </ul>
+    
+    <p>By breaking down this complex topic into its first principles, we can see that horizontal well flow behavior, while more complicated than vertical wells, follows logical patterns that can be understood, predicted, and utilized for better reservoir management.</p>
+
+    <script>
+        // Interactive well model visualization
+        const canvas = document.getElementById('wellCanvas');
+        const ctx = canvas.getContext('2d');
+        const wellLengthSlider = document.getElementById('wellLength');
+        const thicknessSlider = document.getElementById('thickness');
+        const permeabilityRatioSlider = document.getElementById('permeabilityRatio');
+        const wellPositionSlider = document.getElementById('wellPosition');
+        const wellLengthValue = document.getElementById('wellLengthValue');
+        const thicknessValue = document.getElementById('thicknessValue');
+        const permeabilityRatioValue = document.getElementById('permeabilityRatioValue');
+        const wellPositionValue = document.getElementById('wellPositionValue');
+        const flowPeriodMessage = document.getElementById('flowPeriodMessage');
+        
+        // Data analysis functionality
+        const flowPeriodSelect = document.getElementById('flowPeriod');
+        const addDataRowBtn = document.getElementById('addDataRow');
+        const analyzeDataBtn = document.getElementById('analyzeData');
+        const pressureDataTable = document.getElementById('pressureDataTable');
+        const analysisResults = document.getElementById('analysisResults');
+        const resultsText = document.getElementById('resultsText');
+        const dataPlotCanvas = document.getElementById('dataPlotCanvas');
+        
+        // Update well model visualization
+        function drawWellModel() {
+            const wellLength = parseInt(wellLengthSlider.value);
+            const thickness = parseInt(thicknessSlider.value);
+            const permeabilityRatio = parseInt(permeabilityRatioSlider.value);
+            const wellPosition = parseFloat(wellPositionSlider.value);
+            
+            wellLengthValue.textContent = wellLength;
+            thicknessValue.textContent = thickness;
+            permeabilityRatioValue.textContent = permeabilityRatio;
+            wellPositionValue.textContent = wellPosition;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw reservoir
+            const reservoirWidth = 600;
+            const reservoirHeight = thickness * 1.2;
+            const reservoirX = 50;
+            const reservoirY = 50;
+            
+            ctx.fillStyle = '#f0f7ff';
+            ctx.fillRect(reservoirX, reservoirY, reservoirWidth, reservoirHeight);
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(reservoirX, reservoirY, reservoirWidth, reservoirHeight);
+            
+            // Draw well
+            const wellX = reservoirX;
+            const wellY = reservoirY + reservoirHeight * wellPosition;
+            const scaledWellLength = Math.min(wellLength / 2000 * reservoirWidth, reservoirWidth);
+            
+            ctx.beginPath();
+            ctx.moveTo(wellX, wellY);
+            ctx.lineTo(wellX + scaledWellLength, wellY);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Draw flow patterns based on parameters
+            drawFlowPatterns(reservoirX, reservoirY, reservoirWidth, reservoirHeight, wellX, wellY, scaledWellLength, thickness, permeabilityRatio, wellPosition);
+            
+            // Determine likely flow periods
+            determineLikelyFlowPeriods(wellLength, thickness, permeabilityRatio, wellPosition);
+        }
+        
+        function drawFlowPatterns(reservoirX, reservoirY, reservoirWidth, reservoirHeight, wellX, wellY, wellLength, thickness, permeabilityRatio, wellPosition) {
+            // Early radial flow (circles around well)
+            ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+            ctx.lineWidth = 1;
+            
+            // Draw flow lines based on permeability ratio
+            const verticalScale = 1 / Math.sqrt(permeabilityRatio);
+            
+            // Early radial
+            for (let r = 10; r <= 40; r += 10) {
+                ctx.beginPath();
+                for (let x = 0; x <= wellLength; x += 10) {
+                    for (let angle = 0; angle < 2 * Math.PI; angle += 0.1) {
+                        const flowX = wellX + x + r * Math.cos(angle);
+                        const flowY = wellY + r * Math.sin(angle) * verticalScale;
+                        
+                        if (angle === 0) {
+                            ctx.moveTo(flowX, flowY);
+                        } else {
+                            ctx.lineTo(flowX, flowY);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Linear flow (horizontal lines)
+            ctx.strokeStyle = 'rgba(155, 89, 182, 0.5)';
+            for (let y = reservoirY + 20; y < reservoirY + reservoirHeight; y += 20) {
+                if (Math.abs(y - wellY) > 10) {
+                    ctx.beginPath();
+                    ctx.moveTo(wellX + wellLength + 20, y);
+                    ctx.lineTo(reservoirX + reservoirWidth, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // Late radial (vertical lines from edges)
+            ctx.strokeStyle = 'rgba(46, 204, 113, 0.5)';
+            for (let x = wellX + wellLength + 40; x < reservoirX + reservoirWidth; x += 30) {
+                ctx.beginPath();
+                ctx.moveTo(x, reservoirY);
+                ctx.lineTo(x, reservoirY + reservoirHeight);
+                ctx.stroke();
+            }
+        }
+        
+        function determineLikelyFlowPeriods(wellLength, thickness, permeabilityRatio, wellPosition) {
+            const reservoirWidth = 2000; // Assumed width
+            const L_over_h = wellLength / thickness;
+            const L_over_b = wellLength / reservoirWidth;
+            
+            let message = "Likely flow periods: ";
+            let periods = [];
+            
+            // Early radial - almost always occurs but might be too short
+            if (thickness > 50) {
+                periods.push("Early Radial");
+            }
+            
+            // Early linear - requires L > 3.33*Dz*sqrt(ky/kz)
+            const Dz = Math.max(thickness * wellPosition, thickness * (1 - wellPosition));
+            if (wellLength > 3.33 * Dz * Math.sqrt(1 / permeabilityRatio)) {
+                periods.push("Early Linear");
+            }
+            
+            // Late pseudo-radial - requires L/b < 0.45
+            if (L_over_b < 0.45) {
+                periods.push("Late Pseudo-Radial");
+            }
+            
+            // Late linear - almost always occurs
+            periods.push("Late Linear");
+            
+            flowPeriodMessage.textContent = message + periods.join(", ");
+        }
+        
+        // Add event listeners for sliders
+        wellLengthSlider.addEventListener('input', drawWellModel);
+        thicknessSlider.addEventListener('input', drawWellModel);
+        permeabilityRatioSlider.addEventListener('input', drawWellModel);
+        wellPositionSlider.addEventListener('input', drawWellModel);
+        
+        // Add row to pressure data table
+        addDataRowBtn.addEventListener('click', function() {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="number" class="time-input" value="0" step="0.1"></td>
+                <td><input type="number" class="pressure-input" value="0" step="0.01"></td>
+            `;
+            pressureDataTable.appendChild(newRow);
+        });
+        
+        // Analyze data
+        analyzeDataBtn.addEventListener('click', function() {
+            const flowPeriod = flowPeriodSelect.value;
+            const flowRate = parseFloat(document.getElementById('flowRate').value);
+            const wellLength = parseFloat(document.getElementById('wellLengthInput').value);
+            const thickness = parseFloat(document.getElementById('reservoirThickness').value);
+            const viscosity = parseFloat(document.getElementById('viscosity').value);
+            const formationVolumeFactor = parseFloat(document.getElementById('formationVolumeFactor').value);
+            const porosity = parseFloat(document.getElementById('porosity').value);
+            const compressibility = parseFloat(document.getElementById('compressibility').value);
+            
+            // Collect pressure data
+            const timeInputs = document.querySelectorAll('.time-input');
+            const pressureInputs = document.querySelectorAll('.pressure-input');
+            const timeData = [];
+            const pressureData = [];
+            
+            for (let i = 0; i < timeInputs.length; i++) {
+                timeData.push(parseFloat(timeInputs[i].value));
+                pressureData.push(parseFloat(pressureInputs[i].value));
+            }
+            
+            // Simple analysis based on flow period
+            let result = '';
+            let plotType = '';
+            let xData = [];
+            let yData = [];
+            
+            switch(flowPeriod) {
+                case 'early-radial':
+                    // Semi-log plot: pressure vs log(time)
+                    plotType = 'semilog';
+                    xData = timeData.map(t => Math.log10(t));
+                    yData = pressureData;
+                    
+                    // Calculate slope from linear regression
+                    const slope = calculateSlope(xData, yData);
+                    const sqrtKxKz = 162.6 * flowRate * viscosity * formationVolumeFactor / (Math.abs(slope) * wellLength);
+                    
+                    result = `
+                        <p>Early Radial Flow Analysis:</p>
+                        <p>Slope (m) = ${slope.toFixed(2)} psi/cycle</p>
+                        <p>√(k<sub>x</sub>k<sub>z</sub>) = ${sqrtKxKz.toFixed(2)} md</p>
+                        <p>k<sub>x</sub>k<sub>z</sub> = ${(sqrtKxKz * sqrtKxKz).toFixed(2)} md²</p>
+                    `;
+                    break;
+                    
+                case 'early-linear':
+                    // Linear plot: pressure vs sqrt(time)
+                    plotType = 'sqrt';
+                    xData = timeData.map(t => Math.sqrt(t));
+                    yData = pressureData;
+                    
+                    // Calculate slope from linear regression
+                    const slopeLinear = calculateSlope(xData, yData);
+                    const sqrtPhiMuCtKx = 8.13 * flowRate * viscosity * formationVolumeFactor / (Math.abs(slopeLinear) * wellLength * thickness);
+                    const kx = Math.pow(sqrtPhiMuCtKx, 2) / (porosity * viscosity * compressibility);
+                    
+                    result = `
+                        <p>Early Linear Flow Analysis:</p>
+                        <p>Slope (m) = ${slopeLinear.toFixed(2)} psi/√hr</p>
+                        <p>√(φμc<sub>t</sub>k<sub>x</sub>) = ${sqrtPhiMuCtKx.toFixed(4)}</p>
+                        <p>k<sub>x</sub> = ${kx.toFixed(2)} md</p>
+                    `;
+                    break;
+                    
+                case 'late-radial':
+                    // Semi-log plot: pressure vs log(time)
+                    plotType = 'semilog';
+                    xData = timeData.map(t => Math.log10(t));
+                    yData = pressureData;
+                    
+                    // Calculate slope from linear regression
+                    const slopeLateRadial = calculateSlope(xData, yData);
+                    const sqrtKxKyLate = 162.6 * flowRate * viscosity * formationVolumeFactor / (Math.abs(slopeLateRadial) * thickness);
+                    
+                    result = `
+                        <p>Late Pseudo-Radial Flow Analysis:</p>
+                        <p>Slope (m) = ${slopeLateRadial.toFixed(2)} psi/cycle</p>
+                        <p>√(k<sub>x</sub>k<sub>y</sub>) = ${sqrtKxKyLate.toFixed(2)} md</p>
+                    `;
+                    break;
+                    
+                case 'late-linear':
+                    // Linear plot: pressure vs sqrt(time)
+                    plotType = 'sqrt';
+                    xData = timeData.map(t => Math.sqrt(t));
+                    yData = pressureData;
+                    
+                    // Calculate slope from linear regression
+                    const slopeLateLinear = calculateSlope(xData, yData);
+                    const reservoirWidth = 2000; // Assumed width
+                    const sqrtPhiMuCtKxLate = 8.13 * flowRate * viscosity * formationVolumeFactor / (Math.abs(slopeLateLinear) * reservoirWidth * thickness);
+                    const kxLate = Math.pow(sqrtPhiMuCtKxLate, 2) / (porosity * viscosity * compressibility);
+                    
+                    result = `
+                        <p>Late Linear Flow Analysis:</p>
+                        <p>Slope (m) = ${slopeLateLinear.toFixed(2)} psi/√hr</p>
+                        <p>√(φμc<sub>t</sub>k<sub>x</sub>) = ${sqrtPhiMuCtKxLate.toFixed(4)}</p>
+                        <p>k<sub>x</sub> = ${kxLate.toFixed(2)} md</p>
+                    `;
+                    break;
+            }
+            
+            // Display results
+            resultsText.innerHTML = result;
+            analysisResults.style.display = 'block';
+            
+            // Plot data
+            plotData(timeData, pressureData, plotType);
+        });
+        
+        function calculateSlope(xData, yData) {
+            // Simple linear regression
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+            const n = xData.length;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += xData[i];
+                sumY += yData[i];
+                sumXY += xData[i] * yData[i];
+                sumXX += xData[i] * xData[i];
+            }
+            
+            return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        }
+        
+        function plotData(timeData, pressureData, plotType) {
+            const ctx = dataPlotCanvas.getContext('2d');
+            ctx.clearRect(0, 0, dataPlotCanvas.width, dataPlotCanvas.height);
+            
+            // Determine x-axis data based on plot type
+            let xData;
+            let xLabel;
+            
+            if (plotType === 'semilog') {
+                xData = timeData.map(t => Math.log10(t));
+                xLabel = 'log(Time, hrs)';
+            } else if (plotType === 'sqrt') {
+                xData = timeData.map(t => Math.sqrt(t));
+                xLabel = '√Time (hrs^0.5)';
+            } else {
+                xData = timeData;
+                xLabel = 'Time (hrs)';
+            }
+            
+            // Find min and max for scaling
+            const xMin = Math.min(...xData);
+            const xMax = Math.max(...xData);
+            const yMin = Math.min(...pressureData);
+            const yMax = Math.max(...pressureData);
+            
+            const padding = 40;
+            const plotWidth = dataPlotCanvas.width - 2 * padding;
+            const plotHeight = dataPlotCanvas.height - 2 * padding;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, dataPlotCanvas.height - padding);
+            ctx.lineTo(dataPlotCanvas.width - padding, dataPlotCanvas.height - padding);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(xLabel, dataPlotCanvas.width / 2, dataPlotCanvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, dataPlotCanvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Pressure Drop (psi)', 0, 0);
+            ctx.restore();
+            
+            // Plot data points
+            ctx.fillStyle = '#3498db';
+            for (let i = 0; i < xData.length; i++) {
+                const x = padding + (xData[i] - xMin) / (xMax - xMin) * plotWidth;
+                const y = dataPlotCanvas.height - padding - (pressureData[i] - yMin) / (yMax - yMin) * plotHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Calculate and draw best-fit line
+            const slope = calculateSlope(xData, pressureData);
+            const intercept = calculateIntercept(xData, pressureData, slope);
+            
+            ctx.beginPath();
+            const x1 = padding;
+            const y1 = dataPlotCanvas.height - padding - (slope * xMin + intercept - yMin) / (yMax - yMin) * plotHeight;
+            const x2 = dataPlotCanvas.width - padding;
+            const y2 = dataPlotCanvas.height - padding - (slope * xMax + intercept - yMin) / (yMax - yMin) * plotHeight;
+            
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function calculateIntercept(xData, yData, slope) {
+            let sumX = 0, sumY = 0;
+            const n = xData.length;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += xData[i];
+                sumY += yData[i];
+            }
+            
+            return (sumY - slope * sumX) / n;
+        }
+        
+        // Initialize the visualization
+        drawWellModel();
+    </script>
+</body>
+</html>

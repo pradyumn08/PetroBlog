@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Multiphase Multicomponent Chemical Flooding from First Principles</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4285f4;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider {
+            width: 100%;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .value-display {
+            font-weight: bold;
+            color: #4285f4;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .highlight {
+            background-color: #fffde7;
+            padding: 2px;
+        }
+        .note {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Multiphase Multicomponent Chemical Flooding from First Principles</h1>
+    
+    <p>Have you ever wondered how oil companies extract the stubborn oil that refuses to flow out of underground reservoirs? After primary and secondary recovery methods (natural pressure and water flooding), about 60-70% of oil typically remains trapped in the rock. This is where enhanced oil recovery techniques like chemical flooding come into play.</p>
+    
+    <p>Today, we're going to break down a fundamental academic paper that revolutionized how we model these complex systems: "Formulation of a General Multiphase Multicomponent Chemical Flood Model" by Fleming, Thomas, and Winter. Rather than getting lost in the mathematical jungle, we'll build our understanding from first principles.</p>
+
+    <div class="box">
+        <h3>What You'll Learn</h3>
+        <ul>
+            <li>How multiple fluids and chemicals interact in porous rock</li>
+            <li>The mathematical framework for modeling these complex systems</li>
+            <li>Why the Buckley-Leverett equations are a special case of this model</li>
+            <li>How to apply this to real-world enhanced oil recovery</li>
+        </ul>
+    </div>
+
+    <h2>The Big Picture: What's Happening Underground</h2>
+    
+    <p>Imagine trying to wash oil off your hands with just water. It doesn't work well, right? Now imagine that oil trapped in tiny pores of rock underground. Chemical flooding introduces surfactants (like soap), polymers, and other chemicals to help mobilize that trapped oil.</p>
+
+    <p>But modeling this process is incredibly complex because we're dealing with:</p>
+    <ul>
+        <li>Multiple phases (oil, water, microemulsions)</li>
+        <li>Multiple components (water, oil, surfactant, polymer, salt, etc.)</li>
+        <li>Components moving between phases</li>
+        <li>Adsorption onto rock surfaces</li>
+        <li>Flow through a complex porous medium</li>
+    </ul>
+
+    <h2>The Fundamental Building Blocks</h2>
+
+    <h3>1. Mass Conservation: Where Everything Starts</h3>
+    
+    <p>The core principle is that matter cannot be created or destroyed. For each component in our system, we can write:</p>
+    
+    <div class="equation-box">
+        $$\frac{\partial\bar{\rho}_{i}}{\partial t}+\nabla\cdot(\vec{g}_{i}) = 0, \quad i=1 \ldots n_{c}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\bar{\rho}_{i}\) is the mass density of component \(i\)</li>
+        <li>\(\vec{g}_{i}\) is the momentum density of component \(i\)</li>
+        <li>\(n_c\) is the number of components</li>
+    </ul>
+
+    <p>This equation simply states: the rate of change of mass plus the net flow of mass out of a region equals zero.</p>
+
+    <h3>2. Multiphase Nature: Splitting the System</h3>
+    
+    <p>Since our components exist in multiple phases, we need to account for this. We split the density into parts:</p>
+    
+    <div class="equation-box">
+        $$\bar{\rho}_{i} = \sum_{j=1}^{n_{p}+1}\bar{\rho}_{i}^{j}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\bar{\rho}_{i}^{j}\) is the density of component \(i\) in phase \(j\)</li>
+        <li>\(n_p\) is the number of fluid phases</li>
+        <li>The \(n_p+1\) term represents the adsorbed phase (on the rock)</li>
+    </ul>
+
+    <h3>3. Porous Medium: Introducing Porosity and Saturation</h3>
+    
+    <p>Since we're dealing with flow through porous rock, we need to account for the rock structure:</p>
+    
+    <div class="equation-box">
+        $$\bar{\rho}_{i}^{j} = \phi S^{j}{\rho}_{i}^{j}, \quad j=1\ldots n_{p}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\phi\) is the porosity (fraction of rock volume that is pore space)</li>
+        <li>\(S^{j}\) is the saturation of phase \(j\) (fraction of pore space filled with phase \(j\))</li>
+        <li>\(\rho_{i}^{j}\) is the "bulk" density of component \(i\) in phase \(j\)</li>
+    </ul>
+
+    <div class="note">
+        <strong>Intuition:</strong> Think of porosity as how "sponge-like" the rock is, and saturation as what fraction of that sponge contains a specific fluid.
+    </div>
+
+    <h3>4. Concentrations: Describing Phase Compositions</h3>
+    
+    <p>To track how components distribute between phases:</p>
+    
+    <div class="equation-box">
+        $$C_{i}^{j} = \frac{\rho_{i}^{j}}{\rho^{j}} = \frac{\bar{\rho}_{i}^{j}}{\bar{\rho}^{j}}$$
+    </div>
+    
+    <p>Where \(C_{i}^{j}\) is the mass concentration of component \(i\) in phase \(j\).</p>
+
+    <h2>The Physics of Flow: Darcy's Law and Fick's Law</h2>
+
+    <p>Two fundamental laws govern how our fluids move:</p>
+
+    <h3>1. Darcy's Law: Movement Between Phases</h3>
+    
+    <div class="equation-box">
+        $$\vec{v}^{j} = -\frac{k^{j}}{\phi\eta^{j}S^{j}} \nabla p_{E}^{j}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\vec{v}^{j}\) is the velocity of phase \(j\)</li>
+        <li>\(k^{j}\) is the effective permeability to phase \(j\)</li>
+        <li>\(\eta^{j}\) is the viscosity of phase \(j\)</li>
+        <li>\(p_{E}^{j}\) is the effective pressure (including gravity)</li>
+    </ul>
+
+    <div class="note">
+        <strong>Intuition:</strong> Fluids move from high pressure to low pressure, but how easily they move depends on the rock properties and fluid properties.
+    </div>
+
+    <h3>2. Fick's Law: Diffusion Within Phases</h3>
+    
+    <div class="equation-box">
+        $$\rho_{i}^{j}(\vec{v}_{i}^{j}-\vec{v}^{j}) = -\sum_{k=1}^{n_{c}-1}\xi_{i k} \nabla\hat{\mu}_{k}$$
+    </div>
+    
+    <p>This describes how components diffuse within a phase due to chemical potential gradients.</p>
+
+    <h2>Phase Equilibrium: How Components Distribute</h2>
+    
+    <p>At equilibrium, the chemical potential of each component must be equal in all phases:</p>
+    
+    <div class="equation-box">
+        $$\mu_{i}(\rho_{1}^{1},\rho_{2}^{1}\ldots\rho_{n_{c}}^{1},T) = \mu_{i}(\rho_{1}^{j},\rho_{2}^{j}\ldots\rho_{n_{c}}^{j},T)$$
+    </div>
+    
+    <p>This determines how components distribute between phases.</p>
+
+    <h3>Capillary Pressure: The Interface Effect</h3>
+    
+    <p>When two fluid phases meet in tiny pores, we get capillary pressure:</p>
+    
+    <div class="equation-box">
+        $$p^{j}-p^{1} \equiv P_{c}^{j} = \frac{2\gamma_{1j}}{\bar{r}_{1j}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\gamma_{1j}\) is the interfacial tension</li>
+        <li>\(\bar{r}_{1j}\) is the average radius of curvature</li>
+    </ul>
+
+    <div class="note">
+        <strong>Intuition:</strong> Think of how water curves up in a very thin glass tube. That same effect happens in tiny rock pores, creating pressure differences between phases.
+    </div>
+
+    <h2>The Special Case: Buckley-Leverett Theory</h2>
+    
+    <p>One of the elegant aspects of this model is that it reduces to the classic Buckley-Leverett equations under specific conditions.</p>
+    
+    <p>If we have:</p>
+    <ul>
+        <li>Two phases (oil and water)</li>
+        <li>Two components that don't mix (oil stays in oil phase, water stays in water phase)</li>
+        <li>Incompressible fluids</li>
+        <li>Constant porosity</li>
+    </ul>
+    
+    <p>Then our complex system simplifies to:</p>
+    
+    <div class="equation-box">
+        $$\phi\frac{\partial S^{1}}{\partial t}+\vec{u}\cdot\nabla f^{1} = 0$$
+    </div>
+    
+    <p>and</p>
+    
+    <div class="equation-box">
+        $$\nabla\cdot\vec{u} = 0$$
+    </div>
+    
+    <p>Where \(f^{1}\) is the fractional flow of phase 1 (typically water).</p>
+
+    <p>This is the famous Buckley-Leverett equation that has been used for decades to model waterflooding in oil reservoirs.</p>
+
+    <h2>Application to Chemical Flooding</h2>
+    
+    <p>For enhanced oil recovery with chemicals, we need to consider three components (at minimum):</p>
+    <ol>
+        <li>Water (the carrier fluid)</li>
+        <li>Oil (what we want to recover)</li>
+        <li>Chemical additive (surfactant, polymer, etc.)</li>
+    </ol>
+    
+    <p>The paper derives a system of equations that can model this scenario:</p>
+    
+    <div class="equation-box">
+        $$\phi\left[\frac{\partial S^{j}}{\partial t}+\nabla\cdot(S^{j}\vec{v}^{j})\right] = \Delta^{j}, \quad j=1,2$$
+    </div>
+    
+    <p>and</p>
+    
+    <div class="equation-box">
+        $$\sum_{j=1}^{3}\frac{\hat{\rho}^{j}}{1-C_{3}^{j}}\left(\frac{D^{j}C_{3}^{j}}{D t}\right)_{T,p^{1},S^{1}} = \Lambda^{3}$$
+    </div>
+    
+    <p>These equations capture the complex interplay of multiple components moving between phases while accounting for adsorption and phase behavior.</p>
+
+    <div class="simulator">
+        <h3>Interactive Chemical Flood Simulator</h3>
+        <p>Adjust the parameters below to see how they affect oil recovery in a chemical flooding process:</p>
+        
+        <div class="slider-container">
+            <label for="surfactant-concentration">Surfactant Concentration (%): <span id="surfactant-value" class="value-display">0.5</span></label>
+            <input type="range" id="surfactant-concentration" class="slider" min="0" max="2" step="0.1" value="0.5">
+        </div>
+        
+        <div class="slider-container">
+            <label for="polymer-concentration">Polymer Concentration (ppm): <span id="polymer-value" class="value-display">1000</span></label>
+            <input type="range" id="polymer-concentration" class="slider" min="0" max="2000" step="100" value="1000">
+        </div>
+        
+        <div class="slider-container">
+            <label for="injection-rate">Injection Rate (PV/year): <span id="rate-value" class="value-display">0.3</span></label>
+            <input type="range" id="injection-rate" class="slider" min="0.1" max="1" step="0.05" value="0.3">
+        </div>
+        
+        <div class="slider-container">
+            <label for="interfacial-tension">Interfacial Tension Reduction Factor: <span id="ift-value" class="value-display">100</span></label>
+            <input type="range" id="interfacial-tension" class="slider" min="1" max="1000" step="10" value="100">
+        </div>
+        
+        <canvas id="simulation-canvas" width="700" height="300"></canvas>
+        
+        <div>
+            <p>Oil Recovery: <span id="recovery-value" class="value-display">0</span>%</p>
+            <button id="start-simulation">Start Simulation</button>
+            <button id="reset-simulation">Reset</button>
+        </div>
+    </div>
+
+    <h2>Why This Matters: Real-World Applications</h2>
+    
+    <p>This mathematical framework has profound practical implications:</p>
+    
+    <ul>
+        <li><strong>Optimizing Chemical Formulations:</strong> By understanding how components interact, we can design better chemical cocktails for specific reservoir conditions.</li>
+        <li><strong>Predicting Recovery:</strong> These models help forecast how much additional oil can be recovered using chemical flooding.</li>
+        <li><strong>Economic Assessment:</strong> By simulating different scenarios, companies can evaluate the economic viability of chemical flooding projects.</li>
+        <li><strong>Environmental Impact:</strong> Better modeling means more efficient use of chemicals and reduced environmental footprint.</li>
+    </ul>
+
+    <h2>Key Insights from First Principles</h2>
+    
+    <p>Looking at this complex model from first principles, several key insights emerge:</p>
+    
+    <div class="box">
+        <ol>
+            <li><strong>Conservation is fundamental:</strong> No matter how complex the system, mass conservation remains the foundation.</li>
+            <li><strong>Scale matters:</strong> The equations work at a scale where we can treat the porous medium as a continuum with average properties.</li>
+            <li><strong>Equilibrium assumption:</strong> Local thermodynamic equilibrium simplifies the model significantly but may not always hold in fast-flowing systems.</li>
+            <li><strong>Simpler models are special cases:</strong> The classic Buckley-Leverett theory emerges naturally when appropriate simplifications are made.</li>
+            <li><strong>Concentration derivatives are critical:</strong> For chemical flooding, the derivatives of density with respect to chemical concentration cannot typically be ignored.</li>
+        </ol>
+    </div>
+
+    <h2>Conclusion: The Power of Mathematical Modeling</h2>
+    
+    <p>Fleming, Thomas, and Winter's model provides a comprehensive framework for understanding multiphase, multicomponent flow in porous media. By starting from fundamental conservation laws and incorporating phase behavior, they created a model that can describe everything from simple waterflooding to complex chemical flooding processes.</p>
+    
+    <p>The beauty of this approach is that it connects microscopic phenomena (diffusion, phase equilibrium) to macroscopic observations (oil recovery rates, pressure distributions) through a coherent mathematical framework. This allows engineers to design better recovery processes and make more informed decisions about field implementation.</p>
+    
+    <p>As computational power continues to increase, these models become even more valuable for optimizing enhanced oil recovery operations and maximizing the use of our natural resources.</p>
+
+    <script>
+        // Simulation canvas setup
+        const canvas = document.getElementById('simulation-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Slider value displays
+        const surfactantValue = document.getElementById('surfactant-value');
+        const polymerValue = document.getElementById('polymer-value');
+        const rateValue = document.getElementById('rate-value');
+        const iftValue = document.getElementById('ift-value');
+        const recoveryValue = document.getElementById('recovery-value');
+        
+        // Slider event listeners
+        document.getElementById('surfactant-concentration').addEventListener('input', function() {
+            surfactantValue.textContent = this.value;
+            drawInitialState();
+        });
+        
+        document.getElementById('polymer-concentration').addEventListener('input', function() {
+            polymerValue.textContent = this.value;
+            drawInitialState();
+        });
+        
+        document.getElementById('injection-rate').addEventListener('input', function() {
+            rateValue.textContent = this.value;
+            drawInitialState();
+        });
+        
+        document.getElementById('interfacial-tension').addEventListener('input', function() {
+            iftValue.textContent = this.value;
+            drawInitialState();
+        });
+        
+        // Simulation variables
+        let isSimulating = false;
+        let animationId;
+        let time = 0;
+        let recovery = 0;
+        let oilDistribution = [];
+        let chemicalFront = 0;
+        let waterFront = 0;
+        
+        // Initialize the oil distribution
+        function initializeSimulation() {
+            time = 0;
+            recovery = 0;
+            oilDistribution = [];
+            chemicalFront = 0;
+            waterFront = 0;
+            
+            // Create initial oil distribution (heterogeneous)
+            for (let i = 0; i < canvas.width; i++) {
+                // More oil on the right side
+                let oilSaturation = 0.8 - 0.3 * Math.sin(i / canvas.width * Math.PI);
+                oilDistribution.push(oilSaturation);
+            }
+            
+            recoveryValue.textContent = '0';
+            drawInitialState();
+        }
+        
+        // Draw the initial reservoir state
+        function drawInitialState() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw reservoir background
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw porous medium
+            for (let x = 0; x < canvas.width; x += 5) {
+                for (let y = 0; y < canvas.height; y += 5) {
+                    if (Math.random() > 0.7) {
+                        ctx.fillStyle = '#d3d3d3';
+                        ctx.fillRect(x, y, 3, 3);
+                    }
+                }
+            }
+            
+            // Draw initial oil distribution
+            if (oilDistribution.length > 0) {
+                for (let i = 0; i < canvas.width; i++) {
+                    const oilHeight = oilDistribution[i] * canvas.height;
+                    ctx.fillStyle = 'rgba(139, 69, 19, 0.7)';
+                    ctx.fillRect(i, canvas.height - oilHeight, 1, oilHeight);
+                }
+            }
+            
+            // Draw injection well on left
+            ctx.fillStyle = '#4285f4';
+            ctx.fillRect(0, 0, 10, canvas.height);
+            
+            // Draw production well on right
+            ctx.fillStyle = '#34a853';
+            ctx.fillRect(canvas.width - 10, 0, 10, canvas.height);
+        }
+        
+        // Update simulation state
+        function updateSimulation() {
+            const surfactantConc = parseFloat(document.getElementById('surfactant-concentration').value);
+            const polymerConc = parseFloat(document.getElementById('polymer-concentration').value);
+            const injectionRate = parseFloat(document.getElementById('injection-rate').value);
+            const iftReduction = parseFloat(document.getElementById('interfacial-tension').value);
+            
+            // Advance time
+            time += 0.01;
+            
+            // Calculate chemical front position based on injection rate
+            chemicalFront = Math.min(canvas.width, time * injectionRate * 100);
+            
+            // Water front moves faster than chemical front
+            waterFront = Math.min(canvas.width, chemicalFront * 1.2);
+            
+            // Calculate recovery efficiency based on parameters
+            // This is a simplified model that mimics the general behavior
+            const surfactantEfficiency = surfactantConc * iftReduction / 100;
+            const polymerEfficiency = polymerConc / 2000; // Normalized to 0-1
+            const sweepEfficiency = 0.5 + 0.3 * polymerEfficiency;
+            
+            // Update oil distribution based on fronts
+            for (let i = 0; i < canvas.width; i++) {
+                if (i < waterFront) {
+                    // Water sweep
+                    oilDistribution[i] *= 0.99;
+                }
+                
+                if (i < chemicalFront) {
+                    // Chemical effect (more efficient oil removal)
+                    const chemicalEfficiency = surfactantEfficiency * sweepEfficiency;
+                    oilDistribution[i] *= (1 - 0.02 * chemicalEfficiency);
+                }
+            }
+            
+            // Calculate total recovery
+            let totalOil = 0;
+            let originalOil = 0.5 * canvas.width; // Approximate original oil in place
+            
+            for (let i = 0; i < canvas.width; i++) {
+                totalOil += oilDistribution[i];
+            }
+            
+            recovery = Math.min(100, Math.max(0, Math.round((1 - totalOil / originalOil) * 100)));
+            recoveryValue.textContent = recovery.toString();
+            
+            // Draw updated state
+            drawSimulationState();
+            
+            // Stop if recovery plateaus or reaches maximum
+            if (recovery >= 95 || time > 10) {
+                stopSimulation();
+            } else if (isSimulating) {
+                animationId = requestAnimationFrame(updateSimulation);
+            }
+        }
+        
+        // Draw the current simulation state
+        function drawSimulationState() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw reservoir background
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw porous medium
+            for (let x = 0; x < canvas.width; x += 5) {
+                for (let y = 0; y < canvas.height; y += 5) {
+                    if (Math.random() > 0.7) {
+                        ctx.fillStyle = '#d3d3d3';
+                        ctx.fillRect(x, y, 3, 3);
+                    }
+                }
+            }
+            
+            // Draw water region
+            ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+            ctx.fillRect(0, 0, waterFront, canvas.height);
+            
+            // Draw chemical region
+            const surfactantConc = parseFloat(document.getElementById('surfactant-concentration').value);
+            ctx.fillStyle = `rgba(255, 165, 0, ${surfactantConc * 0.3})`;
+            ctx.fillRect(0, 0, chemicalFront, canvas.height);
+            
+            // Draw remaining oil
+            for (let i = 0; i < canvas.width; i++) {
+                const oilHeight = oilDistribution[i] * canvas.height;
+                ctx.fillStyle = 'rgba(139, 69, 19, 0.7)';
+                ctx.fillRect(i, canvas.height - oilHeight, 1, oilHeight);
+            }
+            
+            // Draw injection well on left
+            ctx.fillStyle = '#4285f4';
+            ctx.fillRect(0, 0, 10, canvas.height);
+            
+            // Draw production well on right
+            ctx.fillStyle = '#34a853';
+            ctx.fillRect(canvas.width - 10, 0, 10, canvas.height);
+            
+            // Draw progress indicator
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.fillText(`Time: ${time.toFixed(2)} PV`, 20, 20);
+            ctx.fillText(`Recovery: ${recovery}%`, 20, 40);
+        }
+        
+        // Start the simulation
+        function startSimulation() {
+            if (!isSimulating) {
+                isSimulating = true;
+                updateSimulation();
+            }
+        }
+        
+        // Stop the simulation
+        function stopSimulation() {
+            isSimulating = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        // Event listeners for buttons
+        document.getElementById('start-simulation').addEventListener('click', startSimulation);
+        document.getElementById('reset-simulation').addEventListener('click', function() {
+            stopSimulation();
+            initializeSimulation();
+        });
+        
+        // Initialize on load
+        initializeSimulation();
+    </script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Fractured Reservoirs: How Stress Changes Everything</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 220px;
+        }
+        .slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            display: block;
+        }
+        .output {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .footnote {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Fractured Reservoirs: How Stress Changes Everything</h1>
+    
+    <p>Have you ever wondered what happens deep beneath the Earth's surface when oil companies extract fluids from underground reservoirs? The physics behind this process is fascinating and has significant implications for energy production worldwide. Today, we'll break down a complex academic paper on naturally fractured reservoirs (NFRs) using first principles to understand how stress affects these geological formations.</p>
+    
+    <div class="highlight">
+        <p><strong>Key Takeaway:</strong> When fluids are extracted from naturally fractured reservoirs, the pressure decreases, causing the fractures to close slightly. This seemingly small change has dramatic effects on how oil and gas flow through the rock. Understanding these effects helps engineers predict reservoir behavior and optimize production.</p>
+    </div>
+    
+    <h2>What Are Naturally Fractured Reservoirs?</h2>
+    
+    <p>Before diving into the complex math, let's establish what we're talking about. A naturally fractured reservoir is a rock formation that contains two distinct systems:</p>
+    
+    <ol>
+        <li><strong>Matrix:</strong> The bulk of the rock with tiny pores that hold most of the oil or gas</li>
+        <li><strong>Fractures:</strong> Natural cracks in the rock that provide pathways for fluid flow</li>
+    </ol>
+    
+    <div class="analogy">
+        <p><strong>Analogy:</strong> Think of the matrix like a sponge that holds water, while the fractures are like straws inserted throughout the sponge. The water (oil/gas) is stored mainly in the sponge but flows primarily through the straws.</p>
+    </div>
+    
+    <h2>The Fundamental Problem: Stress and Fractures</h2>
+    
+    <p>When engineers extract fluids from a reservoir, two opposing forces are at play:</p>
+    
+    <ol>
+        <li><strong>Confining Pressure (p<sub>c</sub>):</strong> The weight of all the rock above pushing down</li>
+        <li><strong>Pore Pressure (p<sub>p</sub>):</strong> The pressure of fluids inside the rock pushing outward</li>
+    </ol>
+    
+    <p>The difference between these forces is called <strong>effective stress</strong>, and it's the key to understanding how reservoirs behave when fluids are extracted.</p>
+    
+    <h3>The Effective Stress Equation</h3>
+    
+    <p>The foundational equation from the paper is Terzaghi's effective stress concept:</p>
+    
+    <p>\[ p_e = p_c - \alpha p_p \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_e\) = effective stress</li>
+        <li>\(p_c\) = confining pressure</li>
+        <li>\(p_p\) = pore pressure</li>
+        <li>\(\alpha\) = Biot's coefficient (often assumed to be 1)</li>
+    </ul>
+    
+    <p>For most practical purposes, we can simplify to:</p>
+    
+    <p>\[ p_e = p_c - p_p \]</p>
+    
+    <p>This means that as we extract fluid (reducing \(p_p\)), the effective stress increases, which compresses the rock and especially the fractures.</p>
+    
+    <h2>How Fractures Change Under Stress</h2>
+    
+    <p>The paper derives equations that show how fracture properties change when pressure changes. Let's break down the key relationships:</p>
+    
+    <h3>Fracture Porosity</h3>
+    
+    <p>Fracture porosity is the percentage of the total rock volume that consists of fracture space. As effective stress increases, fractures close slightly, reducing fracture porosity:</p>
+    
+    <p>\[ \phi_f = \phi_{f_i} e^{-(c_t)_f(P_i - \bar{P})} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\phi_f\) = current fracture porosity</li>
+        <li>\(\phi_{f_i}\) = initial fracture porosity</li>
+        <li>\((c_t)_f\) = total fracture compressibility</li>
+        <li>\(P_i\) = initial reservoir pressure</li>
+        <li>\(\bar{P}\) = current average reservoir pressure</li>
+    </ul>
+    
+    <h3>Fracture Permeability</h3>
+    
+    <p>Permeability measures how easily fluids flow through the rock. For fractures, it's proportional to the cube of the fracture width, making it extremely sensitive to stress changes:</p>
+    
+    <p>\[ k_f = k_{f_i} e^{-3(c_t)_f(P_i - \bar{P})} \]</p>
+    
+    <p>This cubic relationship is critical! It means that a small reduction in fracture width causes a dramatic decrease in flow capacity.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Fracture Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="pressure-drop">Pressure Drop (psi):</label>
+            <input type="range" id="pressure-drop" class="slider" min="0" max="2000" value="500" step="10">
+            <span id="pressure-drop-value">500</span> psi
+        </div>
+        
+        <div class="slider-container">
+            <label for="compressibility">Fracture Compressibility (1/psi):</label>
+            <input type="range" id="compressibility" class="slider" min="1" max="100" value="25" step="1">
+            <span id="compressibility-value">2.5</span> × 10<sup>-5</sup> psi<sup>-1</sup>
+        </div>
+        
+        <div class="slider-container">
+            <label for="initial-width">Initial Fracture Width (mm):</label>
+            <input type="range" id="initial-width" class="slider" min="0.1" max="2" value="0.5" step="0.1">
+            <span id="initial-width-value">0.5</span> mm
+        </div>
+        
+        <canvas id="fracture-canvas" width="600" height="300"></canvas>
+        
+        <div>
+            <p><strong>Results:</strong></p>
+            <p>Fracture Width Reduction: <span id="width-reduction" class="output">0%</span></p>
+            <p>Fracture Porosity Reduction: <span id="porosity-reduction" class="output">0%</span></p>
+            <p>Fracture Permeability Reduction: <span id="permeability-reduction" class="output">0%</span></p>
+        </div>
+        
+        <button id="reset-btn" class="btn">Reset</button>
+    </div>
+    
+    <h2>The Storage Capacity Ratio (ω)</h2>
+    
+    <p>A key parameter in the paper is the storage capacity ratio (ω), which tells us what fraction of the fluid in the reservoir is stored in fractures versus the matrix:</p>
+    
+    <p>\[ \omega = \frac{(\phi c_t)_f}{(\phi c_t)_f + (\phi c_t)_m} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\((\phi c_t)_f\) = storage capacity of fractures</li>
+        <li>\((\phi c_t)_m\) = storage capacity of matrix</li>
+    </ul>
+    
+    <p>This ratio is crucial for reservoir engineers because it affects how pressure waves propagate through the reservoir during production.</p>
+    
+    <h3>Connecting Storage Capacity to Rock Physics</h3>
+    
+    <p>One of the most innovative aspects of the paper is connecting the storage capacity ratio to the elastic properties of the rock, specifically the normal compliance of fractures:</p>
+    
+    <p>\[ \omega = \frac{K_F Z_{Nf}}{K_F Z_{Nf} + \phi_T} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(K_F\) = fluid bulk modulus</li>
+        <li>\(Z_{Nf}\) = normal compliance of fractures</li>
+        <li>\(\phi_T\) = total porosity</li>
+    </ul>
+    
+    <p>This relationship allows engineers to estimate storage capacity from seismic data, providing a powerful tool for reservoir characterization without requiring well testing.</p>
+    
+    <h2>Practical Implications: A Step-by-Step Approach</h2>
+    
+    <p>The paper provides a comprehensive 18-step procedure for analyzing how stress affects fractured reservoirs. Let's highlight the most critical steps:</p>
+    
+    <ol>
+        <li>Measure the current reservoir pressure</li>
+        <li>Calculate the effective stress</li>
+        <li>Determine the storage capacity ratio from well tests</li>
+        <li>Calculate fracture and matrix compressibilities</li>
+        <li>Estimate changes in fracture porosity and permeability due to pressure changes</li>
+    </ol>
+    
+    <div class="highlight">
+        <p>By applying this procedure, engineers can predict how a reservoir will behave over time and optimize production strategies accordingly.</p>
+    </div>
+    
+    <h2>Real-World Example: The Wyebourn Field</h2>
+    
+    <p>The paper analyzes data from the Wyebourn field, a carbonate reservoir with the following properties:</p>
+    
+    <ul>
+        <li>Initial pressure: 5500 psi</li>
+        <li>Current pressure: 4320 psi</li>
+        <li>Total porosity: 20%</li>
+        <li>Storage capacity ratio: 0.05</li>
+    </ul>
+    
+    <p>The analysis revealed that:</p>
+    
+    <ol>
+        <li>Fracture compressibility is 280 times higher than matrix compressibility</li>
+        <li>Fracture porosity decreased by only 2% due to depletion</li>
+        <li>Permeability decreased by 4% due to depletion</li>
+    </ol>
+    
+    <p>These seemingly small changes can significantly impact production rates over time.</p>
+    
+    <h2>Connecting the Dots: Pressure Transient Analysis</h2>
+    
+    <p>One of the most powerful aspects of the paper is how it connects observable well test data to the underlying physical properties of the reservoir.</p>
+    
+    <p>When engineers conduct a pressure buildup test (shutting in a well and measuring how pressure recovers), the pressure derivative curve shows a characteristic "trough" for naturally fractured reservoirs:</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Well Test Analyzer</h3>
+        
+        <div class="slider-container">
+            <label for="omega-value">Storage Capacity Ratio (ω):</label>
+            <input type="range" id="omega-value" class="slider" min="0.01" max="0.2" value="0.05" step="0.01">
+            <span id="omega-value-display">0.05</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="lambda-value">Interporosity Flow (λ):</label>
+            <input type="range" id="lambda-value" class="slider" min="-9" max="-5" value="-7" step="0.5">
+            <span id="lambda-value-display">1.0 × 10<sup>-7</sup></span>
+        </div>
+        
+        <canvas id="welltest-canvas" width="600" height="300"></canvas>
+        
+        <p>The depth of the trough indicates the storage capacity ratio (ω), while its position indicates the interporosity flow parameter (λ).</p>
+        
+        <button id="analyze-btn" class="btn">Analyze Test</button>
+        <div id="analysis-result"></div>
+    </div>
+    
+    <h2>Why This Matters: The Big Picture</h2>
+    
+    <p>Understanding how stress affects naturally fractured reservoirs is crucial for several reasons:</p>
+    
+    <ol>
+        <li><strong>Resource Estimation:</strong> More accurate estimates of recoverable oil and gas</li>
+        <li><strong>Production Optimization:</strong> Better prediction of how production rates will decline over time</li>
+        <li><strong>Field Development:</strong> Improved well placement and stimulation strategies</li>
+        <li><strong>Enhanced Recovery:</strong> More effective design of water or gas injection programs</li>
+    </ol>
+    
+    <p>By integrating data from multiple sources (well tests, logs, seismic surveys, and core analysis), engineers can build more accurate reservoir models and make better decisions.</p>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>The paper demonstrates how a first-principles approach to understanding fractured reservoirs—starting with the basic physics of stress and strain—leads to practical tools for reservoir characterization and management.</p>
+    
+    <p>The key insights are:</p>
+    
+    <ol>
+        <li>Fracture properties are much more sensitive to stress changes than matrix properties</li>
+        <li>The cubic relationship between fracture width and permeability creates a strong sensitivity to pressure changes</li>
+        <li>Integrating multiple data sources provides the most robust characterization of fractured reservoirs</li>
+    </ol>
+    
+    <p>By understanding these fundamental relationships, engineers can better predict and optimize the performance of naturally fractured reservoirs, ultimately leading to more efficient extraction of valuable energy resources.</p>
+    
+    <div class="footnote">
+        <p><strong>Note:</strong> This blog post is based on "Effects of Stress on Fracture Properties of Naturally Fractured Reservoirs" by Abel Chacon and Djebbar Tiab (2007). The interactive elements are simplified representations of the complex physical phenomena described in the paper.</p>
+    </div>
+
+    <script>
+        // Fracture Simulator
+        const pressureDropSlider = document.getElementById('pressure-drop');
+        const pressureDropValue = document.getElementById('pressure-drop-value');
+        const compressibilitySlider = document.getElementById('compressibility');
+        const compressibilityValue = document.getElementById('compressibility-value');
+        const initialWidthSlider = document.getElementById('initial-width');
+        const initialWidthValue = document.getElementById('initial-width-value');
+        const widthReduction = document.getElementById('width-reduction');
+        const porosityReduction = document.getElementById('porosity-reduction');
+        const permeabilityReduction = document.getElementById('permeability-reduction');
+        const resetBtn = document.getElementById('reset-btn');
+        const fracCanvas = document.getElementById('fracture-canvas');
+        const fracCtx = fracCanvas.getContext('2d');
+
+        // Well Test Analyzer
+        const omegaSlider = document.getElementById('omega-value');
+        const omegaDisplay = document.getElementById('omega-value-display');
+        const lambdaSlider = document.getElementById('lambda-value');
+        const lambdaDisplay = document.getElementById('lambda-value-display');
+        const wellTestCanvas = document.getElementById('welltest-canvas');
+        const wellTestCtx = wellTestCanvas.getContext('2d');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const analysisResult = document.getElementById('analysis-result');
+
+        // Initialize values
+        pressureDropValue.textContent = pressureDropSlider.value;
+        compressibilityValue.textContent = (compressibilitySlider.value / 1000).toFixed(1);
+        initialWidthValue.textContent = initialWidthSlider.value;
+        
+        // Update fracture simulation
+        function updateFractureSimulation() {
+            const pressureDrop = parseFloat(pressureDropSlider.value);
+            const compressibility = parseFloat(compressibilitySlider.value) / 1000000; // Convert to proper scale
+            const initialWidth = parseFloat(initialWidthSlider.value);
+            
+            // Calculate reductions based on equations from the paper
+            const widthFactor = Math.exp(-compressibility * pressureDrop);
+            const porosityFactorValue = widthFactor;
+            const permeabilityFactorValue = Math.pow(widthFactor, 3);
+            
+            // Update output values
+            widthReduction.textContent = ((1 - widthFactor) * 100).toFixed(1) + '%';
+            porosityReduction.textContent = ((1 - porosityFactorValue) * 100).toFixed(1) + '%';
+            permeabilityReduction.textContent = ((1 - permeabilityFactorValue) * 100).toFixed(1) + '%';
+            
+            // Draw the fracture visualization
+            drawFracture(initialWidth, widthFactor);
+        }
+        
+        function drawFracture(initialWidth, widthFactor) {
+            fracCtx.clearRect(0, 0, fracCanvas.width, fracCanvas.height);
+            
+            const centerY = fracCanvas.height / 2;
+            const scale = 100; // Scale factor for visualization
+            
+            // Draw matrix blocks
+            fracCtx.fillStyle = '#d2b48c'; // Tan color for rock
+            fracCtx.fillRect(50, centerY - 100, 200, 200);
+            fracCtx.fillRect(300, centerY - 100, 200, 200);
+            
+            // Draw initial fracture outline
+            fracCtx.strokeStyle = '#888';
+            fracCtx.lineWidth = 1;
+            fracCtx.strokeRect(250, centerY - initialWidth * scale / 2, 50, initialWidth * scale);
+            
+            // Draw current fracture
+            fracCtx.fillStyle = '#3498db'; // Blue for fracture
+            const currentWidth = initialWidth * widthFactor;
+            fracCtx.fillRect(250, centerY - currentWidth * scale / 2, 50, currentWidth * scale);
+            
+            // Labels
+            fracCtx.fillStyle = '#000';
+            fracCtx.font = '12px Arial';
+            fracCtx.fillText('Matrix', 130, centerY);
+            fracCtx.fillText('Matrix', 380, centerY);
+            fracCtx.fillText('Fracture', 260, centerY + 60);
+            
+            // Draw arrows indicating stress
+            fracCtx.fillStyle = '#e74c3c';
+            drawArrow(fracCtx, 275, 50, 275, 80, 'Stress');
+            drawArrow(fracCtx, 275, fracCanvas.height - 50, 275, fracCanvas.height - 80, 'Stress');
+        }
+        
+        function drawArrow(ctx, fromX, fromY, toX, toY, text) {
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            
+            // Arrowhead
+            const headLen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+            
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Text
+            if (text) {
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = '12px Arial';
+                ctx.fillText(text, fromX + 10, fromY);
+            }
+        }
+        
+        // Well test visualization
+        function drawWellTest() {
+            wellTestCtx.clearRect(0, 0, wellTestCanvas.width, wellTestCanvas.height);
+            
+            const omega = parseFloat(omegaSlider.value);
+            const lambda = Math.pow(10, parseFloat(lambdaSlider.value));
+            
+            // Draw axes
+            wellTestCtx.beginPath();
+            wellTestCtx.moveTo(50, 50);
+            wellTestCtx.lineTo(50, wellTestCanvas.height - 50);
+            wellTestCtx.lineTo(wellTestCanvas.width - 50, wellTestCanvas.height - 50);
+            wellTestCtx.strokeStyle = '#000';
+            wellTestCtx.lineWidth = 2;
+            wellTestCtx.stroke();
+            
+            // Labels
+            wellTestCtx.fillStyle = '#000';
+            wellTestCtx.font = '12px Arial';
+            wellTestCtx.fillText('Time', wellTestCanvas.width / 2, wellTestCanvas.height - 30);
+            wellTestCtx.save();
+            wellTestCtx.translate(25, wellTestCanvas.height / 2);
+            wellTestCtx.rotate(-Math.PI / 2);
+            wellTestCtx.fillText('Pressure Derivative', 0, 0);
+            wellTestCtx.restore();
+            
+            // Draw well test curve
+            wellTestCtx.beginPath();
+            const width = wellTestCanvas.width - 100;
+            const height = wellTestCanvas.height - 100;
+            const midY = 50 + height / 2;
+            
+            wellTestCtx.moveTo(50, midY);
+            
+            // Early wellbore storage (unit slope)
+            wellTestCtx.lineTo(width * 0.1 + 50, midY - height * 0.2);
+            
+            // Early radial flow
+            wellTestCtx.lineTo(width * 0.2 + 50, midY - height * 0.3);
+            
+            // Transition (trough)
+            const troughDepth = 0.3 * (1 - omega * 5); // Make trough deeper for smaller omega
+            const troughPosition = 0.5 - lambda * 1000000; // Position trough based on lambda
+            wellTestCtx.bezierCurveTo(
+                width * (0.3) + 50, midY - height * 0.3,
+                width * (troughPosition - 0.1) + 50, midY - height * (0.3 - troughDepth),
+                width * troughPosition + 50, midY - height * (0.3 - troughDepth)
+            );
+            
+            // Recovery from trough
+            wellTestCtx.bezierCurveTo(
+                width * (troughPosition + 0.1) + 50, midY - height * (0.3 - troughDepth),
+                width * 0.7 + 50, midY - height * 0.3,
+                width * 0.8 + 50, midY - height * 0.3
+            );
+            
+            // Late radial flow
+            wellTestCtx.lineTo(width + 50, midY - height * 0.3);
+            
+            wellTestCtx.strokeStyle = '#3498db';
+            wellTestCtx.lineWidth = 3;
+            wellTestCtx.stroke();
+            
+            // Mark the trough
+            wellTestCtx.beginPath();
+            wellTestCtx.arc(width * troughPosition + 50, midY - height * (0.3 - troughDepth), 5, 0, Math.PI * 2);
+            wellTestCtx.fillStyle = '#e74c3c';
+            wellTestCtx.fill();
+            
+            wellTestCtx.font = '12px Arial';
+            wellTestCtx.fillText('Trough', width * troughPosition + 60, midY - height * (0.3 - troughDepth) + 5);
+        }
+        
+        // Event listeners
+        pressureDropSlider.addEventListener('input', function() {
+            pressureDropValue.textContent = this.value;
+            updateFractureSimulation();
+        });
+        
+        compressibilitySlider.addEventListener('input', function() {
+            compressibilityValue.textContent = (this.value / 1000).toFixed(1);
+            updateFractureSimulation();
+        });
+        
+        initialWidthSlider.addEventListener('input', function() {
+            initialWidthValue.textContent = this.value;
+            updateFractureSimulation();
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            pressureDropSlider.value = 500;
+            pressureDropValue.textContent = '500';
+            compressibilitySlider.value = 25;
+            compressibilityValue.textContent = '2.5';
+            initialWidthSlider.value = 0.5;
+            initialWidthValue.textContent = '0.5';
+            updateFractureSimulation();
+        });
+        
+        omegaSlider.addEventListener('input', function() {
+            omegaDisplay.textContent = this.value;
+            drawWellTest();
+        });
+        
+        lambdaSlider.addEventListener('input', function() {
+            lambdaDisplay.textContent = '1.0 × 10<sup>' + this.value + '</sup>';
+            drawWellTest();
+        });
+        
+        analyzeBtn.addEventListener('click', function() {
+            const omega = parseFloat(omegaSlider.value);
+            const lambda = Math.pow(10, parseFloat(lambdaSlider.value));
+            
+            let result = '<p><strong>Well Test Analysis:</strong></p>';
+            result += `<p>Storage capacity ratio (ω): ${omega.toFixed(2)}</p>`;
+            result += `<p>Interporosity flow (λ): ${lambda.toExponential(2)}</p>`;
+            
+            if (omega < 0.05) {
+                result += '<p>Interpretation: Fractures provide very little storage. Most fluids are in the matrix.</p>';
+            } else if (omega < 0.1) {
+                result += '<p>Interpretation: Typical dual porosity system with moderate fracture storage.</p>';
+            } else {
+                result += '<p>Interpretation: Significant fracture storage - potentially highly fractured system.</p>';
+            }
+            
+            if (lambda < 1e-8) {
+                result += '<p>Poor fluid transfer between matrix and fractures.</p>';
+            } else if (lambda < 1e-6) {
+                result += '<p>Moderate fluid transfer between matrix and fractures.</p>';
+            } else {
+                result += '<p>Good fluid transfer between matrix and fractures.</p>';
+            }
+            
+            analysisResult.innerHTML = result;
+        });
+        
+        // Initialize
+        updateFractureSimulation();
+        drawWellTest();
+    </script>
+</body>
+</html>

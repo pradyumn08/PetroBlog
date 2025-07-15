@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Transient Radial Flow: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .formula-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 3px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #fffacd;
+            padding: 10px;
+            border-left: 3px solid #f1c40f;
+            margin: 15px 0;
+        }
+        .interactive-container {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        #plot-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        .analogy {
+            background-color: #e8f8e8;
+            padding: 15px;
+            border-left: 3px solid #2ecc71;
+            margin: 20px 0;
+        }
+        .key-concept {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 5px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Disturbed Zone Concept: A Simple Approach to Understanding Transient Radial Flow</h1>
+    
+    <p>Have you ever wondered how petroleum engineers predict how oil will flow through rock formations? Or how groundwater moves through aquifers? These seemingly complex phenomena can be understood through the lens of transient radial flow. Today, I'll break down a powerful but often overlooked approximation method from a 1970s paper by G. Rowan and M.W. Clegg that makes these calculations much more intuitive.</p>
+    
+    <div class="note">
+        <p><strong>Why this matters:</strong> Understanding fluid flow in porous media is crucial for everything from oil extraction to groundwater management to geothermal energy. Traditional solutions involve either complex mathematical series or numerical methods that hide the underlying physics. The approach we'll explore today gives us physical insight while maintaining accuracy.</p>
+    </div>
+    
+    <h2>The Key Insight: The Disturbed Zone</h2>
+    
+    <p>The central concept in this approach is the <span class="key-concept">disturbed zone</span> - a region around a well that expands outward into the reservoir as fluid is produced. Outside this zone, the reservoir remains undisturbed at its initial conditions.</p>
+    
+    <div class="analogy">
+        <p><strong>Think of it like this:</strong> Imagine dropping a stone into a still pond. The ripples spread outward in circles, creating a "disturbed zone" that grows with time. Beyond the furthest ripple, the water remains perfectly still. Similarly, when we pump fluid from a well, the pressure disturbance spreads outward, and we can track this disturbance front as it moves through the reservoir.</p>
+    </div>
+    
+    <h2>Starting from First Principles: The Basic Equations</h2>
+    
+    <p>Before diving into the approximation, let's understand what equations govern fluid flow in porous media. We'll focus on three types of fluids:</p>
+    
+    <h3>1. Compressible Liquids</h3>
+    
+    <p>For a slightly compressible liquid (like oil), the diffusion equation in radial coordinates is:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial p}{\partial r}\right) = \frac{\phi\mu c}{k}\frac{\partial p}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p\) = pressure</li>
+        <li>\(r\) = radial distance from well</li>
+        <li>\(\phi\) = porosity of the rock</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(c\) = fluid compressibility</li>
+        <li>\(k\) = rock permeability</li>
+        <li>\(t\) = time</li>
+    </ul>
+    
+    <h3>2. Gases</h3>
+    
+    <p>For gas flow, the equation becomes non-linear:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial p^{1+m}}{\partial r}\right) = \frac{\mu\phi(1+m)}{k}\frac{\partial p^m}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>Where \(m\) is a constant related to the gas properties (often \(m = 1\) for real gases).</p>
+    
+    <h3>3. Incompressible Liquids with Free Surface</h3>
+    
+    <p>For gravity drainage problems (like water table movement):</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial b^2}{\partial r}\right) = \frac{\phi\mu}{k\rho g}\frac{\partial b}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>Where \(b\) is the height of the fluid column and \(\rho g\) is the fluid density times gravity.</p>
+    
+    <h2>The Approximation Method: Simplifying the Math</h2>
+    
+    <p>Here's where the genius of the method comes in. Instead of solving these equations directly, Rowan and Clegg introduced two key approximations:</p>
+    
+    <ol>
+        <li>They defined a <span class="key-concept">disturbed zone</span> with radius \(r_d\) that expands with time</li>
+        <li>They replaced the time derivatives with their average values within this disturbed zone</li>
+    </ol>
+    
+    <p>For the compressible liquid case, this transforms our equation to:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial p}{\partial r}\right) = \frac{1}{K}F(t)
+        \end{equation}
+    </div>
+    
+    <p>Where \(K = \frac{k}{\phi\mu c}\) (a diffusivity constant) and \(F(t)\) is the average value of \(\frac{\partial p}{\partial t}\) in the disturbed zone.</p>
+    
+    <p>The beauty of this approach is that it yields a much simpler equation that can be integrated directly!</p>
+    
+    <h2>Solving the Simplified Equation</h2>
+    
+    <p>For a well producing at constant rate \(q\) in an infinite reservoir, the pressure at the wellbore is:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        p_0 - p_w = \frac{\mu q}{4\pi kb}\ln\left(\frac{8Kt}{e r_w^2}\right)
+        \end{equation}
+    </div>
+    
+    <p>Where \(p_0\) is the initial reservoir pressure, \(p_w\) is the wellbore pressure, and \(r_w\) is the wellbore radius.</p>
+    
+    <p>The radius of the disturbed zone grows according to:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        r_d = \sqrt{\frac{8Kt}{e}}
+        \end{equation}
+    </div>
+    
+    <p>This elegant result shows that the disturbed zone grows proportionally to the square root of time!</p>
+    
+    <h2>Interactive Visualization: Exploring Transient Radial Flow</h2>
+    
+    <div class="interactive-container">
+        <h3>Pressure Profile Simulator</h3>
+        <p>Adjust the parameters below to see how pressure changes with distance and time during transient radial flow.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability (mD):</span>
+            <input type="range" id="permeability" min="1" max="1000" value="100">
+            <span class="value-display" id="permeability-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Porosity (%):</span>
+            <input type="range" id="porosity" min="1" max="40" value="20">
+            <span class="value-display" id="porosity-value">20</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Viscosity (cP):</span>
+            <input type="range" id="viscosity" min="0.1" max="10" step="0.1" value="1">
+            <span class="value-display" id="viscosity-value">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Compressibility (1/psi):</span>
+            <input type="range" id="compressibility" min="1" max="100" value="10">
+            <span class="value-display" id="compressibility-value">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Production Rate (bbl/day):</span>
+            <input type="range" id="flow-rate" min="10" max="1000" value="100">
+            <span class="value-display" id="flow-rate-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Time (hours):</span>
+            <input type="range" id="time" min="1" max="1000" value="10">
+            <span class="value-display" id="time-value">10</span>
+        </div>
+        
+        <div id="plot-container">
+            <!-- Canvas will be inserted here by JavaScript -->
+        </div>
+        
+        <p class="caption">Figure 1: Pressure distribution in the reservoir as a function of distance from the wellbore.</p>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <h3>1. Pressure Buildup Tests</h3>
+    
+    <p>When a producing well is shut in, the pressure builds back up. Using our method, the pressure buildup is given by:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        p(t) - p_{ws} = \frac{\mu q}{4\pi kb}\ln\left(\frac{t + \Delta t}{t}\right)
+        \end{equation}
+    </div>
+    
+    <p>Where \(p_{ws}\) is the pressure at shut-in, and \(\Delta t\) is the production time before shut-in.</p>
+    
+    <h3>2. Bounded Reservoirs</h3>
+    
+    <p>For a circular reservoir with radius \(r_b\), once the disturbed zone reaches the boundary:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        p_0 - p_w = \frac{\mu q}{4\pi kb}\left[\ln\left(\frac{r_b}{r_w}\right) - \frac{3}{2} + \frac{4Kt}{r_b^2}\right]
+        \end{equation}
+    </div>
+    
+    <p>Notice how the pressure declines linearly with time after the boundary is reached!</p>
+    
+    <h3>3. Stratified Reservoirs</h3>
+    
+    <p>For a reservoir with multiple layers of different properties, the production from each layer is:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \frac{q_i}{q} = \frac{\beta_i\ln\frac{8K_it}{er_w^2}}{\sum_{j=1}^{n}\frac{1}{\beta_j\ln\frac{8K_jt}{er_w^2}}}
+        \end{equation}
+    </div>
+    
+    <p>Where \(\beta_i = \frac{\mu}{4\pi k_i b_i}\) for each layer.</p>
+    
+    <h2>The Game: "Reservoir Engineer"</h2>
+    
+    <div class="interactive-container">
+        <h3>Can you manage this reservoir?</h3>
+        <p>Your goal is to maintain a target production rate while keeping the pressure above the bubble point. Adjust the production rate as time progresses!</p>
+        
+        <div>
+            <button id="start-game">Start Game</button>
+            <button id="reset-game">Reset</button>
+        </div>
+        
+        <div id="game-container" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <div>Time: <span id="game-time">0</span> days</div>
+                <div>Current Rate: <span id="current-rate">100</span> bbl/day</div>
+                <div>Pressure: <span id="current-pressure">3000</span> psi</div>
+                <div>Score: <span id="score">0</span></div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="rate-control">Adjust Production Rate:</label>
+                <input type="range" id="rate-control" min="0" max="500" value="100" style="width: 300px;">
+            </div>
+            
+            <div id="game-plot" style="width: 100%; height: 300px; border: 1px solid #ddd;"></div>
+        </div>
+    </div>
+    
+    <h2>Conclusion: The Power of Approximation</h2>
+    
+    <p>Rowan and Clegg's method demonstrates the power of thoughtful approximation in science and engineering. By introducing the concept of a disturbed zone and replacing time derivatives with their average values, they transformed complex partial differential equations into simple, solvable forms without sacrificing much accuracy.</p>
+    
+    <p>This approach gives us:</p>
+    <ul>
+        <li>Physical intuition about how pressure disturbances propagate</li>
+        <li>Simple analytical formulas instead of infinite series or numerical solutions</li>
+        <li>The ability to quickly analyze a wide range of problems</li>
+    </ul>
+    
+    <p>Next time you encounter a complex differential equation, remember this lesson: sometimes the best approach isn't to solve the equation exactly, but to make physically meaningful approximations that preserve the essential behavior while simplifying the mathematics.</p>
+    
+    <script>
+        // Initialize MathJax rendering
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+        
+        // Interactive plot functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create canvas for the pressure profile plot
+            const plotContainer = document.getElementById('plot-container');
+            const canvas = document.createElement('canvas');
+            canvas.width = plotContainer.clientWidth;
+            canvas.height = plotContainer.clientHeight;
+            plotContainer.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            
+            // Get slider elements
+            const permeabilitySlider = document.getElementById('permeability');
+            const porositySlider = document.getElementById('porosity');
+            const viscositySlider = document.getElementById('viscosity');
+            const compressibilitySlider = document.getElementById('compressibility');
+            const flowRateSlider = document.getElementById('flow-rate');
+            const timeSlider = document.getElementById('time');
+            
+            // Get value display elements
+            const permeabilityValue = document.getElementById('permeability-value');
+            const porosityValue = document.getElementById('porosity-value');
+            const viscosityValue = document.getElementById('viscosity-value');
+            const compressibilityValue = document.getElementById('compressibility-value');
+            const flowRateValue = document.getElementById('flow-rate-value');
+            const timeValue = document.getElementById('time-value');
+            
+            // Function to update the plot
+            function updatePlot() {
+                // Get values from sliders
+                const k = parseFloat(permeabilitySlider.value) * 0.001; // Convert mD to Darcy
+                const phi = parseFloat(porositySlider.value) / 100; // Convert % to fraction
+                const mu = parseFloat(viscositySlider.value); // cP
+                const c = parseFloat(compressibilitySlider.value) * 1e-6; // Convert to 1/psi
+                const q = parseFloat(flowRateSlider.value); // bbl/day
+                const t = parseFloat(timeSlider.value); // hours
+                
+                // Update value displays
+                permeabilityValue.textContent = permeabilitySlider.value;
+                porosityValue.textContent = porositySlider.value;
+                viscosityValue.textContent = viscositySlider.value;
+                compressibilityValue.textContent = compressibilitySlider.value;
+                flowRateValue.textContent = flowRateSlider.value;
+                timeValue.textContent = timeSlider.value;
+                
+                // Constants
+                const b = 10; // Formation thickness, ft
+                const rw = 0.5; // Wellbore radius, ft
+                const p0 = 3000; // Initial reservoir pressure, psi
+                
+                // Calculate diffusivity constant K
+                const K = k / (phi * mu * c);
+                
+                // Calculate radius of disturbed zone
+                const rd = Math.sqrt(8 * K * t / 3600); // Convert hours to seconds
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw axes
+                ctx.beginPath();
+                ctx.moveTo(50, 50);
+                ctx.lineTo(50, canvas.height - 50);
+                ctx.lineTo(canvas.width - 50, canvas.height - 50);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw axis labels
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.fillText('Distance from wellbore (ft)', canvas.width / 2, canvas.height - 20);
+                ctx.save();
+                ctx.translate(20, canvas.height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = 'center';
+                ctx.fillText('Pressure (psi)', 0, 0);
+                ctx.restore();
+                
+                // Calculate pressure profile
+                const xScale = (canvas.width - 100) / rd;
+                const yScale = (canvas.height - 100) / p0;
+                
+                // Draw pressure profile
+                ctx.beginPath();
+                ctx.moveTo(50, canvas.height - 50 - (p0 - calculatePressure(rw)) * yScale);
+                
+                for (let r = rw; r <= rd; r += rd / 100) {
+                    const p = calculatePressure(r);
+                    const x = 50 + (r - rw) * xScale;
+                    const y = canvas.height - 50 - (p0 - p) * yScale;
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Draw disturbed zone boundary
+                ctx.beginPath();
+                const rdX = 50 + (rd - rw) * xScale;
+                ctx.moveTo(rdX, canvas.height - 50);
+                ctx.lineTo(rdX, 50);
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Add legend
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(canvas.width - 140, 70, 15, 15);
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'left';
+                ctx.fillText('Pressure Profile', canvas.width - 120, 82);
+                
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - 140, 100);
+                ctx.lineTo(canvas.width - 125, 100);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillText('Disturbed Zone', canvas.width - 120, 104);
+                
+                // Function to calculate pressure at a given radius
+                function calculatePressure(r) {
+                    // Convert units for calculation
+                    const qBPD = q * 5.615 / 86400; // Convert bbl/day to ft³/s
+                    const tSec = t * 3600; // Convert hours to seconds
+                    
+                    if (r <= rd) {
+                        // Inside disturbed zone
+                        return p0 - (mu * qBPD / (4 * Math.PI * k * b)) * Math.log(8 * K * tSec / (Math.E * r * r));
+                    } else {
+                        // Outside disturbed zone
+                        return p0;
+                    }
+                }
+            }
+            
+            // Add event listeners to sliders
+            permeabilitySlider.addEventListener('input', updatePlot);
+            porositySlider.addEventListener('input', updatePlot);
+            viscositySlider.addEventListener('input', updatePlot);
+            compressibilitySlider.addEventListener('input', updatePlot);
+            flowRateSlider.addEventListener('input', updatePlot);
+            timeSlider.addEventListener('input', updatePlot);
+            
+            // Initial plot
+            updatePlot();
+            
+            // Game functionality
+            const startGameBtn = document.getElementById('start-game');
+            const resetGameBtn = document.getElementById('reset-game');
+            const gameContainer = document.getElementById('game-container');
+            const gamePlot = document.getElementById('game-plot');
+            const rateControl = document.getElementById('rate-control');
+            const gameTimeDisplay = document.getElementById('game-time');
+            const currentRateDisplay = document.getElementById('current-rate');
+            const currentPressureDisplay = document.getElementById('current-pressure');
+            const scoreDisplay = document.getElementById('score');
+            
+            let gameCanvas = document.createElement('canvas');
+            gameCanvas.width = gamePlot.clientWidth;
+            gameCanvas.height = gamePlot.clientHeight;
+            gamePlot.appendChild(gameCanvas);
+            const gameCtx = gameCanvas.getContext('2d');
+            
+            let gameInterval;
+            let gameTime = 0;
+            let gameScore = 0;
+            let pressureHistory = [];
+            let rateHistory = [];
+            
+            startGameBtn.addEventListener('click', startGame);
+            resetGameBtn.addEventListener('click', resetGame);
+            rateControl.addEventListener('input', updateRate);
+            
+            function startGame() {
+                resetGame();
+                gameInterval = setInterval(updateGame, 1000); // Update every second
+            }
+            
+            function resetGame() {
+                clearInterval(gameInterval);
+                gameTime = 0;
+                gameScore = 0;
+                pressureHistory = [3000];
+                rateHistory = [100];
+                rateControl.value = 100;
+                gameTimeDisplay.textContent = '0';
+                currentRateDisplay.textContent = '100';
+                currentPressureDisplay.textContent = '3000';
+                scoreDisplay.textContent = '0';
+                drawGamePlot();
+            }
+            
+            function updateRate() {
+                const rate = parseInt(rateControl.value);
+                currentRateDisplay.textContent = rate;
+            }
+            
+            function updateGame() {
+                gameTime++;
+                gameTimeDisplay.textContent = gameTime;
+                
+                const rate = parseInt(rateControl.value);
+                rateHistory.push(rate);
+                
+                // Simple reservoir model
+                const initialPressure = 3000;
+                const bubblePoint = 2000;
+                const reservoirSize = 1000000; // barrels
+                const currentPressure = initialPressure - (rateHistory.reduce((a, b) => a + b, 0) / reservoirSize) * 1000;
+                pressureHistory.push(currentPressure);
+                
+                currentPressureDisplay.textContent = Math.round(currentPressure);
+                
+                // Score calculation
+                if (currentPressure > bubblePoint) {
+                    gameScore += rate;
+                } else {
+                    gameScore -= rate * 2; // Penalty for going below bubble point
+                }
+                
+                scoreDisplay.textContent = gameScore;
+                
+                // End game conditions
+                if (currentPressure < 1000 || gameTime >= 100) {
+                    clearInterval(gameInterval);
+                    alert(`Game Over! Final Score: ${gameScore}`);
+                }
+                
+                drawGamePlot();
+            }
+            
+            function drawGamePlot() {
+                gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Draw axes
+                gameCtx.beginPath();
+                gameCtx.moveTo(50, 50);
+                gameCtx.lineTo(50, gameCanvas.height - 50);
+                gameCtx.lineTo(gameCanvas.width - 50, gameCanvas.height - 50);
+                gameCtx.strokeStyle = '#000';
+                gameCtx.lineWidth = 2;
+                gameCtx.stroke();
+                
+                // Draw pressure line
+                if (pressureHistory.length > 1) {
+                    const xScale = (gameCanvas.width - 100) / 100; // Max 100 days
+                    const yScale = (gameCanvas.height - 100) / 3000;
+                    
+                    gameCtx.beginPath();
+                    gameCtx.moveTo(50, gameCanvas.height - 50 - pressureHistory[0] * yScale);
+                    
+                    for (let i = 1; i < pressureHistory.length; i++) {
+                        const x = 50 + i * xScale;
+                        const y = gameCanvas.height - 50 - pressureHistory[i] * yScale;
+                        gameCtx.lineTo(x, y);
+                    }
+                    
+                    gameCtx.strokeStyle = '#3498db';
+                    gameCtx.lineWidth = 2;
+                    gameCtx.stroke();
+                }
+                
+                // Draw rate line
+                if (rateHistory.length > 1) {
+                    const xScale = (gameCanvas.width - 100) / 100; // Max 100 days
+                    const yScale = (gameCanvas.height - 100) / 500; // Max 500 bbl/day
+                    
+                    gameCtx.beginPath();
+                    gameCtx.moveTo(50, gameCanvas.height - 50 - rateHistory[0] * yScale);
+                    
+                    for (let i = 1; i < rateHistory.length; i++) {
+                        const x = 50 + i * xScale;
+                        const y = gameCanvas.height - 50 - rateHistory[i] * yScale;
+                        gameCtx.lineTo(x, y);
+                    }
+                    
+                    gameCtx.strokeStyle = '#e74c3c';
+                    gameCtx.lineWidth = 2;
+                    gameCtx.stroke();
+                }
+                
+                // Draw bubble point line
+                gameCtx.beginPath();
+                gameCtx.moveTo(50, gameCanvas.height - 50 - 2000 * (gameCanvas.height - 100) / 3000);
+                gameCtx.lineTo(gameCanvas.width - 50, gameCanvas.height - 50 - 2000 * (gameCanvas.height - 100) / 3000);
+                gameCtx.strokeStyle = '#f39c12';
+                gameCtx.lineWidth = 1;
+                gameCtx.setLineDash([5, 5]);
+                gameCtx.stroke();
+                gameCtx.setLineDash([]);
+                
+                // Add legend
+                gameCtx.font = '12px Arial';
+                gameCtx.fillStyle = '#3498db';
+                gameCtx.fillRect(gameCanvas.width - 140, 70, 15, 15);
+                gameCtx.fillStyle = '#000';
+                gameCtx.textAlign = 'left';
+                gameCtx.fillText('Pressure', gameCanvas.width - 120, 82);
+                
+                gameCtx.fillStyle = '#e74c3c';
+                gameCtx.fillRect(gameCanvas.width - 140, 100, 15, 15);
+                gameCtx.fillStyle = '#000';
+                gameCtx.fillText('Production Rate', gameCanvas.width - 120, 104);
+                
+                gameCtx.strokeStyle = '#f39c12';
+                gameCtx.lineWidth = 1;
+                gameCtx.setLineDash([5, 5]);
+                gameCtx.beginPath();
+                gameCtx.moveTo(gameCanvas.width - 140, 130);
+                gameCtx.lineTo(gameCanvas.width - 125, 130);
+                gameCtx.stroke();
+                gameCtx.setLineDash([]);
+                gameCtx.fillText('Bubble Point', gameCanvas.width - 120, 134);
+            }
+        });
+    </script>
+</body>
+</html>

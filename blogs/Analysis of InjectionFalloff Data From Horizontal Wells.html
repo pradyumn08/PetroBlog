@@ -1,0 +1,578 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding Thermal Effects in Injection/Falloff Testing</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    h1 {
+      font-size: 2.2em;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    h2 {
+      font-size: 1.8em;
+      margin-top: 30px;
+    }
+    h3 {
+      font-size: 1.4em;
+      margin-top: 25px;
+    }
+    code {
+      background-color: #f7f7f7;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    .key-concept {
+      background-color: #e8f4f8;
+      padding: 15px;
+      border-left: 5px solid #3498db;
+      margin: 20px 0;
+    }
+    .analogy {
+      background-color: #f9f4e8;
+      padding: 15px;
+      border-left: 5px solid #f39c12;
+      margin: 20px 0;
+    }
+    .formula-box {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+    .interactive {
+      background-color: #edf7ed;
+      padding: 20px;
+      border-radius: 5px;
+      margin: 25px 0;
+    }
+    .slider-container {
+      margin: 10px 0;
+    }
+    .slider-label {
+      display: inline-block;
+      width: 200px;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      background-color: white;
+    }
+    .reference {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cold Water Injection in Hot Reservoirs: Understanding Temperature Front Dynamics</h1>
+  
+  <p>When we inject cold water into a hot oil reservoir, something fascinating happens: we create not just one but two moving fronts. The first is the saturation front (where water displaces oil), and the second is a temperature front (where cold water cools the hot reservoir). Understanding how these fronts move and interact is crucial for interpreting pressure data from injection and falloff tests.</p>
+  
+  <p>In today's post, I'll break down the complex physics from Boughrara and Reynolds' paper on thermal effects in injection/falloff testing. By the end, you'll have a clear understanding of how temperature affects pressure responses in water injection wells, and you'll be able to visualize these effects through our interactive simulation.</p>
+  
+  <div class="key-concept">
+    <h3>Key Concept: Two Moving Fronts</h3>
+    <p>In cold water injection, we track two separate fronts:</p>
+    <ol>
+      <li><strong>Saturation front</strong>: The boundary between water-flooded and original oil zones</li>
+      <li><strong>Temperature front</strong>: The boundary between cooled reservoir and original hot reservoir</li>
+    </ol>
+    <p>The temperature front always moves slower than the saturation front.</p>
+  </div>
+  
+  <h2>First Principles: The Physics of Cold Water Injection</h2>
+  
+  <p>To understand what happens when we inject cold water into a hot reservoir, we need to start with the fundamental physics involved:</p>
+  
+  <h3>1. Heat Transfer Mechanisms</h3>
+  
+  <p>When cold water enters a hot reservoir, heat transfers through three main mechanisms:</p>
+  
+  <ul>
+    <li><strong>Convection</strong>: Heat transfer by fluid movement (dominant during injection)</li>
+    <li><strong>Conduction</strong>: Heat transfer through direct contact (dominant during falloff)</li>
+    <li><strong>Radiation</strong>: Heat transfer through electromagnetic waves (usually negligible in reservoirs)</li>
+  </ul>
+  
+  <div class="analogy">
+    <h3>Analogy: Coffee and Cream</h3>
+    <p>Think of pouring cold cream into hot coffee. The cream (cold water) initially creates a distinct boundary with the coffee (hot oil). As you pour, the cream pushes the coffee outward (convection), while gradually warming up as heat transfers from the coffee (conduction). When you stop pouring, the temperature difference slowly evens out (pure conduction).</p>
+  </div>
+  
+  <h3>2. Temperature Distribution</h3>
+  
+  <p>During injection, the temperature distribution can be approximated by a Heaviside function (a step function):</p>
+  
+  <div class="formula-box">
+    <p>$$T(r,t)=\left\{\begin{array}{c c}{{T_{wi}}}&{{r<r_{T}(t)}}\\ {{T_{oi}}}&{{r>r_{T}(t)}}\end{array},\right.$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(T_{wi}\) = Temperature of injected water</li>
+      <li>\(T_{oi}\) = Initial reservoir temperature</li>
+      <li>\(r_T(t)\) = Radial position of the temperature front at time t</li>
+    </ul>
+  </div>
+  
+  <h3>3. Heat Balance Equation</h3>
+  
+  <p>To determine where the temperature front is located, we need a heat balance between the injected water and the formation:</p>
+  
+  <div class="formula-box">
+    <p>$$\int_{r_{T}}^{r_{f}}\phi\rho_{w}C_{w}S_{w}\left(T_{oi}-T_{wi}\right)2\pi h r dr = \int_{r_{w}}^{r_{T}}(1-\phi)\rho_{r}C_{r}\left(T_{oi}-T_{wi}\right)2\pi h r dr + \int_{r_{w}}^{r_{T}}\phi\rho_{o}C_{o}S_{o}\left(T_{oi}-T_{wi}\right)2\pi h r dr$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(\phi\) = Porosity</li>
+      <li>\(\rho_w, \rho_o, \rho_r\) = Densities of water, oil, and rock</li>
+      <li>\(C_w, C_o, C_r\) = Specific heat capacities of water, oil, and rock</li>
+      <li>\(S_w, S_o\) = Water and oil saturations</li>
+      <li>\(r_f\) = Position of the water front</li>
+      <li>\(r_w\) = Wellbore radius</li>
+      <li>\(h\) = Formation thickness</li>
+    </ul>
+  </div>
+  
+  <p>This equation can be simplified to:</p>
+  
+  <div class="formula-box">
+    <p>$$\int_{r_{w}}^{r_{f}}\phi\rho_{w}C_{w}S_{w}r dr=\int_{r_{w}}^{r_{T}}(\rho C)_{e}r dr$$</p>
+    <p>Where \((\rho C)_e\) is the effective heat capacity of the system:</p>
+    <p>$$(\rho C)_{e}=\phi(\rho_{w}C_{w}S_{w}+\rho_{o}C_{o}S_{o})+(1-\phi)\rho_{r}C_{r}$$</p>
+  </div>
+  
+  <p>Since \((\rho C)_e\) is larger than \(\phi\rho_w C_w S_w\), the temperature front \(r_T\) must always be within the flooded region (i.e., \(r_T < r_f\)).</p>
+  
+  <h2>Injection Pressure Response</h2>
+  
+  <p>Now let's examine how these temperature effects impact the pressure response during injection. The pressure change at the wellbore can be expressed as:</p>
+  
+  <div class="formula-box">
+    <p>$$\Delta p = \Delta p_{(T=T_{oi})} + \frac{\alpha q_{inj}}{h_n}\int_{r_{wn}}^{r_T(t)}\left(\frac{1}{\lambda_{tc}(r_n,t)}-\frac{1}{\lambda_{th}(r_n,t)}\right)\frac{dr_n}{r_n\overline{k}(r_n)}$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(\Delta p_{(T=T_{oi})}\) = Isothermal pressure solution at original reservoir temperature</li>
+      <li>\(\lambda_{tc}\) = Total mobility at cold temperature</li>
+      <li>\(\lambda_{th}\) = Total mobility at hot temperature</li>
+      <li>\(\alpha\) = Unit conversion constant (141.2 in field units)</li>
+      <li>\(q_{inj}\) = Injection rate</li>
+      <li>\(h_n\) = Normalized formation thickness</li>
+      <li>\(\overline{k}(r_n)\) = Equivalent isotropic permeability</li>
+    </ul>
+  </div>
+  
+  <p>The total mobility is a key concept here. It represents how easily fluids flow through the rock and is defined as:</p>
+  
+  <div class="formula-box">
+    <p>For the cold region (\(r < r_T\)):</p>
+    <p>$$\lambda_{tc} = \frac{k_{ro}(S_w)}{\mu_o(T_{wi})} + \frac{k_{rw}(S_w)}{\mu_w(T_{wi})}$$</p>
+    
+    <p>For the hot region (\(r > r_T\)):</p>
+    <p>$$\lambda_{th} = \frac{k_{ro}(S_w)}{\mu_o(T_{oi})} + \frac{k_{rw}(S_w)}{\mu_w(T_{oi})}$$</p>
+    
+    <p>Where:</p>
+    <ul>
+      <li>\(k_{ro}, k_{rw}\) = Relative permeabilities to oil and water</li>
+      <li>\(\mu_o, \mu_w\) = Viscosities of oil and water (temperature dependent)</li>
+    </ul>
+  </div>
+  
+  <h3>Mobility Ratio: A Critical Parameter</h3>
+  
+  <p>The endpoint mobility ratio is a crucial parameter that influences pressure behavior:</p>
+  
+  <div class="formula-box">
+    <p>$$\hat{M}_c = \frac{\hat{\lambda}_{wc}}{\hat{\lambda}_{oc}}$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(\hat{\lambda}_{wc}\) = Endpoint water mobility at cold temperature</li>
+      <li>\(\hat{\lambda}_{oc}\) = Endpoint oil mobility at cold temperature</li>
+    </ul>
+  </div>
+  
+  <p>This ratio determines whether the pressure derivative can take negative values during injection, which is an important diagnostic feature.</p>
+  
+  <h2>Falloff Pressure Response</h2>
+  
+  <p>During falloff (after injection stops), heat conduction becomes the dominant mechanism. The temperature front begins to dissipate, and the temperature distribution spreads out. The falloff pressure solution is:</p>
+  
+  <div class="formula-box">
+    <p>$$\Delta p_{ws} = \Delta p_{os}(T=T_{oi}) + \frac{\alpha}{h_n\hat{\lambda}_{oh}}\int_{r_{wn}}^{r_f(t_p)}\left(\frac{\hat{\lambda}_{oh}}{\lambda_t(r_n,t_p)}q_s(r_n,\Delta t) - \hat{q}_{os}(r_n,\Delta t)\right)\frac{dr_n}{r_n\overline{k}(r_n)}$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(\Delta p_{os}(T=T_{oi})\) = Single-phase falloff solution at original temperature</li>
+      <li>\(q_s(r_n,\Delta t)\) = Total flow rate distribution during shut-in</li>
+      <li>\(\hat{q}_{os}(r_n,\Delta t)\) = Oil flow rate distribution during shut-in under single-phase conditions</li>
+      <li>\(t_p\) = Duration of injection period</li>
+      <li>\(\Delta t\) = Time since shut-in</li>
+    </ul>
+  </div>
+  
+  <p>The flow rate distributions can be calculated using:</p>
+  
+  <div class="formula-box">
+    <p>$$q_s(r_n,\Delta t) = q_{inj}\left[\exp\left(-\frac{\phi c_t(r_n,t_p)r_n^2}{4\beta\overline{k}\lambda_t(r_n,t_p)(t_p+\Delta t)}\right) - \exp\left(-\frac{\phi c_t(r_n,t_p)r_n^2}{4\beta\overline{k}\lambda_t(r_n,t_p)\Delta t}\right)\right]$$</p>
+    <p>Where:</p>
+    <ul>
+      <li>\(c_t\) = Total compressibility</li>
+      <li>\(\beta\) = Constant (10.548×10<sup>-4</sup> in field units with time in hours)</li>
+    </ul>
+  </div>
+  
+  <h2>Horizontal Wells: A Special Case</h2>
+  
+  <p>For horizontal wells, the solution becomes more complex as we need to account for flow in multiple directions. The general solution is:</p>
+  
+  <div class="formula-box">
+    <p>$$\Delta p = \Delta p(T=T_{oi}) + \Delta p_{x_n-z_n,T}(t) + \Delta p_{x_n,T}(t) + \Delta p_{x_n-y_n,T}(t)$$</p>
+  </div>
+  
+  <p>Each term represents the pressure contribution from different flow regimes as the flood and temperature fronts propagate through the reservoir.</p>
+  
+  <div class="interactive">
+    <h3>Interactive Simulation: Temperature and Saturation Fronts</h3>
+    <p>Use the sliders below to explore how different parameters affect the propagation of temperature and saturation fronts during cold water injection.</p>
+    
+    <div class="slider-container">
+      <label class="slider-label" for="injectionRate">Injection Rate (STB/D):</label>
+      <input type="range" id="injectionRate" min="1000" max="10000" value="3000" step="100">
+      <span id="injectionRateValue">3000</span>
+    </div>
+    
+    <div class="slider-container">
+      <label class="slider-label" for="tempDiff">Temperature Difference (°F):</label>
+      <input type="range" id="tempDiff" min="20" max="150" value="119.3" step="1">
+      <span id="tempDiffValue">119.3</span>
+    </div>
+    
+    <div class="slider-container">
+      <label class="slider-label" for="injectionTime">Injection Time (hours):</label>
+      <input type="range" id="injectionTime" min="1" max="48" value="24" step="1">
+      <span id="injectionTimeValue">24</span>
+    </div>
+    
+    <div class="slider-container">
+      <label class="slider-label" for="permeability">Permeability (md):</label>
+      <input type="range" id="permeability" min="50" max="500" value="270" step="10">
+      <span id="permeabilityValue">270</span>
+    </div>
+    
+    <canvas id="simulationCanvas" width="700" height="400"></canvas>
+    
+    <div>
+      <p><strong>Legend:</strong></p>
+      <p>🔵 Blue region: Water-flooded zone (r < r<sub>f</sub>)</p>
+      <p>❄️ Light blue region: Cold temperature zone (r < r<sub>T</sub>)</p>
+      <p>🔴 Red region: Original oil zone (r > r<sub>f</sub>)</p>
+      <p>📊 Green line: Pressure response</p>
+      <p>📈 Orange line: Pressure derivative</p>
+    </div>
+  </div>
+  
+  <h2>Practical Implications</h2>
+  
+  <p>Understanding these thermal effects has several practical implications for reservoir engineers:</p>
+  
+  <ol>
+    <li><strong>Test Interpretation:</strong> Ignoring thermal effects can lead to misinterpretation of permeability, skin factor, and relative permeability curves.</li>
+    <li><strong>Test Duration:</strong> For horizontal wells, tests need to be sufficiently long to resolve all three directional permeabilities.</li>
+    <li><strong>Diagnostic Features:</strong> The pressure derivative behavior (whether it goes negative or not) provides insights into reservoir and fluid properties.</li>
+    <li><strong>Parameter Estimation:</strong> With proper analysis, we can estimate absolute permeabilities, well skin factor, well length, and relative permeability curves.</li>
+  </ol>
+  
+  <h2>Conclusion</h2>
+  
+  <p>Cold water injection into hot reservoirs creates a complex interplay between fluid displacement and heat transfer. The key insights are:</p>
+  
+  <ul>
+    <li>The temperature front always moves slower than the saturation front</li>
+    <li>During injection, convection dominates heat transfer</li>
+    <li>During falloff, conduction becomes the primary heat transfer mechanism</li>
+    <li>The pressure response is a combination of isothermal effects and additional thermal effects</li>
+    <li>Proper analysis can yield valuable reservoir and well parameters</li>
+  </ul>
+  
+  <p>By understanding these principles, engineers can better interpret pressure data from water injection wells and improve reservoir characterization.</p>
+  
+  <script>
+    // Update slider values
+    document.getElementById('injectionRate').addEventListener('input', function() {
+      document.getElementById('injectionRateValue').textContent = this.value;
+      updateSimulation();
+    });
+    
+    document.getElementById('tempDiff').addEventListener('input', function() {
+      document.getElementById('tempDiffValue').textContent = this.value;
+      updateSimulation();
+    });
+    
+    document.getElementById('injectionTime').addEventListener('input', function() {
+      document.getElementById('injectionTimeValue').textContent = this.value;
+      updateSimulation();
+    });
+    
+    document.getElementById('permeability').addEventListener('input', function() {
+      document.getElementById('permeabilityValue').textContent = this.value;
+      updateSimulation();
+    });
+    
+    // Canvas setup
+    const canvas = document.getElementById('simulationCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Constants
+    const wellRadius = 0.35;
+    const porosity = 0.32;
+    const thickness = 50;
+    const oilViscosityHot = 2; // cp at reservoir temperature
+    const waterViscosityHot = 0.25; // cp at reservoir temperature
+    const oilViscosityCold = 8; // cp at injection temperature
+    const waterViscosityCold = 0.4; // cp at injection temperature
+    const rockHeatCapacity = 42.45; // BTU/ft3/°F
+    const oilHeatCapacity = 23; // BTU/ft3/°F
+    const waterHeatCapacity = 62.40; // BTU/ft3/°F
+    const residualOilSaturation = 0.28;
+    const irreducibleWaterSaturation = 0.25;
+    
+    function calculateFrontPositions(injectionRate, tempDiff, injectionTime, permeability) {
+      // Convert injection time to days for calculation
+      const timeInDays = injectionTime / 24;
+      
+      // Simplified calculations based on the paper's equations
+      // These are approximations for visualization purposes
+      
+      // Calculate water front position (Buckley-Leverett theory simplified)
+      const mobilityRatio = (waterViscosityCold / oilViscosityCold) * 0.5 / 1.0; // Simplified relative permeability ratio
+      const frontVelocity = 5.615 * injectionRate / (2 * Math.PI * thickness * porosity * (1 - irreducibleWaterSaturation - residualOilSaturation));
+      const waterFrontPosition = Math.sqrt(permeability * frontVelocity * timeInDays / mobilityRatio) + wellRadius;
+      
+      // Calculate temperature front position (always behind water front)
+      const heatCapacityRatio = (porosity * waterHeatCapacity + (1 - porosity) * rockHeatCapacity) / (porosity * waterHeatCapacity);
+      const tempFrontPosition = waterFrontPosition / Math.sqrt(heatCapacityRatio);
+      
+      return {
+        waterFront: waterFrontPosition,
+        tempFront: tempFrontPosition
+      };
+    }
+    
+    function calculatePressureResponse(injectionRate, tempDiff, injectionTime, permeability, fronts) {
+      // Generate pressure and derivative data points
+      const pressurePoints = [];
+      const derivativePoints = [];
+      
+      // Time points for log-log plot (20 points from 0.01 to 100 hours)
+      const timePoints = Array.from({length: 20}, (_, i) => 0.01 * Math.pow(10, i * 0.2));
+      
+      // Calculate mobility ratios
+      const endpointMobilityRatioCold = (0.5 / waterViscosityCold) / (1.0 / oilViscosityCold);
+      const endpointMobilityRatioHot = (0.5 / waterViscosityHot) / (1.0 / oilViscosityHot);
+      
+      timePoints.forEach(time => {
+        if (time > injectionTime) {
+          // After injection time, use falloff solution (simplified)
+          const deltaT = time - injectionTime;
+          const te = (injectionTime * deltaT) / (injectionTime + deltaT); // Equivalent time
+          
+          // Simplified falloff pressure calculation
+          const pressure = 500 * Math.log10(te) + 1000;
+          const derivative = 500 / Math.log(10);
+          
+          pressurePoints.push({x: time, y: pressure});
+          derivativePoints.push({x: time, y: derivative});
+        } else {
+          // During injection
+          let frontPosition, tempPosition;
+          
+          if (time < 0.1) {
+            // Early time: wellbore storage dominates
+            frontPosition = wellRadius * 1.2;
+            tempPosition = wellRadius * 1.1;
+          } else {
+            // Calculate front positions at current time
+            const timeRatio = time / injectionTime;
+            frontPosition = wellRadius + (fronts.waterFront - wellRadius) * Math.sqrt(timeRatio);
+            tempPosition = wellRadius + (fronts.tempFront - wellRadius) * Math.sqrt(timeRatio);
+          }
+          
+          // Simplified pressure calculation based on the paper's model
+          let pressure = 0;
+          
+          // Single-phase component
+          pressure += 141.2 * injectionRate / (2 * Math.PI * thickness * permeability) * Math.log(time);
+          
+          // Multiphase component from temperature effect
+          if (tempPosition > wellRadius * 1.5) {
+            const thermalEffect = 141.2 * injectionRate / (2 * Math.PI * thickness) * 
+                                 (1/endpointMobilityRatioCold - 1/endpointMobilityRatioHot) * 
+                                 Math.log(tempPosition/wellRadius);
+            pressure += thermalEffect;
+          }
+          
+          // Calculate derivative
+          const derivative = 141.2 * injectionRate / (2 * Math.PI * thickness * permeability);
+          
+          // Add noise for realism
+          pressure += 20 * Math.random() - 10;
+          
+          pressurePoints.push({x: time, y: pressure});
+          derivativePoints.push({x: time, y: derivative});
+        }
+      });
+      
+      return {
+        pressure: pressurePoints,
+        derivative: derivativePoints
+      };
+    }
+    
+    function drawSimulation(fronts, pressureData) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Set up scaling
+      const maxRadius = Math.max(fronts.waterFront * 1.2, 100);
+      const scale = canvas.width * 0.45 / maxRadius;
+      const centerX = canvas.width * 0.3;
+      const centerY = canvas.height * 0.5;
+      
+      // Draw original reservoir (red)
+      ctx.fillStyle = 'rgba(255, 200, 200, 0.5)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, maxRadius * scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Draw water front (blue)
+      ctx.fillStyle = 'rgba(173, 216, 230, 0.7)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, fronts.waterFront * scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Draw temperature front (light blue)
+      ctx.fillStyle = 'rgba(135, 206, 250, 0.7)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, fronts.tempFront * scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Draw wellbore (black)
+      ctx.fillStyle = 'black';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, wellRadius * scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Draw labels
+      ctx.fillStyle = 'black';
+      ctx.font = '12px Arial';
+      ctx.fillText('Wellbore', centerX + (wellRadius * scale) + 5, centerY - 5);
+      ctx.fillText('Temperature Front', centerX + (fronts.tempFront * scale) + 5, centerY - 5);
+      ctx.fillText('Water Front', centerX + (fronts.waterFront * scale) + 5, centerY - 5);
+      
+      // Draw pressure response graph
+      const graphX = canvas.width * 0.65;
+      const graphY = canvas.height * 0.1;
+      const graphWidth = canvas.width * 0.3;
+      const graphHeight = canvas.height * 0.8;
+      
+      // Draw graph axes
+      ctx.strokeStyle = 'black';
+      ctx.beginPath();
+      ctx.moveTo(graphX, graphY);
+      ctx.lineTo(graphX, graphY + graphHeight);
+      ctx.lineTo(graphX + graphWidth, graphY + graphHeight);
+      ctx.stroke();
+      
+      // Draw axis labels
+      ctx.fillText('Time', graphX + graphWidth/2, graphY + graphHeight + 15);
+      ctx.save();
+      ctx.translate(graphX - 15, graphY + graphHeight/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.fillText('Pressure / Derivative', 0, 0);
+      ctx.restore();
+      
+      // Draw pressure data
+      if (pressureData.pressure.length > 0) {
+        // Find min/max for scaling
+        const allValues = [...pressureData.pressure.map(p => p.y), ...pressureData.derivative.map(p => p.y)];
+        const minValue = Math.min(...allValues);
+        const maxValue = Math.max(...allValues);
+        const valueRange = maxValue - minValue;
+        
+        // Draw pressure line
+        ctx.strokeStyle = 'green';
+        ctx.beginPath();
+        pressureData.pressure.forEach((point, i) => {
+          const x = graphX + graphWidth * (Math.log10(point.x) + 2) / 4; // Log scale from 0.01 to 100
+          const y = graphY + graphHeight - graphHeight * (point.y - minValue) / valueRange;
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.stroke();
+        
+        // Draw derivative line
+        ctx.strokeStyle = 'orange';
+        ctx.beginPath();
+        pressureData.derivative.forEach((point, i) => {
+          const x = graphX + graphWidth * (Math.log10(point.x) + 2) / 4; // Log scale from 0.01 to 100
+          const y = graphY + graphHeight - graphHeight * (point.y - minValue) / valueRange;
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.stroke();
+        
+        // Add legend
+        ctx.fillStyle = 'green';
+        ctx.fillRect(graphX + 10, graphY + 10, 10, 10);
+        ctx.fillStyle = 'black';
+        ctx.fillText('Pressure', graphX + 25, graphY + 18);
+        
+        ctx.fillStyle = 'orange';
+        ctx.fillRect(graphX + 10, graphY + 30, 10, 10);
+        ctx.fillStyle = 'black';
+        ctx.fillText('Derivative', graphX + 25, graphY + 38);
+      }
+    }
+    
+    function updateSimulation() {
+      const injectionRate = parseInt(document.getElementById('injectionRate').value);
+      const tempDiff = parseInt(document.getElementById('tempDiff').value);
+      const injectionTime = parseInt(document.getElementById('injectionTime').value);
+      const permeability = parseInt(document.getElementById('permeability').value);
+      
+      const fronts = calculateFrontPositions(injectionRate, tempDiff, injectionTime, permeability);
+      const pressureData = calculatePressureResponse(injectionRate, tempDiff, injectionTime, permeability, fronts);
+      
+      drawSimulation(fronts, pressureData);
+    }
+    
+    // Initial simulation
+    updateSimulation();
+  </script>
+  
+  <div class="reference">
+    <h3>References</h3>
+    <p>Boughrara, A. A., & Reynolds, A. C. (2009). Analysis of Injection/Falloff Data From Horizontal Wells. SPE Journal.</p>
+  </div>
+</body>
+</html>

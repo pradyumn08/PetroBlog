@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Crossflow in Stratified Porous Systems: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .math {
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 1em;
+            margin: 1.5em 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border: 1px solid #a8d1e0;
+            padding: 1em;
+            margin: 1.5em 0;
+            border-radius: 4px;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .slider-container label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .slider-value {
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+            margin-top: 10px;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 8px;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Crossflow in Stratified Porous Systems: A First Principles Approach</h1>
+    
+    <p class="highlight">In this blog post, we'll break down a complex concept from reservoir engineering: crossflow in stratified porous systems. We'll take the dense mathematical formulations from Katz and Tek's academic paper and translate them into intuitive explanations, visualizations, and even a simulator you can play with. By the end, you'll understand how fluid moves between layers of different permeabilities in reservoirs and why this matters for predicting oil and gas production.</p>
+    
+    <h2>The Problem: How Do Fluids Flow in Layered Reservoirs?</h2>
+    
+    <p>Imagine you're trying to extract oil from a reservoir that's not a uniform chunk of rock, but rather a cake-like structure with multiple layers of different types of rock. Some layers allow fluid to flow easily (high permeability), while others are more restrictive (low permeability). How does fluid move through this system when you start pumping?</p>
+    
+    <p>This is a critical question in reservoir engineering because most real-world oil and gas reservoirs are heterogeneous - they have varying properties throughout their volume. Understanding this behavior helps engineers predict how much oil they can extract and how quickly.</p>
+    
+    <div class="image-container">
+        <img src="https://miro.medium.com/max/700/1*YQv5dMXpkocj9KVg3tY4Hw.png" alt="Layered reservoir illustration">
+        <p class="caption">Fig. 1: Illustration of a stratified reservoir with layers of different permeabilities</p>
+    </div>
+    
+    <h2>What is Crossflow?</h2>
+    
+    <p>When you extract fluid from a layered reservoir, the high-permeability layers deplete faster than the low-permeability layers. This creates pressure differences not just horizontally (toward the well) but also vertically between layers. These vertical pressure differences cause fluid to move between layers - a phenomenon called <strong>crossflow</strong>.</p>
+    
+    <p>In the original paper, Katz and Tek describe it this way:</p>
+    
+    <div class="note">
+        "In stratified systems with finite vertical permeability and no barriers to fluid flow between layers, the more rapid depletion of the zone of higher permeability causes crossflow to occur between layers."
+    </div>
+    
+    <p>This crossflow can significantly impact how much fluid you can extract and how quickly. It's like having a natural "helper" that moves fluid from less accessible layers to more accessible ones.</p>
+    
+    <h2>The Mathematical Model: From First Principles</h2>
+    
+    <p>To understand crossflow, we need to start with the fundamental equation governing fluid flow in porous media: the diffusivity equation. This equation is derived from three basic principles:</p>
+    
+    <ol>
+        <li>Conservation of mass</li>
+        <li>Darcy's law (relating flow rate to pressure gradient)</li>
+        <li>Fluid properties (slight compressibility)</li>
+    </ol>
+    
+    <p>The general diffusivity equation is:</p>
+    
+    <div class="math">
+        \begin{equation}
+        div\left[k\ grad\ P\right]\ =\ \mu\phi c\ \frac{\partial P}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(k\) is permeability (how easily fluid flows through the rock)</li>
+        <li>\(P\) is pressure</li>
+        <li>\(\mu\) is fluid viscosity</li>
+        <li>\(\phi\) is porosity (fraction of void space in the rock)</li>
+        <li>\(c\) is fluid compressibility</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <p>For a stratified system with layers, we need to consider flow in two dimensions (horizontal and vertical). For a radial system (like flow toward a wellbore), the equation becomes:</p>
+    
+    <div class="math">
+        \begin{equation}
+        \frac{k}{\mu}\left[\frac{\partial^{2}P}{\partial r^{2}}+\frac{1}{r}\frac{\partial P}{\partial r}\right]+\frac{\partial}{\partial y}\left[\frac{k}{\mu}\frac{\partial P}{\partial y}\right]=\phi c\frac{\partial P}{\partial t}
+        \end{equation}
+    </div>
+    
+    <p>To make this more manageable, we can use dimensionless variables:</p>
+    
+    <div class="math">
+        \begin{equation}
+        K\left[\frac{\partial^{2}P}{\partial r^{2}}\ +\frac{1}{r}\frac{\partial P}{\partial r}\right]+\frac{K r_{b}^{\ 2}}{H^{2}}\frac{\partial^{2}P}{\partial y^{2}}\ =\frac{\partial P}{\partial\theta}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(K\) is the ratio of permeabilities between layers</li>
+        <li>\(r_b\) is the wellbore radius</li>
+        <li>\(H\) is the total system thickness</li>
+        <li>\(\theta\) is dimensionless time</li>
+    </ul>
+    
+    <h3>Boundary and Interface Conditions</h3>
+    
+    <p>To solve this equation, we need boundary conditions that describe the physical situation:</p>
+    
+    <p><strong>Initial condition:</strong> At the start, pressure is uniform throughout the reservoir</p>
+    <div class="math">
+        \begin{equation}
+        P(r,y,0)=1
+        \end{equation}
+    </div>
+    
+    <p><strong>Boundary condition:</strong> No flow at the outer boundary of the reservoir</p>
+    <div class="math">
+        \begin{equation}
+        \frac{\partial P}{\partial r}(R,y,\theta)=0
+        \end{equation}
+    </div>
+    
+    <p><strong>Interface conditions:</strong> At the interface between layers, both pressure and fluid flux must be continuous</p>
+    <div class="math">
+        \begin{align}
+        P(\xi-)&=P(\xi+)\\
+        \frac{\partial P}{\partial y}(\xi-)&=K\ \frac{\partial P}{\partial y}(\xi+)
+        \end{align}
+    </div>
+    
+    <h2>Solving the Equations: Separation of Variables</h2>
+    
+    <p>The paper uses a technique called "separation of variables" to solve these partial differential equations. This approach assumes that the solution can be written as a product of functions, each depending on only one variable:</p>
+    
+    <div class="math">
+        \begin{equation}
+        P(r,y,\theta) = X(r) \cdot Y(y) \cdot T(\theta)
+        \end{equation}
+    </div>
+    
+    <p>After applying this technique and solving the resulting ordinary differential equations, the solution for pressure distribution in a two-layer system is:</p>
+    
+    <div class="math">
+        \begin{equation}
+        P(r,y,\theta)=\sum_{m=1}^{\infty}\sum_{n=1}^{\infty}C_{m n}\mathrm{e}^{-a^{2}\theta}Y_{m n}F(b)U(b r)
+        \end{equation}
+    </div>
+    
+    <p>This double summation is a Fourier-Bessel series, where:</p>
+    <ul>
+        <li>\(C_{mn}\) are coefficients determined by initial conditions</li>
+        <li>\(a\) and \(b\) are eigenvalues (special values that make the solution work)</li>
+        <li>\(Y_{mn}\) describes the vertical pressure profile</li>
+        <li>\(F(b)\) and \(U(br)\) describe the radial pressure profile</li>
+    </ul>
+    
+    <p>The eigenvalues \(b\) are defined by:</p>
+    <div class="math">
+        \begin{equation}
+        J_{0}\left(b\right)Y_{1}\left(b R\right)-Y_{0}\left(b\right)J_{1}\left(b R\right)=0
+        \end{equation}
+    </div>
+    
+    <p>And the eigenvalues \(a\) are defined by:</p>
+    <div class="math">
+        \begin{equation}
+        \gamma\sin\gamma f\cos\beta(1-f)+\beta K_{2}\sin\beta(1-f)\cos\gamma f=0
+        \end{equation}
+    </div>
+    
+    <p>Where \(J_0\), \(J_1\), \(Y_0\), and \(Y_1\) are Bessel functions, and:</p>
+    <div class="math">
+        \begin{align}
+        \gamma &= \frac{H}{r_b}\sqrt{a^2-b^2}\\
+        \beta &= \frac{H}{r_b}\sqrt{\frac{a^2}{K_2}-b^2}
+        \end{align}
+    </div>
+    
+    <h2>The Key Insight: Bounds on System Performance</h2>
+    
+    <p>While the mathematical solution is complex, the paper's most valuable insight is remarkably intuitive: <strong>the performance of a stratified system always falls between two easily calculated bounds</strong>.</p>
+    
+    <h3>The Upper Bound: Complete Crossflow</h3>
+    
+    <p>If vertical permeability is infinite (complete crossflow), the system behaves like a single layer with properties equal to the arithmetic average of all layers:</p>
+    
+    <div class="math">
+        \begin{equation}
+        k_m = \frac{\sum_{i=1}^{N}(k_i b_i)}{\sum_{i=1}^{N}b_i}
+        \end{equation}
+    </div>
+    
+    <div class="math">
+        \begin{equation}
+        \phi_m = \frac{\sum_{i=1}^{N}(\phi_i b_i)}{\sum_{i=1}^{N}b_i}
+        \end{equation}
+    </div>
+    
+    <h3>The Lower Bound: No Crossflow</h3>
+    
+    <p>If vertical permeability is zero (no crossflow), the system behaves like separate, independent layers. The total flow is simply the sum of flows from each layer calculated individually.</p>
+    
+    <h3>Real Systems: Between the Bounds</h3>
+    
+    <p>Real stratified systems with finite vertical permeability behave somewhere between these bounds. Interestingly, they tend to behave more like the lower bound (no crossflow) at early times and approach the upper bound (complete crossflow) as time increases.</p>
+    
+    <div class="note">
+        <p>This insight gives reservoir engineers a powerful simplification: they can quickly estimate the range of possible performance without solving complex equations.</p>
+    </div>
+    
+    <h2>Factors Influencing Crossflow</h2>
+    
+    <p>The paper identifies several key factors that determine how much crossflow occurs:</p>
+    
+    <ol>
+        <li><strong>Vertical permeability</strong>: Higher vertical permeability leads to more crossflow</li>
+        <li><strong>System thickness</strong>: Thinner systems experience more crossflow</li>
+        <li><strong>Ratio of system thickness to radius of drainage</strong>: As the drainage radius increases with time, crossflow becomes more significant</li>
+        <li><strong>Ratio of system thickness to wellbore radius</strong> (for radial systems): Smaller ratios lead to more crossflow</li>
+    </ol>
+    
+    <h2>Interactive Simulator: Explore Crossflow in Two-Layer Systems</h2>
+    
+    <div class="simulator">
+        <h3>Two-Layer Reservoir Crossflow Simulator</h3>
+        <p>Adjust the parameters below to see how they affect fluid flow and crossflow in a two-layer reservoir system.</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="k-ratio">Permeability Ratio (K₂/K₁): <span id="k-ratio-value" class="slider-value">100</span></label>
+                    <input type="range" id="k-ratio" min="1" max="1000" value="100" step="1">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="thickness-ratio">Layer Thickness Ratio (f): <span id="thickness-ratio-value" class="slider-value">0.5</span></label>
+                    <input type="range" id="thickness-ratio" min="0.1" max="0.9" value="0.5" step="0.05">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="vertical-perm">Vertical Permeability Factor: <span id="vertical-perm-value" class="slider-value">1.0</span></label>
+                    <input type="range" id="vertical-perm" min="0.01" max="10" value="1" step="0.01">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="slider-container">
+                    <label for="system-length">System Length (L/H): <span id="system-length-value" class="slider-value">10</span></label>
+                    <input type="range" id="system-length" min="1" max="50" value="10" step="1">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="time">Dimensionless Time (θ): <span id="time-value" class="slider-value">0.5</span></label>
+                    <input type="range" id="time" min="0.01" max="6" value="0.5" step="0.01">
+                </div>
+                
+                <button id="run-simulation">Run Simulation</button>
+            </div>
+        </div>
+        
+        <div>
+            <canvas id="flow-canvas" width="750" height="400"></canvas>
+        </div>
+        
+        <div>
+            <canvas id="flux-canvas" width="750" height="300"></canvas>
+        </div>
+    </div>
+    
+    <h2>Real-World Applications</h2>
+    
+    <p>Understanding crossflow in stratified systems has several practical applications:</p>
+    
+    <h3>1. Oil and Gas Production Forecasting</h3>
+    <p>Engineers can better predict how much oil or gas can be extracted from layered reservoirs and how quickly. This helps in planning field development and economic evaluations.</p>
+    
+    <h3>2. Gas Storage Operations</h3>
+    <p>The paper specifically mentions that for gas storage reservoirs with large radius-to-thickness ratios (typically >50), using the arithmetic average permeability provides an excellent approximation of system behavior.</p>
+    
+    <h3>3. Enhanced Oil Recovery (EOR)</h3>
+    <p>Understanding crossflow helps design more effective EOR techniques by accounting for how injected fluids will move between layers of different permeabilities.</p>
+    
+    <h3>4. Aquifer Behavior</h3>
+    <p>The paper mentions that the numerical results were calculated for parameters associated with aquifer movement, which is important for understanding water encroachment into oil reservoirs.</p>
+    
+    <h2>Connecting to Modern Reservoir Engineering</h2>
+    
+    <p>While this paper was published decades ago, its insights remain relevant. Modern reservoir simulation software incorporates these principles, though often with numerical methods rather than analytical solutions due to the complexity of real reservoirs.</p>
+    
+    <p>The concept of upper and lower bounds is particularly valuable for quick estimations and as a check on more complex simulations. If a detailed simulation predicts performance outside these bounds, it likely contains errors.</p>
+    
+    <h2>Conclusion: The Power of Mathematical Models</h2>
+    
+    <p>Katz and Tek's paper demonstrates how mathematical analysis of idealized models can yield practical insights for complex real-world systems. By deriving analytical solutions for stratified systems with crossflow, they provided:</p>
+    
+    <ol>
+        <li>A fundamental understanding of how crossflow affects reservoir performance</li>
+        <li>Simple bounds that engineers can use for quick estimations</li>
+        <li>Identification of key parameters that control crossflow behavior</li>
+    </ol>
+    
+    <p>The beauty of their approach is that while the mathematics is complex, the resulting insights are intuitive and practical. This exemplifies the power of first principles thinking in engineering: breaking down a complex system into its fundamental components, analyzing those components rigorously, and then synthesizing the results into useful guidelines.</p>
+    
+    <script>
+        // Update slider value displays
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                document.getElementById(this.id + '-value').textContent = this.value;
+            });
+        });
+        
+        // Canvas setup and drawing functions
+        const flowCanvas = document.getElementById('flow-canvas');
+        const fluxCanvas = document.getElementById('flux-canvas');
+        const flowCtx = flowCanvas.getContext('2d');
+        const fluxCtx = fluxCanvas.getContext('2d');
+        
+        // Run simulation button event listener
+        document.getElementById('run-simulation').addEventListener('click', runSimulation);
+        
+        function runSimulation() {
+            // Get parameter values from sliders
+            const kRatio = parseFloat(document.getElementById('k-ratio').value);
+            const thicknessRatio = parseFloat(document.getElementById('thickness-ratio').value);
+            const verticalPerm = parseFloat(document.getElementById('vertical-perm').value);
+            const systemLength = parseFloat(document.getElementById('system-length').value);
+            const time = parseFloat(document.getElementById('time').value);
+            
+            // Clear canvases
+            flowCtx.clearRect(0, 0, flowCanvas.width, flowCanvas.height);
+            fluxCtx.clearRect(0, 0, fluxCanvas.width, fluxCanvas.height);
+            
+            // Draw reservoir visualization
+            drawReservoir(kRatio, thicknessRatio, verticalPerm, systemLength, time);
+            
+            // Draw flux comparison graph
+            drawFluxGraph(kRatio, thicknessRatio, verticalPerm, systemLength);
+        }
+        
+        function drawReservoir(kRatio, thicknessRatio, verticalPerm, systemLength, time) {
+            const width = flowCanvas.width;
+            const height = flowCanvas.height;
+            const margin = 50;
+            const reservoirWidth = width - 2 * margin;
+            const reservoirHeight = height - 2 * margin;
+            
+            // Draw reservoir outline
+            flowCtx.strokeStyle = 'black';
+            flowCtx.lineWidth = 2;
+            flowCtx.strokeRect(margin, margin, reservoirWidth, reservoirHeight);
+            
+            // Draw layer boundary
+            const layerBoundaryY = margin + reservoirHeight * thicknessRatio;
+            flowCtx.beginPath();
+            flowCtx.moveTo(margin, layerBoundaryY);
+            flowCtx.lineTo(margin + reservoirWidth, layerBoundaryY);
+            flowCtx.stroke();
+            
+            // Label layers
+            flowCtx.font = '16px Arial';
+            flowCtx.fillStyle = 'black';
+            flowCtx.fillText(`Layer 1: k₁ = 1 md`, margin + 10, margin + reservoirHeight * thicknessRatio / 2);
+            flowCtx.fillText(`Layer 2: k₂ = ${kRatio} md`, margin + 10, layerBoundaryY + (reservoirHeight * (1 - thicknessRatio)) / 2);
+            
+            // Draw wellbore
+            flowCtx.fillStyle = 'black';
+            flowCtx.beginPath();
+            flowCtx.arc(margin, margin + reservoirHeight / 2, 10, 0, Math.PI * 2);
+            flowCtx.fill();
+            flowCtx.fillText('Well', margin - 30, margin + reservoirHeight / 2 + 5);
+            
+            // Draw pressure contours
+            drawPressureContours(margin, margin, reservoirWidth, reservoirHeight, thicknessRatio, kRatio, verticalPerm, time);
+            
+            // Draw flow arrows
+            drawFlowArrows(margin, margin, reservoirWidth, reservoirHeight, thicknessRatio, kRatio, verticalPerm, time);
+            
+            // Add title and parameters
+            flowCtx.font = '18px Arial';
+            flowCtx.fillStyle = 'black';
+            flowCtx.fillText(`Pressure Distribution and Flow Vectors at Time θ = ${time}`, margin, 30);
+            
+            // Legend for pressure
+            const gradientWidth = 200;
+            const gradientHeight = 20;
+            const gradientX = width - margin - gradientWidth;
+            const gradientY = height - 30;
+            
+            const gradient = flowCtx.createLinearGradient(gradientX, gradientY, gradientX + gradientWidth, gradientY);
+            gradient.addColorStop(0, 'blue');
+            gradient.addColorStop(0.5, 'green');
+            gradient.addColorStop(1, 'red');
+            
+            flowCtx.fillStyle = gradient;
+            flowCtx.fillRect(gradientX, gradientY, gradientWidth, gradientHeight);
+            
+            flowCtx.fillStyle = 'black';
+            flowCtx.font = '12px Arial';
+            flowCtx.fillText('Low Pressure', gradientX, gradientY + gradientHeight + 15);
+            flowCtx.fillText('High Pressure', gradientX + gradientWidth - 80, gradientY + gradientHeight + 15);
+            flowCtx.fillText('Pressure Legend:', gradientX - 100, gradientY + gradientHeight / 2 + 5);
+        }
+        
+        function drawPressureContours(x, y, width, height, thicknessRatio, kRatio, verticalPerm, time) {
+            // Simplified pressure calculation for visualization
+            // In a real simulation, we would use the analytical solution from the paper
+            
+            // Create grid
+            const gridSize = 20;
+            const dx = width / gridSize;
+            const dy = height / gridSize;
+            
+            // Draw pressure as color map
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const xPos = x + i * dx;
+                    const yPos = y + j * dy;
+                    
+                    // Calculate normalized distance from wellbore
+                    const distance = Math.sqrt((xPos - x) ** 2 + (yPos - (y + height / 2)) ** 2) / width;
+                    
+                    // Determine which layer we're in
+                    const isUpperLayer = yPos < y + height * thicknessRatio;
+                    
+                    // Calculate pressure based on layer, distance, and time
+                    // This is a simplified model, not the actual solution from the paper
+                    let pressure;
+                    if (isUpperLayer) {
+                        pressure = 1 - Math.exp(-distance * 10) * Math.exp(-time);
+                    } else {
+                        pressure = 1 - Math.exp(-distance * 10 / kRatio) * Math.exp(-time);
+                    }
+                    
+                    // Adjust for crossflow effect
+                    const crossflowFactor = verticalPerm * (1 - Math.exp(-time * 2)) / (1 + distance * 5);
+                    if (isUpperLayer) {
+                        pressure -= crossflowFactor * 0.1;
+                    } else {
+                        pressure += crossflowFactor * 0.1 * (kRatio / 10);
+                    }
+                    
+                    // Clamp pressure between 0 and 1
+                    pressure = Math.max(0, Math.min(1, pressure));
+                    
+                    // Map pressure to color (red = high pressure, blue = low pressure)
+                    const r = Math.floor(255 * pressure);
+                    const g = Math.floor(100 + 100 * (1 - Math.abs(pressure - 0.5) * 2));
+                    const b = Math.floor(255 * (1 - pressure));
+                    
+                    flowCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    flowCtx.fillRect(xPos, yPos, dx, dy);
+                }
+            }
+        }
+        
+        function drawFlowArrows(x, y, width, height, thicknessRatio, kRatio, verticalPerm, time) {
+            // Create grid for arrows
+            const arrowGridX = 10;
+            const arrowGridY = 6;
+            const dx = width / arrowGridX;
+            const dy = height / arrowGridY;
+            
+            // Draw flow arrows
+            for (let i = 1; i < arrowGridX; i++) {
+                for (let j = 0; j < arrowGridY; j++) {
+                    const xPos = x + i * dx;
+                    const yPos = y + j * dy + dy / 2;
+                    
+                    // Calculate normalized distance from wellbore
+                    const distance = (xPos - x) / width;
+                    
+                    // Determine which layer we're in
+                    const isUpperLayer = yPos < y + height * thicknessRatio;
+                    
+                    // Calculate horizontal flow magnitude based on layer, distance, and time
+                    let hFlow;
+                    if (isUpperLayer) {
+                        hFlow = -20 * Math.exp(-distance * 3) * Math.exp(-time * 0.5);
+                    } else {
+                        hFlow = -20 * Math.exp(-distance * 3) * Math.exp(-time * 0.5) * kRatio / 20;
+                    }
+                    
+                    // Calculate vertical flow (crossflow)
+                    let vFlow = 0;
+                    
+                    // Only calculate crossflow near the interface
+                    const interfaceY = y + height * thicknessRatio;
+                    const distanceToInterface = Math.abs(yPos - interfaceY);
+                    
+                    if (distanceToInterface < dy * 2) {
+                        // Direction of crossflow: from high pressure to low pressure
+                        // In early times, flow is from low-perm to high-perm layer
+                        // In later times, flow pattern becomes more complex
+                        const crossflowStrength = verticalPerm * 5 * Math.exp(-distance * 2) * (1 - Math.exp(-time));
+                        
+                        if (isUpperLayer) {
+                            vFlow = crossflowStrength; // Downward flow from upper layer
+                        } else {
+                            vFlow = -crossflowStrength; // Upward flow to upper layer
+                        }
+                        
+                        // As time increases, crossflow pattern changes
+                        if (time > 1) {
+                            const patternShift = (1 - Math.exp(-distance * 5)) * (time - 1) / 5;
+                            vFlow *= (1 - patternShift);
+                            
+                            // In later times and further from well, flow can reverse
+                            if (distance > 0.5 && time > 3) {
+                                vFlow *= -1;
+                            }
+                        }
+                    }
+                    
+                    // Draw the arrow
+                    const arrowLength = Math.sqrt(hFlow * hFlow + vFlow * vFlow);
+                    if (arrowLength > 0.5) {
+                        drawArrow(flowCtx, xPos, yPos, xPos + hFlow, yPos + vFlow);
+                    }
+                }
+            }
+        }
+        
+        function drawArrow(ctx, fromX, fromY, toX, toY) {
+            const headLength = 10;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw arrowhead
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fill();
+        }
+        
+        function drawFluxGraph(kRatio, thicknessRatio, verticalPerm, systemLength) {
+            const width = fluxCanvas.width;
+            const height = fluxCanvas.height;
+            const margin = { top: 30, right: 50, bottom: 50, left: 60 };
+            const graphWidth = width - margin.left - margin.right;
+            const graphHeight = height - margin.top - margin.bottom;
+            
+            // Clear canvas
+            fluxCtx.clearRect(0, 0, width, height);
+            
+            // Draw axes
+            fluxCtx.beginPath();
+            fluxCtx.moveTo(margin.left, margin.top);
+            fluxCtx.lineTo(margin.left, margin.top + graphHeight);
+            fluxCtx.lineTo(margin.left + graphWidth, margin.top + graphHeight);
+            fluxCtx.strokeStyle = 'black';
+            fluxCtx.lineWidth = 2;
+            fluxCtx.stroke();
+            
+            // Add axis labels
+            fluxCtx.font = '14px Arial';
+            fluxCtx.fillStyle = 'black';
+            fluxCtx.textAlign = 'center';
+            fluxCtx.fillText('Dimensionless Time (θ)', margin.left + graphWidth / 2, height - 10);
+            
+            fluxCtx.save();
+            fluxCtx.translate(15, margin.top + graphHeight / 2);
+            fluxCtx.rotate(-Math.PI / 2);
+            fluxCtx.textAlign = 'center';
+            fluxCtx.fillText('Cumulative Dimensionless Flux', 0, 0);
+            fluxCtx.restore();
+            
+            // Add title
+            fluxCtx.font = '16px Arial';
+            fluxCtx.textAlign = 'center';
+            fluxCtx.fillText('Comparison of Cumulative Flux', margin.left + graphWidth / 2, 20);
+            
+            // Draw tick marks on x-axis
+            const xTicks = 6;
+            fluxCtx.textAlign = 'center';
+            for (let i = 0; i <= xTicks; i++) {
+                const x = margin.left + (graphWidth * i) / xTicks;
+                const tickValue = (6 * i) / xTicks;
+                
+                fluxCtx.beginPath();
+                fluxCtx.moveTo(x, margin.top + graphHeight);
+                fluxCtx.lineTo(x, margin.top + graphHeight + 5);
+                fluxCtx.stroke();
+                
+                fluxCtx.fillText(tickValue.toFixed(1), x, margin.top + graphHeight + 20);
+            }
+            
+            // Draw tick marks on y-axis
+            const yTicks = 5;
+            const maxFlux = systemLength;
+            fluxCtx.textAlign = 'right';
+            for (let i = 0; i <= yTicks; i++) {
+                const y = margin.top + graphHeight - (graphHeight * i) / yTicks;
+                const tickValue = (maxFlux * i) / yTicks;
+                
+                fluxCtx.beginPath();
+                fluxCtx.moveTo(margin.left, y);
+                fluxCtx.lineTo(margin.left - 5, y);
+                fluxCtx.stroke();
+                
+                fluxCtx.fillText(tickValue.toFixed(1), margin.left - 10, y + 5);
+            }
+            
+            // Draw the three curves
+            
+            // 1. Upper bound (arithmetic mean permeability)
+            const upperK = (kRatio * thicknessRatio + (1 - thicknessRatio)) / 1;
+            drawFluxCurve(upperK, systemLength, 'red', 'Upper Bound (Arithmetic Mean k)', 0);
+            
+            // 2. Lower bound (sum of individual layer fluxes)
+            drawFluxCurve(1, systemLength, 'blue', 'Lower Bound (No Crossflow)', 1);
+            
+            // 3. Actual system with crossflow
+            const crossflowFactor = Math.min(1, verticalPerm * 0.5);
+            drawFluxCurve(kRatio, systemLength, 'green', 'Actual System with Crossflow', crossflowFactor);
+            
+            // Add legend
+            const legendX = margin.left + graphWidth - 200;
+            const legendY = margin.top + 30;
+            const legendSpacing = 25;
+            
+            // Draw legend boxes
+            fluxCtx.fillStyle = 'red';
+            fluxCtx.fillRect(legendX, legendY, 20, 10);
+            fluxCtx.fillStyle = 'green';
+            fluxCtx.fillRect(legendX, legendY + legendSpacing, 20, 10);
+            fluxCtx.fillStyle = 'blue';
+            fluxCtx.fillRect(legendX, legendY + 2 * legendSpacing, 20, 10);
+            
+            // Draw legend text
+            fluxCtx.fillStyle = 'black';
+            fluxCtx.textAlign = 'left';
+            fluxCtx.fillText('Upper Bound (Arithmetic Mean k)', legendX + 30, legendY + 10);
+            fluxCtx.fillText('Actual System with Crossflow', legendX + 30, legendY + legendSpacing + 10);
+            fluxCtx.fillText('Lower Bound (No Crossflow)', legendX + 30, legendY + 2 * legendSpacing + 10);
+        }
+        
+        function drawFluxCurve(kRatio, systemLength, color, label, crossflowFactor) {
+            const width = fluxCanvas.width;
+            const height = fluxCanvas.height;
+            const margin = { top: 30, right: 50, bottom: 50, left: 60 };
+            const graphWidth = width - margin.left - margin.right;
+            const graphHeight = height - margin.top - margin.bottom;
+            
+            const maxTime = 6;
+            const maxFlux = systemLength;
+            
+            // Generate points for the curve
+            const points = [];
+            const numPoints = 100;
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const time = (maxTime * i) / numPoints;
+                
+                // Calculate flux based on simplified model
+                // For upper bound (arithmetic mean k)
+                if (color === 'red') {
+                    const flux = systemLength * (1 - 2 * Math.exp(-kRatio * time));
+                    points.push({ x: time, y: Math.min(maxFlux, Math.max(0, flux)) });
+                }
+                // For lower bound (no crossflow)
+                else if (color === 'blue') {
+                    const flux1 = systemLength * 0.5 * (1 - 2 * Math.exp(-1 * time));
+                    const flux2 = systemLength * 0.5 * (1 - 2 * Math.exp(-kRatio * time));
+                    const totalFlux = flux1 + flux2;
+                    points.push({ x: time, y: Math.min(maxFlux, Math.max(0, totalFlux)) });
+                }
+                // For actual system with crossflow
+                else {
+                    // Start close to lower bound
+                    const flux1 = systemLength * 0.5 * (1 - 2 * Math.exp(-1 * time));
+                    const flux2 = systemLength * 0.5 * (1 - 2 * Math.exp(-kRatio * time));
+                    let totalFlux = flux1 + flux2;
+                    
+                    // Gradually approach upper bound as time increases
+                    const upperFlux = systemLength * (1 - 2 * Math.exp(-kRatio * time / 2));
+                    const transitionFactor = crossflowFactor * (1 - Math.exp(-time));
+                    totalFlux = totalFlux * (1 - transitionFactor) + upperFlux * transitionFactor;
+                    
+                    points.push({ x: time, y: Math.min(maxFlux, Math.max(0, totalFlux)) });
+                }
+            }
+            
+            // Draw the curve
+            fluxCtx.beginPath();
+            points.forEach((point, index) => {
+                const x = margin.left + (graphWidth * point.x) / maxTime;
+                const y = margin.top + graphHeight - (graphHeight * point.y) / maxFlux;
+                
+                if (index === 0) {
+                    fluxCtx.moveTo(x, y);
+                } else {
+                    fluxCtx.lineTo(x, y);
+                }
+            });
+            
+            fluxCtx.strokeStyle = color;
+            fluxCtx.lineWidth = 3;
+            fluxCtx.stroke();
+        }
+        
+        // Initial simulation run
+        runSimulation();
+    </script>
+</body>
+</html>

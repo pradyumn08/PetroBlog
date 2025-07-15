@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Understanding Interference Between Oil Fields: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            margin: 20px 0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 10px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Interference Between Oil Fields: A First Principles Approach</h1>
+    
+    <p>When oil fields share the same underground water system (aquifer), they don't exist in isolation. They talk to each other through pressure changes, creating what petroleum engineers call "interference." Today, we'll break down this complex phenomenon using first principles, making it accessible even if you've never thought about what happens beneath oil wells.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll explore how pressure changes in one oil field can affect another field miles away, and how we can model this using elegant mathematical physics rather than brute-force computer simulations.</p>
+    </div>
+    
+    <h2>The Problem: When Oil Fields Share an Aquifer</h2>
+    
+    <p>Imagine two lakes connected by an underground stream. If you start draining one lake, eventually the water level in the other will drop too. Oil fields work similarly when they share the same aquifer.</p>
+    
+    <div class="analogy">
+        <h3>Real-World Analogy</h3>
+        <p>Think of two straws inserted into the same milkshake. When someone sips through one straw, they create a pressure drop that affects how easily you can drink through your straw. Now imagine these straws are miles apart, and the milkshake is actually a complex mix of oil, gas, and water trapped in rock. That's oil field interference!</p>
+    </div>
+    
+    <p>When oil is produced from a reservoir, the pressure drops. This pressure change propagates through the connected aquifer and can affect other fields, causing their pressures to drop more than they would from their own production alone.</p>
+    
+    <h2>The Material Balance Equation: Our Foundation</h2>
+    
+    <p>At the heart of understanding reservoir behavior is the material balance equation. Think of it as an accounting ledger that tracks all fluids entering and leaving the reservoir. The traditional form is complex and requires iterative calculations, but we'll use a simplified version developed by William Hurst that gives us pressure as an explicit function.</p>
+    
+    <p>For an oil field subject to water drive and interference, the differential form of the material balance equation is:</p>
+    
+    <div class="formula">
+        $$
+        \begin{array}{r l}{\textnormal{N o}_{1}\displaystyle\frac{\mathrm{d}\Delta\mathfrak{p}}{\mathrm{d}\mathfrak{t}_{0}}=}&{\mathsf{N}_{\mathsf{p u}}\mathsf{o}_{2}\displaystyle\frac{\mathrm{d}\Delta\mathfrak{p}}{\mathrm{d}\mathfrak{t}_{0}}+\frac{\varphi\mathcal{U}_{\mathsf{w}}\mathsf{C}_{\mathsf{w}}\mathsf{T}_{\mathsf{a}}^{2}\mathsf{q}_{0}}{\mathsf{k}}(\mathsf{B}_{\mathsf{t u}}+(\mathsf{R}_{\mathsf{p u}}-\mathsf{R}_{\mathsf{s i}})\\ &{\mathsf{B}_{\mathsf{g u}}+\mathsf{\pmb{0}}_{3})-2\mathcal{W}\otimes\mathsf{c}_{\mathsf{w}}\mathsf{h}\mathsf{r}_{\mathsf{a}}^{2}\displaystyle\int_{0}^{\mathsf{t_{0}}}\frac{\mathrm{d}(\Delta\mathfrak{p}-\Delta\mathfrak{p}^{*})}{\mathrm{d}\mathfrak{t}_{0}^{*}}}\\ &{\mathsf{Q}^{*}(\mathfrak{t}_{0}-\mathfrak{t}_{0}^{*})\mathsf{d}\mathfrak{t}_{0}^{*}}\end{array}
+        $$
+    </div>
+    
+    <p>Let's break this down:</p>
+    <ul>
+        <li>\(\Delta p\) is the pressure drop in our field of interest</li>
+        <li>\(\Delta p^*\) is the pressure drop caused by interference from another field</li>
+        <li>\(t_D\) is dimensionless time, a way to scale time that makes our equations more general</li>
+        <li>The left side represents the expansion of oil in the reservoir</li>
+        <li>The right side includes oil production, gas production, and water influx terms</li>
+    </ul>
+    
+    <p>The key insight: the pressure gradient driving water into our reservoir is \(\Delta p - \Delta p^*\), not just \(\Delta p\). The interference from another field reduces the water drive into our field.</p>
+    
+    <h2>Solving the Interference Problem</h2>
+    
+    <p>To solve this equation, we need to apply the Laplace transformation, a mathematical technique that converts differential equations into algebraic ones. This transformation is powerful because it allows us to handle the complex integral term in our equation.</p>
+    
+    <p>After applying the Laplace transformation, we get:</p>
+    
+    <div class="formula">
+        $$
+        \begin{array}{l}{{\displaystyle\mathbb{N}\mathfrak{a}_{1}\mathsf{p}\overline{{\Delta}}\mathsf{p}=\mathsf{N}_{\mathsf{p}\rtimes}\mathfrak{a}_{2}\mathsf{p}\overline{{\Delta}}\mathsf{p}+\underbrace{\phi\mu_{w}\mathfrak{c}_{w}\mathfrak{r}_{\mathrm{a}}^{2}}_{\displaystyle\mathbf{k}\mathsf{p}}\mathfrak{q}_{\mathrm{o}}\big(\mathsf{B}_{\mathsf{t}w}+\big(\mathsf{R}_{\mathsf{p}u}-\mathsf{R}_{\mathrm{si}}\big)\mathsf{B}_{\mathsf{g}u}+\mathfrak{a}_{3}\big)}}\\ {~\cdot2~\mathcal{W}\mathfrak{e}\mathfrak{c}_{w}\mathsf{h}\mathfrak{r}_{\mathrm{a}}^{2}\overline{{\Delta}}\mathsf{p}\overline{{\mathsf{Q}}}+2~\mathcal{W}\mathfrak{e}_{w}\mathsf{h}\mathfrak{r}_{\mathrm{a}}^{2}}\\ {~\displaystyle\int_{0}^{\infty}\mathrm{e}^{-\mathsf{p}\mathsf{t}}\int_{0}^{\mathsf{f}}\frac{\mathrm{d}\Delta\mathfrak{p}^{*}(\mathfrak{t}_{0}^{*})}{\mathrm{d}\mathfrak{t}_{0}^{*}}\mathrm{Q}^{*}(\mathfrak{t}_{0}-\mathfrak{t}_{0}^{*})\mathrm{d}\mathfrak{t}_{0}^{*}\mathrm{d}\mathfrak{t}_{0}~}\end{array}
+        $$
+    </div>
+    
+    <p>The challenge now is to define \(\Delta p^*\), the pressure drop transmitted from one field to another through the aquifer. This depends on:</p>
+    
+    <div class="formula">
+        $$\Delta p^{*}=\Delta p^{*}(r_{\mathsf{A B}}^{*},t_{\mathsf{B}})$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(r_{AB}^{'} = r_{AB}/r_B\) is the ratio of the distance between fields to the radius of Field B</li>
+        <li>\(t_B\) is the dimensionless time for Field B</li>
+    </ul>
+    
+    <p>After solving the complex mathematics (involving contour integration and the Mellin's inversion formula), we can express the pressure drop in Field A as:</p>
+    
+    <div class="formula">
+        $$
+        \begin{array}{r l}&{\Delta\mathbf{p}=\left(\frac{{\mathbf{q}}_{0}\mu_{\mathsf{w}}}{2\mathcal{W}\mathsf{k h}}\right)^{({\mathsf{B}}_{\mathsf{t w}}+\{\mathsf{R}_{\mathsf{p w}}-{\mathsf{R}}_{\mathsf{s i}}\}{\mathsf{B}}_{\mathsf{g w}}+{\mathbf{0}}_{\mathsf{s}}){\mathbf{\dot{Q}}}_{\mathsf{w}}\mathsf{N}(\mathfrak{g}_{\mathsf{w}},\mathfrak{f}_{\mathsf{o}})}\\ &{\qquad+\left(\frac{{\mathbf{q}}_{0}\mu_{\mathsf{w}}}{2\mathcal{W}\mathsf{k h}}\right)({\mathsf{B}}_{\mathsf{t w}}+({\mathsf{R}}_{\mathsf{p w}}-{\mathsf{R}}_{\mathsf{s i}}){\mathsf{B}}_{\mathsf{g w}}+{\mathbf{0}}_{\mathsf{s}})_{\mathsf{B}}\mathfrak{G}_{\mathsf{w}}}\\ &{\qquad\quad\mathsf{W}({\mathbf{r}}_{\mathsf{A B}}^{\star}\nabla_{\mathsf{A B}},{\mathsf{q}}_{\mathsf{w}},\mathfrak{f}_{\mathsf{o}})-{\mathsf{G}}_{\mathsf{w}}\Delta_{\mathsf{P o}}^{\star}\mathsf{W}(\mathfrak{g}_{\mathsf{w}},\mathfrak{f}_{\mathsf{o}})}\end{array}
+        $$
+    </div>
+    
+    <p>This equation has three components:</p>
+    <ol>
+        <li>The first term represents Field A's own pressure drop due to its production</li>
+        <li>The second term is the interference effect from Field B</li>
+        <li>The third term accounts for the initial pressure drop already caused by Field B when Field A begins production</li>
+    </ol>
+    
+    <h2>Key Insights About Interference</h2>
+    
+    <p>From this mathematical analysis, we can draw several important conclusions:</p>
+    
+    <div class="note">
+        <ol>
+            <li><strong>Interference is not just superposition</strong>: While the water drive component follows the superposition principle, the volumetric expansion of fluids is automatically adjusted by the overall pressure drop.</li>
+            <li><strong>Physical parameters matter</strong>: The interference effect depends on the properties of both fields, including permeability, porosity, and fluid properties.</li>
+            <li><strong>Distance is crucial</strong>: The distance between fields significantly affects the interference magnitude.</li>
+            <li><strong>Time sequence matters</strong>: When each field started production affects how they interfere with each other.</li>
+            <li><strong>The aquifer properties at the reservoir edge matter most</strong>: Surprisingly, variations in permeability in the intervening aquifer have less impact than the properties at each reservoir boundary.</li>
+        </ol>
+    </div>
+    
+    <h2>The Surprising Result: Aquifer Properties Between Fields</h2>
+    
+    <p>One of the most counterintuitive findings is that the properties of the aquifer between fields have less impact than you might expect. What matters most are the properties at the edge of each reservoir.</p>
+    
+    <p>This was proven by analyzing fluid flow through sands of different permeabilities in series. For large times, the pressure drop at a distant point depends primarily on:</p>
+    <ul>
+        <li>The permeability at that point</li>
+        <li>The distance from the source</li>
+        <li>The rate of fluid withdrawal at the source</li>
+    </ul>
+    
+    <p>The mathematical proof yields this elegant formula for pressure drop at a distant point:</p>
+    
+    <div class="formula">
+        $$\Delta p=\frac{q_{0}\mu_{0}}{2\pi k_{02}h}P(t_{02})$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(q_0\) is the production rate</li>
+        <li>\(\mu_0\) is fluid viscosity</li>
+        <li>\(k_{02}\) is the permeability at the point of interest</li>
+        <li>\(h\) is formation thickness</li>
+        <li>\(P(t_{02})\) is a time function</li>
+    </ul>
+    
+    <p>Notice that this equation depends on the properties at the point of interest (\(k_{02}\)), not on the properties of the intervening aquifer!</p>
+    
+    <h2>Interactive Visualization: Interference Between Oil Fields</h2>
+    
+    <div class="interactive">
+        <h3>Oil Field Interference Simulator</h3>
+        <p>Adjust the parameters below to see how interference between oil fields works:</p>
+        
+        <div class="slider-container">
+            <label class="slider-label" for="distance">Distance between fields (miles):</label>
+            <input type="range" id="distance" min="1" max="20" value="5" step="1">
+            <span id="distance-value">5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label" for="permeability">Permeability (md):</label>
+            <input type="range" id="permeability" min="10" max="500" value="100" step="10">
+            <span id="permeability-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label" for="production-rate">Production Rate (bbl/day):</label>
+            <input type="range" id="production-rate" min="100" max="5000" value="1000" step="100">
+            <span id="production-rate-value">1000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label" for="time">Production Time (years):</label>
+            <input type="range" id="time" min="0" max="10" value="2" step="0.5">
+            <span id="time-value">2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label" for="field-b-start">Field B Start Time (years after Field A):</label>
+            <input type="range" id="field-b-start" min="0" max="5" value="1" step="0.5">
+            <span id="field-b-start-value">1</span>
+        </div>
+        
+        <canvas id="interference-canvas" width="800" height="400"></canvas>
+        
+        <div>
+            <p><strong>Pressure Drop in Field A: <span id="pressure-drop-a">0</span> psi</strong></p>
+            <p><strong>Pressure Drop in Field B: <span id="pressure-drop-b">0</span> psi</strong></p>
+            <p><strong>Interference Effect: <span id="interference-effect">0</span> psi</strong></p>
+        </div>
+    </div>
+    
+    <h2>Practical Applications</h2>
+    
+    <p>Understanding interference between oil fields has several practical applications:</p>
+    
+    <ol>
+        <li><strong>Field Development Planning</strong>: Optimizing well placement and production rates to minimize negative interference effects.</li>
+        <li><strong>Reserves Estimation</strong>: More accurate prediction of ultimate recovery by accounting for interference effects.</li>
+        <li><strong>Water Influx Prediction</strong>: Better forecasting of water encroachment into oil fields.</li>
+        <li><strong>Pressure Maintenance Strategies</strong>: Designing more effective injection programs to maintain reservoir pressure.</li>
+        <li><strong>Unitization Decisions</strong>: Providing technical basis for combining operations of adjacent fields.</li>
+    </ol>
+    
+    <h2>Conclusion: The Elegance of Mathematical Physics</h2>
+    
+    <p>What we've explored today is a beautiful example of how mathematical physics can simplify seemingly complex problems. By using the Laplace transformation and first principles analysis, we've converted a problem that traditionally required iterative computer simulations into explicit formulas that reveal the underlying physics.</p>
+    
+    <p>The key takeaways:</p>
+    
+    <div class="highlight">
+        <ul>
+            <li>Oil fields sharing an aquifer create pressure interference that can be mathematically modeled</li>
+            <li>The simplified material balance approach gives us explicit formulas for pressure changes</li>
+            <li>The properties at the reservoir boundaries matter more than properties of the intervening aquifer</li>
+            <li>For large times, oil fields behave like point sources, similar to individual wells</li>
+            <li>The time sequence of field development significantly affects interference patterns</li>
+        </ul>
+    </div>
+    
+    <p>This approach not only enhances our understanding of reservoir behavior but also provides practical tools for petroleum engineers to make better decisions about field development and management.</p>
+    
+    <script>
+        // Interactive visualization code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get sliders and output elements
+            const distanceSlider = document.getElementById('distance');
+            const permeabilitySlider = document.getElementById('permeability');
+            const productionRateSlider = document.getElementById('production-rate');
+            const timeSlider = document.getElementById('time');
+            const fieldBStartSlider = document.getElementById('field-b-start');
+            
+            const distanceValue = document.getElementById('distance-value');
+            const permeabilityValue = document.getElementById('permeability-value');
+            const productionRateValue = document.getElementById('production-rate-value');
+            const timeValue = document.getElementById('time-value');
+            const fieldBStartValue = document.getElementById('field-b-start-value');
+            
+            const pressureDropA = document.getElementById('pressure-drop-a');
+            const pressureDropB = document.getElementById('pressure-drop-b');
+            const interferenceEffect = document.getElementById('interference-effect');
+            
+            const canvas = document.getElementById('interference-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Update the visualization when sliders change
+            function updateSliderValues() {
+                distanceValue.textContent = distanceSlider.value;
+                permeabilityValue.textContent = permeabilitySlider.value;
+                productionRateValue.textContent = productionRateSlider.value;
+                timeValue.textContent = timeSlider.value;
+                fieldBStartValue.textContent = fieldBStartSlider.value;
+                
+                updateVisualization();
+            }
+            
+            // Attach event listeners to sliders
+            distanceSlider.addEventListener('input', updateSliderValues);
+            permeabilitySlider.addEventListener('input', updateSliderValues);
+            productionRateSlider.addEventListener('input', updateSliderValues);
+            timeSlider.addEventListener('input', updateSliderValues);
+            fieldBStartSlider.addEventListener('input', updateSliderValues);
+            
+            function updateVisualization() {
+                // Get current values
+                const distance = parseFloat(distanceSlider.value);
+                const permeability = parseFloat(permeabilitySlider.value);
+                const productionRate = parseFloat(productionRateSlider.value);
+                const time = parseFloat(timeSlider.value);
+                const fieldBStart = parseFloat(fieldBStartSlider.value);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background
+                ctx.fillStyle = '#f0f8ff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw aquifer
+                ctx.fillStyle = '#add8e6';
+                ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+                
+                // Calculate field positions based on distance
+                const fieldAX = canvas.width / 4;
+                const fieldBX = fieldAX + (distance / 20) * (canvas.width / 2);
+                const fieldY = canvas.height - 150;
+                
+                // Calculate pressure drops
+                // Simplified pressure drop calculation based on our equations
+                const fieldAOwnPressureDrop = productionRate * time / (permeability * 0.1);
+                
+                // Calculate interference effect
+                // Simplified version of the interference formula
+                let interferenceValue = 0;
+                if (time > fieldBStart) {
+                    const effectiveTime = time - fieldBStart;
+                    interferenceValue = productionRate * effectiveTime / (permeability * distance * 0.2);
+                }
+                
+                const fieldBOwnPressureDrop = (time > fieldBStart) ? 
+                    productionRate * (time - fieldBStart) / (permeability * 0.1) : 0;
+                
+                const fieldAInterference = interferenceValue;
+                const fieldBInterference = interferenceValue * 0.8; // Slightly less effect on Field B
+                
+                const fieldATotalPressureDrop = fieldAOwnPressureDrop + fieldAInterference;
+                const fieldBTotalPressureDrop = fieldBOwnPressureDrop + fieldBInterference;
+                
+                // Update pressure drop displays
+                pressureDropA.textContent = Math.round(fieldATotalPressureDrop);
+                pressureDropB.textContent = Math.round(fieldBTotalPressureDrop);
+                interferenceEffect.textContent = Math.round(interferenceValue);
+                
+                // Draw pressure contours
+                drawPressureContours(fieldAX, fieldY, fieldATotalPressureDrop, fieldBX, fieldY, fieldBTotalPressureDrop);
+                
+                // Draw Field A
+                drawField(fieldAX, fieldY, 'Field A', fieldATotalPressureDrop);
+                
+                // Draw Field B
+                drawField(fieldBX, fieldY, 'Field B', fieldBTotalPressureDrop);
+                
+                // Draw distance indicator
+                ctx.beginPath();
+                ctx.moveTo(fieldAX, fieldY + 30);
+                ctx.lineTo(fieldBX, fieldY + 30);
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+                
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Arial';
+                ctx.fillText(`${distance} miles`, (fieldAX + fieldBX) / 2 - 20, fieldY + 45);
+                
+                // Draw time indicators
+                ctx.fillStyle = 'black';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Time: ${time} years`, 20, 30);
+                ctx.fillText(`Field B starts: ${fieldBStart} years after Field A`, 20, 50);
+            }
+            
+            function drawField(x, y, name, pressureDrop) {
+                // Draw well
+                ctx.beginPath();
+                ctx.rect(x - 5, y - 100, 10, 100);
+                ctx.fillStyle = '#8b4513';
+                ctx.fill();
+                
+                // Draw field boundary
+                ctx.beginPath();
+                ctx.arc(x, y, 40, 0, Math.PI, true);
+                ctx.fillStyle = '#d2b48c';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+                
+                // Draw field name
+                ctx.fillStyle = 'black';
+                ctx.font = '14px Arial';
+                ctx.fillText(name, x - 20, y - 50);
+                
+                // Draw pressure indicator
+                const pressureHeight = Math.min(80, pressureDrop / 5);
+                ctx.beginPath();
+                ctx.rect(x - 15, y - 30, 30, -pressureHeight);
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+                
+                ctx.fillStyle = 'black';
+                ctx.fillText(`${Math.round(pressureDrop)} psi`, x - 15, y - pressureHeight - 35);
+            }
+            
+            function drawPressureContours(x1, y1, p1, x2, y2, p2) {
+                // Draw simplified pressure contours as circles with gradient
+                const gradient = ctx.createRadialGradient(x1, y1, 0, x1, y1, 200);
+                gradient.addColorStop(0, 'rgba(255, 0, 0, 0.5)');
+                gradient.addColorStop(0.2, 'rgba(255, 165, 0, 0.3)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 0, 0.1)');
+                gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
+                
+                ctx.beginPath();
+                ctx.arc(x1, y1, 150, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                const gradient2 = ctx.createRadialGradient(x2, y2, 0, x2, y2, 200);
+                gradient2.addColorStop(0, 'rgba(255, 0, 0, 0.5)');
+                gradient2.addColorStop(0.2, 'rgba(255, 165, 0, 0.3)');
+                gradient2.addColorStop(0.5, 'rgba(255, 255, 0, 0.1)');
+                gradient2.addColorStop(1, 'rgba(0, 0, 255, 0)');
+                
+                ctx.beginPath();
+                ctx.arc(x2, y2, 150, 0, Math.PI * 2);
+                ctx.fillStyle = gradient2;
+                ctx.fill();
+                
+                // Draw interference zone
+                if (p1 > 0 && p2 > 0) {
+                    const midX = (x1 + x2) / 2;
+                    const midY = y1 - 50;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x1 + 20, y1 - 20);
+                    ctx.quadraticCurveTo(midX, midY, x2 - 20, y2 - 20);
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.7)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+                    
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+                    ctx.font = '14px Arial';
+                    ctx.fillText('Interference Zone', midX - 50, midY - 10);
+                }
+            }
+            
+            // Initial update
+            updateVisualization();
+        });
+    </script>
+</body>
+</html>

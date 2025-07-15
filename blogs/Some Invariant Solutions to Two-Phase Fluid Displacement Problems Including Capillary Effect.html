@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Two-Phase Fluid Displacement with Capillary Effects</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #4a7bab;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .equation-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        figure {
+            text-align: center;
+            margin: 25px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 25px 0;
+            background-color: #f9f9f9;
+        }
+        #simulation-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+            background-color: #f5f5f5;
+        }
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        button {
+            background-color: #4a7bab;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3d6691;
+        }
+        .analogy {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Two-Phase Fluid Displacement with Capillary Effects: From Equations to Real-World Applications</h1>
+    
+    <p>When oil and water flow together through porous rock, they create fascinating and complex patterns. This seemingly esoteric topic is actually crucial to our everyday lives - it's the foundation of how we extract oil from underground reservoirs, manage groundwater resources, and even understand how your morning coffee filters through ground beans.</p>
+    
+    <p>Today, we'll break down a sophisticated mathematical model of two-phase fluid flow through porous media, focusing on the crucial role of <strong>capillary effects</strong> - the phenomenon that makes water climb up a narrow tube against gravity. We'll explore analytical solutions that help us understand this complex physical process without relying on numerical approximations.</p>
+
+    <div class="analogy">
+        <h3>The Highway Analogy</h3>
+        <p>Imagine two types of vehicles (oil and water) traveling on a complex network of highways (the porous medium). The vehicles have different sizes and prefer different lanes. Capillary effects are like special express lanes that one type of vehicle (usually water in water-wet rock) prefers. The mathematical models we'll explore help us predict traffic patterns and congestion points as these vehicles navigate through the network.</p>
+    </div>
+    
+    <h2>First Principles: What's Really Happening?</h2>
+    
+    <p>At its core, two-phase fluid displacement is governed by three fundamental forces:</p>
+    
+    <ol>
+        <li><strong>Viscous forces</strong>: Resistance to flow due to fluid viscosity</li>
+        <li><strong>Gravitational forces</strong>: The effect of gravity on fluids with different densities</li>
+        <li><strong>Capillary forces</strong>: Interactions between fluids and the porous medium at the microscopic level</li>
+    </ol>
+    
+    <p>The classic Buckley-Leverett model simplifies this by ignoring capillary forces, which makes the equations easier to solve but creates an unrealistic discontinuity in the solution. The models we'll explore maintain mathematical tractability while properly accounting for capillary effects.</p>
+    
+    <h2>The Mathematical Framework</h2>
+    
+    <p>Let's start with the core equations that describe two immiscible fluids (like oil and water) flowing through a porous medium:</p>
+    
+    <div class="equation-container">
+        <p>The velocity of water is given by:</p>
+        $$\vec{u}_w = -\frac{k}{\mu_w}k_{rw}(S_w)\nabla(p_w + \gamma_w z)$$
+        
+        <p>The velocity of oil is given by:</p>
+        $$\vec{u}_o = -\frac{k}{\mu_o}k_{ro}(S_w)\nabla(p_o + \gamma_o z)$$
+        
+        <p>With the constraint that the fluids fill the entire pore space:</p>
+        $$S_w + S_o = 1$$
+    </div>
+    
+    <div class="note">
+        <p><strong>Key terms explained:</strong></p>
+        <ul>
+            <li>\(S_w\) and \(S_o\): Water and oil saturations (volume fractions)</li>
+            <li>\(k\): Absolute permeability of the rock</li>
+            <li>\(k_{rw}\) and \(k_{ro}\): Relative permeabilities (functions of saturation)</li>
+            <li>\(p_w\) and \(p_o\): Pressures in water and oil phases</li>
+            <li>\(\mu_w\) and \(\mu_o\): Viscosities of water and oil</li>
+            <li>\(\gamma_w\) and \(\gamma_o\): Specific weights of water and oil</li>
+        </ul>
+    </div>
+    
+    <p>The difference between the pressures in the two phases is the capillary pressure:</p>
+    
+    $$P_c(S_w) = p_o - p_w$$
+    
+    <p>For one-dimensional flow in a stream tube with variable cross-section, these equations reduce to:</p>
+    
+    $$q_w = -\frac{k k_{rw}(S_w)}{\mu_w}A(x)\left[\frac{\partial p_w}{\partial x} + \gamma_w\sin\alpha(x)\right]$$
+    
+    $$q_o = -\frac{k k_{ro}(S_w)}{\mu_o}A(x)\left[\frac{\partial p_o}{\partial x} + \gamma_o\sin\alpha(x)\right]$$
+    
+    <p>With conservation of mass equations:</p>
+    
+    $$\frac{\partial q_w}{\partial x} + \phi A(x)\frac{\partial S_w}{\partial t} = 0$$
+    
+    $$\frac{\partial q_o}{\partial x} + \phi A(x)\frac{\partial S_o}{\partial t} = 0$$
+    
+    <h3>The Master Equation</h3>
+    
+    <p>Combining these equations, we arrive at the fundamental equation describing one-dimensional, two-phase, unsteady-state flow with capillary effects:</p>
+    
+    $$\phi A(x)\frac{\partial S_w}{\partial t} + \frac{\partial}{\partial x}\left\{q_t(t)f_1(S_w) + \frac{k A(x)}{\mu_o}f_2(S_w)\left[P_c'(S_w)\frac{\partial S_w}{\partial x} - \Delta\gamma\sin\alpha(x)\right]\right\} = 0$$
+    
+    <p>Where:</p>
+    
+    $$f_1(S_w) = \frac{k_{rw}(S_w)}{k_{rw}(S_w) + \mu_D k_{ro}(S_w)}$$
+    
+    $$f_2(S_w) = \frac{k_{rw}(S_w)k_{ro}(S_w)}{k_{rw}(S_w) + \mu_D k_{ro}(S_w)}$$
+    
+    <p>And \(\mu_D = \mu_w/\mu_o\) is the viscosity ratio.</p>
+    
+    <div class="highlight">
+        <p>This is a nonlinear, parabolic differential equation of second order - much more complex than the first-order hyperbolic equation in the Buckley-Leverett model where capillary pressure is neglected.</p>
+    </div>
+    
+    <h2>Self-Similar Solutions: A Powerful Mathematical Approach</h2>
+    
+    <p>Now we'll explore a special type of solution called "self-similar solutions." These are elegant mathematical constructs where the solution at different times maintains the same shape but is stretched or compressed.</p>
+    
+    <div class="analogy">
+        <h3>The Zoom Lens Analogy</h3>
+        <p>Think of self-similar solutions like looking at an object through a zoom lens. As you zoom in or out, the object maintains its shape but changes in size. Similarly, self-similar solutions in fluid flow maintain their shape over time, just "stretched" along the spatial dimension.</p>
+    </div>
+    
+    <h3>Case 1: Radial Flow in a Horizontal Reservoir</h3>
+    
+    <p>Consider an infinite horizontal reservoir initially saturated with oil. At time t=0, we inject a mixture of oil and water through a well with infinitesimal radius. The equation becomes:</p>
+    
+    $$2\pi\phi h x\frac{\partial S_w}{\partial t} + \frac{\partial}{\partial x}\left[q_t(t)f_1(S_w) + \frac{2\pi k h x}{\mu_o}f_2(S_w)P_c'(S_w)\frac{\partial S_w}{\partial x}\right] = 0$$
+    
+    <p>By introducing the similarity variable \(\xi = x/(a\sqrt{t})\), this equation transforms into an ordinary differential equation:</p>
+    
+    $$\frac{d^2\Phi(S_w)}{d\xi^2} + \frac{1}{\xi}\frac{d\Phi(S_w)}{d\xi} + \left[\frac{\xi}{2} - \frac{q_D}{\xi}f_1'(S_w)\right]\frac{dS_w}{d\xi} = 0$$
+    
+    <p>Where \(\Phi(S_w)\) is defined by:</p>
+    
+    $$\Phi(S_w) = \pm\int f_2(S_w)J'(S_w)dS_w$$
+    
+    <p>And \(J(S_w)\) is the Leverett J-function that characterizes capillary pressure.</p>
+    
+    <h3>Key Insights from the Self-Similar Solution</h3>
+    
+    <p>Solving this equation reveals several important insights:</p>
+    
+    <ol>
+        <li>The water saturation profile has a finite front (unlike the Buckley-Leverett solution)</li>
+        <li>The saturation changes continuously at the front (not discontinuously)</li>
+        <li>The front propagates at a finite velocity</li>
+    </ol>
+    
+    <div class="interactive">
+        <h3>Interactive Visualization: Radial Flow with Capillary Effects</h3>
+        
+        <div class="control-panel">
+            <div class="slider-container">
+                <label for="injectionRate">Injection Rate (q<sub>D</sub>):</label>
+                <input type="range" id="injectionRate" min="0.1" max="10" step="0.1" value="1">
+                <span id="injectionRateValue">1</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="viscosityRatio">Viscosity Ratio (μ<sub>D</sub>):</label>
+                <input type="range" id="viscosityRatio" min="0.1" max="5" step="0.1" value="1">
+                <span id="viscosityRatioValue">1</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="time">Dimensionless Time:</label>
+                <input type="range" id="time" min="0.1" max="2" step="0.1" value="1">
+                <span id="timeValue">1</span>
+            </div>
+        </div>
+        
+        <div id="simulation-container">
+            <canvas id="simulation-canvas" width="800" height="400"></canvas>
+        </div>
+        
+        <button id="startSimulation">Start Simulation</button>
+        <button id="resetSimulation">Reset</button>
+    </div>
+    
+    <h3>Case 2: Linear Flow in an Isoclinal Reservoir</h3>
+    
+    <p>Now consider a linear, isoclinal (tilted) reservoir with water on one side and oil on the other. The fluids start flowing under the combined effects of capillary, gravitational, and hydrodynamic forces.</p>
+    
+    <p>The governing equation becomes:</p>
+    
+    $$\frac{1}{a^2}\frac{\partial S_w}{\partial t} - \frac{\partial}{\partial x}\left[\frac{\partial\Phi(S_w)}{\partial x} - \frac{u_t(t)}{a^2\phi}f_1(S_w) + \frac{k\Delta\gamma\sin\alpha}{\mu_o a^2\phi}f_2(S_w)\right] = 0$$
+    
+    <p>For a self-similar solution to exist, we need:</p>
+    
+    $$u_t(t) = \frac{u_0}{\sqrt{t}}, \Delta\gamma = \frac{(\Delta\gamma)_0}{\sqrt{t}}$$
+    
+    <p>This gives us the ordinary differential equation:</p>
+    
+    $$\frac{d^2\Phi(S_w)}{d\xi^2} + \left[\frac{\xi}{2} - u_D f_1'(S_w) + \epsilon f_2'(S_w)\right]\frac{dS_w}{d\xi} = 0$$
+    
+    <p>Where:</p>
+    
+    $$u_D = \frac{u_0}{a\phi}$$
+    
+    $$\epsilon = \frac{k(\Delta\gamma)_0\sin\alpha}{\mu_o a\phi}$$
+    
+    <h3>Key Insights from Linear Flow Solutions</h3>
+    
+    <ol>
+        <li>When the denser phase is at the upper side of a dipped reservoir, capillary and gravitational effects reinforce each other</li>
+        <li>When the denser phase is at the lower side, gravitational effects weaken capillary effects</li>
+        <li>In purely gravity-driven flow (no injection), capillary effects cannot be neglected</li>
+    </ol>
+    
+    <h2>The Progressive Wave Solution: Stabilized Saturation Zones</h2>
+    
+    <p>Another important solution describes the "stabilized zone" that forms at the displacement front after a long period of injection at constant rate.</p>
+    
+    <p>By introducing the variable \(\xi = x - \nu t\) (where \(\nu\) is the velocity of the stabilized zone), we get:</p>
+    
+    $$a^2\phi\Phi'(S_w)\frac{dS_w}{d\xi} + u_t[\Psi(S_w) - \Psi(S_w)] - \nu\phi(S_w - S_w) = 0$$
+    
+    <p>With solution:</p>
+    
+    $$\xi - \xi_0 = \frac{a^2\phi}{u_t}\int_{S_{w0}}^{S_w}\frac{\Phi'(S_w)}{[\Psi(S_{w1}) - \Psi(S_{w2})]\frac{S_{w1} - S_w}{S_{w1} - S_{w2}} - [\Psi(S_{w1}) - \Psi(S_w)]}\,dS_w$$
+    
+    <p>This solution describes a saturation profile that moves with constant velocity \(\nu\) without changing shape.</p>
+    
+    <h2>Real-World Applications and Practical Significance</h2>
+    
+    <p>These mathematical solutions might seem abstract, but they have profound practical applications:</p>
+    
+    <ol>
+        <li><strong>Oil Recovery Optimization</strong>: Understanding how water displaces oil helps engineers design more efficient recovery strategies</li>
+        <li><strong>Groundwater Remediation</strong>: Similar principles apply when removing contaminants from aquifers</li>
+        <li><strong>Carbon Sequestration</strong>: Injecting CO₂ into geological formations follows similar displacement physics</li>
+        <li><strong>Enhanced Oil Recovery</strong>: The insights about capillary effects guide the development of better chemicals for EOR</li>
+    </ol>
+    
+    <h2>The Bigger Picture: Three Models Compared</h2>
+    
+    <p>We can categorize our understanding of two-phase flow into three models of increasing complexity:</p>
+    
+    <ol>
+        <li><strong>Model ignoring capillary effects completely</strong>: Simplified but unrealistic</li>
+        <li><strong>Buckley-Leverett model</strong>: Includes capillary effects implicitly through relative permeability curves</li>
+        <li><strong>Full model with explicit capillary pressure</strong>: Most accurate but mathematically complex</li>
+    </ol>
+    
+    <p>The solutions we've explored bridge the gap between mathematical tractability and physical accuracy.</p>
+    
+    <h2>Interactive Game: Optimize Oil Recovery</h2>
+    
+    <div class="interactive">
+        <h3>Oil Recovery Challenge</h3>
+        <p>Adjust the injection parameters to maximize oil recovery while minimizing water production.</p>
+        
+        <div class="control-panel">
+            <div class="slider-container">
+                <label for="gameInjectionRate">Injection Rate:</label>
+                <input type="range" id="gameInjectionRate" min="0.1" max="5" step="0.1" value="1">
+                <span id="gameInjectionRateValue">1</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="gameWaterCut">Water Cut in Injection Fluid:</label>
+                <input type="range" id="gameWaterCut" min="0" max="1" step="0.01" value="1">
+                <span id="gameWaterCutValue">100%</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="gameCapillaryStrength">Capillary Strength:</label>
+                <input type="range" id="gameCapillaryStrength" min="0" max="2" step="0.1" value="1">
+                <span id="gameCapillaryStrengthValue">1</span>
+            </div>
+        </div>
+        
+        <div id="game-container">
+            <canvas id="game-canvas" width="800" height="300"></canvas>
+        </div>
+        
+        <div id="game-stats">
+            <p>Oil Recovered: <span id="oilRecovered">0</span>%</p>
+            <p>Water Produced: <span id="waterProduced">0</span>%</p>
+            <p>Efficiency: <span id="efficiency">0</span></p>
+        </div>
+        
+        <button id="startGame">Start Recovery</button>
+        <button id="resetGame">Reset</button>
+    </div>
+    
+    <h2>Conclusion: The Power of Analytical Solutions</h2>
+    
+    <p>The self-similar solutions and progressive wave solutions we've explored provide valuable insights into the physics of two-phase flow through porous media. They reveal the critical role of capillary effects in creating continuous saturation profiles and finite front velocities.</p>
+    
+    <p>While numerical simulations are widely used in practice, these analytical solutions serve as:</p>
+    
+    <ol>
+        <li>Benchmarks for validating numerical methods</li>
+        <li>Tools for understanding the fundamental physics</li>
+        <li>Guides for developing simplified engineering models</li>
+    </ol>
+    
+    <p>By understanding the mathematical foundation of two-phase flow with capillary effects, engineers can develop more effective strategies for oil recovery, groundwater remediation, and other applications involving multiphase flow through porous media.</p>
+    
+    <script>
+        // Simulation code for the interactive visualizations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update slider value displays
+            document.getElementById('injectionRate').addEventListener('input', function() {
+                document.getElementById('injectionRateValue').textContent = this.value;
+                updateSimulation();
+            });
+            
+            document.getElementById('viscosityRatio').addEventListener('input', function() {
+                document.getElementById('viscosityRatioValue').textContent = this.value;
+                updateSimulation();
+            });
+            
+            document.getElementById('time').addEventListener('input', function() {
+                document.getElementById('timeValue').textContent = this.value;
+                updateSimulation();
+            });
+            
+            document.getElementById('gameInjectionRate').addEventListener('input', function() {
+                document.getElementById('gameInjectionRateValue').textContent = this.value;
+                updateGame();
+            });
+            
+            document.getElementById('gameWaterCut').addEventListener('input', function() {
+                const percent = Math.round(this.value * 100);
+                document.getElementById('gameWaterCutValue').textContent = percent + '%';
+                updateGame();
+            });
+            
+            document.getElementById('gameCapillaryStrength').addEventListener('input', function() {
+                document.getElementById('gameCapillaryStrengthValue').textContent = this.value;
+                updateGame();
+            });
+            
+            // Simulation canvas
+            const simCanvas = document.getElementById('simulation-canvas');
+            const simCtx = simCanvas.getContext('2d');
+            
+            // Game canvas
+            const gameCanvas = document.getElementById('game-canvas');
+            const gameCtx = gameCanvas.getContext('2d');
+            
+            // Simulation variables
+            let simRunning = false;
+            let simTime = 0;
+            let waterFront = 0;
+            
+            // Game variables
+            let gameRunning = false;
+            let gameTime = 0;
+            let oilRecovered = 0;
+            let waterProduced = 0;
+            
+            // Start simulation button
+            document.getElementById('startSimulation').addEventListener('click', function() {
+                if (!simRunning) {
+                    simRunning = true;
+                    simulationLoop();
+                    this.textContent = 'Pause Simulation';
+                } else {
+                    simRunning = false;
+                    this.textContent = 'Resume Simulation';
+                }
+            });
+            
+            // Reset simulation button
+            document.getElementById('resetSimulation').addEventListener('click', function() {
+                simRunning = false;
+                simTime = 0;
+                waterFront = 0;
+                document.getElementById('startSimulation').textContent = 'Start Simulation';
+                drawSimulation();
+            });
+            
+            // Start game button
+            document.getElementById('startGame').addEventListener('click', function() {
+                if (!gameRunning) {
+                    gameRunning = true;
+                    gameLoop();
+                    this.textContent = 'Pause Recovery';
+                } else {
+                    gameRunning = false;
+                    this.textContent = 'Resume Recovery';
+                }
+            });
+            
+            // Reset game button
+            document.getElementById('resetGame').addEventListener('click', function() {
+                gameRunning = false;
+                gameTime = 0;
+                oilRecovered = 0;
+                waterProduced = 0;
+                document.getElementById('startGame').textContent = 'Start Recovery';
+                updateGameStats();
+                drawGame();
+            });
+            
+            // Simulation loop
+            function simulationLoop() {
+                if (!simRunning) return;
+                
+                simTime += 0.05;
+                updateSimulation();
+                
+                requestAnimationFrame(simulationLoop);
+            }
+            
+            // Game loop
+            function gameLoop() {
+                if (!gameRunning) return;
+                
+                gameTime += 0.05;
+                updateGame();
+                
+                requestAnimationFrame(gameLoop);
+            }
+            
+            // Update simulation
+            function updateSimulation() {
+                const qD = parseFloat(document.getElementById('injectionRate').value);
+                const muD = parseFloat(document.getElementById('viscosityRatio').value);
+                const t = parseFloat(document.getElementById('time').value);
+                
+                // Calculate water front position based on a simplified model
+                waterFront = 100 * Math.sqrt(qD * t) / (1 + 0.5 * Math.sqrt(muD));
+                
+                drawSimulation();
+            }
+            
+            // Draw simulation
+            function drawSimulation() {
+                simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+                
+                // Draw reservoir
+                simCtx.fillStyle = '#f0f0f0';
+                simCtx.fillRect(0, 0, simCanvas.width, simCanvas.height);
+                
+                // Draw well
+                simCtx.fillStyle = '#333';
+                simCtx.beginPath();
+                simCtx.arc(50, simCanvas.height/2, 10, 0, Math.PI*2);
+                simCtx.fill();
+                
+                // Draw water front (radial pattern)
+                const centerX = 50;
+                const centerY = simCanvas.height/2;
+                const radius = waterFront;
+                
+                const gradient = simCtx.createRadialGradient(
+                    centerX, centerY, 0,
+                    centerX, centerY, radius
+                );
+                gradient.addColorStop(0, 'rgba(0, 100, 255, 0.8)');
+                gradient.addColorStop(0.8, 'rgba(0, 100, 255, 0.6)');
+                gradient.addColorStop(0.9, 'rgba(0, 100, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(0, 100, 255, 0)');
+                
+                simCtx.fillStyle = gradient;
+                simCtx.beginPath();
+                simCtx.arc(centerX, centerY, radius, 0, Math.PI*2);
+                simCtx.fill();
+                
+                // Draw oil
+                simCtx.fillStyle = 'rgba(139, 69, 19, 0.3)';
+                simCtx.fillRect(0, 0, simCanvas.width, simCanvas.height);
+                
+                // Draw saturation profile
+                drawSaturationProfile();
+            }
+            
+            // Draw saturation profile
+            function drawSaturationProfile() {
+                const qD = parseFloat(document.getElementById('injectionRate').value);
+                const muD = parseFloat(document.getElementById('viscosityRatio').value);
+                
+                simCtx.strokeStyle = '#000';
+                simCtx.lineWidth = 2;
+                simCtx.beginPath();
+                simCtx.moveTo(50, 350);
+                
+                for (let x = 0; x <= waterFront; x++) {
+                    // Calculate saturation based on distance from well
+                    // This is a simplified model of the actual solution
+                    let saturation;
+                    if (x < waterFront * 0.7) {
+                        saturation = 0.8 - 0.6 * (x / waterFront) * Math.sqrt(muD/qD);
+                    } else {
+                        const frontDist = (waterFront - x) / (0.3 * waterFront);
+                        saturation = 0.2 * Math.pow(frontDist, 1/3);
+                    }
+                    
+                    const y = 350 - saturation * 300;
+                    simCtx.lineTo(50 + x, y);
+                }
+                
+                simCtx.stroke();
+                
+                // Draw axis labels
+                simCtx.fillStyle = '#000';
+                simCtx.font = '12px Arial';
+                simCtx.fillText('Distance from well', simCanvas.width/2, 380);
+                simCtx.save();
+                simCtx.translate(20, simCanvas.height/2);
+                simCtx.rotate(-Math.PI/2);
+                simCtx.fillText('Water Saturation', 0, 0);
+                simCtx.restore();
+            }
+            
+            // Update game
+            function updateGame() {
+                const injectionRate = parseFloat(document.getElementById('gameInjectionRate').value);
+                const waterCut = parseFloat(document.getElementById('gameWaterCut').value);
+                const capillaryStrength = parseFloat(document.getElementById('gameCapillaryStrength').value);
+                
+                if (gameRunning) {
+                    // Update oil recovered and water produced based on parameters
+                    const recoveryRate = injectionRate * waterCut * (1 + 0.5 * capillaryStrength) / 100;
+                    const waterProductionRate = injectionRate * (1 - waterCut * 0.8) / 100;
+                    
+                    oilRecovered = Math.min(100, oilRecovered + recoveryRate);
+                    waterProduced = Math.min(100, waterProduced + waterProductionRate);
+                    
+                    updateGameStats();
+                }
+                
+                drawGame();
+            }
+            
+            // Update game statistics
+            function updateGameStats() {
+                document.getElementById('oilRecovered').textContent = Math.round(oilRecovered);
+                document.getElementById('waterProduced').textContent = Math.round(waterProduced);
+                
+                const efficiency = oilRecovered > 0 ? 
+                    Math.round((oilRecovered / (oilRecovered + waterProduced)) * 100) / 100 : 0;
+                document.getElementById('efficiency').textContent = efficiency.toFixed(2);
+            }
+            
+            // Draw game
+            function drawGame() {
+                gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Draw reservoir
+                gameCtx.fillStyle = '#f0f0f0';
+                gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+                
+                // Draw oil
+                gameCtx.fillStyle = 'rgba(139, 69, 19, 0.5)';
+                gameCtx.fillRect(0, 0, gameCanvas.width * (1 - oilRecovered/100), gameCanvas.height);
+                
+                // Draw water
+                gameCtx.fillStyle = 'rgba(0, 100, 255, 0.5)';
+                gameCtx.fillRect(0, 0, gameCanvas.width * (waterProduced/100), gameCanvas.height);
+                
+                // Draw injection well
+                gameCtx.fillStyle = '#333';
+                gameCtx.beginPath();
+                gameCtx.arc(20, gameCanvas.height/2, 10, 0, Math.PI*2);
+                gameCtx.fill();
+                
+                // Draw production well
+                gameCtx.fillStyle = '#333';
+                gameCtx.beginPath();
+                gameCtx.arc(gameCanvas.width - 20, gameCanvas.height/2, 10, 0, Math.PI*2);
+                gameCtx.fill();
+                
+                // Draw saturation profile
+                const injectionRate = parseFloat(document.getElementById('gameInjectionRate').value);
+                const waterCut = parseFloat(document.getElementById('gameWaterCut').value);
+                const capillaryStrength = parseFloat(document.getElementById('gameCapillaryStrength').value);
+                
+                gameCtx.strokeStyle = '#000';
+                gameCtx.lineWidth = 2;
+                gameCtx.beginPath();
+                gameCtx.moveTo(20, gameCanvas.height - 20);
+                
+                for (let x = 0; x < gameCanvas.width - 40; x++) {
+                    const xNorm = x / (gameCanvas.width - 40);
+                    
+                    // Calculate saturation based on position and parameters
+                    // This is a simplified model
+                    let saturation;
+                    const frontPosition = oilRecovered / 100;
+                    
+                    if (xNorm < frontPosition) {
+                        saturation = waterCut * (1 - 0.2 * Math.pow(1 - xNorm/frontPosition, capillaryStrength));
+                    } else {
+                        saturation = waterCut * 0.2 * Math.pow(Math.max(0, 1 - (xNorm - frontPosition) / (capillaryStrength * 0.3)), 2);
+                    }
+                    
+                    const y = gameCanvas.height - 20 - saturation * (gameCanvas.height - 40);
+                    gameCtx.lineTo(20 + x, y);
+                }
+                
+                gameCtx.stroke();
+            }
+            
+            // Initial draws
+            drawSimulation();
+            drawGame();
+            updateGameStats();
+        });
+    </script>
+</body>
+</html>

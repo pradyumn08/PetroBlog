@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Pressure Buildup Analysis: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        pre {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            color: #555;
+            margin: 20px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .note {
+            background-color: #e7f5fe;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-left: 5px solid #ffc107;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 120px;
+        }
+        .slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            margin-left: 10px;
+            min-width: 40px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+            margin: 15px 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .analogy {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-left: 5px solid #4caf50;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Pressure Buildup Analysis: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how petroleum engineers figure out what's happening deep underground in oil and gas reservoirs? It's like trying to understand what's inside a sealed box without opening it. Today, we're going to demystify one of the most powerful techniques in reservoir engineering: pressure buildup analysis.</p>
+    
+    <p>In this post, we'll break down a complex academic paper by Correa and Ramey that revolutionized how engineers analyze pressure data from wells. Their work on "Combined Effects of Shut-In and Production" provided a new mathematical approach that's still used today.</p>
+
+    <div class="note">
+        <strong>Why this matters:</strong> Understanding reservoir properties is crucial for efficient oil and gas production, sustainable resource management, and accurate economic forecasting. The techniques we'll explore are fundamental to modern reservoir engineering.
+    </div>
+
+    <h2>The Problem: Understanding What We Can't See</h2>
+    
+    <p>Imagine you have a well drilled thousands of feet into the earth. You can measure the pressure at the wellbore, but how do you determine what the reservoir looks like beyond that? How permeable is the rock? Is there damage around the wellbore? What's the average pressure in the reservoir?</p>
+    
+    <p>Traditionally, engineers analyzed pressure data from wells produced at constant flow rates. But in reality, many wells operate at constant pressure instead. This creates a mathematical challenge when interpreting pressure buildup data after the well is shut in.</p>
+
+    <div class="analogy">
+        <strong>Analogy:</strong> It's like trying to understand a lake by studying how water flows into a bucket. If you always fill your bucket at the same rate (constant rate), you can develop one set of rules. But if you always keep your bucket at the same level (constant pressure), you need different rules. What Correa and Ramey did was figure out how to analyze what happens when you suddenly stop the flow into a constant-pressure bucket.
+    </div>
+
+    <h2>First Principles: The Diffusivity Equation</h2>
+    
+    <p>At the heart of reservoir analysis is the diffusivity equation, which describes how pressure changes propagate through a porous medium. Let's start with this fundamental equation:</p>
+    
+    <div class="equation-box">
+        $$\frac{\partial^{2}p_{D}}{\partial r_{D}^{2}}+\frac{1}{r_{D}}\frac{\partial p_{D}}{\partial r_{D}}=\frac{\partial p_{D}}{\partial t_{D}}$$
+    </div>
+    
+    <p>This equation might look intimidating, but it's essentially describing how pressure disturbances spread through the reservoir over time. The subscript "D" indicates these are dimensionless variables, which help engineers work with universal solutions regardless of the specific reservoir properties.</p>
+    
+    <p>The dimensionless variables are defined as:</p>
+    
+    <div class="equation-box">
+        $$p_{D}(r_{D},t_{D})=\frac{p_{i}-p(r,t)}{p_{i}-p_{0}}$$
+        $$t_{D}=\frac{k\ t}{\phi\ \mu\ c_{t}\ r_{w}^{2}}$$
+        $$r_{D}=\frac{r}{r_{w}}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(p_i\) is the initial reservoir pressure</li>
+        <li>\(p(r,t)\) is the pressure at radius \(r\) and time \(t\)</li>
+        <li>\(p_0\) is the pressure at the wellbore during production</li>
+        <li>\(k\) is permeability</li>
+        <li>\(t\) is time</li>
+        <li>\(\phi\) is porosity</li>
+        <li>\(\mu\) is fluid viscosity</li>
+        <li>\(c_t\) is total compressibility</li>
+        <li>\(r_w\) is wellbore radius</li>
+    </ul>
+
+    <h2>The Innovation: A New Boundary Condition</h2>
+    
+    <p>The key innovation in Correa and Ramey's work was creating a single mathematical boundary condition that could handle both the production period (when the well is flowing) and the buildup period (when the well is shut in).</p>
+    
+    <p>Previously, engineers had to use different equations for each period and combine them using the principle of superposition, which gets complicated for constant-pressure production.</p>
+    
+    <p>Correa and Ramey used the unit step function to create a unified boundary condition:</p>
+    
+    <div class="equation-box">
+        $$\bigg[1-S_{k}\bigg]\bigg(1-p_{wD}(t_{D})\bigg)+S_{k}\Bigg[C_{D}\frac{d p_{wD}}{d t_{D}}-\Bigg[r_{D}\frac{\partial p_{D}}{\partial r_{D}}\Bigg]_{r_{D}=1}\Bigg]=0$$
+    </div>
+    
+    <p>Where \(S_k\) is the unit step function:</p>
+    
+    <div class="equation-box">
+        $$S_{k}(t)=0, \quad 0<t<k$$
+        $$S_{k}(t)=1, \quad t>k$$
+    </div>
+    
+    <p>And \(k\) represents the time when the well is shut in.</p>
+
+    <div class="note">
+        <strong>Key insight:</strong> This unified boundary condition elegantly handles the transition from production to buildup without requiring superposition, making the mathematics more tractable.
+    </div>
+
+    <h2>Solving the Equation: Laplace Transforms</h2>
+    
+    <p>To solve this complex differential equation with time-dependent boundary conditions, Correa and Ramey used Laplace transforms. This mathematical technique converts differential equations into algebraic equations, making them easier to solve.</p>
+    
+    <p>After applying the Laplace transform to the boundary condition, they obtained:</p>
+    
+    <div class="equation-box">
+        $$C_{D}\left[s\:\overline{p}_{wD}-1\:\right]-\left\{r_{D}\frac{d\overline{p}_{D}}{d r_{D}}\right\}_{r_{D}=1}=\int\displaylimits_{0}^{k}e^{-s\tau_{D}}\:q_{wD}(\tau_{D})\:d\tau_{D}$$
+    </div>
+    
+    <p>This transformed equation represents the material balance for fluid produced during both the production and buildup periods.</p>
+    
+    <p>After solving this equation and performing an inverse Laplace transform, they arrived at a solution for the pressure buildup period:</p>
+    
+    <div class="equation-box">
+        $$p_{wD}(t_{D})=C_{D}\ \mathfrak{p_{D}}^{\prime}(S,C_{D},t_{D})+\int_{0}^{k}\mathfrak{p_{D}}^{\prime}(S,C_{D},t_{D}-\tau_{D})q_{wD}(\tau_{D})d\tau_{D}$$
+    </div>
+    
+    <p>For long shut-in times compared to production times, this can be simplified to:</p>
+    
+    <div class="equation-box">
+        $$p_{wD}(t_{D})=\frac{q_{wD}^{*}}{2}\left[1+\frac{C_{D}}{Q_{wD}(t_{pD})}\right]\frac{t_{pD}}{t_{pD}+\Delta t_{D}}$$
+    </div>
+    
+    <p>In real variables, this becomes:</p>
+    
+    <div class="equation-box">
+        $$p_{ws}(\Delta t)=p_{i}-m_{C}\frac{t_{p}}{t_{p}+\Delta t}$$
+    </div>
+    
+    <p>Where \(m_C\) is the slope:</p>
+    
+    <div class="equation-box">
+        $$m_{C}=\frac{q_{w}^{*}\mu}{4\pi kh}\left[1+\frac{C(p_{i}-p_{0})}{q_{w}^{*}t_{p}}\right]$$
+    </div>
+
+    <h2>Practical Application: A New Analysis Method</h2>
+    
+    <p>The beauty of this solution is that it leads to a simple graphical method for analyzing pressure buildup data:</p>
+    
+    <ol>
+        <li>Plot the shut-in pressure \(p_{ws}\) versus \(\frac{t_p}{t_p+\Delta t}\)</li>
+        <li>Draw a straight line through the data points</li>
+        <li>The slope of this line (\(m_C\)) is inversely proportional to the reservoir's permeability-thickness product (\(kh\))</li>
+        <li>The y-intercept (when \(\frac{t_p}{t_p+\Delta t} = 0\)) gives the initial reservoir pressure (\(p_i\))</li>
+    </ol>
+    
+    <p>This method is particularly useful for analyzing data from drill stem tests (DSTs) and other tests with short production periods.</p>
+
+    <div class="interactive-container">
+        <h3>Interactive Pressure Buildup Analysis Tool</h3>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (md):</label>
+            <input type="range" id="permeability" class="slider" min="1" max="100" value="10">
+            <span id="permeability-value" class="output">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skin">Skin Factor:</label>
+            <input type="range" id="skin" class="slider" min="-5" max="10" value="0" step="0.5">
+            <span id="skin-value" class="output">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="production-time">Production Time (hr):</label>
+            <input type="range" id="production-time" class="slider" min="0.1" max="10" value="1" step="0.1">
+            <span id="production-time-value" class="output">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="storage">Wellbore Storage:</label>
+            <input type="range" id="storage" class="slider" min="0.001" max="0.1" value="0.01" step="0.001">
+            <span id="storage-value" class="output">0.01</span>
+        </div>
+        
+        <canvas id="pressureCanvas" width="700" height="400"></canvas>
+        
+        <div>
+            <button id="plot-button">Plot Pressure Buildup</button>
+            <button id="analyze-button">Analyze Data</button>
+            <button id="reset-button">Reset</button>
+        </div>
+        
+        <div id="analysis-results" style="margin-top: 15px;"></div>
+    </div>
+
+    <h2>Key Insights from the Paper</h2>
+    
+    <ol>
+        <li><strong>Unified Mathematical Approach:</strong> The paper presents a method to solve problems with time-dependent boundary conditions using a single boundary condition.</li>
+        <li><strong>Practical Analysis Method:</strong> The solution leads to a simple graphical technique for analyzing pressure buildup data following constant-pressure production.</li>
+        <li><strong>Equivalence to Slug Tests:</strong> For very short production times, the pressure buildup behavior is similar to a slug test.</li>
+        <li><strong>Type Curve Analysis:</strong> The paper provides type curves that can be used to analyze pressure buildup data when wellbore storage effects are significant.</li>
+    </ol>
+
+    <h2>Real-World Applications</h2>
+    
+    <p>This analysis technique is particularly valuable for:</p>
+    
+    <ul>
+        <li><strong>Drill Stem Tests (DSTs):</strong> These are short-duration tests often conducted with constant pressure production.</li>
+        <li><strong>Heavy Oil Wells:</strong> These often operate at constant pressure rather than constant rate.</li>
+        <li><strong>Gas Wells:</strong> Due to their compressibility characteristics, gas wells often exhibit constant-pressure behavior.</li>
+        <li><strong>Exploration Wells:</strong> Where quick assessment of reservoir properties is needed before making development decisions.</li>
+    </ul>
+
+    <div class="analogy">
+        <strong>Analogy:</strong> Traditional pressure analysis is like measuring a person's fitness by having them run at a constant speed and seeing how their heart rate responds. Correa and Ramey's method is like measuring fitness by having someone run as fast as they can (constant effort/pressure) and then seeing how quickly they recover when they stop. Both tell you about fitness, but they measure different aspects of it.
+    </div>
+
+    <h2>Conclusion: Why This Matters</h2>
+    
+    <p>Correa and Ramey's work represents a significant advancement in pressure transient analysis. By developing a unified mathematical approach to handle both production and buildup periods, they provided engineers with a powerful tool for reservoir characterization.</p>
+    
+    <p>Their method is particularly valuable for analyzing tests with constant-pressure production, which are common in practice but were difficult to interpret with traditional methods.</p>
+    
+    <p>The elegance of their solution lies in its mathematical rigor combined with practical applicability. By plotting pressure versus \(\frac{t_p}{t_p+\Delta t}\), engineers can quickly extract key reservoir properties like permeability and initial pressure.</p>
+    
+    <p>Next time you're analyzing pressure data from a well test, consider whether this approach might provide insights that traditional methods miss.</p>
+
+    <script>
+        // Get DOM elements
+        const permeabilitySlider = document.getElementById('permeability');
+        const permeabilityValue = document.getElementById('permeability-value');
+        const skinSlider = document.getElementById('skin');
+        const skinValue = document.getElementById('skin-value');
+        const productionTimeSlider = document.getElementById('production-time');
+        const productionTimeValue = document.getElementById('production-time-value');
+        const storageSlider = document.getElementById('storage');
+        const storageValue = document.getElementById('storage-value');
+        const canvas = document.getElementById('pressureCanvas');
+        const ctx = canvas.getContext('2d');
+        const plotButton = document.getElementById('plot-button');
+        const analyzeButton = document.getElementById('analyze-button');
+        const resetButton = document.getElementById('reset-button');
+        const analysisResults = document.getElementById('analysis-results');
+        
+        // Update slider value displays
+        permeabilitySlider.addEventListener('input', () => {
+            permeabilityValue.textContent = permeabilitySlider.value;
+        });
+        
+        skinSlider.addEventListener('input', () => {
+            skinValue.textContent = skinSlider.value;
+        });
+        
+        productionTimeSlider.addEventListener('input', () => {
+            productionTimeValue.textContent = productionTimeSlider.value;
+        });
+        
+        storageSlider.addEventListener('input', () => {
+            storageValue.textContent = storageSlider.value;
+        });
+        
+        // Constants
+        const initialPressure = 1000; // psi
+        const flowingPressure = 500; // psi
+        const viscosity = 1; // cp
+        const thickness = 20; // ft
+        const porosity = 0.2;
+        const totalCompressibility = 1e-5; // 1/psi
+        const wellboreRadius = 0.3; // ft
+        
+        // Data arrays
+        let timeData = [];
+        let pressureData = [];
+        let plotData = [];
+        
+        // Plot pressure buildup
+        plotButton.addEventListener('click', () => {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get parameter values
+            const k = parseFloat(permeabilitySlider.value);
+            const S = parseFloat(skinSlider.value);
+            const tp = parseFloat(productionTimeSlider.value);
+            const CD = parseFloat(storageSlider.value);
+            
+            // Generate data
+            generatePressureData(k, S, tp, CD);
+            
+            // Plot data
+            plotPressureData();
+        });
+        
+        // Analyze data
+        analyzeButton.addEventListener('click', () => {
+            if (timeData.length === 0) {
+                analysisResults.innerHTML = '<p style="color: red;">Please plot data first!</p>';
+                return;
+            }
+            
+            // Perform analysis
+            const k = parseFloat(permeabilitySlider.value);
+            const S = parseFloat(skinSlider.value);
+            const tp = parseFloat(productionTimeSlider.value);
+            
+            // Calculate slope and intercept
+            const { slope, intercept } = calculateSlopeAndIntercept();
+            
+            // Calculate permeability from slope
+            const calculatedK = calculatePermeability(slope);
+            
+            // Calculate skin factor
+            const calculatedS = calculateSkin(slope, intercept);
+            
+            // Display results
+            analysisResults.innerHTML = `
+                <p><strong>Analysis Results:</strong></p>
+                <p>Estimated Initial Pressure: ${intercept.toFixed(2)} psi</p>
+                <p>Slope (mc): ${slope.toFixed(2)} psi</p>
+                <p>Estimated Permeability: ${calculatedK.toFixed(2)} md (Actual: ${k} md)</p>
+                <p>Estimated Skin Factor: ${calculatedS.toFixed(2)} (Actual: ${S})</p>
+            `;
+            
+            // Draw best fit line
+            drawBestFitLine(slope, intercept);
+        });
+        
+        // Reset
+        resetButton.addEventListener('click', () => {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Reset data arrays
+            timeData = [];
+            pressureData = [];
+            plotData = [];
+            
+            // Reset analysis results
+            analysisResults.innerHTML = '';
+            
+            // Reset sliders to default values
+            permeabilitySlider.value = 10;
+            permeabilityValue.textContent = '10';
+            skinSlider.value = 0;
+            skinValue.textContent = '0';
+            productionTimeSlider.value = 1;
+            productionTimeValue.textContent = '1';
+            storageSlider.value = 0.01;
+            storageValue.textContent = '0.01';
+        });
+        
+        // Generate pressure buildup data
+        function generatePressureData(k, S, tp, CD) {
+            // Clear previous data
+            timeData = [];
+            pressureData = [];
+            plotData = [];
+            
+            // Calculate dimensionless parameters
+            const qAvg = 100; // Average production rate (arbitrary units)
+            
+            // Generate shut-in times
+            const maxShutInTime = 10 * tp;
+            for (let dt = 0.01; dt <= maxShutInTime; dt *= 1.2) {
+                timeData.push(dt);
+                
+                // Calculate dimensionless time
+                const tD = (k * dt) / (porosity * viscosity * totalCompressibility * wellboreRadius * wellboreRadius);
+                const tpD = (k * tp) / (porosity * viscosity * totalCompressibility * wellboreRadius * wellboreRadius);
+                
+                // Calculate pressure using simplified equation
+                const mC = (qAvg * viscosity / (4 * Math.PI * k * thickness)) * (1 + CD / (qAvg * tp));
+                const p = initialPressure - mC * (tp / (tp + dt));
+                
+                // Add some random noise to make it more realistic
+                const noise = Math.random() * 5 - 2.5;
+                pressureData.push(p + noise);
+                
+                // Calculate x-coordinate for plot (tp/(tp+dt))
+                plotData.push(tp / (tp + dt));
+            }
+        }
+        
+        // Plot pressure data
+        function plotPressureData() {
+            // Set up axes
+            const padding = 50;
+            const xMax = 1;
+            const xMin = 0;
+            const yMax = Math.max(...pressureData) + 20;
+            const yMin = Math.min(...pressureData) - 20;
+            
+            // Draw axes
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('tp / (tp + Δt)', canvas.width / 2, canvas.height - 15);
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Pressure (psi)', 0, 0);
+            ctx.restore();
+            
+            // Draw x-axis ticks
+            for (let i = 0; i <= 10; i++) {
+                const x = padding + (i / 10) * (canvas.width - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height - padding);
+                ctx.lineTo(x, canvas.height - padding + 5);
+                ctx.stroke();
+                ctx.fillText((i / 10).toFixed(1), x, canvas.height - padding + 20);
+            }
+            
+            // Draw y-axis ticks
+            const yRange = yMax - yMin;
+            const yTickStep = Math.ceil(yRange / 10 / 50) * 50;
+            for (let i = Math.floor(yMin / yTickStep) * yTickStep; i <= yMax; i += yTickStep) {
+                const y = canvas.height - padding - ((i - yMin) / (yMax - yMin)) * (canvas.height - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding - 5, y);
+                ctx.stroke();
+                ctx.textAlign = 'right';
+                ctx.fillText(i.toFixed(0), padding - 10, y + 5);
+            }
+            
+            // Plot data points
+            ctx.fillStyle = '#3498db';
+            for (let i = 0; i < plotData.length; i++) {
+                const x = padding + (plotData[i] - xMin) / (xMax - xMin) * (canvas.width - 2 * padding);
+                const y = canvas.height - padding - ((pressureData[i] - yMin) / (yMax - yMin)) * (canvas.height - 2 * padding);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        // Calculate slope and intercept using linear regression
+        function calculateSlopeAndIntercept() {
+            let sumX = 0;
+            let sumY = 0;
+            let sumXY = 0;
+            let sumXX = 0;
+            const n = plotData.length;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += plotData[i];
+                sumY += pressureData[i];
+                sumXY += plotData[i] * pressureData[i];
+                sumXX += plotData[i] * plotData[i];
+            }
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            return { slope, intercept };
+        }
+        
+        // Draw best fit line
+        function drawBestFitLine(slope, intercept) {
+            const padding = 50;
+            const xMax = 1;
+            const xMin = 0;
+            const yMax = Math.max(...pressureData) + 20;
+            const yMin = Math.min(...pressureData) - 20;
+            
+            // Calculate line points
+            const x1 = xMin;
+            const y1 = slope * x1 + intercept;
+            const x2 = xMax;
+            const y2 = slope * x2 + intercept;
+            
+            // Convert to canvas coordinates
+            const cx1 = padding + (x1 - xMin) / (xMax - xMin) * (canvas.width - 2 * padding);
+            const cy1 = canvas.height - padding - ((y1 - yMin) / (yMax - yMin)) * (canvas.height - 2 * padding);
+            const cx2 = padding + (x2 - xMin) / (xMax - xMin) * (canvas.width - 2 * padding);
+            const cy2 = canvas.height - padding - ((y2 - yMin) / (yMax - yMin)) * (canvas.height - 2 * padding);
+            
+            // Draw line
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx1, cy1);
+            ctx.lineTo(cx2, cy2);
+            ctx.stroke();
+            
+            // Add annotation
+            ctx.fillStyle = '#e74c3c';
+            ctx.textAlign = 'left';
+            ctx.fillText(`y = ${intercept.toFixed(1)} - ${Math.abs(slope).toFixed(1)}x`, cx2 - 180, cy2 - 15);
+        }
+        
+        // Calculate permeability from slope
+        function calculatePermeability(slope) {
+            const qAvg = 100; // Average production rate (arbitrary units)
+            return (qAvg * viscosity) / (4 * Math.PI * Math.abs(slope) * thickness);
+        }
+        
+        // Calculate skin factor
+        function calculateSkin(slope, intercept) {
+            const k = parseFloat(permeabilitySlider.value);
+            const tp = parseFloat(productionTimeSlider.value);
+            const qAvg = 100; // Average production rate
+            const qEnd = 80; // End rate (arbitrary units)
+            
+            const pressureDrop = initialPressure - flowingPressure;
+            
+            return (0.5 * (pressureDrop / Math.abs(slope)) * (qAvg / qEnd)) - 
+                   (0.5 * Math.log(k * tp / (porosity * viscosity * totalCompressibility * wellboreRadius * wellboreRadius))) + 
+                   3.72;
+        }
+        
+        // Initialize with default plot
+        window.addEventListener('load', () => {
+            plotButton.click();
+        });
+    </script>
+</body>
+</html>

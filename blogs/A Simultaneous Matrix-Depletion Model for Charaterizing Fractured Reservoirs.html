@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Simultaneous Matrix-Depletion in Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f7f7f7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #e8f4f8;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Breaking Down the Quadrilinear Flow Model for Fractured Reservoirs</h1>
+    
+    <p>In today's post, we're going to demystify a complex but fascinating concept from petroleum engineering: the Quadrilinear Flow Model (QFM) for characterizing fractured reservoirs. This model, introduced by Ezulike (2013), addresses some fundamental limitations in how we understand fluid flow in unconventional reservoirs. By the end of this article, you'll understand why this matters and how it changes our approach to modeling these complex systems.</p>
+    
+    <h2>The Problem with Traditional Models</h2>
+    
+    <p>Imagine you're trying to extract oil from a tight rock formation like shale. Unlike conventional reservoirs where oil flows easily, these unconventional reservoirs require techniques like horizontal drilling and hydraulic fracturing to create pathways for the oil to flow.</p>
+    
+    <p>Until now, engineers have used what we call "sequential-depletion" models, which assume fluid flows in a specific sequence:</p>
+    
+    <ol>
+        <li>First, from the rock matrix to micro-fractures (small natural cracks)</li>
+        <li>Then, from micro-fractures to hydraulic fractures (large man-made cracks)</li>
+        <li>Finally, from hydraulic fractures to the wellbore</li>
+    </ol>
+    
+    <p>But here's the problem: real-world data shows this sequential assumption doesn't always hold true. In many cases, fluid simultaneously flows from the matrix directly to both micro-fractures AND hydraulic fractures.</p>
+    
+    <div class="note">
+        <p><strong>Key insight:</strong> Traditional models that assume sequential flow can lead to incorrect estimates of reservoir properties, potentially causing costly errors in production forecasting and field development.</p>
+    </div>
+    
+    <h2>The Quadrilinear Flow Model: A First Principles Approach</h2>
+    
+    <p>The Quadrilinear Flow Model (QFM) takes a fundamentally different approach. Instead of assuming sequential flow, it divides the matrix into two conceptual sub-domains:</p>
+    
+    <ul>
+        <li>Sub-matrix 1: Feeds micro-fractures (MF)</li>
+        <li>Sub-matrix 2: Feeds hydraulic fractures (HF) directly</li>
+    </ul>
+    
+    <p>This seemingly simple change has profound implications. By allowing simultaneous depletion, the model better represents what's actually happening underground and provides more accurate reservoir characterization.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Visualization: Sequential vs. Simultaneous Matrix Depletion</h3>
+        
+        <div>
+            <button id="toggleButton">Toggle Flow Model</button>
+            <div id="modelType" style="font-weight: bold; margin: 10px 0;">Current: Sequential Depletion Model</div>
+        </div>
+        
+        <canvas id="flowModelCanvas" width="700" height="300"></canvas>
+        
+        <script>
+            // Canvas setup
+            const canvas = document.getElementById('flowModelCanvas');
+            const ctx = canvas.getContext('2d');
+            let isSequential = true;
+            
+            // Toggle button
+            document.getElementById('toggleButton').addEventListener('click', function() {
+                isSequential = !isSequential;
+                document.getElementById('modelType').innerText = 'Current: ' + 
+                    (isSequential ? 'Sequential Depletion Model' : 'Simultaneous Depletion Model (QFM)');
+                drawModel();
+            });
+            
+            function drawModel() {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw wellbore
+                ctx.fillStyle = '#333';
+                ctx.beginPath();
+                ctx.arc(350, 250, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.fillText('Well', 339, 253);
+                
+                // Draw hydraulic fractures
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(200, 100, 10, 150);
+                ctx.fillRect(350, 100, 10, 150);
+                ctx.fillRect(500, 100, 10, 150);
+                
+                // Labels
+                ctx.fillStyle = 'black';
+                ctx.font = '14px Arial';
+                ctx.fillText('Hydraulic Fractures (HF)', 290, 270);
+                ctx.fillText('Micro-Fractures (MF)', 150, 80);
+                ctx.fillText('Matrix', 350, 50);
+                
+                // Draw micro-fractures
+                ctx.strokeStyle = '#e74c3c';
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                for(let i = 0; i < 3; i++) {
+                    let xPos = 230 + i * 120;
+                    ctx.moveTo(xPos, 120);
+                    ctx.lineTo(xPos + 40, 120);
+                }
+                for(let i = 0; i < 3; i++) {
+                    let xPos = 250 + i * 120;
+                    ctx.moveTo(xPos, 150);
+                    ctx.lineTo(xPos + 40, 150);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw flow arrows
+                ctx.strokeStyle = '#27ae60';
+                ctx.lineWidth = 2;
+                
+                if (isSequential) {
+                    // Sequential flow model
+                    // Matrix to MF arrows
+                    drawArrow(ctx, 280, 100, 280, 120);
+                    drawArrow(ctx, 430, 100, 430, 120);
+                    drawArrow(ctx, 300, 130, 300, 150);
+                    drawArrow(ctx, 450, 130, 450, 150);
+                    
+                    // MF to HF arrows
+                    drawArrow(ctx, 230, 120, 210, 120);
+                    drawArrow(ctx, 340, 120, 350, 120);
+                    drawArrow(ctx, 490, 120, 500, 120);
+                    drawArrow(ctx, 250, 150, 210, 150);
+                    drawArrow(ctx, 360, 150, 350, 150);
+                    drawArrow(ctx, 510, 150, 500, 150);
+                } else {
+                    // Simultaneous flow model (QFM)
+                    // Matrix to MF arrows
+                    drawArrow(ctx, 280, 100, 280, 120);
+                    drawArrow(ctx, 430, 100, 430, 120);
+                    drawArrow(ctx, 300, 130, 300, 150);
+                    drawArrow(ctx, 450, 130, 450, 150);
+                    
+                    // Matrix directly to HF arrows
+                    drawArrow(ctx, 205, 80, 205, 100);
+                    drawArrow(ctx, 355, 80, 355, 100);
+                    drawArrow(ctx, 505, 80, 505, 100);
+                    
+                    // MF to HF arrows
+                    drawArrow(ctx, 230, 120, 210, 120);
+                    drawArrow(ctx, 340, 120, 350, 120);
+                    drawArrow(ctx, 490, 120, 500, 120);
+                    drawArrow(ctx, 250, 150, 210, 150);
+                    drawArrow(ctx, 360, 150, 350, 150);
+                    drawArrow(ctx, 510, 150, 500, 150);
+                }
+                
+                // Add explanation text
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                if (isSequential) {
+                    ctx.fillText('In sequential depletion, fluid flows from matrix to micro-fractures first,', 150, 200);
+                    ctx.fillText('then from micro-fractures to hydraulic fractures.', 150, 220);
+                } else {
+                    ctx.fillText('In QFM, fluid flows from matrix to both micro-fractures AND hydraulic fractures', 150, 200);
+                    ctx.fillText('simultaneously, better representing actual reservoir behavior.', 150, 220);
+                }
+            }
+            
+            function drawArrow(ctx, fromX, fromY, toX, toY) {
+                const headLength = 10;
+                const angle = Math.atan2(toY - fromY, toX - fromX);
+                
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.lineTo(toX, toY);
+                ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(toX, toY);
+                ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+                ctx.stroke();
+            }
+            
+            // Initial draw
+            drawModel();
+        </script>
+    </div>
+    
+    <h2>The Mathematics Behind QFM</h2>
+    
+    <p>Let's break down the core mathematical foundations of the Quadrilinear Flow Model. Don't worry if you're not a mathematician - we'll explain each concept step by step.</p>
+    
+    <h3>Key Conceptual Equations</h3>
+    
+    <p>The QFM divides a single 2-D matrix flow equation into two 1-D flow equations:</p>
+    
+    <div class="formula">
+        <p>For sub-matrix 1 (feeding micro-fractures):</p>
+        $$\frac{\partial^{2}\Delta P_{m_{1}}}{\partial{y^{*}}^{2}}=\frac{\mu(\phi c_{t})_{m_{1}}}{k_{m_{1}}}\frac{\partial\Delta P_{m_{1}}}{\partial t}$$
+        
+        <p>For sub-matrix 2 (feeding hydraulic fractures):</p>
+        $$\frac{\partial^{2}\Delta P_{m_{2}}}{\partial{x^{*}}^{2}}=\frac{\mu(\phi c_{t})_{m_{2}}}{k_{m_{2}}}\frac{\partial\Delta P_{m_{2}}}{\partial t}$$
+    </div>
+    
+    <p>These equations represent the diffusion of pressure through each sub-matrix. The left side describes how pressure changes across space, while the right side describes how it changes over time.</p>
+    
+    <h3>Mass Conservation</h3>
+    
+    <p>To ensure physical consistency, the total fluid mass in the matrix must be conserved:</p>
+    
+    <div class="formula">
+        $$(\phi c_{t})_{m_{1}}+(\phi c_{t})_{m_{2}}=(\phi c_{t})_{m}$$
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\((\phi c_{t})_{m_{1}}\) is the storage capacity of sub-matrix 1</li>
+        <li>\((\phi c_{t})_{m_{2}}\) is the storage capacity of sub-matrix 2</li>
+        <li>\((\phi c_{t})_{m}\) is the total matrix storage capacity</li>
+    </ul>
+    
+    <h3>The Complete System of Equations</h3>
+    
+    <p>The full QFM involves four sets of equations:</p>
+    
+    <ol>
+        <li>Sub-matrix 1 flow equations (feeding micro-fractures)</li>
+        <li>Sub-matrix 2 flow equations (feeding hydraulic fractures)</li>
+        <li>Micro-fracture flow equations</li>
+        <li>Hydraulic fracture flow equations</li>
+    </ol>
+    
+    <p>Let's focus on the micro-fracture and hydraulic fracture equations, as they show how the system is interconnected:</p>
+    
+    <div class="formula">
+        <p>Micro-fracture equation:</p>
+        $$\frac{\partial^{2}\Delta P_{f}}{\partial x^{2}}=\frac{\mu(\phi c_{t})_{f}}{k_{f}}\frac{\partial\Delta P_{f}}{\partial t}+\frac{1}{L_{f}/2}\frac{k_{m_{1}}}{k_{f}}\frac{\partial\Delta P_{m_{1}}}{\partial y^{*}}\vert_{y^{*}=\frac{L_{f}}{2}}$$
+        
+        <p>Hydraulic fracture equation:</p>
+        $$\frac{\partial^{2}\Delta P_{F}}{\partial y^{2}}=\frac{\mu(\phi c_{t})_{F}}{k_{F}}\frac{\partial\Delta P_{F}}{\partial t}+\frac{1}{L_{F}/2}\frac{k_{m_{2}}}{k_{F}}\frac{\partial\Delta P_{m_{2}}}{\partial x^{*}}\big|_{x^{*}=\frac{L_{F}}{2}}+\frac{1}{L_{F}/2}\frac{k_{f}}{k_{F}}\frac{\partial\Delta P_{f}}{\partial x}\big|_{x=\frac{L_{F}}{2}}$$
+    </div>
+    
+    <p>Notice the key difference in the hydraulic fracture equation: it has <em>three</em> terms on the right side:</p>
+    <ol>
+        <li>The first term represents pressure change over time within the hydraulic fracture</li>
+        <li>The second term represents direct flow from sub-matrix 2 to the hydraulic fracture</li>
+        <li>The third term represents flow from micro-fractures to the hydraulic fracture</li>
+    </ol>
+    
+    <p>This third term is what traditional sequential models have, but the second term is unique to QFM and represents the direct matrix-to-HF flow path.</p>
+    
+    <h3>Solution in Laplace Space</h3>
+    
+    <p>To solve this system of partial differential equations, Ezulike used Laplace transforms, which convert time-dependent problems into algebraic equations. The final solution in Laplace space is:</p>
+    
+    <div class="formula">
+        <p>For constant rate production:</p>
+        $$\overline{{P}}_{wDL}=\frac{\coth\Bigl(\sqrt{s f(s)}y_{De}\Bigr)}{s\sqrt{s f(s)}}$$
+        
+        <p>For constant pressure production:</p>
+        $$\overline{{q}}_{_{D}}={\frac{\sqrt{s f(s)}}{s \coth\bigl(\sqrt{s f(s)}y_{_{De}}\bigr)}}$$
+        
+        <p>Where the transfer function f(s) is:</p>
+        $$f(s)=\omega_{_{F}}+\frac{\lambda_{AC,Ff}}{3s}\sqrt{s f_{f}(s)}\tanh\big(\sqrt{s f_{f}(s)}\big)+\frac{\lambda_{AC,Fm}}{3s}\sqrt{f_{m}(s)}\tanh\big(\sqrt{f_{m}(s)}\big)$$
+    </div>
+    
+    <p>These equations may look intimidating, but they elegantly capture all the physics of fluid flow in the system. The solutions are then numerically inverted from Laplace space back to real time using the Gaver-Stehfest algorithm to create practical type-curves for analysis.</p>
+    
+    <h2>Key Parameters and Their Physical Meaning</h2>
+    
+    <p>To use the QFM effectively, we need to understand the key dimensionless parameters:</p>
+    
+    <table>
+        <tr>
+            <th>Parameter</th>
+            <th>Symbol</th>
+            <th>Physical Meaning</th>
+        </tr>
+        <tr>
+            <td>Storativity ratio of hydraulic fractures</td>
+            <td>\(\omega_F\)</td>
+            <td>Fraction of total system storage capacity in hydraulic fractures</td>
+        </tr>
+        <tr>
+            <td>Storativity ratio of micro-fractures</td>
+            <td>\(\omega_f\)</td>
+            <td>Fraction of total system storage capacity in micro-fractures</td>
+        </tr>
+        <tr>
+            <td>Storativity ratio of matrix</td>
+            <td>\(\omega_m\)</td>
+            <td>Fraction of total system storage capacity in matrix</td>
+        </tr>
+        <tr>
+            <td>Matrix-to-MF weighting parameter</td>
+            <td>\(\omega_1\)</td>
+            <td>Fraction of matrix fluid that flows to micro-fractures</td>
+        </tr>
+        <tr>
+            <td>Matrix-to-HF weighting parameter</td>
+            <td>\(\omega_2\)</td>
+            <td>Fraction of matrix fluid that flows directly to hydraulic fractures</td>
+        </tr>
+        <tr>
+            <td>Matrix-MF interporosity coefficient</td>
+            <td>\(\lambda_{AC,fm}\)</td>
+            <td>Measures the ease of fluid flow between matrix and micro-fractures</td>
+        </tr>
+        <tr>
+            <td>Matrix-HF interporosity coefficient</td>
+            <td>\(\lambda_{AC,Fm}\)</td>
+            <td>Measures the ease of fluid flow between matrix and hydraulic fractures</td>
+        </tr>
+        <tr>
+            <td>MF-HF interporosity coefficient</td>
+            <td>\(\lambda_{AC,Ff}\)</td>
+            <td>Measures the ease of fluid flow between micro-fractures and hydraulic fractures</td>
+        </tr>
+    </table>
+    
+    <div class="note">
+        <p>The parameters \(\omega_1\) and \(\omega_2\) are unique to QFM and are what enable the simultaneous depletion modeling. Their sum must equal 1 to maintain mass conservation.</p>
+    </div>
+    
+    <h2>Interactive Exploration: The Spacing Aspect Ratio</h2>
+    
+    <p>One of the most important parameters in the QFM is the spacing aspect ratio (\(R_{sp}\)), which is the ratio of micro-fracture spacing to hydraulic fracture spacing. This parameter greatly influences flow behavior and determines when simpler models might be adequate.</p>
+    
+    <div class="interactive">
+        <h3>Explore How Spacing Aspect Ratio Affects Flow Regimes</h3>
+        
+        <div class="slider-container">
+            <label for="aspectRatio">Spacing Aspect Ratio (\(R_{sp}\)):</label>
+            <input type="range" id="aspectRatio" min="0.1" max="2" step="0.1" value="0.5">
+            <span id="aspectRatioValue">0.5</span>
+        </div>
+        
+        <canvas id="flowRegimeCanvas" width="700" height="400"></canvas>
+        
+        <div class="result">
+            <p id="modelRecommendation">At \(R_{sp} = 0.5\), use the full Quadrilinear Flow Model (QFM) for accurate results.</p>
+        </div>
+        
+        <script>
+            // Canvas setup for flow regime visualization
+            const regimeCanvas = document.getElementById('flowRegimeCanvas');
+            const regimeCtx = regimeCanvas.getContext('2d');
+            
+            // Slider for aspect ratio
+            const aspectRatioSlider = document.getElementById('aspectRatio');
+            const aspectRatioValue = document.getElementById('aspectRatioValue');
+            const modelRecommendation = document.getElementById('modelRecommendation');
+            
+            aspectRatioSlider.addEventListener('input', function() {
+                aspectRatioValue.textContent = this.value;
+                updateFlowRegimeVisualization(parseFloat(this.value));
+                updateModelRecommendation(parseFloat(this.value));
+            });
+            
+            function updateModelRecommendation(ratio) {
+                if (ratio < 0.2) {
+                    modelRecommendation.textContent = `At R_{sp} = ${ratio}, the Sequential Triple-Porosity Model (STPM) is sufficient.`;
+                } else if (ratio > 1.5) {
+                    modelRecommendation.textContent = `At R_{sp} = ${ratio}, the Dual-Porosity Model (DPM) is sufficient.`;
+                } else {
+                    modelRecommendation.textContent = `At R_{sp} = ${ratio}, use the full Quadrilinear Flow Model (QFM) for accurate results.`;
+                }
+            }
+            
+            function updateFlowRegimeVisualization(ratio) {
+                // Clear canvas
+                regimeCtx.clearRect(0, 0, regimeCanvas.width, regimeCanvas.height);
+                
+                // Draw axes
+                regimeCtx.strokeStyle = 'black';
+                regimeCtx.lineWidth = 2;
+                regimeCtx.beginPath();
+                regimeCtx.moveTo(50, 50);
+                regimeCtx.lineTo(50, 350);
+                regimeCtx.lineTo(650, 350);
+                regimeCtx.stroke();
+                
+                // Axes labels
+                regimeCtx.fillStyle = 'black';
+                regimeCtx.font = '14px Arial';
+                regimeCtx.fillText('Log(time)', 320, 380);
+                regimeCtx.save();
+                regimeCtx.translate(20, 200);
+                regimeCtx.rotate(-Math.PI/2);
+                regimeCtx.fillText('Log(1/q_D)', 0, 0);
+                regimeCtx.restore();
+                
+                // Draw flow regimes based on aspect ratio
+                regimeCtx.lineWidth = 3;
+                regimeCtx.beginPath();
+                
+                // Starting point
+                regimeCtx.moveTo(50, 100);
+                
+                // Early linear flow in HF (always present)
+                regimeCtx.lineTo(150, 200);
+                
+                // Bilinear flow - varies with aspect ratio
+                const bilinearLength = Math.max(20, Math.min(150, 100 * (1 - ratio/2)));
+                regimeCtx.lineTo(150 + bilinearLength, 200 + bilinearLength * 0.25);
+                
+                // Matrix to MF linear flow - varies with aspect ratio
+                const mfFlowStrength = ratio < 0.2 ? 0.8 : (ratio > 1.5 ? 0.2 : 0.5);
+                const mfFlowLength = 100 * mfFlowStrength;
+                regimeCtx.lineTo(150 + bilinearLength + mfFlowLength, 
+                                200 + bilinearLength * 0.25 + mfFlowLength * 0.5);
+                
+                // Boundary dominated flow
+                const boundaryStart = 150 + bilinearLength + mfFlowLength;
+                const curvePoints = 100;
+                for (let i = 0; i < curvePoints; i++) {
+                    const x = boundaryStart + i * (650 - boundaryStart) / curvePoints;
+                    const progress = i / curvePoints;
+                    const y = 200 + bilinearLength * 0.25 + mfFlowLength * 0.5 + 
+                             150 * Math.pow(progress, 2);
+                    regimeCtx.lineTo(x, y);
+                }
+                
+                // Set color based on aspect ratio
+                if (ratio < 0.2) {
+                    regimeCtx.strokeStyle = '#e74c3c'; // Red for STPM
+                } else if (ratio > 1.5) {
+                    regimeCtx.strokeStyle = '#3498db'; // Blue for DPM
+                } else {
+                    regimeCtx.strokeStyle = '#2ecc71'; // Green for QFM
+                }
+                
+                regimeCtx.stroke();
+                
+                // Add regime labels
+                regimeCtx.fillStyle = 'black';
+                regimeCtx.font = '12px Arial';
+                regimeCtx.fillText('1. Early linear flow in HF', 70, 180);
+                regimeCtx.fillText('2. Bilinear flow', 150 + bilinearLength/2 - 50, 200 + bilinearLength * 0.25 - 10);
+                
+                if (mfFlowStrength > 0.3) {
+                    regimeCtx.fillText('3. Matrix-MF linear flow', 150 + bilinearLength + mfFlowLength/2 - 60, 
+                                     200 + bilinearLength * 0.25 + mfFlowLength * 0.5 - 10);
+                }
+                
+                regimeCtx.fillText('4. Boundary dominated flow', 450, 300);
+                
+                // Add model type indicator
+                regimeCtx.fillStyle = 'black';
+                regimeCtx.font = 'bold 14px Arial';
+                if (ratio < 0.2) {
+                    regimeCtx.fillText('Model: Sequential Triple-Porosity (STPM)', 400, 80);
+                } else if (ratio > 1.5) {
+                    regimeCtx.fillText('Model: Dual-Porosity (DPM)', 400, 80);
+                } else {
+                    regimeCtx.fillText('Model: Quadrilinear Flow Model (QFM)', 400, 80);
+                }
+                
+                // Add slopes
+                regimeCtx.font = '12px Arial';
+                regimeCtx.fillText('slope = -0.5', 80, 140);
+                regimeCtx.fillText('slope = -0.25', 150 + bilinearLength/2 - 50, 200 + bilinearLength * 0.25 + 20);
+                
+                if (mfFlowStrength > 0.3) {
+                    regimeCtx.fillText('slope = -0.5', 150 + bilinearLength + mfFlowLength/2 - 50, 
+                                     200 + bilinearLength * 0.25 + mfFlowLength * 0.5 + 20);
+                }
+                
+                regimeCtx.fillText('exponential decline', 500, 320);
+            }
+            
+            // Initial visualization
+            updateFlowRegimeVisualization(0.5);
+        </script>
+    </div>
+    
+    <p>As you can see from the interactive visualization, the spacing aspect ratio has a significant impact on which flow regimes dominate and how long they last. This leads to a practical guideline:</p>
+    
+    <ul>
+        <li>For \(R_{sp} < 0.2\): Use the Sequential Triple-Porosity Model (STPM)</li>
+        <li>For \(R_{sp} > 1.5\): Use the Dual-Porosity Model (DPM)</li>
+        <li>For \(0.2 \leq R_{sp} \leq 1.5\): Use the full Quadrilinear Flow Model (QFM)</li>
+    </ul>
+    
+    <h2>Practical Application: Production History Matching</h2>
+    
+    <p>One of the most powerful applications of the QFM is matching production history from actual wells to estimate reservoir properties. Let's explore how this works with a simplified simulator:</p>
+    
+    <div class="interactive">
+        <h3>QFM Type-Curve Matching Simulator</h3>
+        
+        <p>Adjust parameters to match the production data (red dots) with the QFM type-curve (blue line):</p>
+        
+        <div class="slider-container">
+            <label for="hfLength">HF Half-Length (\(y_e\)):</label>
+            <input type="range" id="hfLength" min="50" max="200" step="5" value="140">
+            <span id="hfLengthValue">140 m</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="mfSpacing">MF Spacing (\(L_f\)):</label>
+            <input type="range" id="mfSpacing" min="5" max="25" step="1" value="13">
+            <span id="mfSpacingValue">13 m</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="mfPerm">MF Permeability (\(k_f\)):</label>
+            <input type="range" id="mfPerm" min="50" max="600" step="10" value="260">
+            <span id="mfPermValue">260 mD</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="omega1">Matrix-MF Weight (\(\omega_1\)):</label>
+            <input type="range" id="omega1" min="0.1" max="0.9" step="0.05" value="0.3">
+            <span id="omega1Value">0.3</span>
+        </div>
+        
+        <canvas id="typeCurveCanvas" width="700" height="400"></canvas>
+        
+        <div class="result">
+            <p id="matchQuality">Match quality: Adjusting parameters...</p>
+            <p id="estimatedParams"></p>
+        </div>
+        
+        <script>
+            // Canvas setup for type curve matching
+            const typeCurveCanvas = document.getElementById('typeCurveCanvas');
+            const typeCurveCtx = typeCurveCanvas.getContext('2d');
+            
+            // Sliders
+            const hfLengthSlider = document.getElementById('hfLength');
+            const mfSpacingSlider = document.getElementById('mfSpacing');
+            const mfPermSlider = document.getElementById('mfPerm');
+            const omega1Slider = document.getElementById('omega1');
+            
+            const hfLengthValue = document.getElementById('hfLengthValue');
+            const mfSpacingValue = document.getElementById('mfSpacingValue');
+            const mfPermValue = document.getElementById('mfPermValue');
+            const omega1Value = document.getElementById('omega1Value');
+            
+            const matchQuality = document.getElementById('matchQuality');
+            const estimatedParams = document.getElementById('estimatedParams');
+            
+            // Generate synthetic production data
+            function generateProductionData() {
+                const data = [];
+                const targetHfLength = 140;
+                const targetMfSpacing = 13;
+                const targetMfPerm = 260;
+                const targetOmega1 = 0.3;
+                
+                for (let t = 0.1; t <= 1000; t *= 1.5) {
+                    // Simplified model of production decline
+                    let q = 1000 * Math.pow(t, -0.5); // Early linear flow
+                    
+                    // Bilinear flow effect
+                    const bilinearEffect = targetMfPerm / 260;
+                    if (t > 10 && t < 100) {
+                        q *= 1 - 0.2 * (t - 10) / 90 * bilinearEffect;
+                    }
+                    
+                    // Matrix-MF flow effect
+                    const mfEffect = targetOmega1 / 0.3;
+                    if (t > 100 && t < 400) {
+                        q *= 1 - 0.3 * (t - 100) / 300 * mfEffect;
+                    }
+                    
+                    // Boundary effect based on HF length
+                    const boundaryFactor = targetHfLength / 140;
+                    if (t > 400) {
+                        q *= Math.exp(-0.002 * (t - 400) / boundaryFactor);
+                    }
+                    
+                    // Add some noise
+                    q *= (1 + (Math.random() - 0.5) * 0.1);
+                    
+                    data.push({ time: t, rate: q });
+                }
+                
+                return data;
+            }
+            
+            // Generate model curve based on parameters
+            function generateModelCurve(hfLength, mfSpacing, mfPerm, omega1) {
+                const data = [];
+                const omega2 = 1 - omega1;
+                
+                for (let t = 0.1; t <= 1000; t *= 1.2) {
+                    // Simplified model of production decline
+                    let q = 1000 * Math.pow(t, -0.5); // Early linear flow
+                    
+                    // Bilinear flow effect
+                    const bilinearEffect = mfPerm / 260;
+                    if (t > 10 && t < 100) {
+                        q *= 1 - 0.2 * (t - 10) / 90 * bilinearEffect;
+                    }
+                    
+                    // Matrix-MF flow effect
+                    const mfEffect = omega1 / 0.3;
+                    if (t > 100 && t < 400) {
+                        q *= 1 - 0.3 * (t - 100) / 300 * mfEffect;
+                    }
+                    
+                    // Boundary effect based on HF length
+                    const boundaryFactor = hfLength / 140;
+                    if (t > 400) {
+                        q *= Math.exp(-0.002 * (t - 400) / boundaryFactor);
+                    }
+                    
+                    data.push({ time: t, rate: q });
+                }
+                
+                return data;
+            }
+            
+            // Calculate match quality
+            function calculateMatchQuality(productionData, modelData) {
+                // Simple metric: how close are the model parameters to the target values?
+                const hfLengthDiff = Math.abs(parseFloat(hfLengthSlider.value) - 140) / 140;
+                const mfSpacingDiff = Math.abs(parseFloat(mfSpacingSlider.value) - 13) / 13;
+                const mfPermDiff = Math.abs(parseFloat(mfPermSlider.value) - 260) / 260;
+                const omega1Diff = Math.abs(parseFloat(omega1Slider.value) - 0.3) / 0.3;
+                
+                const totalDiff = (hfLengthDiff + mfSpacingDiff + mfPermDiff + omega1Diff) / 4;
+                
+                if (totalDiff < 0.05) return "Excellent match!";
+                if (totalDiff < 0.1) return "Good match";
+                if (totalDiff < 0.2) return "Fair match";
+                return "Poor match - keep adjusting parameters";
+            }
+            
+            // Draw type curve match
+            function drawTypeCurveMatch() {
+                // Get current parameters
+                const hfLength = parseFloat(hfLengthSlider.value);
+                const mfSpacing = parseFloat(mfSpacingSlider.value);
+                const mfPerm = parseFloat(mfPermSlider.value);
+                const omega1 = parseFloat(omega1Slider.value);
+                
+                // Update displayed values
+                hfLengthValue.textContent = hfLength + " m";
+                mfSpacingValue.textContent = mfSpacing + " m";
+                mfPermValue.textContent = mfPerm + " mD";
+                omega1Value.textContent = omega1.toFixed(2);
+                
+                // Generate data
+                const productionData = generateProductionData();
+                const modelData = generateModelCurve(hfLength, mfSpacing, mfPerm, omega1);
+                
+                // Clear canvas
+                typeCurveCtx.clearRect(0, 0, typeCurveCanvas.width, typeCurveCanvas.height);
+                
+                // Draw axes
+                typeCurveCtx.strokeStyle = 'black';
+                typeCurveCtx.lineWidth = 2;
+                typeCurveCtx.beginPath();
+                typeCurveCtx.moveTo(50, 50);
+                typeCurveCtx.lineTo(50, 350);
+                typeCurveCtx.lineTo(650, 350);
+                typeCurveCtx.stroke();
+                
+                // Axes labels
+                typeCurveCtx.fillStyle = 'black';
+                typeCurveCtx.font = '14px Arial';
+                typeCurveCtx.fillText('Log(time)', 320, 380);
+                typeCurveCtx.save();
+                typeCurveCtx.translate(20, 200);
+                typeCurveCtx.rotate(-Math.PI/2);
+                typeCurveCtx.fillText('Log(rate)', 0, 0);
+                typeCurveCtx.restore();
+                
+                // Scale functions
+                const xScale = (t) => 50 + 600 * (Math.log10(t) - Math.log10(0.1)) / (Math.log10(1000) - Math.log10(0.1));
+                const yScale = (q) => 350 - 300 * (Math.log10(q) - Math.log10(10)) / (Math.log10(1000) - Math.log10(10));
+                
+                // Draw production data points
+                typeCurveCtx.fillStyle = 'red';
+                for (const point of productionData) {
+                    typeCurveCtx.beginPath();
+                    typeCurveCtx.arc(xScale(point.time), yScale(point.rate), 3, 0, Math.PI * 2);
+                    typeCurveCtx.fill();
+                }
+                
+                // Draw model curve
+                typeCurveCtx.strokeStyle = 'blue';
+                typeCurveCtx.lineWidth = 2;
+                typeCurveCtx.beginPath();
+                typeCurveCtx.moveTo(xScale(modelData[0].time), yScale(modelData[0].rate));
+                for (let i = 1; i < modelData.length; i++) {
+                    typeCurveCtx.lineTo(xScale(modelData[i].time), yScale(modelData[i].rate));
+                }
+                typeCurveCtx.stroke();
+                
+                // Add legend
+                typeCurveCtx.fillStyle = 'black';
+                typeCurveCtx.font = '12px Arial';
+                typeCurveCtx.fillText('● Production Data', 550, 70);
+                typeCurveCtx.strokeStyle = 'blue';
+                typeCurveCtx.beginPath();
+                typeCurveCtx.moveTo(550, 90);
+                typeCurveCtx.lineTo(590, 90);
+                typeCurveCtx.stroke();
+                typeCurveCtx.fillText('QFM Type-Curve', 600, 94);
+                
+                // Update match quality
+                matchQuality.textContent = "Match quality: " + calculateMatchQuality(productionData, modelData);
+                
+                // Calculate additional parameters
+                const hfPerm = mfPerm * 2.35; // Simplified relationship
+                const numMf = Math.round((hfLength * 2) / mfSpacing) - 1;
+                const srv = hfLength * 2 * 100 * 6; // Simplified SRV calculation
+                
+                estimatedParams.innerHTML = `
+                    <strong>Estimated Reservoir Parameters:</strong><br>
+                    HF Half-Length: ${hfLength} m<br>
+                    MF Spacing: ${mfSpacing} m<br>
+                    MF Permeability: ${mfPerm} mD<br>
+                    HF Permeability: ${hfPerm} mD<br>
+                    Number of MF: ${numMf}<br>
+                    Stimulated Reservoir Volume: ${srv.toLocaleString()} m³
+                `;
+            }
+            
+            // Event listeners for sliders
+            hfLengthSlider.addEventListener('input', drawTypeCurveMatch);
+            mfSpacingSlider.addEventListener('input', drawTypeCurveMatch);
+            mfPermSlider.addEventListener('input', drawTypeCurveMatch);
+            omega1Slider.addEventListener('input', drawTypeCurveMatch);
+            
+            // Initial draw
+            drawTypeCurveMatch();
+        </script>
+    </div>
+    
+    <p>This simplified simulator demonstrates the process of type-curve matching. In real applications, engineers would:</p>
+    
+    <ol>
+        <li>Plot actual production data on a log-log scale</li>
+        <li>Generate QFM type-curves with initial parameter estimates</li>
+        <li>Adjust parameters until the type-curve matches the production data</li>
+        <li>Analyze the uncertainty of the match to provide ranges rather than single values</li>
+        <li>Use the results to better understand reservoir properties and optimize future development</li>
+    </ol>
+    
+    <h2>Real-World Impact: Why This Matters</h2>
+    
+    <p>The Quadrilinear Flow Model has significant practical implications:</p>
+    
+    <ol>
+        <li><strong>More accurate reservoir characterization:</strong> By accounting for simultaneous depletion, QFM provides more realistic estimates of reservoir properties like fracture half-length, permeability, and micro-fracture spacing.</li>
+        <li><strong>Better production forecasting:</strong> More accurate models lead to better production forecasts, which directly impact business decisions and economic evaluations.</li>
+        <li><strong>Optimized well spacing and completion design:</strong> Understanding the interplay between hydraulic fractures and micro-fractures helps engineers optimize well spacing and completion designs.</li>
+        <li><strong>Reduced uncertainty:</strong> QFM provides a framework for quantifying uncertainty in parameter estimates, allowing for more robust decision-making.</li>
+    </ol>
+    
+    <div class="note">
+        <p>When comparing QFM to simpler models, Ezulike found that the Sequential Triple-Porosity Model tends to underestimate micro-fracture spacing, while the Dual-Porosity Model tends to overestimate hydraulic fracture half-length. These errors can lead to suboptimal field development decisions.</p>
+    </div>
+    
+    <h2>Conclusion: The Power of First Principles Thinking</h2>
+    
+    <p>The Quadrilinear Flow Model exemplifies the power of first principles thinking in solving complex problems. By questioning the fundamental assumption of sequential depletion and building a new model from basic physics, Ezulike created a more accurate representation of fluid flow in fractured reservoirs.</p>
+    
+    <p>This approach—breaking down a complex problem into its fundamental components and rebuilding from there—is applicable far beyond petroleum engineering. Whether you're designing software, building a business, or solving scientific problems, first principles thinking can lead to breakthrough innovations.</p>
+    
+    <p>In the case of QFM, this innovation provides a more accurate way to characterize fractured reservoirs, leading to better production forecasts, optimized well designs, and ultimately, more efficient resource development. And it all started with questioning a basic assumption about how fluid flows through rock.</p>
+    
+    <div class="warning">
+        <p><strong>Important note:</strong> While the QFM is more comprehensive than simpler models, it's not always necessary to use it. As we saw in the interactive visualization, simpler models can be adequate in certain situations. The key is understanding when to apply which model—another example of how first principles thinking leads to practical wisdom.</p>
+    </div>
+    
+    <p>I hope this exploration of the Quadrilinear Flow Model has given you insight into both the specific technical concept and the broader approach of first principles thinking. The next time you encounter a complex problem, consider whether questioning fundamental assumptions might lead to a breakthrough solution.</p>
+</body>
+</html>

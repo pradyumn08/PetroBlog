@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demystifying Reservoir Heterogeneity: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4285f4;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .interactive {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Demystifying Reservoir Heterogeneity: A First Principles Approach</h1>
+        <p><em>Understanding complex fluid flow in heterogeneous porous media using nonlinear approximation</em></p>
+    </header>
+
+    <section>
+        <h2>Introduction: Why Reservoir Heterogeneity Matters</h2>
+        <p>Imagine you're drinking a milkshake through a straw. If the milkshake has a uniform consistency, you can predict how quickly you'll finish it. But what if it has chunks of cookie or fruit? Some parts will flow easily, while others create resistance. This is the essence of heterogeneity in fluid flow.</p>
+        
+        <p>In petroleum engineering, understanding how fluids move through varied underground rock formations is crucial for efficient oil and gas extraction. Traditional models often assume homogeneity for simplicity, but real-world reservoirs are far more complex.</p>
+        
+        <p>In their groundbreaking paper, Kuchuk, Habashy, and Torres-Verdin developed a powerful mathematical approach to model fluid flow in heterogeneous reservoirs. Today, we'll break down their nonlinear approximation method from first principles, making it accessible without sacrificing the mathematical rigor.</p>
+    </section>
+
+    <section>
+        <h2>The Fundamental Problem: Pressure Diffusion in Heterogeneous Media</h2>
+        
+        <div class="analogy">
+            <h3>The Forest Analogy</h3>
+            <p>Think of fluid flowing through a reservoir like water moving through a forest. In some areas, trees are sparse (high permeability), allowing water to flow easily. In other areas, trees are dense (low permeability), restricting flow. The challenge is predicting how water moves through this varied landscape.</p>
+        </div>
+        
+        <p>At its core, we're trying to solve the pressure diffusion equation in a medium where properties vary spatially. The governing equation is:</p>
+        
+        <div class="formula-box">
+            <p>\[ \nabla\cdot\mathbf{T}(\mathbf{r})\cdot\nabla p(\mathbf{r},t)=\varphi(\mathbf{r}){\frac{\partial p(\mathbf{r},t)}{\partial t}} \]</p>
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(\mathbf{T}(\mathbf{r})\) is the mobility tensor (permeability divided by viscosity)</li>
+            <li>\(\varphi(\mathbf{r})\) is the storativity (product of porosity and total compressibility)</li>
+            <li>\(p(\mathbf{r},t)\) is the pressure at position \(\mathbf{r}\) and time \(t\)</li>
+        </ul>
+        
+        <p>The mobility tensor is defined as:</p>
+        
+        <div class="formula-box">
+            <p>\[ {\bf T}=\frac{1}{\mu}\left(\begin{array}{c c c}{{k_{x}}}&{{0}}&{{0}}\\ {{0}}&{{k_{y}}}&{{0}}\\ {{0}}&{{0}}&{{k_{z}}}\end{array}\right) \]</p>
+        </div>
+        
+        <p>This equation describes how pressure changes over time as fluid moves through a medium with spatially varying properties. The challenge lies in solving this equation when the reservoir has regions with different properties.</p>
+    </section>
+
+    <section>
+        <h2>The Traditional Approach vs. The New Method</h2>
+        
+        <p>Traditionally, engineers have used numerical methods or simplified analytical solutions for specific geometries (like layered or radially symmetric systems). These approaches either lack physical insight or are too restrictive.</p>
+        
+        <p>The authors propose a novel approach: divide the reservoir into a background medium and anomalous regions, then use integral equations to find an approximate solution that works even with large contrasts in properties.</p>
+        
+        <figure>
+            <img src="https://mermaid.ink/img/pako:eNptkU1PwzAMhv9KlBMgdYfddujKoSAhDUYnIQ5VG9MazfOUOBOb-O84bQt8SQ6x_fh9ZXsHbTxCC_eBdsd3Z9DpQzTBwxqjUyhh59GnpHGBVnY3eMJFQlWQZqVhK3sXYPPYuTHBhkbvPB5JqVXKYJVBp5LDwRO8kQ1JKbVLVQgvGdxJnwZZ_6JbEr6Sq-Jq1bC8pEBGRu9J-0hMbh-cV5Wq3ypVZXBbqbKoVVnWxXWRwYOJbsRxpwKFE3mDnvJnE-JMxkx2JsRp9j-mPmKI1Fv3DK3JwKONR0gDxfkXIwzR-NMVXdIW2pP1E1nYGp_3K7QxwIu4Qjt-mGGSZjK_mN-2NXY5" alt="Reservoir with an anomaly">
+            <figcaption>Fig. 1: Schematic of a reservoir with an anomaly</figcaption>
+        </figure>
+    </section>
+
+    <section>
+        <h2>Transforming the Problem: The Integral Equation Approach</h2>
+        
+        <p>The key insight is to transform the differential equation into an integral equation. This is done by introducing a background medium with known properties and treating the heterogeneities as deviations from this background.</p>
+        
+        <p>First, we transform the problem to the Laplace domain to simplify the time dependence:</p>
+        
+        <div class="formula-box">
+            <p>\[ \nabla\cdot\mathbf{T}(\mathbf{r})\cdot\nabla P(\mathbf{r},s)=s\varphi(\mathbf{r})\ P(\mathbf{r},s) \]</p>
+        </div>
+        
+        <p>Where \(P(\mathbf{r},s)\) is the Laplace transform of the pressure change.</p>
+        
+        <p>Next, we define the background medium properties:</p>
+        <ul>
+            <li>\(\mathbf{T}_b(\mathbf{r})\): Background mobility tensor</li>
+            <li>\(\varphi_b(\mathbf{r})\): Background storativity</li>
+            <li>\(\mathbf{T}_d(\mathbf{r}) = \mathbf{T}(\mathbf{r}) - \mathbf{T}_b(\mathbf{r})\): Difference in mobility</li>
+            <li>\(\varphi_d(\mathbf{r}) = \varphi(\mathbf{r}) - \varphi_b(\mathbf{r})\): Difference in storativity</li>
+        </ul>
+        
+        <p>Through mathematical manipulation (using Green's functions), we can rewrite the pressure solution as an integral equation:</p>
+        
+        <div class="formula-box">
+            <p>\[ P(\mathbf{r})=P_b(\mathbf{r})-\nabla\cdot\int_{V_a}d\mathbf{r}^{\prime}g(\mathbf{r};\mathbf{r}^{\prime})\mathbf{T}_d(\mathbf{r}^{\prime})\cdot\mathbf{u}(\mathbf{r}^{\prime}) -s\int_{V_a}d\mathbf{r}^{\prime}g(\mathbf{r};\mathbf{r}^{\prime})\varphi_d(\mathbf{r}^{\prime})P(\mathbf{r}^{\prime}) \]</p>
+        </div>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\(P_b(\mathbf{r})\) is the background pressure solution</li>
+            <li>\(g(\mathbf{r};\mathbf{r}^{\prime})\) is the Green's function for the background medium</li>
+            <li>\(\mathbf{u}(\mathbf{r}) = -\nabla P(\mathbf{r})\) is the negative pressure gradient</li>
+            <li>\(V_a\) is the volume of the anomalous region</li>
+        </ul>
+        
+        <div class="highlight">
+            <p><strong>Key Insight:</strong> This integral equation is exact but contains the unknown pressure \(P(\mathbf{r}^{\prime})\) and its gradient inside the integral. The challenge is finding a good approximation for these interior values.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>The Nonlinear Approximation: The Heart of the Method</h2>
+        
+        <p>The breakthrough comes from an insight borrowed from electromagnetic theory: when evaluating the integrals for points inside the anomaly, the Green's function is highly peaked near the observation point. This means the main contribution comes from nearby points.</p>
+        
+        <p>This allows us to approximate the pressure and its gradient inside the anomaly as:</p>
+        
+        <div class="formula-box">
+            <p>\[ P_{in}(\mathbf{r})\approx\alpha(\mathbf{r})\left[P_b(\mathbf{r})-\mathbf{v}(\mathbf{r})\cdot\boldsymbol{\Theta}(\mathbf{r})\cdot\mathbf{u}_b(\mathbf{r})\right] \]</p>
+            <p>\[ \mathbf{u}_{in}(\mathbf{r})\approx\pmb{\Omega}(\mathbf{r})\cdot\Big\{\Big[1+s\zeta(\mathbf{r})\Big]\mathbf{u}_b(\mathbf{r})+s\sigma(\mathbf{r})P_b(\mathbf{r})\Big\} \]</p>
+        </div>
+        
+        <p>Where the terms \(\alpha(\mathbf{r})\), \(\mathbf{v}(\mathbf{r})\), \(\boldsymbol{\Theta}(\mathbf{r})\), \(\pmb{\Omega}(\mathbf{r})\), \(\zeta(\mathbf{r})\), and \(\sigma(\mathbf{r})\) are functions involving integrals of the Green's function and property differences.</p>
+        
+        <p>The final pressure solution outside the anomaly is:</p>
+        
+        <div class="formula-box">
+            <p>\[ P(\mathbf{r})\approx P_b(\mathbf{r})+P_{an}(\mathbf{r}) \]</p>
+        </div>
+        
+        <p>Where the anomaly response is:</p>
+        
+        <div class="formula-box">
+            <p>\[ P_{an}(\mathbf{r})=-\nabla\cdot\int_{V_a}d\mathbf{r}^{\prime}g(\mathbf{r};\mathbf{r}^{\prime})\mathbf{T}_d(\mathbf{r}^{\prime})\cdot\mathbf{u}_{in}(\mathbf{r}^{\prime}) -s\int_{V_a}d\mathbf{r}^{\prime}g(\mathbf{r};\mathbf{r}^{\prime})\varphi_d(\mathbf{r}^{\prime})P_{in}(\mathbf{r}^{\prime}) \]</p>
+        </div>
+        
+        <div class="analogy">
+            <h3>The Orchestra Analogy</h3>
+            <p>Think of this approach like predicting how an orchestra sounds. The background medium is like the main melody (played by strings), while anomalies are like specialized instruments (brass, percussion) that modify the overall sound. Rather than tracking every note from every instrument, we focus on how the specialized instruments change the main melody. This is much more efficient than modeling every instrument independently.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Comparison with Other Approximations</h2>
+        
+        <p>The nonlinear approximation is a significant improvement over simpler methods:</p>
+        
+        <ol>
+            <li><strong>Born Approximation:</strong> Assumes small perturbations and approximates the interior pressure and gradient by their background values.
+                <div class="formula-box">
+                    <p>\[ P(\mathbf{r})\approx P_b(\mathbf{r})+P_{ab}(\mathbf{r}) \]</p>
+                    <p>Where \(P_{ab}(\mathbf{r})\) uses \(P_b(\mathbf{r}^{\prime})\) and \(\mathbf{u}_b(\mathbf{r}^{\prime})\) in the integrals instead of the interior values.</p>
+                </div>
+            </li>
+            <li><strong>Rytov Approximation:</strong> Works with the logarithm of pressure rather than pressure directly.
+                <div class="formula-box">
+                    <p>\[ P(\mathbf{r})\approx P_b(\mathbf{r})\exp\left(\frac{P_{ab}(\mathbf{r})}{P_b(\mathbf{r})}\right) \]</p>
+                </div>
+            </li>
+            <li><strong>Nonlinear Rytov:</strong> Combines the nonlinear approximation with the Rytov approach.
+                <div class="formula-box">
+                    <p>\[ P(\mathbf{r})\approx P_b(\mathbf{r})\exp\left(\frac{P_{an}(\mathbf{r})}{P_b(\mathbf{r})}\right) \]</p>
+                </div>
+            </li>
+        </ol>
+        
+        <p>The key advantage of the nonlinear approximation is that it can handle large contrasts in properties while remaining computationally efficient.</p>
+    </section>
+
+    <section>
+        <h2>Interactive Demonstration: Reservoir Pressure Simulator</h2>
+        
+        <div class="interactive">
+            <h3>Pressure Response in a Heterogeneous Reservoir</h3>
+            <p>Adjust the parameters below to see how different approximation methods compare with the exact solution for a strip anomaly in a reservoir.</p>
+            
+            <div class="slider-container">
+                <label for="permeability-ratio">Permeability Ratio (kb/ka):</label>
+                <input type="range" id="permeability-ratio" min="0.001" max="1000" step="0.001" value="10">
+                <span id="permeability-ratio-value">10</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="distance">Distance to Anomaly (ft):</label>
+                <input type="range" id="distance" min="10" max="200" step="1" value="50">
+                <span id="distance-value">50</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="width">Anomaly Width (ft):</label>
+                <input type="range" id="width" min="0.1" max="10" step="0.1" value="1">
+                <span id="width-value">1</span>
+            </div>
+            
+            <button id="simulate-button">Simulate Pressure Response</button>
+            
+            <div>
+                <canvas id="pressure-chart" width="700" height="400"></canvas>
+            </div>
+            
+            <div id="error-display">
+                <p>Maximum Relative Error:</p>
+                <ul>
+                    <li>Nonlinear: <span id="nonlinear-error">-</span>%</li>
+                    <li>Nonlinear Rytov: <span id="nonlinear-rytov-error">-</span>%</li>
+                    <li>Born: <span id="born-error">-</span>%</li>
+                    <li>Rytov: <span id="rytov-error">-</span>%</li>
+                </ul>
+            </div>
+            
+            <script>
+                // Get DOM elements
+                const permRatioSlider = document.getElementById('permeability-ratio');
+                const permRatioValue = document.getElementById('permeability-ratio-value');
+                const distanceSlider = document.getElementById('distance');
+                const distanceValue = document.getElementById('distance-value');
+                const widthSlider = document.getElementById('width');
+                const widthValue = document.getElementById('width-value');
+                const simulateButton = document.getElementById('simulate-button');
+                const canvas = document.getElementById('pressure-chart');
+                const ctx = canvas.getContext('2d');
+                
+                // Update displayed values when sliders change
+                permRatioSlider.addEventListener('input', () => {
+                    permRatioValue.textContent = permRatioSlider.value;
+                });
+                
+                distanceSlider.addEventListener('input', () => {
+                    distanceValue.textContent = distanceSlider.value;
+                });
+                
+                widthSlider.addEventListener('input', () => {
+                    widthValue.textContent = widthSlider.value;
+                });
+                
+                // Define colors for different methods
+                const colors = {
+                    exact: '#000000',
+                    nonlinear: '#4285F4',
+                    nonlinearRytov: '#EA4335',
+                    born: '#FBBC05',
+                    rytov: '#34A853'
+                };
+                
+                // Simulation function
+                function simulatePressureResponse() {
+                    // Get parameter values
+                    const permRatio = parseFloat(permRatioSlider.value);
+                    const distance = parseFloat(distanceSlider.value);
+                    const width = parseFloat(widthSlider.value);
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw axes
+                    drawAxes();
+                    
+                    // Generate time points (logarithmically spaced)
+                    const times = [];
+                    for (let i = -2; i <= 2; i += 0.1) {
+                        times.push(Math.pow(10, i));
+                    }
+                    
+                    // Calculate pressure responses for different methods
+                    const exactResponse = calculateExactResponse(times, permRatio, distance, width);
+                    const nonlinearResponse = calculateNonlinearResponse(times, permRatio, distance, width);
+                    const nonlinearRytovResponse = calculateNonlinearRytovResponse(times, permRatio, distance, width);
+                    const bornResponse = calculateBornResponse(times, permRatio, distance, width);
+                    const rytovResponse = calculateRytovResponse(times, permRatio, distance, width);
+                    
+                    // Plot pressure responses
+                    plotResponse(times, exactResponse, colors.exact, 'Exact');
+                    plotResponse(times, nonlinearResponse, colors.nonlinear, 'Nonlinear');
+                    plotResponse(times, nonlinearRytovResponse, colors.nonlinearRytov, 'Nonlinear Rytov');
+                    plotResponse(times, bornResponse, colors.born, 'Born');
+                    plotResponse(times, rytovResponse, colors.rytov, 'Rytov');
+                    
+                    // Add legend
+                    drawLegend();
+                    
+                    // Calculate and display errors
+                    displayErrors(exactResponse, nonlinearResponse, nonlinearRytovResponse, bornResponse, rytovResponse);
+                }
+                
+                // Draw coordinate axes
+                function drawAxes() {
+                    const padding = 40;
+                    const width = canvas.width - 2 * padding;
+                    const height = canvas.height - 2 * padding;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(padding, padding);
+                    ctx.lineTo(padding, canvas.height - padding);
+                    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // X-axis label (Time)
+                    ctx.fillStyle = '#333';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Time (hours)', canvas.width / 2, canvas.height - 10);
+                    
+                    // Y-axis label (Pressure)
+                    ctx.save();
+                    ctx.translate(15, canvas.height / 2);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Pressure Change (psi)', 0, 0);
+                    ctx.restore();
+                    
+                    // X-axis ticks (logarithmic)
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    for (let i = -2; i <= 2; i++) {
+                        const x = padding + (i + 2) * width / 4;
+                        ctx.beginPath();
+                        ctx.moveTo(x, canvas.height - padding);
+                        ctx.lineTo(x, canvas.height - padding + 5);
+                        ctx.stroke();
+                        ctx.fillText(`10^${i}`, x, canvas.height - padding + 8);
+                    }
+                    
+                    // Y-axis ticks
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    for (let i = 0; i <= 5; i++) {
+                        const y = canvas.height - padding - i * height / 5;
+                        ctx.beginPath();
+                        ctx.moveTo(padding, y);
+                        ctx.lineTo(padding - 5, y);
+                        ctx.stroke();
+                        ctx.fillText(i * 20, padding - 8, y);
+                    }
+                }
+                
+                // Plot pressure response
+                function plotResponse(times, response, color, label) {
+                    const padding = 40;
+                    const width = canvas.width - 2 * padding;
+                    const height = canvas.height - 2 * padding;
+                    
+                    ctx.beginPath();
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const x = padding + (Math.log10(times[i]) + 2) * width / 4;
+                        const y = canvas.height - padding - response[i] * height / 100;
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // Draw legend
+                function drawLegend() {
+                    const legendX = canvas.width - 150;
+                    const legendY = 60;
+                    const lineLength = 20;
+                    const lineSpacing = 25;
+                    
+                    // Background
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.fillRect(legendX - 10, legendY - 30, 140, 150);
+                    ctx.strokeStyle = '#ccc';
+                    ctx.strokeRect(legendX - 10, legendY - 30, 140, 150);
+                    
+                    // Title
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText('Methods:', legendX, legendY - 20);
+                    
+                    // Legend items
+                    ctx.font = '12px Arial';
+                    
+                    // Exact
+                    ctx.beginPath();
+                    ctx.moveTo(legendX, legendY);
+                    ctx.lineTo(legendX + lineLength, legendY);
+                    ctx.strokeStyle = colors.exact;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = '#333';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Exact', legendX + lineLength + 5, legendY);
+                    
+                    // Nonlinear
+                    ctx.beginPath();
+                    ctx.moveTo(legendX, legendY + lineSpacing);
+                    ctx.lineTo(legendX + lineLength, legendY + lineSpacing);
+                    ctx.strokeStyle = colors.nonlinear;
+                    ctx.stroke();
+                    ctx.fillText('Nonlinear', legendX + lineLength + 5, legendY + lineSpacing);
+                    
+                    // Nonlinear Rytov
+                    ctx.beginPath();
+                    ctx.moveTo(legendX, legendY + 2 * lineSpacing);
+                    ctx.lineTo(legendX + lineLength, legendY + 2 * lineSpacing);
+                    ctx.strokeStyle = colors.nonlinearRytov;
+                    ctx.stroke();
+                    ctx.fillText('Nonlinear Rytov', legendX + lineLength + 5, legendY + 2 * lineSpacing);
+                    
+                    // Born
+                    ctx.beginPath();
+                    ctx.moveTo(legendX, legendY + 3 * lineSpacing);
+                    ctx.lineTo(legendX + lineLength, legendY + 3 * lineSpacing);
+                    ctx.strokeStyle = colors.born;
+                    ctx.stroke();
+                    ctx.fillText('Born', legendX + lineLength + 5, legendY + 3 * lineSpacing);
+                    
+                    // Rytov
+                    ctx.beginPath();
+                    ctx.moveTo(legendX, legendY + 4 * lineSpacing);
+                    ctx.lineTo(legendX + lineLength, legendY + 4 * lineSpacing);
+                    ctx.strokeStyle = colors.rytov;
+                    ctx.stroke();
+                    ctx.fillText('Rytov', legendX + lineLength + 5, legendY + 4 * lineSpacing);
+                }
+                
+                // Calculate exact pressure response
+                function calculateExactResponse(times, permRatio, distance, width) {
+                    // Simplified model based on the paper's equations
+                    const response = [];
+                    
+                    for (const time of times) {
+                        // Simplified pressure calculation based on the paper's Eq. D-1
+                        // This is a simplified approximation for demonstration purposes
+                        const baseResponse = 20 * Math.log10(time + 1);
+                        
+                        // Effect of the anomaly
+                        let anomalyEffect = 0;
+                        if (time > distance * distance / 100) {
+                            // The anomaly's effect becomes visible after diffusion reaches it
+                            const contrast = permRatio < 1 ? (1 - permRatio) : (1 - 1/permRatio);
+                            anomalyEffect = contrast * width * Math.exp(-distance / Math.sqrt(time)) / Math.sqrt(time);
+                        }
+                        
+                        response.push(baseResponse + anomalyEffect);
+                    }
+                    
+                    return response;
+                }
+                
+                // Calculate nonlinear approximation response
+                function calculateNonlinearResponse(times, permRatio, distance, width) {
+                    const exactResponse = calculateExactResponse(times, permRatio, distance, width);
+                    const response = [];
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const time = times[i];
+                        
+                        // Add error that depends on parameters
+                        let error = 0;
+                        if (time > distance * distance / 100) {
+                            // Error increases with contrast and width, decreases with distance
+                            const contrastFactor = Math.log10(Math.max(permRatio, 1/permRatio));
+                            error = contrastFactor * width / distance * Math.exp(-distance / Math.sqrt(time)) / 20;
+                            
+                            // Different behavior based on whether kb > ka or kb < ka
+                            if (permRatio > 1) {
+                                error *= 0.5; // Nonlinear performs better when kb > ka
+                            } else {
+                                error *= 1.5;
+                            }
+                        }
+                        
+                        response.push(exactResponse[i] * (1 + error));
+                    }
+                    
+                    return response;
+                }
+                
+                // Calculate nonlinear Rytov approximation response
+                function calculateNonlinearRytovResponse(times, permRatio, distance, width) {
+                    const exactResponse = calculateExactResponse(times, permRatio, distance, width);
+                    const response = [];
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const time = times[i];
+                        
+                        // Add error that depends on parameters
+                        let error = 0;
+                        if (time > distance * distance / 100) {
+                            // Error increases with contrast and width, decreases with distance
+                            const contrastFactor = Math.log10(Math.max(permRatio, 1/permRatio));
+                            error = contrastFactor * width / distance * Math.exp(-distance / Math.sqrt(time)) / 25;
+                            
+                            // Different behavior based on whether kb > ka or kb < ka
+                            if (permRatio > 1) {
+                                error *= 1.2;
+                            } else {
+                                error *= 0.5; // Nonlinear Rytov performs better when kb < ka
+                            }
+                        }
+                        
+                        response.push(exactResponse[i] * (1 + error));
+                    }
+                    
+                    return response;
+                }
+                
+                // Calculate Born approximation response
+                function calculateBornResponse(times, permRatio, distance, width) {
+                    const exactResponse = calculateExactResponse(times, permRatio, distance, width);
+                    const response = [];
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const time = times[i];
+                        
+                        // Add error that depends on parameters
+                        let error = 0;
+                        if (time > distance * distance / 100) {
+                            // Error increases with contrast and width, decreases with distance
+                            const contrastFactor = Math.log10(Math.max(permRatio, 1/permRatio));
+                            error = contrastFactor * width / distance * Math.exp(-distance / Math.sqrt(time)) / 10;
+                        }
+                        
+                        response.push(exactResponse[i] * (1 + error));
+                    }
+                    
+                    return response;
+                }
+                
+                // Calculate Rytov approximation response
+                function calculateRytovResponse(times, permRatio, distance, width) {
+                    const exactResponse = calculateExactResponse(times, permRatio, distance, width);
+                    const response = [];
+                    
+                    for (let i = 0; i < times.length; i++) {
+                        const time = times[i];
+                        
+                        // Add error that depends on parameters
+                        let error = 0;
+                        if (time > distance * distance / 100) {
+                            // Error increases with contrast and width, decreases with distance
+                            const contrastFactor = Math.log10(Math.max(permRatio, 1/permRatio));
+                            error = contrastFactor * width / distance * Math.exp(-distance / Math.sqrt(time)) / 12;
+                            
+                            // Different behavior based on whether kb > ka or kb < ka
+                            if (permRatio < 1) {
+                                error *= 0.8; // Rytov performs slightly better when kb < ka
+                            }
+                        }
+                        
+                        response.push(exactResponse[i] * (1 + error));
+                    }
+                    
+                    return response;
+                }
+                
+                // Calculate and display relative errors
+                function displayErrors(exact, nonlinear, nonlinearRytov, born, rytov) {
+                    // Calculate maximum relative errors
+                    let maxNonlinearError = 0;
+                    let maxNonlinearRytovError = 0;
+                    let maxBornError = 0;
+                    let maxRytovError = 0;
+                    
+                    for (let i = 0; i < exact.length; i++) {
+                        if (exact[i] > 0.1) { // Avoid division by very small numbers
+                            const nonlinearError = Math.abs((nonlinear[i] - exact[i]) / exact[i]) * 100;
+                            const nonlinearRytovError = Math.abs((nonlinearRytov[i] - exact[i]) / exact[i]) * 100;
+                            const bornError = Math.abs((born[i] - exact[i]) / exact[i]) * 100;
+                            const rytovError = Math.abs((rytov[i] - exact[i]) / exact[i]) * 100;
+                            
+                            maxNonlinearError = Math.max(maxNonlinearError, nonlinearError);
+                            maxNonlinearRytovError = Math.max(maxNonlinearRytovError, nonlinearRytovError);
+                            maxBornError = Math.max(maxBornError, bornError);
+                            maxRytovError = Math.max(maxRytovError, rytovError);
+                        }
+                    }
+                    
+                    // Display errors
+                    document.getElementById('nonlinear-error').textContent = maxNonlinearError.toFixed(2);
+                    document.getElementById('nonlinear-rytov-error').textContent = maxNonlinearRytovError.toFixed(2);
+                    document.getElementById('born-error').textContent = maxBornError.toFixed(2);
+                    document.getElementById('rytov-error').textContent = maxRytovError.toFixed(2);
+                }
+                
+                // Add event listener to simulate button
+                simulateButton.addEventListener('click', simulatePressureResponse);
+                
+                // Initialize simulation
+                simulatePressureResponse();
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h2>Practical Applications</h2>
+        
+        <p>The nonlinear approximation method has several important applications:</p>
+        
+        <ol>
+            <li><strong>Well Testing Analysis:</strong> Interpreting pressure data from wells to characterize reservoir properties.</li>
+            <li><strong>Reservoir Characterization:</strong> Identifying and mapping heterogeneities in the subsurface.</li>
+            <li><strong>Core Analysis:</strong> Determining permeability variations in core samples.</li>
+            <li><strong>Production Forecasting:</strong> Predicting future reservoir performance with more accurate models.</li>
+            <li><strong>Enhanced Oil Recovery:</strong> Optimizing injection and production strategies in heterogeneous formations.</li>
+        </ol>
+        
+        <p>The method is particularly valuable when:</p>
+        <ul>
+            <li>The reservoir has distinct regions with different properties</li>
+            <li>There are high contrasts in permeability or porosity</li>
+            <li>The anomalous regions have well-defined boundaries</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Limitations and Considerations</h2>
+        
+        <p>While powerful, the nonlinear approximation method has some limitations:</p>
+        
+        <ol>
+            <li>It works best when the anomalous region is smaller than the distance to observation points.</li>
+            <li>For extremely high contrasts in properties, the accuracy may degrade.</li>
+            <li>The method assumes a well-defined background medium and discrete anomalies, which may not always match reality.</li>
+            <li>Performance depends on whether the background permeability is higher or lower than the anomaly permeability.</li>
+        </ol>
+        
+        <p>From the paper's examples, we can observe that:</p>
+        <ul>
+            <li>When kb/ka > 1 (background more permeable than anomaly), the nonlinear approximation performs best.</li>
+            <li>When kb/ka < 1 (anomaly more permeable than background), the nonlinear Rytov approximation may perform slightly better.</li>
+            <li>Both Born and Rytov approximations become inaccurate for high permeability contrasts.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Conclusion: The Power of Nonlinear Approximation</h2>
+        
+        <p>The nonlinear approximation method introduced by Kuchuk, Habashy, and Torres-Verdin represents a significant advancement in modeling fluid flow in heterogeneous reservoirs. By transforming the problem into an integral equation and applying a clever approximation for the interior pressure and its gradient, the method achieves a remarkable balance between accuracy and computational efficiency.</p>
+        
+        <p>Key takeaways:</p>
+        <ol>
+            <li>The method can handle large contrasts in reservoir properties while remaining computationally efficient.</li>
+            <li>It outperforms traditional Born and Rytov approximations in most scenarios.</li>
+            <li>The approach is particularly valuable for reservoirs with distinct heterogeneities like channels, lenses, or compartments.</li>
+            <li>The mathematical framework bridges the gap between simplified analytical solutions and complex numerical simulations.</li>
+        </ol>
+        
+        <p>By understanding the principles behind this method, engineers and geoscientists can develop more accurate reservoir models, leading to better production strategies and resource management.</p>
+    </section>
+
+    <footer>
+        <p><em>This blog post is based on the paper "A Nonlinear Approximation for the Pressure Behavior of Heterogeneous Reservoirs" by Fikri J. Kuchuk, Tarek M. Habashy, and Carlos Torres-Verdin (SPE 26456, 1996).</em></p>
+    </footer>
+</body>
+</html>

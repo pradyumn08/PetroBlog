@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Elliptical Flow in Naturally Fractured Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .math-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive-section {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        .canvas-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: #fffde7;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Understanding Elliptical Flow in Naturally Fractured Reservoirs: A First Principles Approach</h1>
+
+<p>When you look at a glass of water, you see a simple liquid. But when that water is trapped within the complex network of cracks and pores inside underground rock formations, its behavior becomes fascinatingly complex. Today, we're going to break down a revolutionary approach to understanding how fluids move through naturally fractured reservoirs using elliptical flow models.</p>
+
+<div class="note">
+    <p><strong>Why this matters:</strong> Traditional models assume fluids flow radially (like ripples in a pond) around a well. But in naturally fractured reservoirs, the flow patterns are more like elongated ellipses. Getting this right is crucial for efficient oil and gas extraction, geothermal energy development, and groundwater management.</p>
+</div>
+
+<h2>The Problem with Traditional Models</h2>
+
+<p>For decades, petroleum engineers have used the radial flow model to analyze well tests in reservoirs. This model assumes that when fluid flows toward a well, it moves uniformly in all directions - like spokes on a wheel. But nature rarely cooperates with such simplistic assumptions.</p>
+
+<p>Naturally fractured reservoirs are inherently anisotropic - meaning their properties vary depending on direction. Think of wood grain: it's much easier to split wood along the grain than against it. Similarly, fluids in fractured reservoirs flow more easily in some directions than others.</p>
+
+<h3>Types of Naturally Fractured Reservoirs</h3>
+
+<p>According to Nelson's classification, naturally fractured reservoirs come in four types:</p>
+
+<ul>
+    <li><strong>Type 1:</strong> Fractures provide both the essential porosity and permeability</li>
+    <li><strong>Type 2:</strong> Fractures provide the essential permeability, while the matrix provides the essential porosity</li>
+    <li><strong>Type 3:</strong> Fractures assist permeability in an already producible reservoir</li>
+    <li><strong>Type 4:</strong> Fractures create significant reservoir anisotropy but provide no additional porosity or permeability</li>
+</ul>
+
+<p>Most real-world reservoirs don't fit neatly into just one category, but understanding these classifications helps us conceptualize the problem.</p>
+
+<div class="interactive-section">
+    <h3>Interactive: Visualizing Different Flow Patterns</h3>
+    <div class="slider-container">
+        <label for="anisotropy">Anisotropy Ratio:</label>
+        <input type="range" id="anisotropy" min="1" max="50" value="1" step="0.5">
+        <span id="anisotropy-value">1:1</span>
+    </div>
+    <div class="slider-container">
+        <label for="orientation">Fracture Orientation:</label>
+        <input type="range" id="orientation" min="0" max="90" value="0">
+        <span id="orientation-value">0°</span>
+    </div>
+    <div class="canvas-container">
+        <canvas id="flowPatternCanvas" width="500" height="500"></canvas>
+    </div>
+    <p>This visualization shows how fluid pressure propagates from a well (center) in a reservoir. As you increase the anisotropy ratio, you can see how the flow pattern transforms from circular (radial) to elliptical.</p>
+</div>
+
+<h2>The Elliptical Flow Model: Back to First Principles</h2>
+
+<p>Let's start from the fundamental physics governing fluid flow through porous media. The cornerstone of this understanding is Darcy's Law, which relates fluid flow rate to pressure gradient:</p>
+
+<div class="math-block">
+    <p>$$q = -\frac{kA}{\mu} \nabla P$$</p>
+    <p>Where:</p>
+    <ul>
+        <li>\(q\) = flow rate</li>
+        <li>\(k\) = permeability</li>
+        <li>\(A\) = cross-sectional area</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(\nabla P\) = pressure gradient</li>
+    </ul>
+</div>
+
+<p>In anisotropic media, permeability is not a single value but a tensor with different values in different directions. This is where things get interesting.</p>
+
+<h3>The Diffusivity Equation for Naturally Fractured Reservoirs</h3>
+
+<p>According to Warren and Root's "sugar cube" model, the diffusivity equation in a naturally fractured reservoir can be written as:</p>
+
+<div class="math-block">
+    <p>$${\frac{k_{fx}}{\mu}}{\frac{\partial^{2}P_{f}}{\partial x^{2}}}+{\frac{k_{fy}}{\mu}}{\frac{\partial^{2}P_{f}}{\partial y^{2}}}-\phi_{m}c_{m}{\frac{\partial P_{m}}{\partial t}}=\phi_{f}c_{f}{\frac{\partial P_{f}}{\partial t}}$$</p>
+    <p>Where:</p>
+    <ul>
+        <li>\(k_{fx}\) and \(k_{fy}\) = fracture permeabilities in x and y directions</li>
+        <li>\(P_f\) and \(P_m\) = pressure in fracture and matrix</li>
+        <li>\(\phi_f\) and \(\phi_m\) = porosity of fracture and matrix</li>
+        <li>\(c_f\) and \(c_m\) = compressibility of fracture and matrix</li>
+    </ul>
+</div>
+
+<p>For matrix pseudo-steady state flow:</p>
+
+<div class="math-block">
+    <p>$$\phi_{m}c_{m}{\frac{\partial P_{m}}{\partial t}}={\frac{\beta k_{m}}{\mu}}\left(P_{f}-P_{m}\right)$$</p>
+    <p>Where \(\beta\) is a shape factor defined as:</p>
+    <p>$$\beta=\frac{4m\left(m+2\right)}{l^{2}}$$</p>
+    <p>Here, \(m\) is the number of normal sets of fractures and \(l\) is the characteristic length.</p>
+</div>
+
+<h3>Transforming to Elliptical Coordinates</h3>
+
+<p>The key innovation in this paper is transforming the diffusivity equation into elliptical coordinates. This is mathematically elegant and physically meaningful for anisotropic reservoirs.</p>
+
+<p>First, we define dimensionless quantities:</p>
+
+<div class="math-block">
+    <p>$$P_{\mathcal{D}}=\frac{k_{f}h\big(P_{i}-P\big(x,y,t\big)\big)}{\Omega q\mu B}$$</p>
+    <p>$$t_{\mathrm{D}}=\frac{\Psi k_{f}t}{\left(\phi_{t}c_{t}\right)_{f+m}\mu L^{2}}$$</p>
+    <p>Where \(\Omega\) = 141.2 for oilfield units and \(1.591\times10^{-7}\) for SI units, and \(\Psi\) = 0.000264 for oilfield units and \(1.001\times10^{6}\) for SI units.</p>
+</div>
+
+<p>Through a series of transformations (detailed in the paper's appendix), the diffusivity equation is converted to elliptical coordinates (\(\xi\), \(\eta\)):</p>
+
+<div class="math-block">
+    <p>$$\frac{\partial^{2}\overline{P}_{Df}}{\partial\xi^{2}}+\frac{\partial^{2}\overline{P}_{Df}}{\partial\eta^{2}}=\frac{1}{2}\big\{\cosh2\xi-\cos2\eta\big\}s f(s)\overline{P}_{Df}$$</p>
+    <p>Where \(s\) is the Laplace variable and \(f(s)\) is the transfer function:</p>
+    <p>$$s f(s)=s\left({\frac{\omega(1-\omega)+\lambda}{\left(1-\omega\right)s+\lambda}}\right)$$</p>
+</div>
+
+<p>This transformation is the mathematical equivalent of viewing the reservoir through "elliptical glasses" - it allows us to see the natural flow patterns more clearly.</p>
+
+<h2>Interpreting Well Test Data: A Practical Guide</h2>
+
+<p>Now comes the practical part: how do we use this model to extract meaningful information from well test data? The paper presents several key equations for different flow regimes.</p>
+
+<h3>Long-Term Radial Flow</h3>
+
+<p>During the long-term radial flow regime, the pressure drop at the wellbore can be expressed as:</p>
+
+<div class="math-block">
+    <p>$$P_{fw}=P_{i}-\frac{70.6q\mu B}{k_{f}h}\left\{\ln t+\ln\left(\frac{k}{\left(\phi_{t}c_{t}\right)_{f+m}\mu L^{2}}\right)\right\}$$</p>
+    <p>In SI units:</p>
+    <p>$$P_{fw}=P_{i}-\frac{7.955\times10^{-8}q\mu B}{k_{f}h}\left\{\ln t+\ln\left(\frac{k}{\left(\phi_{t}c_{t}\right)_{f+m}\mu L^{2}}\right)\right\}$$</p>
+</div>
+
+<h3>Early Linear Flow</h3>
+
+<p>During the early linear flow regime, the pressure drop is given by:</p>
+
+<div class="math-block">
+    <p>$$\Delta P_{f}=\frac{3.66q B}{h L\sqrt{\left(k_{xf}\omega\right)}\sqrt{\left(\cosh^{2}\xi_{w}+\sinh^{2}\xi_{w}\right)}}\left(\frac{\mu}{\left(\phi c_{t}\right)_{f+m}}\right)^{\frac{1}{2}}\sqrt{t}$$</p>
+    <p>In SI units:</p>
+    <p>$$\Delta P_{f}=\frac{2.539\times10^{-4}q B}{h L\sqrt{\left(k_{xf}\omega\right)}\sqrt{\left(\cosh^{2}\xi_{w}+\sinh^{2}\xi_{w}\right)}}\left(\frac{\mu}{\left(\phi c_{t}\right)_{f+m}}\right)^{\frac{1}{2}}\sqrt{t}$$</p>
+</div>
+
+<h3>Quantifying Anisotropy</h3>
+
+<p>The key parameter for quantifying anisotropy is the ratio of maximum to minimum permeability. This can be related to the elliptical coordinate \(\xi_w\) at the wellbore:</p>
+
+<div class="math-block">
+    <p>$$\sqrt{\frac{k_{x}}{k_{y}}}=\coth\left(\xi_{w}\right)$$</p>
+    <p>Therefore:</p>
+    <p>$$k_{\min}=\frac{\overline{k}}{\coth\xi_{w}}$$</p>
+    <p>$$k_{\max}=\overline{k}\coth\left(\xi_{w}\right)$$</p>
+    <p>Where \(\overline{k}\) is the average permeability.</p>
+</div>
+
+<div class="interactive-section">
+    <h3>Interactive: Calculate Reservoir Properties</h3>
+    
+    <div class="slider-container">
+        <label for="avg-perm">Average Permeability (md):</label>
+        <input type="range" id="avg-perm" min="1" max="100" value="20">
+        <span id="avg-perm-value">20 md</span>
+    </div>
+    
+    <div class="slider-container">
+        <label for="xi-w">Elliptical Coordinate (ξw):</label>
+        <input type="range" id="xi-w" min="0.01" max="2" value="0.5" step="0.01">
+        <span id="xi-w-value">0.5</span>
+    </div>
+    
+    <div id="results">
+        <p><strong>Maximum Permeability:</strong> <span id="k-max">-- md</span></p>
+        <p><strong>Minimum Permeability:</strong> <span id="k-min">-- md</span></p>
+        <p><strong>Anisotropy Ratio:</strong> <span id="anisotropy-ratio">--</span></p>
+    </div>
+    
+    <button id="calculate-btn" class="btn">Calculate</button>
+    
+    <div class="canvas-container">
+        <canvas id="permeabilityEllipseCanvas" width="400" height="400"></canvas>
+    </div>
+</div>
+
+<h2>Real-World Applications: Case Studies</h2>
+
+<p>The paper applies this method to four field examples. Let's examine what these tell us about the practical value of the elliptical flow model.</p>
+
+<h3>Example 1: Interference Test</h3>
+
+<p>This example involved an injection well with pressure data that matched the elliptical flow model with the following parameters:</p>
+
+<ul>
+    <li>Average permeability: 17.03 md</li>
+    <li>Maximum permeability: 21.3 md</li>
+    <li>Minimum permeability: 13.63 md</li>
+    <li>Direction of maximum permeability: N29°E</li>
+</ul>
+
+<p>The interference test validated these results, confirming the model's accuracy.</p>
+
+<h3>Example 3: Spraberry Formation</h3>
+
+<p>This example from the Spraberry formation, known for its vertical fractures in low-permeability matrix rock, showed extreme anisotropy:</p>
+
+<ul>
+    <li>Average permeability: 0.058 md</li>
+    <li>Maximum permeability: 4.0 md</li>
+    <li>Minimum permeability: 0.0009 md</li>
+    <li>Anisotropy ratio: 4444:1</li>
+</ul>
+
+<p>This extreme anisotropy explains why the well produced only 5.58 bbl/day despite having fractures with relatively high permeability. The flow was highly directional, following the fracture orientation.</p>
+
+<h2>Practical Implications: Why This Matters</h2>
+
+<p>Understanding reservoir anisotropy through elliptical flow models has several practical implications:</p>
+
+<ol>
+    <li><strong>Well Placement:</strong> By knowing the direction of maximum permeability, engineers can optimize the placement of injection and production wells.</li>
+    <li><strong>Enhanced Oil Recovery:</strong> Fluid injection patterns can be designed to account for preferential flow directions.</li>
+    <li><strong>Reserve Estimation:</strong> More accurate models lead to better estimates of recoverable reserves.</li>
+    <li><strong>Fracture Characterization:</strong> The method provides insights into fracture networks without requiring expensive imaging techniques.</li>
+</ol>
+
+<div class="note">
+    <p><strong>Key Insight:</strong> The paper introduces a parameter called the "flow path identification" that can determine whether a reservoir exhibits a "narrow" or "wide" flow path. Narrow flow paths are associated with high anisotropy and elliptical flow, while wide flow paths indicate low anisotropy and more radial flow.</p>
+</div>
+
+<h2>Conclusion: A New Paradigm for Reservoir Analysis</h2>
+
+<p>The elliptical flow model represents a significant advancement in our understanding of fluid flow in naturally fractured reservoirs. By accounting for directional permeability variations, it provides a more accurate representation of reality than traditional radial flow models.</p>
+
+<p>This approach allows petroleum engineers to:</p>
+
+<ul>
+    <li>Estimate both maximum and minimum permeability from a single well test</li>
+    <li>Identify the direction of preferential fluid flow</li>
+    <li>Characterize fracture networks more accurately</li>
+    <li>Make better-informed decisions about reservoir development</li>
+</ul>
+
+<p>As we continue to develop more complex and challenging reservoirs, such sophisticated analytical tools will become increasingly important for efficient and sustainable resource extraction.</p>
+
+<script>
+// Flow pattern visualization
+const flowPatternCanvas = document.getElementById('flowPatternCanvas');
+const flowPatternCtx = flowPatternCanvas.getContext('2d');
+const anisotropySlider = document.getElementById('anisotropy');
+const anisotropyValue = document.getElementById('anisotropy-value');
+const orientationSlider = document.getElementById('orientation');
+const orientationValue = document.getElementById('orientation-value');
+
+function drawFlowPattern() {
+    const anisotropy = parseFloat(anisotropySlider.value);
+    const orientation = parseFloat(orientationSlider.value) * Math.PI / 180;
+    
+    anisotropyValue.textContent = anisotropy + ':1';
+    orientationValue.textContent = orientationSlider.value + '°';
+    
+    const centerX = flowPatternCanvas.width / 2;
+    const centerY = flowPatternCanvas.height / 2;
+    
+    // Clear canvas
+    flowPatternCtx.clearRect(0, 0, flowPatternCanvas.width, flowPatternCanvas.height);
+    
+    // Draw background grid
+    flowPatternCtx.strokeStyle = '#e0e0e0';
+    flowPatternCtx.lineWidth = 1;
+    
+    for (let i = 0; i <= 10; i++) {
+        // Vertical lines
+        flowPatternCtx.beginPath();
+        flowPatternCtx.moveTo(i * 50, 0);
+        flowPatternCtx.lineTo(i * 50, 500);
+        flowPatternCtx.stroke();
+        
+        // Horizontal lines
+        flowPatternCtx.beginPath();
+        flowPatternCtx.moveTo(0, i * 50);
+        flowPatternCtx.lineTo(500, i * 50);
+        flowPatternCtx.stroke();
+    }
+    
+    // Draw pressure contours (ellipses)
+    for (let i = 1; i <= 10; i++) {
+        const a = i * 20 * Math.sqrt(anisotropy);
+        const b = i * 20 / Math.sqrt(anisotropy);
+        
+        flowPatternCtx.save();
+        flowPatternCtx.translate(centerX, centerY);
+        flowPatternCtx.rotate(orientation);
+        
+        // Draw ellipse
+        flowPatternCtx.beginPath();
+        flowPatternCtx.ellipse(0, 0, a, b, 0, 0, 2 * Math.PI);
+        
+        // Different colors for different pressure contours
+        const hue = 200 - i * 15;
+        flowPatternCtx.strokeStyle = `hsl(${hue}, 70%, 50%)`;
+        flowPatternCtx.lineWidth = 2;
+        flowPatternCtx.stroke();
+        
+        flowPatternCtx.restore();
+    }
+    
+    // Draw well
+    flowPatternCtx.beginPath();
+    flowPatternCtx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+    flowPatternCtx.fillStyle = '#e74c3c';
+    flowPatternCtx.fill();
+    flowPatternCtx.strokeStyle = '#c0392b';
+    flowPatternCtx.lineWidth = 2;
+    flowPatternCtx.stroke();
+    
+    // Draw fracture orientation if anisotropy > 2
+    if (anisotropy > 2) {
+        flowPatternCtx.save();
+        flowPatternCtx.translate(centerX, centerY);
+        flowPatternCtx.rotate(orientation);
+        
+        flowPatternCtx.beginPath();
+        flowPatternCtx.moveTo(-200, 0);
+        flowPatternCtx.lineTo(200, 0);
+        flowPatternCtx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
+        flowPatternCtx.lineWidth = 3;
+        flowPatternCtx.setLineDash([10, 5]);
+        flowPatternCtx.stroke();
+        
+        flowPatternCtx.restore();
+    }
+}
+
+anisotropySlider.addEventListener('input', drawFlowPattern);
+orientationSlider.addEventListener('input', drawFlowPattern);
+
+// Permeability ellipse visualization
+const permeabilityEllipseCanvas = document.getElementById('permeabilityEllipseCanvas');
+const permeabilityEllipseCtx = permeabilityEllipseCanvas.getContext('2d');
+const avgPermSlider = document.getElementById('avg-perm');
+const avgPermValue = document.getElementById('avg-perm-value');
+const xiWSlider = document.getElementById('xi-w');
+const xiWValue = document.getElementById('xi-w-value');
+const calculateBtn = document.getElementById('calculate-btn');
+const kMaxSpan = document.getElementById('k-max');
+const kMinSpan = document.getElementById('k-min');
+const anisotropyRatioSpan = document.getElementById('anisotropy-ratio');
+
+function updateAvgPermValue() {
+    avgPermValue.textContent = avgPermSlider.value + ' md';
+}
+
+function updateXiWValue() {
+    xiWValue.textContent = xiWSlider.value;
+}
+
+function calculatePermeabilities() {
+    const avgPerm = parseFloat(avgPermSlider.value);
+    const xiW = parseFloat(xiWSlider.value);
+    
+    // Calculate coth(xiW)
+    const cothXiW = 1 / Math.tanh(xiW);
+    
+    const kMax = avgPerm * cothXiW;
+    const kMin = avgPerm / cothXiW;
+    const ratio = kMax / kMin;
+    
+    kMaxSpan.textContent = kMax.toFixed(2) + ' md';
+    kMinSpan.textContent = kMin.toFixed(2) + ' md';
+    anisotropyRatioSpan.textContent = ratio.toFixed(2) + ':1';
+    
+    drawPermeabilityEllipse(kMax, kMin);
+}
+
+function drawPermeabilityEllipse(kMax, kMin) {
+    const centerX = permeabilityEllipseCanvas.width / 2;
+    const centerY = permeabilityEllipseCanvas.height / 2;
+    const scale = 150 / Math.sqrt(Math.max(kMax, kMin));
+    
+    // Clear canvas
+    permeabilityEllipseCtx.clearRect(0, 0, permeabilityEllipseCanvas.width, permeabilityEllipseCanvas.height);
+    
+    // Draw axes
+    permeabilityEllipseCtx.strokeStyle = '#aaa';
+    permeabilityEllipseCtx.lineWidth = 1;
+    
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(centerX, 0);
+    permeabilityEllipseCtx.lineTo(centerX, permeabilityEllipseCanvas.height);
+    permeabilityEllipseCtx.stroke();
+    
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(0, centerY);
+    permeabilityEllipseCtx.lineTo(permeabilityEllipseCanvas.width, centerY);
+    permeabilityEllipseCtx.stroke();
+    
+    // Draw permeability ellipse
+    const a = Math.sqrt(kMax) * scale;
+    const b = Math.sqrt(kMin) * scale;
+    
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.ellipse(centerX, centerY, a, b, 0, 0, 2 * Math.PI);
+    permeabilityEllipseCtx.strokeStyle = '#3498db';
+    permeabilityEllipseCtx.lineWidth = 3;
+    permeabilityEllipseCtx.stroke();
+    
+    // Fill with gradient
+    const gradient = permeabilityEllipseCtx.createRadialGradient(
+        centerX, centerY, 0,
+        centerX, centerY, Math.max(a, b)
+    );
+    gradient.addColorStop(0, 'rgba(52, 152, 219, 0.7)');
+    gradient.addColorStop(1, 'rgba(52, 152, 219, 0.1)');
+    
+    permeabilityEllipseCtx.fillStyle = gradient;
+    permeabilityEllipseCtx.fill();
+    
+    // Draw arrows for kMax and kMin
+    permeabilityEllipseCtx.save();
+    permeabilityEllipseCtx.translate(centerX, centerY);
+    
+    // kMax arrow (horizontal)
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(0, 0);
+    permeabilityEllipseCtx.lineTo(a + 20, 0);
+    permeabilityEllipseCtx.strokeStyle = '#e74c3c';
+    permeabilityEllipseCtx.lineWidth = 2;
+    permeabilityEllipseCtx.stroke();
+    
+    // Arrow head
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(a + 20, 0);
+    permeabilityEllipseCtx.lineTo(a + 10, -10);
+    permeabilityEllipseCtx.lineTo(a + 10, 10);
+    permeabilityEllipseCtx.closePath();
+    permeabilityEllipseCtx.fillStyle = '#e74c3c';
+    permeabilityEllipseCtx.fill();
+    
+    // kMin arrow (vertical)
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(0, 0);
+    permeabilityEllipseCtx.lineTo(0, b + 20);
+    permeabilityEllipseCtx.strokeStyle = '#27ae60';
+    permeabilityEllipseCtx.lineWidth = 2;
+    permeabilityEllipseCtx.stroke();
+    
+    // Arrow head
+    permeabilityEllipseCtx.beginPath();
+    permeabilityEllipseCtx.moveTo(0, b + 20);
+    permeabilityEllipseCtx.lineTo(-10, b + 10);
+    permeabilityEllipseCtx.lineTo(10, b + 10);
+    permeabilityEllipseCtx.closePath();
+    permeabilityEllipseCtx.fillStyle = '#27ae60';
+    permeabilityEllipseCtx.fill();
+    
+    permeabilityEllipseCtx.restore();
+    
+    // Labels
+    permeabilityEllipseCtx.font = '14px Arial';
+    permeabilityEllipseCtx.fillStyle = '#e74c3c';
+    permeabilityEllipseCtx.fillText('kmax', centerX + a + 25, centerY);
+    
+    permeabilityEllipseCtx.fillStyle = '#27ae60';
+    permeabilityEllipseCtx.fillText('kmin', centerX, centerY + b + 25);
+}
+
+avgPermSlider.addEventListener('input', updateAvgPermValue);
+xiWSlider.addEventListener('input', updateXiWValue);
+calculateBtn.addEventListener('click', calculatePermeabilities);
+
+// Initialize visualizations
+drawFlowPattern();
+updateAvgPermValue();
+updateXiWValue();
+calculatePermeabilities();
+</script>
+
+</body>
+</html>

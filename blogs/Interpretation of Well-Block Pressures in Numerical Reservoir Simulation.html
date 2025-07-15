@@ -1,0 +1,680 @@
+<html>
+<head>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive {
+            background-color: #eaf2f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .formula-explanation {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Magic Number 0.2: Understanding Well-Block Pressure in Numerical Reservoir Simulation</h1>
+    
+    <p>Have you ever wondered how engineers accurately model oil and gas wells in computer simulations when the grid blocks used are hundreds or thousands of times larger than the actual wellbore? Today, we're diving into one of the most elegant solutions in petroleum engineering: Peaceman's equivalent radius concept.</p>
+    
+    <div class="note">
+        <p><strong>TL;DR:</strong> When simulating fluid flow in reservoirs, the pressure calculated for a grid block containing a well isn't the average pressure of that block. Instead, it represents the pressure at a specific radius (0.2 times the grid block width) from the well. This insight revolutionized reservoir simulation accuracy.</p>
+    </div>
+    
+    <h2>The Fundamental Problem</h2>
+    
+    <p>Imagine you're trying to model the flow of oil from a reservoir into a well. The well itself might have a radius of just a few inches, but in your computer model, you're forced to use grid blocks that are tens or hundreds of feet wide. How do you reconcile this massive scale difference?</p>
+    
+    <p>For decades, engineers assumed that the pressure calculated for a grid block containing a well represented the average pressure across that entire block. Peaceman's groundbreaking work showed this assumption was incorrect and provided a precise interpretation.</p>
+    
+    <h2>First Principles: The Radial Flow Equation</h2>
+    
+    <p>Let's start with the fundamental equation describing steady-state radial flow into a well:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ q = \frac{2\pi kh}{\mu} \frac{p_e - p_{wf}}{\ln(r_e/r_w) + s} \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(q\) = production rate</li>
+            <li>\(k\) = permeability</li>
+            <li>\(h\) = reservoir thickness</li>
+            <li>\(\mu\) = fluid viscosity</li>
+            <li>\(p_e\) = pressure at external boundary</li>
+            <li>\(p_{wf}\) = flowing bottom-hole pressure</li>
+            <li>\(r_e\) = external radius</li>
+            <li>\(r_w\) = wellbore radius</li>
+            <li>\(s\) = skin factor</li>
+        </ul>
+    </div>
+    
+    <p>In numerical simulation, we need to relate the well-block pressure (\(p_o\)) to the actual flowing well pressure (\(p_{wf}\)). Previous approaches assumed the well-block pressure was equal to the average pressure in the block, leading to:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \bar{p} = p_{wf} + \frac{q\mu}{2\pi kh}\left[\ln \frac{r_b}{r_w} - \frac{1}{2}\right] \]</p>
+        <p>Where \(r_b = \Delta x/\sqrt{\pi}\) (the radius of a circle with area equal to the grid block)</p>
+    </div>
+    
+    <p>This resulted in an equivalent radius of \(r_o^A = 0.342\Delta x\).</p>
+    
+    <h2>Peaceman's Discovery: The 0.2 Rule</h2>
+    
+    <p>Through rigorous mathematical analysis and numerical experiments, Peaceman discovered something remarkable: the pressure calculated for a well block is actually equal to the flowing pressure at a radius of \(0.2\Delta x\) from the well.</p>
+    
+    <p>In other words:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ r_o = 0.2\Delta x \]</p>
+        <p>This means the well-block pressure equals the actual pressure at a radius of 20% of the grid block width from the center of the well.</p>
+    </div>
+    
+    <p>This discovery allows us to accurately relate the well-block pressure to the actual flowing bottom-hole pressure:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ p_{wf} = p_o + \frac{q\mu}{2\pi kh} \ln \frac{r_w}{0.2\Delta x} \]</p>
+    </div>
+    
+    <h2>Proving the 0.2 Rule</h2>
+    
+    <p>Peaceman validated this result through three independent methods:</p>
+    
+    <ol>
+        <li><strong>Numerical solution analysis:</strong> By examining the numerical solution for Laplace's equation near a single well</li>
+        <li><strong>Approximate calculation:</strong> By analyzing the pressure in blocks adjacent to the well block</li>
+        <li><strong>Exact calculation:</strong> By solving for steady-state pressure distribution in a repeated five-spot pattern</li>
+    </ol>
+    
+    <p>All three approaches converged to the same answer: \(r_o = 0.2\Delta x\).</p>
+    
+    <div class="interactive">
+        <h3>Interactive Demonstration: Visualizing the 0.2 Rule</h3>
+        <p>Adjust the sliders below to see how well-block pressure relates to actual pressure distribution around a well.</p>
+        
+        <div class="slider-container">
+            <label for="gridSize">Grid Block Size (Δx): <span id="gridSizeValue">100</span> ft</label><br>
+            <input type="range" id="gridSize" min="50" max="300" value="100" class="slider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="wellRadius">Wellbore Radius (r<sub>w</sub>): <span id="wellRadiusValue">0.5</span> ft</label><br>
+            <input type="range" id="wellRadius" min="0.1" max="2" value="0.5" step="0.1" class="slider">
+        </div>
+        
+        <div class="slider-container">
+            <label for="flowRate">Flow Rate (q): <span id="flowRateValue">100</span> STB/D</label><br>
+            <input type="range" id="flowRate" min="10" max="500" value="100" class="slider">
+        </div>
+        
+        <canvas id="pressureCanvas" width="700" height="400"></canvas>
+        <div id="explanation">
+            <p>The blue line shows the actual pressure distribution around the well. The red dot indicates the well-block pressure in simulation, which corresponds to the pressure at radius = 0.2Δx.</p>
+        </div>
+        
+        <script>
+            // Get DOM elements
+            const gridSizeSlider = document.getElementById('gridSize');
+            const wellRadiusSlider = document.getElementById('wellRadius');
+            const flowRateSlider = document.getElementById('flowRate');
+            const gridSizeValue = document.getElementById('gridSizeValue');
+            const wellRadiusValue = document.getElementById('wellRadiusValue');
+            const flowRateValue = document.getElementById('flowRateValue');
+            const canvas = document.getElementById('pressureCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Constants
+            const k = 100; // permeability in md
+            const h = 50; // thickness in ft
+            const mu = 1.0; // viscosity in cp
+            const pi = 5000; // initial pressure in psi
+            
+            // Update function
+            function updateVisualization() {
+                const deltaX = parseFloat(gridSizeSlider.value);
+                const rw = parseFloat(wellRadiusSlider.value);
+                const q = parseFloat(flowRateSlider.value);
+                
+                // Update display values
+                gridSizeValue.textContent = deltaX;
+                wellRadiusValue.textContent = rw;
+                flowRateValue.textContent = q;
+                
+                // Calculate ro
+                const ro = 0.2 * deltaX;
+                
+                // Calculate flowing bottom-hole pressure (simplified)
+                const qBPD = q * 5.615; // convert STB/D to ft³/day
+                const pressureDrop = (141.2 * qBPD * mu) / (k * h) * Math.log(ro/rw);
+                const pwf = pi - pressureDrop;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid
+                drawGrid(deltaX);
+                
+                // Draw pressure profile
+                drawPressureProfile(rw, ro, deltaX, pwf, q);
+                
+                // Draw well and labels
+                drawWellAndLabels(rw, ro, deltaX, pwf);
+            }
+            
+            function drawGrid(deltaX) {
+                const scale = 1.5; // Scale factor for visualization
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const gridWidth = deltaX * scale;
+                
+                ctx.strokeStyle = '#ccc';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(centerX - gridWidth/2, centerY - gridWidth/2, gridWidth, gridWidth);
+                
+                // Draw grid label
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`Grid Block (${deltaX} ft × ${deltaX} ft)`, centerX - gridWidth/2, centerY - gridWidth/2 - 10);
+            }
+            
+            function drawPressureProfile(rw, ro, deltaX, pwf, q) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.5; // Scale factor for visualization
+                const maxRadius = deltaX * 2 * scale;
+                
+                // Draw pressure profile
+                ctx.beginPath();
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
+                
+                const qBPD = q * 5.615; // convert STB/D to ft³/day
+                const c = (141.2 * qBPD * mu) / (k * h);
+                
+                for (let x = 0; x <= maxRadius; x += 2) {
+                    const r = x / scale;
+                    if (r < rw) continue;
+                    
+                    const pressureDrop = c * Math.log(r/rw);
+                    const p = pi - pressureDrop;
+                    
+                    // Scale pressure to canvas
+                    const y = centerY - (p - (pwf - 500)) / 10;
+                    
+                    if (x === 0) {
+                        ctx.moveTo(centerX + x, y);
+                    } else {
+                        ctx.lineTo(centerX + x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Draw ro point
+                const roX = centerX + ro * scale;
+                const roPressureDrop = c * Math.log(ro/rw);
+                const roP = pi - roPressureDrop;
+                const roY = centerY - (roP - (pwf - 500)) / 10;
+                
+                ctx.beginPath();
+                ctx.arc(roX, roY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                
+                // Draw ro label
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(`r₀ = 0.2Δx = ${ro.toFixed(1)} ft`, roX + 10, roY - 10);
+                ctx.fillText(`Well-block pressure = ${roP.toFixed(1)} psi`, roX + 10, roY + 10);
+                
+                // Draw axes
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY + 150);
+                ctx.lineTo(centerX, centerY - 150);
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + maxRadius, centerY);
+                ctx.stroke();
+                
+                // Axes labels
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.fillText('Radius (ft)', centerX + maxRadius - 50, centerY + 20);
+                ctx.fillText('Pressure (psi)', centerX - 80, centerY - 140);
+                
+                // Draw pressure scale
+                for (let p = pwf; p <= pi; p += 100) {
+                    const y = centerY - (p - (pwf - 500)) / 10;
+                    ctx.fillText(`${p.toFixed(0)}`, centerX - 40, y + 5);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - 5, y);
+                    ctx.lineTo(centerX + 5, y);
+                    ctx.stroke();
+                }
+                
+                // Draw radius scale
+                for (let r = 0; r <= maxRadius/scale; r += deltaX/2) {
+                    const x = centerX + r * scale;
+                    ctx.fillText(`${r.toFixed(0)}`, x - 5, centerY + 20);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, centerY - 5);
+                    ctx.lineTo(x, centerY + 5);
+                    ctx.stroke();
+                }
+            }
+            
+            function drawWellAndLabels(rw, ro, deltaX, pwf) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scale = 1.5; // Scale factor for visualization
+                
+                // Draw wellbore
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, rw * scale, 0, Math.PI * 2);
+                ctx.fillStyle = '#34495e';
+                ctx.fill();
+                
+                // Draw well label
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Wellbore (r_w = ${rw.toFixed(1)} ft)`, centerX - 20, centerY + 50);
+                ctx.fillText(`Flowing pressure = ${pwf.toFixed(1)} psi`, centerX - 20, centerY + 70);
+            }
+            
+            // Add event listeners
+            gridSizeSlider.addEventListener('input', updateVisualization);
+            wellRadiusSlider.addEventListener('input', updateVisualization);
+            flowRateSlider.addEventListener('input', updateVisualization);
+            
+            // Initial update
+            updateVisualization();
+        </script>
+    </div>
+    
+    <h2>Implications for Pressure Buildup Tests</h2>
+    
+    <p>Peaceman's work also has profound implications for how we interpret pressure buildup tests in relation to simulator results. When a well is shut in, the pressure builds up over time. At what point does this buildup pressure match the simulator's well-block pressure?</p>
+    
+    <p>Peaceman showed that this occurs at a shut-in time of:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \Delta t_s^0 = 67.5 \phi\mu c_t (\Delta x)^2/k \]</p>
+        <p>This is approximately one-third of the previously accepted value!</p>
+    </div>
+    
+    <p>The error in the previous formula led to significant mismatches when comparing field data to simulation results.</p>
+    
+    <h2>The Concept of "Probe Radius"</h2>
+    
+    <p>Peaceman introduced the elegant concept of a "probe radius" (\(r_m\)) - the radius at which the steady-state flowing pressure (before shut-in) equals the current well pressure after shut-in. This radius is related to shut-in time by:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \frac{k \Delta t_s}{\phi\mu c_t r_m^2} = 0.445 \]</p>
+    </div>
+    
+    <p>When this probe radius equals the equivalent radius of the well block (0.2Δx), the shut-in pressure matches the simulator well-block pressure.</p>
+    
+    <h2>A Simple Game: Find the Right Shut-in Time</h2>
+    
+    <div class="interactive">
+        <h3>Interactive Challenge: Match Field Data to Simulation</h3>
+        <p>You're a reservoir engineer trying to match pressure buildup data with simulation results. Find the correct shut-in time to use!</p>
+        
+        <div class="game-container">
+            <div class="parameters">
+                <label for="permeability">Permeability (k): <span id="permValue">100</span> md</label><br>
+                <input type="range" id="permeability" min="10" max="500" value="100" class="slider"><br>
+                
+                <label for="porosity">Porosity (φ): <span id="poroValue">0.2</span></label><br>
+                <input type="range" id="porosity" min="0.05" max="0.35" value="0.2" step="0.01" class="slider"><br>
+                
+                <label for="viscosity">Viscosity (μ): <span id="viscValue">1.0</span> cp</label><br>
+                <input type="range" id="viscosity" min="0.2" max="5" value="1.0" step="0.1" class="slider"><br>
+                
+                <label for="compressibility">Total Compressibility (c<sub>t</sub>): <span id="compValue">10</span> × 10<sup>-6</sup> psi<sup>-1</sup></label><br>
+                <input type="range" id="compressibility" min="1" max="50" value="10" class="slider"><br>
+                
+                <label for="gridSize2">Grid Size (Δx): <span id="gridValue">100</span> ft</label><br>
+                <input type="range" id="gridSize2" min="50" max="300" value="100" class="slider"><br>
+            </div>
+            
+            <div class="calculation">
+                <h4>Calculate the correct shut-in time:</h4>
+                <div class="formula">
+                    <p>Δt<sub>s</sub><sup>0</sup> = <input type="number" id="coefficient" min="1" max="1000" value="67.5"> × φμc<sub>t</sub>(Δx)<sup>2</sup>/k</p>
+                </div>
+                <button id="calculateButton">Calculate</button>
+                <div id="result"></div>
+            </div>
+            
+            <canvas id="buildupCanvas" width="700" height="300"></canvas>
+        </div>
+        
+        <script>
+            // Get DOM elements for the game
+            const permSlider = document.getElementById('permeability');
+            const poroSlider = document.getElementById('porosity');
+            const viscSlider = document.getElementById('viscosity');
+            const compSlider = document.getElementById('compressibility');
+            const gridSlider = document.getElementById('gridSize2');
+            const permValue = document.getElementById('permValue');
+            const poroValue = document.getElementById('poroValue');
+            const viscValue = document.getElementById('viscValue');
+            const compValue = document.getElementById('compValue');
+            const gridValue = document.getElementById('gridValue');
+            const coeffInput = document.getElementById('coefficient');
+            const calculateButton = document.getElementById('calculateButton');
+            const resultDiv = document.getElementById('result');
+            const buildupCanvas = document.getElementById('buildupCanvas');
+            const buildupCtx = buildupCanvas.getContext('2d');
+            
+            // Update display values
+            function updateValues() {
+                permValue.textContent = permSlider.value;
+                poroValue.textContent = poroSlider.value;
+                viscValue.textContent = viscSlider.value;
+                compValue.textContent = compSlider.value;
+                gridValue.textContent = gridSlider.value;
+                
+                // Update buildup curve visualization
+                drawBuildupCurve();
+            }
+            
+            // Calculate shut-in time
+            function calculateShutInTime() {
+                const k = parseFloat(permSlider.value);
+                const phi = parseFloat(poroSlider.value);
+                const mu = parseFloat(viscSlider.value);
+                const ct = parseFloat(compSlider.value) * 1e-6;
+                const dx = parseFloat(gridSlider.value);
+                const coeff = parseFloat(coeffInput.value);
+                
+                // Calculate using user's coefficient
+                const shutInTime = coeff * phi * mu * ct * dx * dx / k;
+                
+                // Calculate using Peaceman's coefficient (67.5)
+                const correctTime = 67.5 * phi * mu * ct * dx * dx / k;
+                
+                // Calculate using old method (200)
+                const oldTime = 200 * phi * mu * ct * dx * dx / k;
+                
+                // Calculate error
+                const error = Math.abs((shutInTime - correctTime) / correctTime) * 100;
+                
+                // Display results
+                if (error < 5) {
+                    resultDiv.innerHTML = `<p style="color: green">Excellent! Your calculated shut-in time (${shutInTime.toFixed(2)} hours) is within 5% of the correct value.</p>`;
+                } else if (error < 15) {
+                    resultDiv.innerHTML = `<p style="color: orange">Close! Your calculated shut-in time (${shutInTime.toFixed(2)} hours) is within 15% of the correct value.</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red">Try again. Your calculated shut-in time (${shutInTime.toFixed(2)} hours) is off by ${error.toFixed(1)}%.</p>`;
+                }
+                
+                resultDiv.innerHTML += `<p>Peaceman's correct value: ${correctTime.toFixed(2)} hours</p>`;
+                resultDiv.innerHTML += `<p>Old incorrect value: ${oldTime.toFixed(2)} hours</p>`;
+                
+                // Update visualization with markers
+                drawBuildupCurve(shutInTime, correctTime, oldTime);
+            }
+            
+            // Draw buildup curve
+            function drawBuildupCurve(userTime = null, correctTime = null, oldTime = null) {
+                const k = parseFloat(permSlider.value);
+                const phi = parseFloat(poroSlider.value);
+                const mu = parseFloat(viscSlider.value);
+                const ct = parseFloat(compSlider.value) * 1e-6;
+                const dx = parseFloat(gridSlider.value);
+                
+                // Clear canvas
+                buildupCtx.clearRect(0, 0, buildupCanvas.width, buildupCanvas.height);
+                
+                // Draw axes
+                buildupCtx.strokeStyle = '#000';
+                buildupCtx.lineWidth = 1;
+                buildupCtx.beginPath();
+                buildupCtx.moveTo(50, 250);
+                buildupCtx.lineTo(650, 250);
+                buildupCtx.moveTo(50, 250);
+                buildupCtx.lineTo(50, 50);
+                buildupCtx.stroke();
+                
+                // Axes labels
+                buildupCtx.fillStyle = '#000';
+                buildupCtx.font = '12px Arial';
+                buildupCtx.fillText('Shut-in Time (hours)', 300, 280);
+                buildupCtx.save();
+                buildupCtx.translate(20, 150);
+                buildupCtx.rotate(-Math.PI/2);
+                buildupCtx.fillText('Pressure (psi)', 0, 0);
+                buildupCtx.restore();
+                
+                // Calculate ro
+                const ro = 0.2 * dx;
+                
+                // Draw buildup curve
+                buildupCtx.beginPath();
+                buildupCtx.strokeStyle = '#3498db';
+                buildupCtx.lineWidth = 3;
+                
+                const pi = 5000; // initial pressure
+                const pwf = 4500; // flowing pressure
+                
+                for (let t = 0.1; t <= 100; t *= 1.1) {
+                    // Calculate probe radius
+                    const rm = Math.sqrt(k * t / (0.445 * phi * mu * ct));
+                    
+                    // Calculate pressure
+                    let p;
+                    if (rm < ro) {
+                        // Early time
+                        p = pwf + (pi - pwf) * (Math.log(rm/0.1) / Math.log(ro/0.1));
+                    } else {
+                        // Late time
+                        p = pi - (pi - pwf) * (Math.log(1000/rm) / Math.log(1000/ro));
+                    }
+                    
+                    // Scale to canvas
+                    const x = 50 + 200 * Math.log10(t);
+                    const y = 250 - (p - 4400) / 2;
+                    
+                    if (t === 0.1) {
+                        buildupCtx.moveTo(x, y);
+                    } else {
+                        buildupCtx.lineTo(x, y);
+                    }
+                }
+                buildupCtx.stroke();
+                
+                // Draw well-block pressure line
+                buildupCtx.beginPath();
+                buildupCtx.strokeStyle = '#e74c3c';
+                buildupCtx.setLineDash([5, 5]);
+                buildupCtx.lineWidth = 2;
+                
+                // Calculate well-block pressure
+                const pWellBlock = pi - (pi - pwf) * (Math.log(1000/ro) / Math.log(1000/0.1));
+                const y = 250 - (pWellBlock - 4400) / 2;
+                
+                buildupCtx.moveTo(50, y);
+                buildupCtx.lineTo(650, y);
+                buildupCtx.stroke();
+                buildupCtx.setLineDash([]);
+                
+                // Label well-block pressure
+                buildupCtx.fillStyle = '#e74c3c';
+                buildupCtx.fillText(`Well-block pressure: ${pWellBlock.toFixed(1)} psi`, 60, y - 10);
+                
+                // Draw time markers if provided
+                if (userTime !== null) {
+                    // User's time
+                    const xUser = 50 + 200 * Math.log10(userTime);
+                    buildupCtx.beginPath();
+                    buildupCtx.arc(xUser, y, 6, 0, Math.PI * 2);
+                    buildupCtx.fillStyle = '#9b59b6';
+                    buildupCtx.fill();
+                    buildupCtx.fillText(`Your time: ${userTime.toFixed(2)} hrs`, xUser - 40, y + 20);
+                    
+                    // Correct time
+                    const xCorrect = 50 + 200 * Math.log10(correctTime);
+                    buildupCtx.beginPath();
+                    buildupCtx.arc(xCorrect, y, 6, 0, Math.PI * 2);
+                    buildupCtx.fillStyle = '#2ecc71';
+                    buildupCtx.fill();
+                    buildupCtx.fillText(`Correct: ${correctTime.toFixed(2)} hrs`, xCorrect - 40, y + 35);
+                    
+                    // Old incorrect time
+                    const xOld = 50 + 200 * Math.log10(oldTime);
+                    buildupCtx.beginPath();
+                    buildupCtx.arc(xOld, y, 6, 0, Math.PI * 2);
+                    buildupCtx.fillStyle = '#e67e22';
+                    buildupCtx.fill();
+                    buildupCtx.fillText(`Old method: ${oldTime.toFixed(2)} hrs`, xOld - 40, y + 50);
+                }
+                
+                // Draw time scale
+                buildupCtx.fillStyle = '#000';
+                for (let t = 1; t <= 100; t *= 10) {
+                    const x = 50 + 200 * Math.log10(t);
+                    buildupCtx.fillText(`${t}`, x - 5, 265);
+                    
+                    buildupCtx.beginPath();
+                    buildupCtx.moveTo(x, 250);
+                    buildupCtx.lineTo(x, 255);
+                    buildupCtx.stroke();
+                }
+                
+                // Draw pressure scale
+                for (let p = 4500; p <= 5000; p += 100) {
+                    const y = 250 - (p - 4400) / 2;
+                    buildupCtx.fillText(`${p}`, 30, y + 5);
+                    
+                    buildupCtx.beginPath();
+                    buildupCtx.moveTo(45, y);
+                    buildupCtx.lineTo(50, y);
+                    buildupCtx.stroke();
+                }
+            }
+            
+            // Add event listeners
+            permSlider.addEventListener('input', updateValues);
+            poroSlider.addEventListener('input', updateValues);
+            viscSlider.addEventListener('input', updateValues);
+            compSlider.addEventListener('input', updateValues);
+            gridSlider.addEventListener('input', updateValues);
+            calculateButton.addEventListener('click', calculateShutInTime);
+            
+            // Initial update
+            updateValues();
+        </script>
+    </div>
+    
+    <h2>Why This Matters: Real-World Applications</h2>
+    
+    <p>The "0.2 rule" has profound implications for reservoir simulation accuracy:</p>
+    
+    <ol>
+        <li><strong>Well Productivity:</strong> Accurately relating well-block pressure to flowing bottom-hole pressure ensures correct well rates in simulation.</li>
+        <li><strong>History Matching:</strong> The correct interpretation of buildup test data allows for more accurate matching of simulation results to field data.</li>
+        <li><strong>Field Development Planning:</strong> More accurate simulations lead to better production forecasts and development decisions.</li>
+        <li><strong>Enhanced Oil Recovery:</strong> Proper modeling of injection and production wells is crucial for EOR simulations.</li>
+    </ol>
+    
+    <h2>Mathematical Foundation: From Laplace's Equation to the 0.2 Rule</h2>
+    
+    <p>Let's trace the mathematical path that leads to the 0.2 rule.</p>
+    
+    <p>The steady-state pressure distribution around a well follows Laplace's equation:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \nabla^2 p = \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial p}{\partial r} \right) = 0 \]</p>
+    </div>
+    
+    <p>The solution for radial flow is:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ p = p_{wf} + \frac{q\mu}{2\pi kh} \ln \frac{r}{r_w} \]</p>
+    </div>
+    
+    <p>In numerical simulation, we use a finite-difference approximation for the well block:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \frac{kh}{\mu}(p_1 + p_2 + p_3 + p_4 - 4p_0) = q \]</p>
+        <p>Where \(p_0\) is the well-block pressure and \(p_1\), \(p_2\), \(p_3\), \(p_4\) are the pressures in the four neighboring blocks.</p>
+    </div>
+    
+    <p>By assuming that the pressure in adjacent blocks follows the radial flow equation and applying symmetry conditions, we get:</p>
+    
+    <div class="formula-explanation">
+        <p>\[ \ln(\Delta x/r_o) = \pi/2 \]</p>
+        <p>\[ r_o = \Delta x \exp(-\pi/2) = 0.208 \Delta x \]</p>
+    </div>
+    
+    <p>This elegant derivation, along with numerical verification, confirms that \(r_o = 0.2\Delta x\) is indeed the correct interpretation.</p>
+    
+    <h2>Extensions and Limitations</h2>
+    
+    <p>Peaceman's work has been extended to handle:</p>
+    
+    <ul>
+        <li>Non-square grid blocks: \(r_o = 0.2 \sqrt{\Delta x \cdot \Delta y}\)</li>
+        <li>Anisotropic permeability</li>
+        <li>Highly compressible fluids and gases</li>
+        <li>Multiple wells in a simulation</li>
+    </ul>
+    
+    <p>The primary limitation is that for very early times after a rate change (when \(t_D < 1.0\)), the 0.2 rule becomes less accurate. In these cases, a finer grid is needed around the well.</p>
+    
+    <h2>Conclusion: The Elegance of 0.2</h2>
+    
+    <p>Peaceman's discovery of the 0.2 rule is a beautiful example of how rigorous mathematical analysis can solve practical engineering problems. By correctly interpreting well-block pressure as the pressure at a radius of 0.2Δx from the well, we've gained the ability to accurately model wells in numerical simulations despite the enormous scale difference between wellbores and grid blocks.</p>
+    
+    <p>This insight has improved the accuracy of reservoir simulations worldwide and remains a cornerstone of petroleum engineering practice today.</p>
+    
+    <div class="note">
+        <p><strong>Key Takeaway:</strong> When you see well-block pressure in a reservoir simulator, remember it's not the average pressure of the block—it's the pressure at a specific radius of 0.2Δx from the well. This seemingly small detail makes all the difference in simulation accuracy.</p>
+    </div>
+</body>
+</html>

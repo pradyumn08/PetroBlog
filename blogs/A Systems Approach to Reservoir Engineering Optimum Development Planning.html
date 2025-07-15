@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Principles of Reservoir Engineering: A Systems Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .interactive-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            background-color: #f9f9f9;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+        }
+        .output-value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .analogy {
+            background-color: #e8f8f5;
+            border-left: 4px solid #1abc9c;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-explanation {
+            margin-left: 20px;
+            color: #555;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Systems Thinking in Reservoir Engineering: Understanding Optimal Development Planning</h1>
+    
+    <p>Have you ever wondered how oil companies decide when and where to drill wells? Or how engineers determine the optimal production rate for an oil reservoir? These questions might seem straightforward, but they involve complex systems with many interacting parts and significant uncertainty.</p>
+    
+    <p>Today, we're diving into a groundbreaking approach to reservoir engineering developed by G. Rowan and J.E. Warren. Their 1967 paper introduced a systems approach to reservoir engineering that revolutionized how we think about development planning.</p>
+
+    <div class="note">
+        <strong>In this blog post:</strong> We'll break down complex reservoir engineering concepts using first principles and systems thinking. You'll learn how to model reservoir behavior without needing to know all the internal details, and we'll explore how this approach leads to better decision-making for reservoir development.
+    </div>
+
+    <h2>The Traditional Problem in Reservoir Development</h2>
+
+    <p>When an oil company discovers a new reservoir, they face a crucial question:</p>
+    
+    <div class="highlight">
+        "What drilling and/or production policy should be adopted to maximize the return from a given operation in the presence of practical constraints?"
+    </div>
+
+    <p>This seemingly simple question hides tremendous complexity. Traditional approaches try to model every aspect of the reservoir's internal structure - the porosity, permeability, fluid properties, and so on. But there's a fundamental problem: we often don't know these properties with any certainty, especially early in development.</p>
+
+    <div class="analogy">
+        <strong>Analogy:</strong> Imagine trying to predict how traffic will flow in a city. You could try to model every driver's behavior, every traffic light, and every road condition. Or you could simply measure traffic flow at key points and use that data to make predictions. The systems approach is like the latter - it focuses on observable behavior rather than trying to model every internal detail.
+    </div>
+
+    <h2>First Principles: The Systems Approach</h2>
+
+    <p>Rather than getting lost in uncertain details, Rowan and Warren took a step back and asked: "What do we actually observe about reservoirs?"</p>
+
+    <p>Two key observations form the foundation of their approach:</p>
+    <ol>
+        <li>We observe <strong>production rates</strong> and <strong>reservoir pressure</strong></li>
+        <li>Changes in production are reflected in changes in pressure</li>
+    </ol>
+
+    <p>From these simple observations, they recognized that a reservoir behaves as a <strong>dynamic system</strong>. In systems theory language:</p>
+    <ul>
+        <li>Production rate is a <strong>control variable</strong> (we can decide how much to produce)</li>
+        <li>Pressure is a <strong>state variable</strong> (it reflects the internal state of the reservoir)</li>
+    </ul>
+
+    <h2>The Mathematical Model: From Complexity to Simplicity</h2>
+
+    <p>In systems theory, a dynamic system can be described by a first-order differential equation:</p>
+
+    <div class="highlight">
+        $$\frac{d\mathbf{x}}{d\mathbf{t}}=\mathrm{f}(\mathbf{x}, \mathbf{m}, \mathrm{t})$$
+    </div>
+
+    <p>Where \(\mathbf{x}\) represents state variables and \(\mathbf{m}\) represents control variables.</p>
+
+    <p>For a reservoir, this becomes:</p>
+
+    <div class="highlight">
+        $$\frac{dp}{dt}=\textrm{f}(p,q,t)$$
+    </div>
+
+    <p>Where \(p\) is pressure and \(q\) is production rate.</p>
+
+    <p>Since we don't know the exact form of the function \(f\), we can linearize this equation. The most general linear approximation is:</p>
+
+    <div class="highlight">
+        $$\frac{d\Delta p}{dt}+\gamma(t)\Delta p=R(t)q$$
+    </div>
+
+    <p>Where \(\Delta p = p_0 - p\) is the pressure drawdown from the initial pressure.</p>
+
+    <div class="formula-explanation">
+        <strong>What this means:</strong> The rate of change in pressure drawdown plus a term related to the current drawdown equals a term related to production rate. This simple equation captures the essential dynamics of the reservoir.
+    </div>
+
+    <p>To complete the model, we need one more equation relating production to the number of wells. The authors assumed:</p>
+
+    <div class="highlight">
+        $$q=n(t)A(t)(\Delta_0-\Delta p)$$
+    </div>
+
+    <p>Where \(n(t)\) is the number of wells and \(A(t)\) is a proportionality constant related to well productivity.</p>
+
+    <h2>Why This Approach Works: The Connection to Material Balance</h2>
+
+    <p>For those familiar with traditional reservoir engineering, you might wonder: "How does this relate to the material balance equation we typically use?"</p>
+
+    <p>The beauty of the systems approach is that it's consistent with traditional methods, but more practical. Starting with the general material balance equation:</p>
+
+    <div class="highlight">
+        $$N=\frac{N_p[B_o-B_{oi}+B_{oi}c_e\Delta p]+G_p[B_g-B_{gi}]}{B_{oi}-B_o+B_{oi}c_e\Delta p}+\frac{W_e-W_p}{B_{oi}-B_o+B_{oi}c_e\Delta p}$$
+    </div>
+
+    <p>Through differentiation and substitution (details in the paper), this can be transformed into a differential equation of exactly the same form as our systems model:</p>
+
+    <div class="highlight">
+        $$\frac{d\Delta p}{dt}+\gamma(t)\Delta p=R(t)q$$
+    </div>
+
+    <p>The key difference is that in the systems approach, we don't need to know values like original oil in place (N) or water influx (W<sub>e</sub>) - which are often uncertain. Instead, we determine the coefficients γ and R directly from observed behavior.</p>
+
+    <h2>Interactive Simulation: Reservoir Development Planning</h2>
+
+    <div class="interactive-container">
+        <h3>Reservoir Development Simulator</h3>
+        <p>Explore how different drilling policies affect production rate and economic returns.</p>
+        
+        <div class="slider-container">
+            <label for="gamma-slider">Reservoir Decline Rate (γ):</label>
+            <input type="range" id="gamma-slider" min="0.05" max="0.5" step="0.01" value="0.2">
+            <span id="gamma-value" class="output-value">0.2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="beta-slider">Well Productivity (β):</label>
+            <input type="range" id="beta-slider" min="0.1" max="1.0" step="0.05" value="0.5">
+            <span id="beta-value" class="output-value">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="drilling-policy">Drilling Policy:</label>
+            <select id="drilling-policy">
+                <option value="constant">Constant Rate Drilling</option>
+                <option value="exponential">Exponential Rate Drilling</option>
+                <option value="inverse">Inverse Proportional Drilling</option>
+                <option value="stop">Drilling with Cutoff Time</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <label for="drilling-rate">Drilling Rate Parameter:</label>
+            <input type="range" id="drilling-rate" min="0.05" max="0.5" step="0.01" value="0.2">
+            <span id="drilling-rate-value" class="output-value">0.2</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="price-slider">Oil Price ($/bbl):</label>
+            <input type="range" id="price-slider" min="20" max="100" step="5" value="60">
+            <span id="price-value" class="output-value">60</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="well-cost-slider">Well Cost ($ million):</label>
+            <input type="range" id="well-cost-slider" min="1" max="10" step="0.5" value="5">
+            <span id="well-cost-value" class="output-value">5</span>
+        </div>
+        
+        <button id="run-simulation">Run Simulation</button>
+        
+        <div style="margin-top: 20px;">
+            <canvas id="simulation-canvas" width="700" height="400"></canvas>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <h4>Results:</h4>
+            <p>Total Production: <span id="total-production">0</span> million barrels</p>
+            <p>Maximum Production Rate: <span id="max-production">0</span> thousand barrels/day</p>
+            <p>Total Wells Drilled: <span id="total-wells">0</span></p>
+            <p>Present Worth: <span id="present-worth">0</span> $ million</p>
+        </div>
+    </div>
+
+    <h2>Applying the Model to Real-World Decisions</h2>
+
+    <p>The true power of this approach is in decision-making. Once we have our model, we can:</p>
+
+    <ol>
+        <li><strong>Predict production rates</strong> for a given drilling policy</li>
+        <li><strong>Determine the number of wells needed</strong> to achieve a desired production profile</li>
+        <li><strong>Optimize economic returns</strong> by finding the best drilling policy</li>
+    </ol>
+
+    <p>For example, the present worth of the net cash flow from operations can be expressed as:</p>
+
+    <div class="highlight">
+        $$\mathrm{P.W.}=\int_{0}^{T}\mathrm{F(t)}\exp(-\mathrm{i}\mathrm{t})\mathrm{d}\mathrm{t}$$
+    </div>
+
+    <p>Where:</p>
+    <ul>
+        <li>\(F(t)\) is the flow of net cash earnings</li>
+        <li>\(i\) is the annual discount rate</li>
+        <li>\(T\) is the time horizon</li>
+    </ul>
+
+    <p>And \(F(t)\) can be calculated as:</p>
+
+    <div class="highlight">
+        $$\begin{array}{r l}&{\mathbf{F}(\mathrm{t})=\mathrm{k}_{\mathrm{r}}\mathbf{q}\ -\ \mathbf{U}\ \left\{\displaystyle\frac{\mathrm{d}\mathbf{q}}{\mathrm{d}\mathrm{t}}\right\}\mathrm{k}_{\mathrm{:}}\ \frac{\mathrm{d}\mathbf{q}}{\mathrm{d}\mathrm{t}}-\mathrm{k}_{\mathrm{a}\mathrm{n}}}\\ &{\qquad-\ \mathbf{U}\ \left\{\displaystyle\frac{\mathrm{d}\mathbf{n}}{\mathrm{d}\mathrm{t}}\right\}\mathrm{k}_{\mathrm{:}}\ \frac{\mathrm{d}\mathbf{n}}{\mathrm{d}\mathrm{t}}}\end{array}$$
+    </div>
+
+    <p>This allows us to compare different policies and find the one that maximizes economic return.</p>
+
+    <h2>Exploring Different Drilling Policies</h2>
+
+    <p>The paper analyzes several specific drilling policies and derives their mathematical solutions. Let's look at some key examples:</p>
+
+    <h3>1. Constant Rate Drilling</h3>
+    <p>If wells are drilled at a constant rate, the number of wells at time t is:</p>
+    <div class="highlight">
+        $$n = n_0(1 + b(t - t_0))$$
+    </div>
+    <p>Where b is the drilling rate parameter. The resulting production profile can be calculated and has a characteristic shape with an initial rise followed by eventual decline.</p>
+
+    <h3>2. Exponential Drilling</h3>
+    <p>If drilling accelerates exponentially:</p>
+    <div class="highlight">
+        $$n = n_0 \exp\{H(t - t_0)\}$$
+    </div>
+    <p>This can lead to rapid production increases but may not be sustainable long-term.</p>
+
+    <h3>3. Drilling with a Cutoff Time</h3>
+    <p>A more realistic scenario involves drilling at a constant rate until a cutoff time, after which no new wells are drilled:</p>
+    <div class="highlight">
+        $$n = \begin{cases} 
+        n_0(1 + b(t - t_0)) & \text{for } t_0 \leq t \leq t_c \\
+        n_0(1 + b(t_c - t_0)) & \text{for } t > t_c
+        \end{cases}$$
+    </div>
+
+    <h2>Finding the Maximum Attainable Production Rate</h2>
+
+    <p>A key insight from the paper is that for any drilling policy, there's a maximum attainable production rate. For constant rate drilling, this maximum occurs when:</p>
+
+    <div class="highlight">
+        $$(t - t_0) = \frac{1}{H}\ln\left\{\frac{H}{H - n_0 \beta}\right\}$$
+    </div>
+
+    <p>And the maximum production rate is:</p>
+
+    <div class="highlight">
+        $$q_{max} = \frac{q_0 H}{\beta n_0}\ln\left\{\frac{n_0 \beta}{H} - 1\right\}$$
+    </div>
+
+    <p>This gives engineers a way to estimate the peak production that can be achieved with a given drilling policy.</p>
+
+    <h2>Why This Matters: The Power of Systems Thinking</h2>
+
+    <p>The systems approach to reservoir engineering represents a fundamental shift in thinking. Instead of getting lost in uncertain details, it focuses on observable behavior and uses that to make predictions and decisions.</p>
+
+    <p>Key advantages include:</p>
+    <ul>
+        <li><strong>Simplicity:</strong> The model is straightforward yet powerful</li>
+        <li><strong>Practicality:</strong> It works with available data rather than requiring uncertain assumptions</li>
+        <li><strong>Flexibility:</strong> It can be adapted to different reservoir types and production scenarios</li>
+        <li><strong>Economic integration:</strong> It directly connects to economic objectives</li>
+    </ul>
+
+    <div class="note">
+        <p>This approach has implications far beyond reservoir engineering. The same systems thinking can be applied to many complex problems where internal mechanisms are uncertain but external behavior can be observed.</p>
+    </div>
+
+    <h2>Conclusion: A New Paradigm for Reservoir Development</h2>
+
+    <p>Rowan and Warren's systems approach to reservoir engineering offers a powerful framework for development planning. By focusing on observable variables and using systems theory, engineers can make better decisions despite uncertainty.</p>
+
+    <p>The approach is:</p>
+    <ul>
+        <li>Grounded in first principles of systems theory</li>
+        <li>Consistent with traditional material balance methods</li>
+        <li>More practical for real-world decision-making</li>
+        <li>Directly connected to economic objectives</li>
+    </ul>
+
+    <p>Next time you face a complex system with uncertainty, consider taking a step back and asking: "What do we actually observe about the system's behavior?" Sometimes, the simplest approach is the most powerful.</p>
+
+    <script>
+        // Update slider values
+        document.getElementById('gamma-slider').addEventListener('input', function() {
+            document.getElementById('gamma-value').textContent = this.value;
+        });
+        
+        document.getElementById('beta-slider').addEventListener('input', function() {
+            document.getElementById('beta-value').textContent = this.value;
+        });
+        
+        document.getElementById('drilling-rate').addEventListener('input', function() {
+            document.getElementById('drilling-rate-value').textContent = this.value;
+        });
+        
+        document.getElementById('price-slider').addEventListener('input', function() {
+            document.getElementById('price-value').textContent = this.value;
+        });
+        
+        document.getElementById('well-cost-slider').addEventListener('input', function() {
+            document.getElementById('well-cost-value').textContent = this.value;
+        });
+        
+        // Run simulation
+        document.getElementById('run-simulation').addEventListener('click', function() {
+            const gamma = parseFloat(document.getElementById('gamma-slider').value);
+            const beta = parseFloat(document.getElementById('beta-slider').value);
+            const drillingPolicy = document.getElementById('drilling-policy').value;
+            const drillingRate = parseFloat(document.getElementById('drilling-rate').value);
+            const oilPrice = parseFloat(document.getElementById('price-slider').value);
+            const wellCost = parseFloat(document.getElementById('well-cost-slider').value);
+            
+            runSimulation(gamma, beta, drillingPolicy, drillingRate, oilPrice, wellCost);
+        });
+        
+        function runSimulation(gamma, beta, drillingPolicy, drillingRate, oilPrice, wellCost) {
+            const canvas = document.getElementById('simulation-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Simulation parameters
+            const timeHorizon = 15; // years
+            const timeSteps = 180; // months
+            const dt = timeHorizon / timeSteps;
+            const initialWells = 5;
+            const initialProduction = 5000; // barrels per day
+            const discountRate = 0.1; // 10% annual discount rate
+            
+            // Arrays to store simulation results
+            const time = [];
+            const wells = [];
+            const productionRate = [];
+            const pressure = [];
+            const cashFlow = [];
+            const discountedCashFlow = [];
+            
+            // Initial conditions
+            let currentWells = initialWells;
+            let currentProduction = initialProduction;
+            let currentPressure = 0; // pressure drawdown (Delta p)
+            let deltaPressure = 0;
+            const initialPressureDrawdown = 0;
+            
+            // Initialize arrays
+            time.push(0);
+            wells.push(currentWells);
+            productionRate.push(currentProduction);
+            pressure.push(currentPressure);
+            cashFlow.push(oilPrice * currentProduction * 365 / 1000000 - wellCost * initialWells); // Annual cash flow in $ million
+            discountedCashFlow.push(cashFlow[0]);
+            
+            // Simulation loop
+            for (let i = 1; i < timeSteps; i++) {
+                const t = i * dt;
+                time.push(t);
+                
+                // Calculate new wells based on drilling policy
+                let newWells = 0;
+                switch (drillingPolicy) {
+                    case 'constant':
+                        currentWells = initialWells * (1 + drillingRate * t);
+                        newWells = initialWells * drillingRate * dt;
+                        break;
+                    case 'exponential':
+                        currentWells = initialWells * Math.exp(drillingRate * t);
+                        newWells = currentWells * drillingRate * dt;
+                        break;
+                    case 'inverse':
+                        const drillingFactor = drillingRate / currentWells;
+                        newWells = drillingFactor * dt;
+                        currentWells += newWells;
+                        break;
+                    case 'stop':
+                        if (t <= 5) { // Stop drilling after 5 years
+                            currentWells = initialWells * (1 + drillingRate * t);
+                            newWells = initialWells * drillingRate * dt;
+                        }
+                        break;
+                }
+                
+                // Calculate pressure change
+                deltaPressure = (gamma * currentPressure - beta * currentProduction) * dt;
+                currentPressure += deltaPressure;
+                
+                // Calculate new production rate
+                currentProduction = currentWells * beta * (initialPressureDrawdown - currentPressure);
+                if (currentProduction < 0) currentProduction = 0;
+                
+                // Calculate cash flow
+                const annualRevenue = oilPrice * currentProduction * 365 / 1000000; // $ million
+                const drillingCost = wellCost * newWells; // $ million
+                const operatingCost = 0.5 * currentWells; // $ million per year
+                const annualCashFlow = annualRevenue - drillingCost - operatingCost;
+                
+                // Apply discount factor
+                const discountFactor = Math.exp(-discountRate * t);
+                
+                wells.push(currentWells);
+                productionRate.push(currentProduction);
+                pressure.push(currentPressure);
+                cashFlow.push(annualCashFlow);
+                discountedCashFlow.push(annualCashFlow * discountFactor);
+            }
+            
+            // Calculate results
+            const totalProduction = productionRate.reduce((sum, rate, i) => sum + rate * 365 * dt / 1000, 0);
+            const maxProduction = Math.max(...productionRate);
+            const totalWells = Math.round(wells[wells.length - 1]);
+            const presentWorth = discountedCashFlow.reduce((sum, cf) => sum + cf * dt, 0);
+            
+            // Update results display
+            document.getElementById('total-production').textContent = totalProduction.toFixed(2);
+            document.getElementById('max-production').textContent = (maxProduction / 1000).toFixed(2);
+            document.getElementById('total-wells').textContent = totalWells;
+            document.getElementById('present-worth').textContent = presentWorth.toFixed(2);
+            
+            // Draw graphs
+            drawGraph(ctx, time, wells, productionRate, cashFlow, discountedCashFlow);
+        }
+        
+        function drawGraph(ctx, time, wells, productionRate, cashFlow, discountedCashFlow) {
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            const padding = 40;
+            
+            // Find max values for scaling
+            const maxTime = Math.max(...time);
+            const maxWells = Math.max(...wells) * 1.1;
+            const maxProduction = Math.max(...productionRate) * 1.1;
+            
+            // Draw axes
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            
+            // Label axes
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (years)', width / 2, height - 10);
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Wells / Production / Cash Flow', 0, 0);
+            ctx.restore();
+            
+            // Draw time axis labels
+            for (let i = 0; i <= 5; i++) {
+                const x = padding + (width - 2 * padding) * (i * 3) / maxTime;
+                ctx.beginPath();
+                ctx.moveTo(x, height - padding);
+                ctx.lineTo(x, height - padding + 5);
+                ctx.stroke();
+                ctx.fillText((i * 3).toString(), x, height - padding + 20);
+            }
+            
+            // Draw wells curve
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < time.length; i++) {
+                const x = padding + (width - 2 * padding) * time[i] / maxTime;
+                const y = height - padding - (height - 2 * padding) * wells[i] / maxWells;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw production curve
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < time.length; i++) {
+                const x = padding + (width - 2 * padding) * time[i] / maxTime;
+                const y = height - padding - (height - 2 * padding) * productionRate[i] / maxProduction;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw cash flow curve
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // Find min and max cash flow for scaling
+            const maxCF = Math.max(...cashFlow) * 1.1;
+            const minCF = Math.min(...cashFlow) * 1.1;
+            const cfRange = maxCF - minCF;
+            
+            for (let i = 0; i < time.length; i++) {
+                const x = padding + (width - 2 * padding) * time[i] / maxTime;
+                const y = height - padding - (height - 2 * padding) * (cashFlow[i] - minCF) / cfRange;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw discounted cash flow curve
+            ctx.strokeStyle = '#9b59b6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < time.length; i++) {
+                const x = padding + (width - 2 * padding) * time[i] / maxTime;
+                const y = height - padding - (height - 2 * padding) * (discountedCashFlow[i] - minCF) / cfRange;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Add legend
+            const legendX = width - 150;
+            const legendY = padding + 20;
+            
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(legendX, legendY, 20, 10);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Wells', legendX + 30, legendY + 10);
+            
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(legendX, legendY + 20, 20, 10);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Production', legendX + 30, legendY + 30);
+            
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(legendX, legendY + 40, 20, 10);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Cash Flow', legendX + 30, legendY + 50);
+            
+            ctx.fillStyle = '#9b59b6';
+            ctx.fillRect(legendX, legendY + 60, 20, 10);
+            ctx.fillStyle = '#000';
+            ctx.fillText('Discounted CF', legendX + 30, legendY + 70);
+        }
+        
+        // Initialize with default values
+        window.onload = function() {
+            const gamma = parseFloat(document.getElementById('gamma-slider').value);
+            const beta = parseFloat(document.getElementById('beta-slider').value);
+            const drillingPolicy = document.getElementById('drilling-policy').value;
+            const drillingRate = parseFloat(document.getElementById('drilling-rate').value);
+            const oilPrice = parseFloat(document.getElementById('price-slider').value);
+            const wellCost = parseFloat(document.getElementById('well-cost-slider').value);
+            
+            runSimulation(gamma, beta, drillingPolicy, drillingRate, oilPrice, wellCost);
+        };
+    </script>
+</body>
+</html>

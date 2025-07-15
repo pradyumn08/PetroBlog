@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Partially Penetrating Wells: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            padding: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .interactive {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 60%;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .analogy {
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .analogy::before {
+            content: "💡 Analogy:";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .well-diagram {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+        figcaption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Partially Penetrating Wells: A First Principles Approach</h1>
+    
+    <p>When oil companies drill wells, they often don't perforate the entire thickness of an oil-bearing formation. Instead, they create what's called a "partially penetrating well." But how does this affect the flow of oil and the pressure distribution around the well? Today, we'll break down the complex mathematics behind this problem into understandable concepts using first principles.</p>
+    
+    <div class="highlight">
+        <p><strong>What we'll explore:</strong> How fluid flows into a well that only taps into part of an oil reservoir, and how to calculate the resulting pressure distributions both near and far from the well.</p>
+    </div>
+    
+    <h2>The Basics: What is a Partially Penetrating Well?</h2>
+    
+    <div class="analogy">
+        Imagine drinking a milkshake through a straw. If your straw reaches all the way to the bottom of the glass, that's like a fully penetrating well. But if your straw only goes halfway down, that's a partially penetrating well. The question is: how does the shorter straw affect how quickly and efficiently you can drink your milkshake?
+    </div>
+    
+    <p>In oil production, wells are often deliberately completed as partially penetrating wells for several reasons:</p>
+    <ul>
+        <li>To prevent water or gas from being drawn into the well</li>
+        <li>To avoid production problems in certain parts of the reservoir</li>
+        <li>To reduce costs by perforating only the most productive zones</li>
+    </ul>
+    
+    <figure>
+        <div style="text-align: center;">
+            <svg width="500" height="300" class="well-diagram">
+                <rect x="0" y="0" width="500" height="300" fill="#f5f5f5" />
+                <!-- Top boundary -->
+                <rect x="0" y="0" width="500" height="20" fill="#8B4513" />
+                <!-- Oil zone -->
+                <rect x="0" y="20" width="500" height="180" fill="#FFD700" opacity="0.3" />
+                <!-- Water zone -->
+                <rect x="0" y="200" width="500" height="100" fill="#0077be" opacity="0.3" />
+                <!-- Well -->
+                <rect x="100" y="0" width="10" height="300" fill="#888" />
+                <!-- Perforations -->
+                <line x1="110" y1="50" x2="130" y2="50" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="70" x2="130" y2="70" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="90" x2="130" y2="90" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="110" x2="130" y2="110" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="130" x2="130" y2="130" stroke="#000" stroke-width="2" />
+                <!-- Flow lines -->
+                <path d="M 150,50 Q 200,50 250,70" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <path d="M 150,90 Q 220,90 270,100" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <path d="M 150,130 Q 200,140 250,150" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <path d="M 250,180 Q 200,150 130,130" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <path d="M 300,200 Q 200,180 130,110" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <path d="M 350,220 Q 250,200 130,90" stroke="#FF5733" fill="none" stroke-width="1.5" />
+                <!-- Labels -->
+                <text x="400" y="100" fill="#000">Oil Zone</text>
+                <text x="400" y="250" fill="#000">Water Zone</text>
+                <text x="80" y="100" fill="#000" text-anchor="end">Perforated</text>
+                <text x="80" y="120" fill="#000" text-anchor="end">Interval</text>
+                <text x="80" y="250" fill="#000" text-anchor="end">Unperforated</text>
+                <text x="80" y="270" fill="#000" text-anchor="end">Interval</text>
+                <!-- Dimensions -->
+                <text x="20" y="110" fill="#000" text-anchor="middle">h₁</text>
+                <text x="20" y="250" fill="#000" text-anchor="middle">h₂</text>
+                <text x="20" y="150" fill="#000" text-anchor="middle">H</text>
+            </svg>
+        </div>
+        <figcaption>Fig. 1: Cross-sectional view of a partially penetrating well in a reservoir</figcaption>
+    </figure>
+    
+    <h2>The Mathematical Challenge</h2>
+    
+    <p>Calculating the pressure distribution around a partially penetrating well is challenging because of what mathematicians call "mixed boundary conditions." At the wellbore, we have:</p>
+    <ul>
+        <li>A specified flux (flow rate) in the perforated section</li>
+        <li>Zero flux in the unperforated section</li>
+        <li>A requirement that pressure be uniform across the perforated interval</li>
+    </ul>
+    
+    <p>To simplify this problem, Clegg and Mills made a key approximation: they assumed that the flow into the well is uniform across the perforated interval. This simplification allows us to solve the problem analytically while introducing only a small error.</p>
+    
+    <h2>The Governing Equation</h2>
+    
+    <p>The flow of oil in a reservoir is governed by a partial differential equation. For a homogeneous, isotropic reservoir with cylindrical coordinates (r,z), the pressure distribution satisfies:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        \frac{1}{r}\frac{\partial}{\partial r}\left(r\frac{\partial}{\partial r}\Delta p_{i}\right)+\frac{\partial^{2}}{\partial z^{2}}\Delta p_{i}=\frac{\phi_{i}\mu c}{k_{i}}\frac{\partial}{\partial t}\Delta p_{i}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(\Delta p_i\) is the pressure drop at point (r,z) in layer i</li>
+        <li>\(\phi_i\) is the porosity of layer i</li>
+        <li>\(\mu\) is the fluid viscosity</li>
+        <li>\(c\) is the fluid compressibility</li>
+        <li>\(k_i\) is the permeability of layer i</li>
+        <li>\(t\) is time</li>
+    </ul>
+    
+    <div class="analogy">
+        This equation is similar to how heat spreads through a metal rod. If you heat one end of a metal rod, the heat will gradually spread through the entire rod. Similarly, when you start producing from a well, the pressure disturbance spreads through the reservoir over time.
+    </div>
+    
+    <h2>The Solution Approach</h2>
+    
+    <p>To solve this complex equation, the authors used a powerful mathematical technique involving Laplace and Hankel transforms. These transforms convert the partial differential equation into a more manageable form that can be solved and then transformed back to get the final solution.</p>
+    
+    <p>The key steps in their solution were:</p>
+    <ol>
+        <li>Model the reservoir as two adjacent layers with crossflow between them</li>
+        <li>Apply Laplace and Hankel transforms to convert the partial differential equation</li>
+        <li>Solve the transformed equations</li>
+        <li>Invert the transforms to get the pressure distribution</li>
+    </ol>
+    
+    <h2>The Solution: Pressure Distribution</h2>
+    
+    <p>After all the mathematical manipulations, the pressure drop in the perforated layer (Layer 1) is given by:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        \Delta p_{1} = \frac{q_{w}\mu}{4\pi k H}\left[-\mathrm{E1}\left(-\frac{r^{2}}{4\eta t}\right)\right] + \frac{q_{w}\mu}{2\pi^{2}kh_{1}}\sum_{n=1}^{\infty}\frac{1}{n}\sin\left(\frac{n\pi h_{1}}{H}\right)\cos\left(\frac{n\pi(z-h_{1})}{H}\right)\int_{\frac{r^{2}}{4\eta t}}^{\infty}\exp\left(-\left[y+\frac{1}{y}\left(\frac{n\pi r}{2H}\right)^{2}\right]\right)\frac{dy}{y}
+        \end{equation}
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(q_w\) is the production rate</li>
+        <li>\(\mu\) is the fluid viscosity</li>
+        <li>\(k\) is the permeability</li>
+        <li>\(H\) is the total formation thickness</li>
+        <li>\(h_1\) is the thickness of the perforated interval</li>
+        <li>\(r\) is the radial distance from the well</li>
+        <li>\(z\) is the vertical distance</li>
+        <li>\(\eta\) is the diffusivity (\(k/\phi\mu c\))</li>
+        <li>\(\mathrm{E1}(-x)\) is the exponential integral function</li>
+    </ul>
+    
+    <p>This equation looks intimidating, but it has a clear physical interpretation:</p>
+    <ul>
+        <li>The first term represents the pressure drop as if the well were fully penetrating a formation of thickness H</li>
+        <li>The second term (the summation) accounts for the effect of partial penetration</li>
+    </ul>
+    
+    <h2>Key Insights from the Solution</h2>
+    
+    <h3>1. Early-Time Behavior</h3>
+    
+    <p>For early times, the pressure drop near the well is approximately:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        \Delta p_{1} \approx \frac{q_{w}\mu}{4\pi k h_{1}}\left[-\mathrm{E1}\left(-\frac{r^{2}}{4\eta t}\right)\right]
+        \end{equation}
+    </div>
+    
+    <p>This means that initially, the well behaves as if it were fully penetrating a formation of thickness \(h_1\) (not the total thickness H). In other words, at early times, only the perforated interval contributes to production.</p>
+    
+    <h3>2. Late-Time Behavior</h3>
+    
+    <p>For late times and at large distances from the well, the pressure drop approaches:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        \Delta p_{1} \approx \frac{q_{w}\mu}{4\pi k H}\left[-\mathrm{E1}\left(-\frac{r^{2}}{4\eta t}\right)\right]
+        \end{equation}
+    </div>
+    
+    <p>This means that eventually, the entire formation thickness contributes to production, and the flow becomes essentially radial.</p>
+    
+    <h3>3. Effect of Partial Penetration at Large Distances</h3>
+    
+    <p>For a given pressure drop at the well, the ratio of pressure drop at a distance r from a partially penetrating well to that of a fully penetrating well is:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        \frac{\Delta p_{1r}}{\Delta p_{1r}^*} = \frac{\ln\frac{4\eta t}{r_w^2}-\gamma}{\ln\frac{4\eta t}{r_w^2}-\gamma+S}
+        \end{equation}
+    </div>
+    
+    <p>Where S is a term that depends on the penetration ratio \(h_1/H\).</p>
+    
+    <div class="interactive">
+        <h3>Interactive Visualization: Effect of Partial Penetration</h3>
+        <p>Use the sliders below to explore how the penetration ratio affects pressure distribution around a well.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Penetration Ratio (h₁/H):</span>
+            <input type="range" id="penetrationRatio" min="0.1" max="1" step="0.05" value="0.5">
+            <span class="value-display" id="penetrationRatioValue">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Distance from Well (r/rw):</span>
+            <input type="range" id="distanceRatio" min="1" max="2000" step="100" value="1000">
+            <span class="value-display" id="distanceRatioValue">1000</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Time (days):</span>
+            <input type="range" id="timeSlider" min="1" max="100" step="1" value="30">
+            <span class="value-display" id="timeValue">30</span>
+        </div>
+        
+        <canvas id="pressureChart" width="700" height="400"></canvas>
+        
+        <p><strong>What this shows:</strong> This graph illustrates how the pressure drop at a distance from the well compares to what would be expected from a fully penetrating well in a formation of thickness h₁. A value of 0.5 means the pressure drop is 50% of what would occur with a fully penetrating well.</p>
+    </div>
+    
+    <h2>Pressure Variation at the Wellbore</h2>
+    
+    <p>One of the most interesting aspects of this study is how pressure varies with depth at the wellbore itself. The authors found that:</p>
+    
+    <ul>
+        <li>The pressure is not perfectly uniform across the perforated interval (due to the approximation made)</li>
+        <li>The deviation is most significant at the bottom of the perforated interval</li>
+        <li>In the unperforated section, there is a measurable pressure drawdown, even though no fluid is directly entering the well from this section</li>
+    </ul>
+    
+    <div class="interactive">
+        <h3>Interactive Simulation: Pressure Profile at the Wellbore</h3>
+        <p>Explore how pressure varies with depth at the wellbore for different penetration ratios and times.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Penetration Ratio (h₁/H):</span>
+            <input type="range" id="wellPenetrationRatio" min="0.1" max="1" step="0.05" value="0.5">
+            <span class="value-display" id="wellPenetrationRatioValue">0.5</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Dimensionless Time (tD):</span>
+            <input type="range" id="dimensionlessTime" min="7" max="9" step="0.1" value="8">
+            <span class="value-display" id="dimensionlessTimeValue">10⁸</span>
+        </div>
+        
+        <canvas id="wellboreChart" width="700" height="400"></canvas>
+        
+        <p><strong>What this shows:</strong> This graph displays the pressure profile along the wellbore depth. Note how pressure varies even within the perforated interval, and how there's still pressure drawdown in the unperforated section.</p>
+    </div>
+    
+    <h2>The Effect of Anisotropy</h2>
+    
+    <p>In real reservoirs, the permeability often varies with direction. The vertical permeability (\(k_z\)) is typically lower than the horizontal permeability (\(k_r\)). The authors showed that this anisotropy can be accounted for by a simple transformation of the radial coordinate:</p>
+    
+    <div class="formula">
+        \begin{equation}
+        r = \rho\sqrt{\frac{k_r}{k_z}}
+        \end{equation}
+    </div>
+    
+    <p>With this transformation, the anisotropic problem is converted to an equivalent isotropic problem that can be solved using the same methods.</p>
+    
+    <div class="analogy">
+        Anisotropy is like trying to walk through a crowded mall. It's easier to move horizontally (along corridors) than vertically (up and down escalators). Similarly, in many reservoirs, fluid moves more easily in the horizontal direction than in the vertical direction.
+    </div>
+    
+    <h2>Practical Applications</h2>
+    
+    <p>The solutions derived in this paper have several practical applications:</p>
+    
+    <ol>
+        <li><strong>Well Performance Prediction:</strong> Engineers can predict how a partially penetrating well will perform compared to a fully penetrating one.</li>
+        <li><strong>Reservoir Characterization:</strong> By measuring pressure in the unperforated section of a well, engineers can estimate the vertical permeability of the formation.</li>
+        <li><strong>Completion Design:</strong> The analysis helps in deciding how much of a formation to perforate for optimal production.</li>
+    </ol>
+    
+    <h2>Interactive Well Simulator</h2>
+    
+    <div class="interactive">
+        <h3>Partially Penetrating Well Simulator</h3>
+        <p>Design your own well and see how it performs! Adjust the parameters below to see the effect on pressure distribution and production.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Formation Thickness (H, ft):</span>
+            <input type="range" id="formationThickness" min="100" max="1000" step="50" value="500">
+            <span class="value-display" id="formationThicknessValue">500</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Perforated Interval (h₁, ft):</span>
+            <input type="range" id="perforatedInterval" min="50" max="500" step="25" value="200">
+            <span class="value-display" id="perforatedIntervalValue">200</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability Ratio (kz/kr):</span>
+            <input type="range" id="permeabilityRatio" min="0.01" max="1" step="0.01" value="0.1">
+            <span class="value-display" id="permeabilityRatioValue">0.1</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Production Time (days):</span>
+            <input type="range" id="productionTime" min="1" max="100" step="1" value="30">
+            <span class="value-display" id="productionTimeValue">30</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <div style="width: 48%;">
+                <canvas id="pressureDistribution" width="350" height="300"></canvas>
+                <p style="text-align: center;">Pressure Distribution</p>
+            </div>
+            <div style="width: 48%;">
+                <canvas id="productionPerformance" width="350" height="300"></canvas>
+                <p style="text-align: center;">Production Performance</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button id="runSimulation" class="button">Run Simulation</button>
+            <span id="simulationResults" style="margin-left: 20px;"></span>
+        </div>
+    </div>
+    
+    <h2>Conclusion: What We've Learned</h2>
+    
+    <p>The study of partially penetrating wells reveals several important insights:</p>
+    
+    <ol>
+        <li><strong>Time-Dependent Behavior:</strong> A partially penetrating well behaves differently at early times compared to late times.</li>
+        <li><strong>Pressure Distribution:</strong> The pressure distribution around a partially penetrating well is complex, with significant variations in both radial and vertical directions.</li>
+        <li><strong>Practical Implications:</strong> Measurements of pressure in the unperforated section of a well can provide valuable information about the vertical permeability of the formation.</li>
+    </ol>
+    
+    <p>By understanding these principles, petroleum engineers can better design well completions, predict well performance, and characterize reservoirs.</p>
+    
+    <script>
+        // Update displayed values for sliders
+        document.getElementById('penetrationRatio').addEventListener('input', function() {
+            document.getElementById('penetrationRatioValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        document.getElementById('distanceRatio').addEventListener('input', function() {
+            document.getElementById('distanceRatioValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        document.getElementById('timeSlider').addEventListener('input', function() {
+            document.getElementById('timeValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        document.getElementById('wellPenetrationRatio').addEventListener('input', function() {
+            document.getElementById('wellPenetrationRatioValue').textContent = this.value;
+            updateWellboreChart();
+        });
+        
+        document.getElementById('dimensionlessTime').addEventListener('input', function() {
+            const value = Math.pow(10, parseFloat(this.value));
+            document.getElementById('dimensionlessTimeValue').textContent = '10^' + this.value;
+            updateWellboreChart();
+        });
+        
+        document.getElementById('formationThickness').addEventListener('input', function() {
+            document.getElementById('formationThicknessValue').textContent = this.value;
+        });
+        
+        document.getElementById('perforatedInterval').addEventListener('input', function() {
+            const max = parseInt(document.getElementById('formationThickness').value);
+            if (parseInt(this.value) > max) {
+                this.value = max;
+            }
+            document.getElementById('perforatedIntervalValue').textContent = this.value;
+        });
+        
+        document.getElementById('permeabilityRatio').addEventListener('input', function() {
+            document.getElementById('permeabilityRatioValue').textContent = this.value;
+        });
+        
+        document.getElementById('productionTime').addEventListener('input', function() {
+            document.getElementById('productionTimeValue').textContent = this.value;
+        });
+        
+        // Run simulation button
+        document.getElementById('runSimulation').addEventListener('click', function() {
+            runWellSimulation();
+        });
+        
+        // Pressure Chart
+        let pressureChart;
+        function updatePressureChart() {
+            const penetrationRatio = parseFloat(document.getElementById('penetrationRatio').value);
+            const distanceRatio = parseFloat(document.getElementById('distanceRatio').value);
+            const time = parseFloat(document.getElementById('timeSlider').value);
+            
+            // Calculate pressure ratio based on simplified model
+            // This is a simplified version of the equation in the paper
+            const S = (2/Math.PI) * (1/penetrationRatio) * (1 - penetrationRatio);
+            const gamma = 0.5772;
+            const eta = 7.5e-3; // diffusivity in darcy-atm/cp
+            const rw = 10; // wellbore radius in cm
+            
+            // Calculate ln(4ηt/rw²)
+            const lnTerm = Math.log(4 * eta * time * 86400 / (rw * rw));
+            
+            // Calculate pressure ratio
+            const pressureRatio = (lnTerm - gamma) / (lnTerm - gamma + S);
+            
+            // Generate data for comparison line (first approximation)
+            const data = [];
+            for (let i = 0.1; i <= 1; i += 0.05) {
+                const S_i = (2/Math.PI) * (1/i) * (1 - i);
+                const ratio_i = (lnTerm - gamma) / (lnTerm - gamma + S_i);
+                data.push({
+                    x: i,
+                    y: ratio_i
+                });
+            }
+            
+            // Create or update chart
+            const ctx = document.getElementById('pressureChart').getContext('2d');
+            
+            if (pressureChart) {
+                pressureChart.data.datasets[0].data = data;
+                pressureChart.data.datasets[1].data = [{x: penetrationRatio, y: penetrationRatio}];
+                pressureChart.update();
+            } else {
+                pressureChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Actual Pressure Ratio',
+                            data: data,
+                            borderColor: '#3498db',
+                            backgroundColor: '#3498db',
+                            showLine: true,
+                            pointRadius: 0
+                        }, {
+                            label: 'First Approximation (h₁/H)',
+                            data: [{x: penetrationRatio, y: penetrationRatio}],
+                            borderColor: '#e74c3c',
+                            backgroundColor: '#e74c3c',
+                            showLine: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Penetration Ratio (h₁/H)'
+                                },
+                                min: 0,
+                                max: 1
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Pressure Ratio (Δp₁ᵣ/Δp₁ᵣ*)'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Ratio: ${context.parsed.y.toFixed(3)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Wellbore Chart
+        let wellboreChart;
+        function updateWellboreChart() {
+            const penetrationRatio = parseFloat(document.getElementById('wellPenetrationRatio').value);
+            const tD = Math.pow(10, parseFloat(document.getElementById('dimensionlessTime').value));
+            
+            // Generate data for pressure profile
+            const zPoints = 100;
+            const data = [];
+            const H = 1; // Normalized height
+            const h1 = penetrationRatio * H;
+            
+            for (let i = 0; i <= zPoints; i++) {
+                const z = (i / zPoints) * H;
+                let pressure;
+                
+                // Simplified model based on paper's results
+                if (z <= h1) {
+                    // In perforated interval
+                    pressure = 1 - 0.1 * Math.sin(Math.PI * z / h1);
+                } else {
+                    // In unperforated interval
+                    const relativeDepth = (z - h1) / (H - h1);
+                    // Pressure drops more rapidly with higher tD
+                    const tDFactor = Math.log10(tD) / 9; // Normalize to 0-1 range for our tD range
+                    pressure = 0.9 - (0.85 * relativeDepth * tDFactor);
+                }
+                
+                data.push({
+                    x: pressure,
+                    y: z
+                });
+            }
+            
+            // Create or update chart
+            const ctx = document.getElementById('wellboreChart').getContext('2d');
+            
+            if (wellboreChart) {
+                wellboreChart.data.datasets[0].data = data;
+                wellboreChart.update();
+            } else {
+                wellboreChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Pressure Profile',
+                            data: data,
+                            borderColor: '#3498db',
+                            backgroundColor: '#3498db',
+                            showLine: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Dimensionless Pressure (Δp*)'
+                                },
+                                reverse: true,
+                                min: 0,
+                                max: 1
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Normalized Depth (z/H)'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        plugins: {
+                            annotation: {
+                                annotations: {
+                                    line1: {
+                                        type: 'line',
+                                        yMin: penetrationRatio,
+                                        yMax: penetrationRatio,
+                                        borderColor: 'red',
+                                        borderWidth: 2,
+                                        label: {
+                                            content: 'Perforated/Unperforated Boundary',
+                                            enabled: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Pressure Distribution Chart
+        let pressureDistChart;
+        // Production Performance Chart
+        let productionChart;
+        
+        function runWellSimulation() {
+            const H = parseFloat(document.getElementById('formationThickness').value);
+            const h1 = parseFloat(document.getElementById('perforatedInterval').value);
+            const kRatio = parseFloat(document.getElementById('permeabilityRatio').value);
+            const time = parseFloat(document.getElementById('productionTime').value);
+            
+            const penetrationRatio = h1 / H;
+            
+            // Generate pressure distribution data
+            const rPoints = 20;
+            const pressureData = [];
+            const maxR = 1000; // ft
+            
+            for (let i = 0; i <= rPoints; i++) {
+                const r = (i / rPoints) * maxR;
+                // Simplified pressure model
+                const pressure = 1 - (0.8 * Math.exp(-r/200) * (1 - 0.5 * (1 - penetrationRatio)));
+                pressureData.push({
+                    x: r,
+                    y: pressure
+                });
+            }
+            
+            // Generate production performance data
+            const timePoints = 50;
+            const productionData = [];
+            const maxTime = 100; // days
+            
+            for (let i = 0; i <= timePoints; i++) {
+                const t = (i / timePoints) * maxTime;
+                // Simplified production model based on penetration ratio and permeability
+                const production = (1 - Math.exp(-0.05 * t)) * (0.5 + 0.5 * penetrationRatio) * (0.7 + 0.3 * kRatio);
+                productionData.push({
+                    x: t,
+                    y: production
+                });
+            }
+            
+            // Update pressure distribution chart
+            const pressureCtx = document.getElementById('pressureDistribution').getContext('2d');
+            
+            if (pressureDistChart) {
+                pressureDistChart.data.datasets[0].data = pressureData;
+                pressureDistChart.update();
+            } else {
+                pressureDistChart = new Chart(pressureCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Pressure Distribution',
+                            data: pressureData,
+                            borderColor: '#3498db',
+                            backgroundColor: '#3498db',
+                            showLine: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Distance from Well (ft)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Normalized Pressure'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Update production performance chart
+            const productionCtx = document.getElementById('productionPerformance').getContext('2d');
+            
+            if (productionChart) {
+                productionChart.data.datasets[0].data = productionData;
+                productionChart.update();
+            } else {
+                productionChart = new Chart(productionCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Production Performance',
+                            data: productionData,
+                            borderColor: '#2ecc71',
+                            backgroundColor: '#2ecc71',
+                            showLine: true,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Time (days)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Normalized Production Rate'
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Calculate efficiency compared to fully penetrating well
+            const efficiency = (0.5 + 0.5 * penetrationRatio) * (0.7 + 0.3 * kRatio);
+            document.getElementById('simulationResults').textContent = 
+                `Well Efficiency: ${(efficiency * 100).toFixed(1)}% compared to a fully penetrating well`;
+        }
+        
+        // Initialize charts
+        window.onload = function() {
+            updatePressureChart();
+            updateWellboreChart();
+            runWellSimulation();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Triple Porosity Models in Tight Reservoirs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive {
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 200px;
+        }
+        canvas {
+            margin: 20px 0;
+        }
+        .equation-box {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .key-concept {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .analogy {
+            font-style: italic;
+            color: #16a085;
+        }
+        .footnote {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Reservoir Flow Models: From Dual to Triple Porosity Systems</h1>
+    
+    <p>Welcome to today's deep dive where we'll unpack a fascinating concept from petroleum engineering – the analysis of flow in tight reservoirs with hydraulic fractures. If you've ever wondered how engineers determine what's happening deep underground in shale gas or tight oil reservoirs, you're in for a treat.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll break down the complex mathematical models used to analyze production data from hydraulically fractured wells. We'll explore how engineers can determine critical reservoir properties like permeability, fracture dimensions, and stimulated reservoir volume by simply analyzing production rates over time.</p>
+    </div>
+    
+    <h2>Understanding Porosity Systems: The Building Blocks</h2>
+    
+    <p>Before we dive into the mathematics, let's establish what we're talking about. Tight reservoirs (like shale) have extremely low permeability, meaning fluid doesn't flow easily through them. To extract oil or gas economically, engineers create <span class="key-concept">hydraulic fractures</span> – essentially cracks in the rock that provide pathways for fluid to flow.</p>
+    
+    <p>Traditionally, these reservoirs were modeled as <span class="key-concept">dual porosity systems</span>, consisting of:</p>
+    <ul>
+        <li>Matrix blocks (the main reservoir rock with tiny pores)</li>
+        <li>Hydraulic fractures (artificially created high-permeability channels)</li>
+    </ul>
+    
+    <p>But the paper we're examining today explores whether some reservoirs might be better described as <span class="key-concept">triple porosity systems</span>, which include:</p>
+    <ul>
+        <li>Matrix blocks (the main reservoir rock)</li>
+        <li>Micro-fractures (smaller natural or induced fractures)</li>
+        <li>Hydraulic fractures (main artificially created fractures)</li>
+    </ul>
+    
+    <p class="analogy">Think of it like a city's transportation system. The matrix is like neighborhoods with small streets, micro-fractures are like collector roads, and hydraulic fractures are like highways that ultimately connect to the main production well (the city center).</p>
+    
+    <div class="interactive">
+        <h3>Interactive Porosity System Visualizer</h3>
+        <p>Use the sliders below to see how different porosity systems affect fluid flow in a reservoir:</p>
+        
+        <div class="slider-container">
+            <label class="slider-label">Matrix Permeability (md):</label>
+            <input type="range" id="matrixPerm" min="0.0001" max="0.01" step="0.0001" value="0.001">
+            <span id="matrixPermValue">0.001</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Micro-fracture Permeability (md):</label>
+            <input type="range" id="microPerm" min="0.01" max="1" step="0.01" value="0.1">
+            <span id="microPermValue">0.1</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Hydraulic Fracture Permeability (md):</label>
+            <input type="range" id="fracPerm" min="1" max="100" step="1" value="10">
+            <span id="fracPermValue">10</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Fracture Half-Length (ft):</label>
+            <input type="range" id="fracLength" min="50" max="500" step="10" value="150">
+            <span id="fracLengthValue">150</span>
+        </div>
+        
+        <canvas id="flowChart" width="700" height="400"></canvas>
+        
+        <p>This visualization shows how production rate changes over time based on your parameter selections. Notice the different flow regimes that develop as fluid moves through the various porosity systems.</p>
+    </div>
+    
+    <h2>The Mathematics Behind Flow Regimes</h2>
+    
+    <p>Now let's get to the heart of the matter. When engineers plot production rates versus time on a log-log scale, they observe different "flow regimes" characterized by different slopes:</p>
+    
+    <ul>
+        <li>A slope of -0.5 (or "half-slope") indicates <span class="key-concept">linear flow</span></li>
+        <li>A slope of -0.25 (or "quarter-slope") indicates <span class="key-concept">bilinear flow</span></li>
+        <li>A slope of -1 indicates <span class="key-concept">boundary-dominated flow</span> (also called pseudosteady state flow)</li>
+    </ul>
+    
+    <p>Each of these flow regimes tells us something different about the reservoir and can be analyzed to extract valuable information.</p>
+    
+    <h3>The Core Equations</h3>
+    
+    <p>The paper develops simplified analytical equations for different flow regions in a triple porosity system. Let's examine the fundamental equation that describes fluid flow in these systems:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{1}{\overline{{q_{D l}}}}=\frac{2\pi s}{\sqrt{s f(s)}}\left[\frac{1+e^{-2\sqrt{s f(s)}y_{D e}}}{1-e^{-2\sqrt{s f(s)}y_{D e}}}\right] \]</p>
+    </div>
+    
+    <p>This intimidating-looking equation is the Laplace domain solution for linear fluid flow in fractured reservoirs. Don't worry if it looks complex – we'll break it down step by step.</p>
+    
+    <p>For the triple porosity model, the function \(f(s)\) is given by:</p>
+    
+    <div class="equation-box">
+        <p>\[ f(s)=\omega_{F}+\frac{\lambda_{A c F f}}{3s}\sqrt{s f_{f}(s)}\tanh\sqrt{s f_{f}(s)} \]</p>
+    </div>
+    
+    <p>And \(f_f(s)\) is:</p>
+    
+    <div class="equation-box">
+        <p>\[ f_{f}(s)=\frac{3\omega_{f}}{\lambda_{A c F f}}+\frac{\lambda_{A c f m}}{s\lambda_{A c F f}}\sqrt{\frac{3s\omega_{m}}{\lambda_{A c f m}}}\tanh\sqrt{\frac{3s\omega_{m}}{\lambda_{A c f m}}} \]</p>
+    </div>
+    
+    <h3>From Complexity to Simplicity</h3>
+    
+    <p>The beauty of the paper is that it simplifies these complex equations for different flow regions. For example, for Region 5 (linear flow in the matrix), the simplified equation is:</p>
+    
+    <div class="equation-box">
+        <p>\[ q_{D l}=\frac{1}{2\pi\sqrt{\pi t_{d a c}}}\sqrt{\frac{\lambda_{A c f m}\omega_{m}}{3}}y_{D e} \]</p>
+    </div>
+    
+    <p>Which in dimensional form becomes:</p>
+    
+    <div class="equation-box">
+        <p>\[ \sqrt{\sigma_{F}}y_{e}\sqrt{k_{m}}A_{c w}=\frac{2182T}{\sqrt{(\phi\mu c_{t})_{m}}}\frac{1}{m_{5}} \]</p>
+    </div>
+    
+    <p>Where \(m_5\) is the slope obtained by plotting rate-normalized pressure versus the square root of time.</p>
+    
+    <p class="analogy">These equations are like specialized tools in a toolbox. Each one is designed to analyze a specific flow regime, and together they give us a complete picture of what's happening in the reservoir.</p>
+    
+    <h2>Practical Application: Analyzing Real Well Data</h2>
+    
+    <p>Let's see how these equations are applied to actual production data from the Barnett Shale. The paper analyzes two wells (Well 73 and Well 314) to determine if they exhibit triple porosity behavior.</p>
+    
+    <p>For Well 73, the analysis of the bilinear flow region gives:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{k_{f}}{L_{f}}=0.000626~\mathrm{{md}/\mathrm{ft}} \]</p>
+    </div>
+    
+    <p>And the analysis of the linear flow region gives a matrix-fracture interface area of approximately 1,900,000 ft².</p>
+    
+    <p>The most interesting finding is that both wells can be adequately described by a dual porosity model rather than a triple porosity model. The analysis suggests that if micro-fractures are present, they are not well-connected and have a length scale much smaller than the hydraulic fracture spacing.</p>
+    
+    <h2>Boundary-Dominated Flow: The Final Piece of the Puzzle</h2>
+    
+    <p>The second part of the paper focuses on analyzing boundary-dominated flow (or pseudosteady state flow) in tight oil reservoirs. This occurs when pressure interference happens between adjacent hydraulic fractures.</p>
+    
+    <p>The equation for this flow regime is:</p>
+    
+    <div class="equation-box">
+        <p>\[ \frac{P_i-P_{wf}}{Q_{o}}=m_{ss}\:\bar{t}+\:b_{ss} \]</p>
+    </div>
+    
+    <p>Where:</p>
+    
+    <div class="equation-box">
+        <p>\[ m_{ss}=\frac{5.615B_{o}}{A_{c w}y_{e}\ \phi_{m}\ c_{t}} \]</p>
+    </div>
+    
+    <p>And:</p>
+    
+    <div class="equation-box">
+        <p>\[ b_{ss}=\frac{36.96\mu B_{o}L_{f}}{k_{m}N_{f}y_{e}h} \]</p>
+    </div>
+    
+    <p>By analyzing the slope (\(m_{ss}\)), engineers can calculate the Stimulated Reservoir Volume (SRV), which is crucial for estimating the effectiveness of hydraulic fracturing operations.</p>
+    
+    <div class="interactive">
+        <h3>Interactive Boundary-Dominated Flow Calculator</h3>
+        <p>Calculate the Stimulated Reservoir Volume (SRV) and matrix permeability from boundary-dominated flow data:</p>
+        
+        <div class="slider-container">
+            <label class="slider-label">Slope (m<sub>ss</sub>):</label>
+            <input type="range" id="slopeValue" min="0.01" max="0.1" step="0.001" value="0.0427">
+            <span id="slopeDisplay">0.0427 psi/STB/day/day</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Intercept (b<sub>ss</sub>):</label>
+            <input type="range" id="interceptValue" min="0.5" max="10" step="0.1" value="1.134">
+            <span id="interceptDisplay">1.134 psi/STB/day</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Formation Volume Factor (B<sub>o</sub>):</label>
+            <input type="range" id="boValue" min="1.0" max="1.5" step="0.01" value="1.221">
+            <span id="boDisplay">1.221</span>
+        </div>
+        
+        <div class="slider-container">
+            <label class="slider-label">Total Compressibility (c<sub>t</sub>):</label>
+            <input type="range" id="ctValue" min="0.00001" max="0.0003" step="0.00001" value="0.000152">
+            <span id="ctDisplay">0.000152 psi<sup>-1</sup></span>
+        </div>
+        
+        <div class="results">
+            <p><strong>Calculated SRV:</strong> <span id="srvResult">1,056,316.2 ft³</span></p>
+            <p><strong>Calculated Matrix Permeability:</strong> <span id="permResult">0.620 mD</span></p>
+        </div>
+        
+        <p>This calculator demonstrates how engineers can determine key reservoir properties from production data analysis.</p>
+    </div>
+    
+    <h2>Key Insights and Practical Implications</h2>
+    
+    <p>So what can we take away from all this mathematical analysis? Here are the key insights:</p>
+    
+    <ol>
+        <li>For the Barnett Shale wells analyzed, a dual porosity model is more appropriate than a triple porosity model.</li>
+        <li>The boundary-dominated flow analysis complements the transient flow analysis and can help determine if the reservoir has been efficiently stimulated.</li>
+        <li>By analyzing both early-time (transient) and late-time (boundary-dominated) production data, engineers can get a more complete picture of reservoir properties.</li>
+    </ol>
+    
+    <p>These insights have practical implications for hydraulic fracturing operations:</p>
+    
+    <ul>
+        <li>Better understanding of reservoir properties leads to more efficient fracture designs</li>
+        <li>Accurate estimation of Stimulated Reservoir Volume helps optimize well spacing and fracture stages</li>
+        <li>The ability to determine if pressure interference has occurred between fractures helps in planning future well completions</li>
+    </ul>
+    
+    <h2>Conclusion: The Power of Mathematical Models</h2>
+    
+    <p>What I find most fascinating about this paper is how it demonstrates the power of mathematical models to unlock information hidden in production data. By carefully analyzing the slopes on log-log plots, engineers can determine critical reservoir properties without expensive testing or invasive procedures.</p>
+    
+    <p>The progression from dual porosity to triple porosity models represents our evolving understanding of complex reservoir systems. While the triple porosity model wasn't necessary for the specific wells analyzed in this paper, the analytical framework developed provides valuable tools for cases where such complexity might exist.</p>
+    
+    <p>Next time you hear about hydraulic fracturing or tight oil production, remember that behind the scenes, these sophisticated mathematical models are helping engineers optimize production and improve resource recovery.</p>
+    
+    <div class="footnote">
+        <p>Based on: "New Advances in Production Data Analysis of Hydraulically Fractured Tight Reservoirs" by Shahab K Siddiqui, Afsar Ali and Hassan Dehghanpour, SPE, University of Alberta</p>
+    </div>
+
+    <script>
+        // Sliders for porosity visualizer
+        const matrixPerm = document.getElementById('matrixPerm');
+        const microPerm = document.getElementById('microPerm');
+        const fracPerm = document.getElementById('fracPerm');
+        const fracLength = document.getElementById('fracLength');
+        
+        const matrixPermValue = document.getElementById('matrixPermValue');
+        const microPermValue = document.getElementById('microPermValue');
+        const fracPermValue = document.getElementById('fracPermValue');
+        const fracLengthValue = document.getElementById('fracLengthValue');
+        
+        // Sliders for boundary-dominated flow calculator
+        const slopeValue = document.getElementById('slopeValue');
+        const interceptValue = document.getElementById('interceptValue');
+        const boValue = document.getElementById('boValue');
+        const ctValue = document.getElementById('ctValue');
+        
+        const slopeDisplay = document.getElementById('slopeDisplay');
+        const interceptDisplay = document.getElementById('interceptDisplay');
+        const boDisplay = document.getElementById('boDisplay');
+        const ctDisplay = document.getElementById('ctDisplay');
+        
+        const srvResult = document.getElementById('srvResult');
+        const permResult = document.getElementById('permResult');
+        
+        // Update display values when sliders change
+        matrixPerm.addEventListener('input', () => {
+            matrixPermValue.textContent = matrixPerm.value;
+            updateFlowChart();
+        });
+        
+        microPerm.addEventListener('input', () => {
+            microPermValue.textContent = microPerm.value;
+            updateFlowChart();
+        });
+        
+        fracPerm.addEventListener('input', () => {
+            fracPermValue.textContent = fracPerm.value;
+            updateFlowChart();
+        });
+        
+        fracLength.addEventListener('input', () => {
+            fracLengthValue.textContent = fracLength.value;
+            updateFlowChart();
+        });
+        
+        slopeValue.addEventListener('input', () => {
+            slopeDisplay.textContent = slopeValue.value + ' psi/STB/day/day';
+            calculateResults();
+        });
+        
+        interceptValue.addEventListener('input', () => {
+            interceptDisplay.textContent = interceptValue.value + ' psi/STB/day';
+            calculateResults();
+        });
+        
+        boValue.addEventListener('input', () => {
+            boDisplay.textContent = boValue.value;
+            calculateResults();
+        });
+        
+        ctValue.addEventListener('input', () => {
+            ctDisplay.textContent = ctValue.value + ' psi⁻¹';
+            calculateResults();
+        });
+        
+        // Initialize flow chart
+        let flowChart;
+        
+        function initFlowChart() {
+            const ctx = document.getElementById('flowChart').getContext('2d');
+            
+            flowChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Dual Porosity Flow',
+                            data: [],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Triple Porosity Flow',
+                            data: [],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time (days)'
+                            }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Production Rate (Mscf/day)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Flow Rate vs Time for Different Porosity Systems'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Rate: ${context.parsed.y.toFixed(2)} Mscf/day`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateFlowChart() {
+            const matrixP = parseFloat(matrixPerm.value);
+            const microP = parseFloat(microPerm.value);
+            const fracP = parseFloat(fracPerm.value);
+            const fracL = parseFloat(fracLength.value);
+            
+            // Generate time points (logarithmically spaced)
+            const times = [];
+            const dualRates = [];
+            const tripleRates = [];
+            
+            for (let i = 0; i <= 100; i++) {
+                const time = Math.pow(10, i/20); // Log scale from 1 to 10^5
+                times.push(time);
+                
+                // Calculate dual porosity rate (simplified model)
+                let dualRate = 1000 * Math.pow(time, -0.5) * Math.sqrt(fracP * matrixP) * (fracL/100);
+                
+                // Early time fracture-dominated flow
+                if (time < 10) {
+                    dualRate = 1000 * Math.pow(time, -0.1) * fracP * (fracL/100);
+                }
+                
+                // Late time boundary-dominated flow
+                if (time > 500) {
+                    dualRate = 1000 * Math.pow(time, -1) * matrixP * (fracL/100);
+                }
+                
+                dualRates.push(dualRate);
+                
+                // Calculate triple porosity rate (more complex flow regimes)
+                let tripleRate;
+                
+                // Early time fracture-dominated flow
+                if (time < 5) {
+                    tripleRate = 1000 * Math.pow(time, -0.1) * fracP * (fracL/100);
+                } 
+                // Bilinear flow between fracture and microfracture
+                else if (time < 20) {
+                    tripleRate = 800 * Math.pow(time, -0.25) * Math.pow(fracP * microP, 0.25) * (fracL/100);
+                }
+                // Linear flow in microfractures
+                else if (time < 100) {
+                    tripleRate = 600 * Math.pow(time, -0.5) * Math.sqrt(microP) * (fracL/100);
+                }
+                // Bilinear flow between microfracture and matrix
+                else if (time < 300) {
+                    tripleRate = 500 * Math.pow(time, -0.25) * Math.pow(microP * matrixP, 0.25) * (fracL/100);
+                }
+                // Linear flow in matrix
+                else if (time < 1000) {
+                    tripleRate = 400 * Math.pow(time, -0.5) * Math.sqrt(matrixP) * (fracL/100);
+                }
+                // Boundary dominated flow
+                else {
+                    tripleRate = 300 * Math.pow(time, -1) * matrixP * (fracL/100);
+                }
+                
+                tripleRates.push(tripleRate);
+            }
+            
+            // Update chart
+            flowChart.data.labels = times;
+            flowChart.data.datasets[0].data = dualRates;
+            flowChart.data.datasets[1].data = tripleRates;
+            flowChart.update();
+        }
+        
+        function calculateResults() {
+            const mss = parseFloat(slopeValue.value);
+            const bss = parseFloat(interceptValue.value);
+            const bo = parseFloat(boValue.value);
+            const ct = parseFloat(ctValue.value);
+            
+            // Calculate SRV
+            const srv = 5.615 * (bo / ct) * (1 / mss);
+            
+            // Calculate matrix permeability (assuming other parameters from Cardium well)
+            const mu = 1.13; // cp
+            const Lf = 76 * 3.28; // ft
+            const Nf = 18; // number of fractures
+            const ye = 43.73; // ft
+            const h = 7 * 3.28; // ft
+            
+            const km = (36.96 * mu * bo * Lf) / (bss * Nf * ye * h);
+            
+            srvResult.textContent = srv.toFixed(1) + ' ft³';
+            permResult.textContent = km.toFixed(3) + ' mD';
+        }
+        
+        // Initialize
+        window.onload = function() {
+            initFlowChart();
+            updateFlowChart();
+            calculateResults();
+        };
+    </script>
+</body>
+</html>

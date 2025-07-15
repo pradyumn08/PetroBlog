@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Flow in Composite Slabs: A First Principles Approach</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 40px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .caption {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        .interactive {
+            background-color: #f0f7fb;
+            border: 1px solid #d0e3f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 200px;
+        }
+        .simulation-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .analogy {
+            background-color: #fff8dc;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .key-equation {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .step {
+            display: flex;
+            margin: 20px 0;
+            align-items: center;
+        }
+        .step-number {
+            background-color: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .step-content {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Flow in Composite Slabs: A First Principles Approach</h1>
+    
+    <p>In the realm of reservoir engineering, understanding fluid flow through different media is crucial for predicting well performance and optimizing resource extraction. Today, we'll break down the complex concept of "Flow in Composite Slabs" from a fundamental perspective, making it accessible even if you're new to the field.</p>
+    
+    <div class="highlight">
+        <p>A composite slab is a reservoir structure consisting of multiple contiguous zones, each with different properties (like permeability, porosity, and compressibility). Imagine a layered cake where each layer has a different density and texture - fluid will move differently through each layer.</p>
+    </div>
+    
+    <h2>The Core Problem: Fluid Movement Across Different Media</h2>
+    
+    <p>When a well produces fluid from a reservoir that has distinct zones with different properties, how does the pressure distribute throughout the system? How does fluid move across the interfaces between these zones? These questions are at the heart of the composite slab problem.</p>
+    
+    <div class="analogy">
+        <h3>Real-World Analogy: The Coffee Filter System</h3>
+        <p>Think of pouring water through a series of coffee filters stacked together. If some filters are denser than others, water will flow at different rates through each. At the boundaries between filters, there might be slight resistance to flow. This is similar to fluid moving through different reservoir zones with interfaces between them.</p>
+    </div>
+    
+    <h2>The Mathematical Foundation</h2>
+    
+    <p>Let's start with the fundamental equations that govern fluid flow in porous media. The cornerstone is Darcy's Law, which relates fluid velocity to pressure gradient:</p>
+    
+    <div class="key-equation">
+        <p>\[ \mathbf{v}(\mathbf{x},t)=-{\frac{k(\mathbf{x})}{\mu}}\nabla p(\mathbf{x},t) \]</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\( \mathbf{v}(\mathbf{x},t) \) is the fluid velocity at position \( \mathbf{x} \) and time \( t \)</li>
+        <li>\( k(\mathbf{x}) \) is the permeability of the medium at position \( \mathbf{x} \)</li>
+        <li>\( \mu \) is the fluid viscosity</li>
+        <li>\( \nabla p \) is the pressure gradient</li>
+    </ul>
+    
+    <p>This is coupled with the continuity equation, which ensures mass conservation:</p>
+    
+    <div class="key-equation">
+        <p>\[ \nabla\cdot\left[k(\mathbf{x})\nabla p(\mathbf{x},t)\right]=\phi(\mathbf{x})c_{t}(\mathbf{x})\mu{\frac{\partial p(\mathbf{x},t)}{\partial t}} \]</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\( \phi(\mathbf{x}) \) is the porosity at position \( \mathbf{x} \)</li>
+        <li>\( c_t(\mathbf{x}) \) is the total compressibility</li>
+    </ul>
+    
+    <h3>Boundary Conditions at Interfaces</h3>
+    
+    <p>The unique challenge in composite slabs is handling what happens at the interfaces between different zones. Two key conditions must be satisfied:</p>
+    
+    <ol>
+        <li><strong>Pressure Drop Condition:</strong> The pressure drop across an interface is proportional to the flux:
+            <div class="key-equation">
+                <p>\[ -\Upsilon_{j}\frac{\partial p_{j}\big(x,y,z;t\big)}{\partial y}=p_{j+1}\big(x,y,z;t\big)-p_{j}\big(x,y,z;t\big),y=y_{j} \]</p>
+            </div>
+            Where \( \Upsilon \) is the contact resistance at the interface.
+        </li>
+        <li><strong>Flux Continuity Condition:</strong> The flux must be continuous across each interface:
+            <div class="key-equation">
+                <p>\[ T_{j+1}\frac{\partial p_{j+1}\bigl(x,y,z;t\bigr)}{\partial y}=T_{j}\frac{\partial p_{j}\bigl(x,y,z;t\bigr)}{\partial y},y=y_{j} \]</p>
+            </div>
+            Where \( T \) represents the transmissivity (permeability × thickness) of the medium.
+        </li>
+    </ol>
+    
+    <div class="interactive">
+        <h3>Interactive Exploration: Flow Across Interfaces</h3>
+        
+        <p>Adjust the parameters below to see how fluid flows through a composite slab with different properties:</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Permeability Ratio (k₂/k₁):</span>
+            <input type="range" id="permRatio" min="0.1" max="10" step="0.1" value="1">
+            <span id="permRatioValue">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Contact Resistance (Υ):</span>
+            <input type="range" id="resistance" min="0" max="10" step="0.1" value="0">
+            <span id="resistanceValue">0</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Well Position:</span>
+            <input type="range" id="wellPosition" min="0.1" max="0.9" step="0.1" value="0.3">
+            <span id="wellPositionValue">0.3</span>
+        </div>
+        
+        <button id="startSimulation">Start Simulation</button>
+        <button id="resetSimulation">Reset</button>
+        
+        <div class="simulation-container">
+            <canvas id="flowSimulation" width="750" height="350"></canvas>
+        </div>
+        
+        <div class="caption">
+            <p>This simulation shows pressure distribution (colors) and flow direction (arrows) in a two-zone composite slab with a well in the left zone. The vertical line represents the interface between zones.</p>
+        </div>
+    </div>
+    
+    <h2>The Green's Function Approach</h2>
+    
+    <p>The paper uses a Green's function formulation to solve the flow problem. This is a powerful mathematical technique that allows us to find the pressure distribution for any source configuration.</p>
+    
+    <p>In the Laplace domain, the pressure at any point can be expressed as:</p>
+    
+    <div class="key-equation">
+        <p>\[ \overline{{\Delta p}}\big(x,y\big)=\frac{1}{\phi c_{t}}\int_{S^{\prime}}\overline{{\tilde{q}}}\big(x^{\prime},y^{\prime}\big)\overline{{\gamma}}\big(x-x^{\prime},y-y^{\prime}\big)\mathrm{d}S^{\prime} \]</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\( \overline{{\Delta p}} \) is the Laplace transform of the pressure change</li>
+        <li>\( \overline{{\tilde{q}}} \) is the Laplace transform of the source strength</li>
+        <li>\( \overline{{\gamma}} \) is the fundamental solution (Green's function)</li>
+    </ul>
+    
+    <h3>Breaking Down the Fundamental Solution</h3>
+    
+    <p>The fundamental solution for each zone can be constructed using the Sommerfeld procedure:</p>
+    
+    <div class="key-equation">
+        <p>\[ \overline{{{\gamma}}}_{j}\left(x,y\right)=\frac1{2\pi\eta_{j}}K_{0}\left(\sqrt{s/\eta_{j}}r_{j}\right)+\int_{0}^{\infty}f_{2j-1}\left(\alpha\right)e^{-q_{j}y}\cos\left[\alpha\left(x-x_{j}\right)\right]\mathrm{d}\alpha +\int_{0}^{\infty}f_{2j}\left(\alpha\right)e^{q_{j}y}\cos\left[\alpha\left(x-x_{j}\right)\right]\mathrm{d}\alpha \]</p>
+    </div>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\( K_0 \) is the modified Bessel function of the second kind of order 0</li>
+        <li>\( r_j \) is the distance between the point (x,y) and the well in zone j</li>
+        <li>\( f_{2j-1} \) and \( f_{2j} \) are coefficients determined by the boundary conditions</li>
+        <li>\( q_j = \sqrt{\alpha^2 + \frac{s}{\eta_j}} \) where \( \eta_j \) is the diffusivity of zone j</li>
+    </ul>
+    
+    <h2>The Two-Zone Case: A Step-by-Step Derivation</h2>
+    
+    <p>Let's work through the simplest case: a two-zone reservoir with a linear interface at y=0. This is known as the Bixel-Yaxley formulation.</p>
+    
+    <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+            <p>Write the fundamental solutions for each zone:</p>
+            <p>For Zone 1 (y > 0):</p>
+            <p>\[ \overline{{\gamma}}_{1}\left(x,y\right)=\int_{0}^{\infty}\left[\frac{1}{2\pi\eta_{1}}\frac{e^{-q_{1}\left|y-y_{1}^{\prime}\right|}}{q_{1}}+f_{1}\left(\alpha\right)e^{-q_{1}y}\right]\cos\left(\alpha x\right)\mathrm{d}\alpha \]</p>
+            
+            <p>For Zone 2 (y < 0):</p>
+            <p>\[ \overline{{{\gamma}}}_{2}\left(x,y\right)=\int_{0}^{\infty}f_{4}\left(\alpha\right)e^{q_{2}y}\cos\left(\alpha x\right)\mathrm{d}\alpha \]</p>
+        </div>
+    </div>
+    
+    <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+            <p>Apply the boundary conditions at the interface (y=0) to determine the coefficients \(f_1\) and \(f_4\):</p>
+            <p>\[ A_{1}=\frac{q_{1}-\left(1-\Upsilon q_{1}\right)T_{r}q_{2}}{q_{1}\left[q_{1}+\left(1+\Upsilon q_{1}\right)T_{r}q_{2}\right]} \]</p>
+            <p>\[ A_{3}=\frac{1}{q_{1}+\left(1+\Upsilon q_{1}\right)T_{r}q_{2}} \]</p>
+            <p>Where \(T_r = \frac{T_2}{T_1}\) is the transmissivity ratio.</p>
+        </div>
+    </div>
+    
+    <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+            <p>Express the pressure distribution in each zone:</p>
+            <p>In Zone 1 (y > 0):</p>
+            <p>\[ \overline{{\Delta p}}_{1}(x,y)=\frac{1}{s}\frac{q_{w}B\mu}{2\pi T_{1}}\left[K_{0}\Big(\sqrt{s/\eta_{1}}r_{1}\Big) + 2\int_{0}^{\infty}A_{2}e^{-q_{1}(y+y_{1}^{\prime})}\cos(\alpha x)\mathrm{d}\alpha\right] \]</p>
+            
+            <p>In Zone 2 (y < 0):</p>
+            <p>\[ \overline{{\Delta p}}_{2}(x,y)=\frac{1}{s}\frac{q_{w}B\mu}{\pi T_{1}}\int_{0}^{\infty}A_{3}e^{(q_{2}y-q_{1}y_{1}^{\prime})}\cos(\alpha x)\mathrm{d}\alpha \]</p>
+        </div>
+    </div>
+    
+    <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+            <p>For the special case where diffusivity is identical in both zones (\(\eta_1 = \eta_2\)) and there's no contact resistance (\(\Upsilon = 0\)), the solution simplifies to:</p>
+            <p>For Zone 1:</p>
+            <p>\[ p_{i}-p_{1}\left(x,y;t\right)=-\frac{q_{w}B\mu}{4\pi T_{1}}\left[E i\left(-\frac{r_{1}^{2}}{4\eta t}\right)+\mathrm{A}_{0}E i\left(-\frac{r_{2}^{2}}{4\eta t}\right)\right] \]</p>
+            
+            <p>For Zone 2:</p>
+            <p>\[ p_{i}-p_{2}\left(x,y;t\right)=-\frac{q_{w}B\mu}{4\pi T_{1}}\left(\frac{2}{1+T_{r}}\right)E i\left(-\frac{r_{1}^{2}}{4\eta t}\right) \]</p>
+            
+            <p>Where \(\mathrm{A}_{0}=\frac{1-T_{r}}{1+T_{r}}\) and \(E i\) is the exponential integral function.</p>
+        </div>
+    </div>
+    
+    <h2>Key Insights from the Solution</h2>
+    
+    <div class="highlight">
+        <h3>The Reflection and Transmission Analogy</h3>
+        <p>The pressure distribution in a composite system can be understood in terms of source, reflected, and transmitted fields - similar to how waves behave at interfaces between different media:</p>
+        <ul>
+            <li>The source field is the pressure response that would exist in an infinite medium with the properties of the zone containing the well</li>
+            <li>The reflected field represents the effect of the interface on the pressure in the well's zone</li>
+            <li>The transmitted field is the pressure response in the adjacent zone</li>
+        </ul>
+    </div>
+    
+    <p>However, unlike light waves, there's an important difference: the "reflection law" that applies to light waves (angle of incidence equals angle of reflection) doesn't generally hold for fluid flow in porous media. This is because the physics of diffusion is fundamentally different from wave propagation.</p>
+    
+    <h3>Asymptotic Behavior</h3>
+    
+    <p>At late times, the pressure derivative in both zones approaches:</p>
+    
+    <div class="key-equation">
+        <p>\[ \left|t\frac{\mathrm{d}p_{j}}{\mathrm{d}t}\right|_{t\rightarrow\infty}=\frac{q_{w}B\mu}{4\pi T_{1}}\left(\frac{2}{1+T_{r}}\right) \]</p>
+    </div>
+    
+    <p>This means that regardless of diffusivity differences, the late-time behavior is controlled by the total transmissivity of the system (\(T_1 + T_2\)).</p>
+    
+    <h2>Interactive Pressure Response Game</h2>
+    
+    <p>Now let's apply what we've learned with a practical challenge. In this game, you'll interpret pressure derivative curves to identify reservoir properties in a composite system.</p>
+    
+    <div class="interactive">
+        <h3>Well Test Interpretation Challenge</h3>
+        
+        <p>Below is a pressure derivative curve from a well test in a composite reservoir. Your task is to identify the most likely reservoir configuration by adjusting parameters to match the curve.</p>
+        
+        <div class="slider-container">
+            <span class="slider-label">Transmissivity Ratio (T₂/T₁):</span>
+            <input type="range" id="trRatio" min="0.1" max="10" step="0.1" value="1">
+            <span id="trRatioValue">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Diffusivity Ratio (η₂/η₁):</span>
+            <input type="range" id="diffRatio" min="0.1" max="10" step="0.1" value="1">
+            <span id="diffRatioValue">1</span>
+        </div>
+        
+        <div class="slider-container">
+            <span class="slider-label">Contact Resistance:</span>
+            <input type="range" id="contactRes" min="0" max="10" step="0.1" value="0">
+            <span id="contactResValue">0</span>
+        </div>
+        
+        <button id="checkMatch">Check Match</button>
+        <div id="matchResult" style="margin-top: 15px; font-weight: bold;"></div>
+        
+        <div class="simulation-container">
+            <canvas id="pressureDerivative" width="750" height="350"></canvas>
+        </div>
+    </div>
+    
+    <h2>Applications and Extensions</h2>
+    
+    <p>The composite slab model can be extended to more complex scenarios:</p>
+    
+    <h3>Three-Zone Models</h3>
+    
+    <p>Adding a middle zone allows modeling of fault systems with both a core and damaged zones. This is particularly useful for understanding faults that act as both conduits and barriers to flow.</p>
+    
+    <h3>Fractured and Horizontal Wells</h3>
+    
+    <p>The source functions derived for simple line sources can be integrated to model more complex well configurations:</p>
+    
+    <ul>
+        <li><strong>Fractured Wells:</strong> By integrating the line source solution along the fracture length</li>
+        <li><strong>Horizontal Wells:</strong> By considering both the fracture solution and a "pseudoskin function"</li>
+    </ul>
+    
+    <h2>Conclusion: The Power of First Principles</h2>
+    
+    <p>By approaching the composite slab problem from first principles using Green's functions, we've developed a powerful framework that can handle a wide range of reservoir configurations and well types. The mathematical formulation might seem complex, but it's built on fundamental physical laws of fluid flow in porous media.</p>
+    
+    <p>The key takeaways are:</p>
+    
+    <ol>
+        <li>Interfaces between different reservoir zones create reflection and transmission effects in pressure responses</li>
+        <li>Contact resistance at interfaces can significantly affect pressure behavior</li>
+        <li>Late-time behavior is controlled by the total system transmissivity</li>
+        <li>The framework can be extended to model complex well configurations and reservoir structures</li>
+    </ol>
+    
+    <p>Understanding these principles allows engineers to interpret well test data more accurately and build better reservoir models for production optimization.</p>
+
+    <script>
+        // Flow simulation
+        const permRatioSlider = document.getElementById('permRatio');
+        const resistanceSlider = document.getElementById('resistance');
+        const wellPositionSlider = document.getElementById('wellPosition');
+        const permRatioValue = document.getElementById('permRatioValue');
+        const resistanceValue = document.getElementById('resistanceValue');
+        const wellPositionValue = document.getElementById('wellPositionValue');
+        const startButton = document.getElementById('startSimulation');
+        const resetButton = document.getElementById('resetSimulation');
+        const canvas = document.getElementById('flowSimulation');
+        const ctx = canvas.getContext('2d');
+        
+        // Pressure derivative game
+        const trRatioSlider = document.getElementById('trRatio');
+        const diffRatioSlider = document.getElementById('diffRatio');
+        const contactResSlider = document.getElementById('contactRes');
+        const trRatioValue = document.getElementById('trRatioValue');
+        const diffRatioValue = document.getElementById('diffRatioValue');
+        const contactResValue = document.getElementById('contactResValue');
+        const checkMatchButton = document.getElementById('checkMatch');
+        const matchResult = document.getElementById('matchResult');
+        const pdCanvas = document.getElementById('pressureDerivative');
+        const pdCtx = pdCanvas.getContext('2d');
+        
+        // Update slider values
+        permRatioSlider.addEventListener('input', () => {
+            permRatioValue.textContent = permRatioSlider.value;
+        });
+        
+        resistanceSlider.addEventListener('input', () => {
+            resistanceValue.textContent = resistanceSlider.value;
+        });
+        
+        wellPositionSlider.addEventListener('input', () => {
+            wellPositionValue.textContent = wellPositionSlider.value;
+        });
+        
+        trRatioSlider.addEventListener('input', () => {
+            trRatioValue.textContent = trRatioSlider.value;
+            drawPressureDerivative();
+        });
+        
+        diffRatioSlider.addEventListener('input', () => {
+            diffRatioValue.textContent = diffRatioSlider.value;
+            drawPressureDerivative();
+        });
+        
+        contactResSlider.addEventListener('input', () => {
+            contactResValue.textContent = contactResSlider.value;
+            drawPressureDerivative();
+        });
+        
+        // Flow simulation
+        let particles = [];
+        let pressureField = [];
+        let animationId = null;
+        const gridSize = 30;
+        
+        function initializeSimulation() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Initialize pressure field
+            pressureField = [];
+            for (let i = 0; i < gridSize; i++) {
+                pressureField[i] = [];
+                for (let j = 0; j < gridSize; j++) {
+                    pressureField[i][j] = 0;
+                }
+            }
+            
+            // Draw interface
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw well
+            const wellX = canvas.width * 0.25;
+            const wellY = canvas.height * parseFloat(wellPositionSlider.value);
+            ctx.beginPath();
+            ctx.arc(wellX, wellY, 10, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            
+            // Initialize particles
+            particles = [];
+        }
+        
+        function startSimulation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            const permRatio = parseFloat(permRatioSlider.value);
+            const resistance = parseFloat(resistanceSlider.value);
+            const wellPosition = parseFloat(wellPositionSlider.value);
+            
+            initializeSimulation();
+            
+            // Create initial particles around well
+            const wellX = canvas.width * 0.25;
+            const wellY = canvas.height * wellPosition;
+            
+            for (let i = 0; i < 50; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 20 + Math.random() * 10;
+                particles.push({
+                    x: wellX + Math.cos(angle) * distance,
+                    y: wellY + Math.sin(angle) * distance,
+                    vx: Math.cos(angle) * 2,
+                    vy: Math.sin(angle) * 2,
+                    age: 0
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw interface
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw well
+                ctx.beginPath();
+                ctx.arc(wellX, wellY, 10, 0, Math.PI * 2);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                
+                // Update pressure field
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        const x = (i + 0.5) * canvas.width / gridSize;
+                        const y = (j + 0.5) * canvas.height / gridSize;
+                        const dx = x - wellX;
+                        const dy = y - wellY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Calculate pressure based on distance from well
+                        let pressure = 100 / (1 + 0.01 * distance);
+                        
+                        // Apply permeability effect
+                        if (x > canvas.width / 2) {
+                            pressure /= permRatio;
+                        }
+                        
+                        // Apply interface resistance effect
+                        if (Math.abs(x - canvas.width / 2) < 20) {
+                            pressure *= Math.exp(-resistance * 0.1);
+                        }
+                        
+                        pressureField[i][j] = pressure;
+                    }
+                }
+                
+                // Draw pressure field
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        const x = i * canvas.width / gridSize;
+                        const y = j * canvas.height / gridSize;
+                        const width = canvas.width / gridSize;
+                        const height = canvas.height / gridSize;
+                        
+                        const pressure = pressureField[i][j];
+                        const intensity = Math.min(255, Math.max(0, pressure * 2));
+                        
+                        ctx.fillStyle = `rgba(0, 0, ${intensity}, 0.3)`;
+                        ctx.fillRect(x, y, width, height);
+                    }
+                }
+                
+                // Update and draw particles
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    
+                    // Get grid position
+                    const gridX = Math.floor(p.x / (canvas.width / gridSize));
+                    const gridY = Math.floor(p.y / (canvas.height / gridSize));
+                    
+                    // Calculate pressure gradient
+                    let gradX = 0;
+                    let gradY = 0;
+                    
+                    if (gridX > 0 && gridX < gridSize - 1 && gridY >= 0 && gridY < gridSize) {
+                        gradX = pressureField[gridX - 1][gridY] - pressureField[gridX + 1][gridY];
+                    }
+                    
+                    if (gridX >= 0 && gridX < gridSize && gridY > 0 && gridY < gridSize - 1) {
+                        gradY = pressureField[gridX][gridY - 1] - pressureField[gridX][gridY + 1];
+                    }
+                    
+                    // Apply forces based on pressure gradient
+                    p.vx = 0.8 * p.vx + 0.2 * gradX * 0.5;
+                    p.vy = 0.8 * p.vy + 0.2 * gradY * 0.5;
+                    
+                    // Apply permeability effect
+                    if (p.x > canvas.width / 2) {
+                        p.vx *= permRatio;
+                        p.vy *= permRatio;
+                    }
+                    
+                    // Apply interface resistance
+                    if (Math.abs(p.x - canvas.width / 2) < 10) {
+                        p.vx *= Math.exp(-resistance * 0.1);
+                    }
+                    
+                    // Update position
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.age++;
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 165, 0, ${1 - p.age / 100})`;
+                    ctx.fill();
+                    
+                    // Remove old particles
+                    if (p.age > 100 || p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+                        particles.splice(i, 1);
+                        i--;
+                        
+                        // Add new particle near well
+                        if (particles.length < 100) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = 20 + Math.random() * 10;
+                            particles.push({
+                                x: wellX + Math.cos(angle) * distance,
+                                y: wellY + Math.sin(angle) * distance,
+                                vx: Math.cos(angle) * 2,
+                                vy: Math.sin(angle) * 2,
+                                age: 0
+                            });
+                        }
+                    }
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        function resetSimulation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            initializeSimulation();
+        }
+        
+        // Pressure derivative game
+        const targetTr = 5;
+        const targetDiff = 3;
+        const targetRes = 2;
+        
+        function drawPressureDerivative() {
+            pdCtx.clearRect(0, 0, pdCanvas.width, pdCanvas.height);
+            
+            // Draw axes
+            pdCtx.beginPath();
+            pdCtx.moveTo(50, 50);
+            pdCtx.lineTo(50, pdCanvas.height - 50);
+            pdCtx.lineTo(pdCanvas.width - 50, pdCanvas.height - 50);
+            pdCtx.strokeStyle = 'black';
+            pdCtx.lineWidth = 2;
+            pdCtx.stroke();
+            
+            // Draw axis labels
+            pdCtx.font = '14px Arial';
+            pdCtx.fillStyle = 'black';
+            pdCtx.fillText('Time', pdCanvas.width / 2, pdCanvas.height - 20);
+            pdCtx.save();
+            pdCtx.translate(20, pdCanvas.height / 2);
+            pdCtx.rotate(-Math.PI / 2);
+            pdCtx.fillText('Pressure Derivative', 0, 0);
+            pdCtx.restore();
+            
+            // Draw target curve
+            pdCtx.beginPath();
+            pdCtx.moveTo(50, pdCanvas.height - 100);
+            
+            for (let x = 0; x < pdCanvas.width - 100; x++) {
+                const t = x / (pdCanvas.width - 100);
+                let y;
+                
+                if (t < 0.2) {
+                    // Early time - radial flow
+                    y = 0.5;
+                } else if (t < 0.5) {
+                    // Transition due to interface
+                    const factor = 1 + (targetTr - 1) * (t - 0.2) / 0.3;
+                    y = 0.5 * factor;
+                    
+                    // Effect of diffusivity
+                    if (targetDiff > 1) {
+                        y += 0.2 * Math.sin(t * 10) * (targetDiff - 1) / 9;
+                    }
+                    
+                    // Effect of resistance
+                    if (targetRes > 0) {
+                        const peak = 0.3 + 0.1 * targetRes / 10;
+                        if (Math.abs(t - peak) < 0.05) {
+                            y += targetRes * 0.1 * (0.05 - Math.abs(t - peak));
+                        }
+                    }
+                } else {
+                    // Late time - composite behavior
+                    y = 0.5 * (2 / (1 + targetTr));
+                }
+                
+                pdCtx.lineTo(50 + x, pdCanvas.height - 50 - y * 300);
+            }
+            
+            pdCtx.strokeStyle = 'blue';
+            pdCtx.lineWidth = 3;
+            pdCtx.stroke();
+            
+            // Draw user curve
+            const trRatio = parseFloat(trRatioSlider.value);
+            const diffRatio = parseFloat(diffRatioSlider.value);
+            const contactRes = parseFloat(contactResSlider.value);
+            
+            pdCtx.beginPath();
+            pdCtx.moveTo(50, pdCanvas.height - 100);
+            
+            for (let x = 0; x < pdCanvas.width - 100; x++) {
+                const t = x / (pdCanvas.width - 100);
+                let y;
+                
+                if (t < 0.2) {
+                    // Early time - radial flow
+                    y = 0.5;
+                } else if (t < 0.5) {
+                    // Transition due to interface
+                    const factor = 1 + (trRatio - 1) * (t - 0.2) / 0.3;
+                    y = 0.5 * factor;
+                    
+                    // Effect of diffusivity
+                    if (diffRatio > 1) {
+                        y += 0.2 * Math.sin(t * 10) * (diffRatio - 1) / 9;
+                    }
+                    
+                    // Effect of resistance
+                    if (contactRes > 0) {
+                        const peak = 0.3 + 0.1 * contactRes / 10;
+                        if (Math.abs(t - peak) < 0.05) {
+                            y += contactRes * 0.1 * (0.05 - Math.abs(t - peak));
+                        }
+                    }
+                } else {
+                    // Late time - composite behavior
+                    y = 0.5 * (2 / (1 + trRatio));
+                }
+                
+                pdCtx.lineTo(50 + x, pdCanvas.height - 50 - y * 300);
+            }
+            
+            pdCtx.strokeStyle = 'red';
+            pdCtx.lineWidth = 2;
+            pdCtx.stroke();
+            
+            // Draw legend
+            pdCtx.fillStyle = 'blue';
+            pdCtx.fillRect(pdCanvas.width - 150, 20, 20, 10);
+            pdCtx.fillStyle = 'black';
+            pdCtx.fillText('Target Response', pdCanvas.width - 120, 30);
+            
+            pdCtx.fillStyle = 'red';
+            pdCtx.fillRect(pdCanvas.width - 150, 40, 20, 10);
+            pdCtx.fillStyle = 'black';
+            pdCtx.fillText('Your Response', pdCanvas.width - 120, 50);
+        }
+        
+        function checkMatch() {
+            const trRatio = parseFloat(trRatioSlider.value);
+            const diffRatio = parseFloat(diffRatioSlider.value);
+            const contactRes = parseFloat(contactResSlider.value);
+            
+            const trError = Math.abs(trRatio - targetTr) / targetTr;
+            const diffError = Math.abs(diffRatio - targetDiff) / targetDiff;
+            const resError = Math.abs(contactRes - targetRes) / (targetRes + 0.1);
+            
+            const totalError = (trError + diffError + resError) / 3;
+            
+            let message;
+            if (totalError < 0.1) {
+                message = "Excellent match! You've correctly identified the reservoir properties.";
+            } else if (totalError < 0.3) {
+                message = "Good match! You're close to the correct reservoir properties.";
+            } else {
+                message = "Try again. Your match needs improvement.";
+            }
+            
+            matchResult.textContent = message;
+        }
+        
+        // Initialize
+        startButton.addEventListener('click', startSimulation);
+        resetButton.addEventListener('click', resetSimulation);
+        checkMatchButton.addEventListener('click', checkMatch);
+        
+        initializeSimulation();
+        drawPressureDerivative();
+    </script>
+</body>
+</html>

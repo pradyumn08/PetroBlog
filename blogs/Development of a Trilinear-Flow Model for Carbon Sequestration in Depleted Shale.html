@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Sequestration in Depleted Shale: Understanding the Trilinear Flow Model</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .interactive {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 180px;
+        }
+        canvas {
+            margin: 20px auto;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .key-concept {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carbon Sequestration in Depleted Shale: Understanding the Trilinear Flow Model</h1>
+    
+    <p>As our planet grapples with rising CO₂ levels, scientists are exploring innovative ways to capture and store carbon dioxide. One promising approach that's gaining traction is using depleted shale formations as carbon storage sites. But how do we determine how much CO₂ these formations can actually hold? Today, we'll break down a fascinating analytical model that helps answer this question.</p>
+    
+    <div class="highlight">
+        <p><strong>Key Takeaway:</strong> Depleted shale formations offer significant potential for CO₂ storage, with the New Albany Shale alone potentially storing around 27 billion cubic meters of CO₂. The trilinear flow model provides a quick, accurate way to estimate this storage capacity while accounting for complex gas behaviors in the shale.</p>
+    </div>
+    
+    <h2>The Problem: Finding Places to Store Carbon</h2>
+    
+    <p>Before diving into the mathematics, let's understand the problem. We have excess CO₂ in our atmosphere. We have depleted shale gas reservoirs underground. Can we put the CO₂ into these empty reservoirs, and if so, how much can they hold?</p>
+    
+    <p>Most carbon sequestration research has focused on saline aquifers or depleted conventional reservoirs. Shale formations have been largely overlooked due to safety and economic concerns. But with their vast geographical spread, they could be game-changers in our carbon storage arsenal.</p>
+    
+    <h2>First Principles: How Gas Moves Through Shale</h2>
+    
+    <p>To understand carbon storage in shale, we need to grasp how gases move through these unique formations. Unlike conventional reservoirs, shale has three distinct flow regions:</p>
+    
+    <ol>
+        <li><strong>Hydraulic fractures (HF)</strong> - Human-made cracks that allow gas to flow easily</li>
+        <li><strong>Inner region</strong> - The area between fractures with altered permeability</li>
+        <li><strong>Outer region</strong> - The unaltered shale beyond the fracture tips</li>
+    </ol>
+    
+    <div class="interactive">
+        <h3>Interactive Visualization: The Trilinear Flow Model</h3>
+        <p>Explore how the three regions work together in a shale reservoir by adjusting the parameters below:</p>
+        
+        <div class="slider-container">
+            <label for="fracture-length">Fracture Half-Length (m):</label>
+            <input type="range" id="fracture-length" min="50" max="200" value="100" step="10">
+            <span id="fracture-length-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="fracture-number">Number of Fractures:</label>
+            <input type="range" id="fracture-number" min="1" max="8" value="4" step="1">
+            <span id="fracture-number-value">4</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="inner-perm">Inner Region Permeability:</label>
+            <input type="range" id="inner-perm" min="1" max="100" value="10" step="1">
+            <span id="inner-perm-value">10</span> (relative to outer region)
+        </div>
+        
+        <canvas id="shaleModel" width="600" height="300"></canvas>
+        
+        <p><em>This visualization shows a top-down view of a horizontal well with hydraulic fractures. The inner region (lighter shade) has enhanced permeability compared to the outer region (darker shade).</em></p>
+    </div>
+    
+    <h2>The Mathematical Model: Breaking Down the Trilinear Flow</h2>
+    
+    <p>The researchers extended an existing trilinear flow model by introducing several key mechanisms:</p>
+    
+    <ul>
+        <li>Knudsen diffusion (how gas molecules move through tiny pores)</li>
+        <li>Gas adsorption (how gas molecules stick to the rock surface)</li>
+        <li>Stress sensitivity (how pressure changes affect the rock's properties)</li>
+    </ul>
+    
+    <p>Let's examine each region mathematically:</p>
+    
+    <h3>Outer Region Equations</h3>
+    
+    <div class="formula-block">
+        <p>The continuity equation in the natural-fracture subsystem:</p>
+        
+        \begin{equation}
+        e^{-\alpha_{D}m_{OD}}\left[{\frac{\partial^{2}m_{OD}}{\partial y_{D}^{2}}}-\alpha_{D}\left({\frac{\partial m_{OD}}{\partial y_{D}}}\right)^{2}\right]=(1-\omega){\frac{\partial V_{OD}}{\partial t_{D}}}+\omega{\frac{\partial m_{OD}}{\partial t_{D}}}
+        \end{equation}
+        
+        <p>The CO₂ adsorption equation:</p>
+        
+        \begin{equation}
+        \frac{\partial V_{OD}}{\partial t_{D}}=D_{KD}(a m_{OD}-V_{OD})
+        \end{equation}
+    </div>
+    
+    <div class="key-concept">
+        <h4>What Does This Mean?</h4>
+        <p>The first equation describes how gas pressure changes in the natural fractures of the outer region. The left side represents how pressure diffuses through space, while the right side shows how pressure changes over time due to both gas flow and adsorption.</p>
+        <p>The second equation models how CO₂ gets adsorbed onto the shale matrix. The rate depends on the difference between the potential adsorption (based on pressure) and the current adsorption level.</p>
+    </div>
+    
+    <h3>Inner Region Equations</h3>
+    
+    <div class="formula-block">
+        <p>The continuity equation in the natural-fracture subsystem:</p>
+        
+        \begin{equation}
+        \begin{array}{l}{{\displaystyle e^{-\alpha_{D}m_{ID}}\left[{\frac{\partial^{2}m_{ID}}{\partial x_{D}^{2}}}-\alpha_{D}\left({\frac{\partial m_{ID}}{\partial x_{D}}}\right)^{2}\right]+\frac{e^{-\alpha_{D}m_{OD}}}{\eta_{IO}}{\frac{\partial m_{OD}}{\partial y_{D}}}\Bigg\vert_{y=1}}}\\ {{\displaystyle=\frac{1}{\eta_{IO}}\left[(1-\omega)\frac{\partial V_{ID}}{\partial t_{D}}+\omega\frac{\partial m_{ID}}{\partial t_{D}}\right]}}\end{array}
+        \end{equation}
+        
+        <p>The CO₂ adsorption equation:</p>
+        
+        \begin{equation}
+        \frac{\partial V_{ID}}{\partial t_{D}}=D_{KD}(a m_{ID}-V_{ID})
+        \end{equation}
+    </div>
+    
+    <div class="key-concept">
+        <h4>What's Different Here?</h4>
+        <p>The inner region equation is similar to the outer region but includes an additional term that accounts for the flow from the outer region. This reflects the reality that gas doesn't just move within each region, but also between regions.</p>
+    </div>
+    
+    <h3>Hydraulic Fracture (HF) System</h3>
+    
+    <div class="formula-block">
+        <p>The continuity equation in the HF system:</p>
+        
+        \begin{equation}
+        \begin{array}{l}{{\displaystyle e^{-\alpha_{D}m_{FD}}\left[{\frac{\partial^{2}m_{FD}}{\partial y_{D}^{2}}}-\alpha_{D}\left({\frac{\partial m_{FD}}{\partial y_{D}}}\right)^{2}\right]+{\frac{2e^{-\alpha_{D}m_{FD}}}{C_{FD}}}{\frac{\partial m_{ID}}{\partial x_{D}}}\left\vert_{x_{D}=\frac{W_{D}}{2}}}}\\ {{\displaystyle={\frac{\omega}{\eta_{FO}}}{\frac{\partial m_{FD}}{\partial t_{D}}}}}\end{array}
+        \end{equation}
+    </div>
+    
+    <div class="key-concept">
+        <h4>The Highway for Gas Flow</h4>
+        <p>The hydraulic fractures act like highways for gas flow, with much higher permeability than the surrounding rock. This equation describes how pressure changes within these fractures, accounting for both flow along the fracture and flow from the inner region into the fracture.</p>
+    </div>
+    
+    <h3>Solving the System</h3>
+    
+    <p>To solve this complex system of partial differential equations, the researchers used two key mathematical techniques:</p>
+    
+    <ol>
+        <li><strong>The Pedrosa substitution</strong> - A clever transformation that linearizes the exponential terms related to stress sensitivity</li>
+        <li><strong>Laplace transform</strong> - A method that converts time-dependent differential equations into algebraic equations</li>
+    </ol>
+    
+    <p>After these transformations, they derived the following solution for the dimensionless wellbore pressure:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \overline{{\xi}}_{wD}(s)=\frac{\pi}{\eta_{IO}C_{FD}s}\frac{1}{\operatorname{tanh}[\sqrt{f_{F}(s)}]}
+        \end{equation}
+        
+        <p>Which can be inverted back to the time domain and converted to actual pressure using:</p>
+        
+        \begin{equation}
+        m_{wD}(t_{D})=-\frac{1}{\alpha_{D}}\ln[1-\alpha_{D}\xi_{wD}(t_{D})]
+        \end{equation}
+    </div>
+    
+    <p>Once they had this pressure solution, they could calculate how much CO₂ could be injected before reaching a maximum allowable pressure:</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        Q_{D}=n_{F}T_{D}q_{scD}
+        \end{equation}
+    </div>
+    
+    <p>Where \(Q_D\) is the dimensionless storage capacity, \(n_F\) is the number of fractures, \(T_D\) is the dimensionless injection time until reaching the constrained pressure, and \(q_{scD}\) is the dimensionless injection rate.</p>
+    
+    <h2>Key Parameters That Affect CO₂ Storage</h2>
+    
+    <p>The researchers identified four critical parameters that significantly impact how much CO₂ a depleted shale formation can store:</p>
+    
+    <div class="interactive">
+        <h3>Interactive Tool: Explore Parameter Effects</h3>
+        <p>Adjust the sliders to see how different parameters affect CO₂ storage capacity:</p>
+        
+        <div class="slider-container">
+            <label for="adsorption-index">Adsorption Index (a):</label>
+            <input type="range" id="adsorption-index" min="10" max="80" value="40" step="5">
+            <span id="adsorption-index-value">40</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="storage-ratio">Storage Ratio (ω):</label>
+            <input type="range" id="storage-ratio" min="0.02" max="0.12" value="0.06" step="0.01">
+            <span id="storage-ratio-value">0.06</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="knudsen-coef">Knudsen Diffusion (D<sub>KD</sub>):</label>
+            <input type="range" id="knudsen-coef" min="1" max="6" value="3" step="0.5">
+            <span id="knudsen-coef-value">3</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="stress-coef">Stress Sensitivity (α<sub>D</sub>):</label>
+            <input type="range" id="stress-coef" min="0" max="0.09" value="0.04" step="0.01">
+            <span id="stress-coef-value">0.04</span>
+        </div>
+        
+        <canvas id="storageChart" width="600" height="300"></canvas>
+        
+        <p><em>This chart shows the relative impact of each parameter on CO₂ storage capacity.</em></p>
+    </div>
+    
+    <h3>1. Adsorption Index (a)</h3>
+    
+    <p>The adsorption index represents how much CO₂ can stick to the surface of the shale matrix. As this parameter increases, storage capacity increases linearly. This makes sense intuitively - the more gas that can adhere to the rock surface, the more total gas can be stored.</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        a=\frac{3.684\times10^{-3}\mu Z p_{sc}q_{sc}T}{K_Oh T_{sc}}\frac{V_Lp_L}{(p_L+p)(p_L+p_i)(p+p_i)}
+        \end{equation}
+    </div>
+    
+    <h3>2. Storage Ratio (ω)</h3>
+    
+    <p>The storage ratio indicates how much gas is stored in natural fractures versus the total system (fractures + matrix). As ω increases, storage capacity decreases linearly. This is because higher ω means more gas is stored in fractures rather than in the matrix, and the matrix has much greater storage potential due to adsorption.</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \omega=\frac{\phi C_g}{\Lambda}
+        \end{equation}
+        
+        <p>where</p>
+        
+        \begin{equation}
+        \Lambda=\phi C_g+\frac{K_Oh}{1.842\times10^{-3}q_{sc}\mu}
+        \end{equation}
+    </div>
+    
+    <h3>3. Knudsen Diffusion Coefficient (D<sub>KD</sub>)</h3>
+    
+    <p>This parameter describes how quickly CO₂ can flow through the tiny pores in the shale matrix. As D<sub>KD</sub> increases, storage capacity increases, but with diminishing returns. When D<sub>KD</sub> is small, increasing it significantly improves storage because it allows CO₂ to access more of the matrix. However, once D<sub>KD</sub> is large enough, other factors become limiting.</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        D_{KD}=\frac{6\pi^{2}\mu\Lambda L_F^{2}D_K}{K_OR_m^{2}}
+        \end{equation}
+    </div>
+    
+    <h3>4. Stress Sensitivity Coefficient (α<sub>D</sub>)</h3>
+    
+    <p>This parameter captures how reservoir permeability changes with pressure. As α<sub>D</sub> increases, storage capacity increases linearly. This is because higher pressure during injection causes the permeability to increase, making it easier for CO₂ to flow into the formation.</p>
+    
+    <div class="formula-block">
+        \begin{equation}
+        \alpha_D=\alpha\frac{1.842\times10^{-3}p_{sc}q_{sc}T}{K_OT_{sc}h}\frac{\mu Z}{p}
+        \end{equation}
+    </div>
+    
+    <h2>Real-World Application: The New Albany Shale</h2>
+    
+    <p>Let's see how this model works in practice. The researchers applied their method to the New Albany Shale, a formation that spans parts of Illinois, Indiana, and Kentucky.</p>
+    
+    <div class="note">
+        <h4>New Albany Shale Characteristics:</h4>
+        <ul>
+            <li>Depth: 420 meters</li>
+            <li>Thickness: 30 meters</li>
+            <li>Temperature: 303.15 K (30°C)</li>
+            <li>Matrix permeability: 1.5×10<sup>-7</sup> darcy</li>
+            <li>Natural fracture permeability: 0.001 darcy</li>
+            <li>Porosity: 12%</li>
+            <li>Depleted pressure: 0.6 MPa</li>
+        </ul>
+    </div>
+    
+    <p>Using their analytical model, the researchers calculated that this area of the New Albany Shale could store approximately 27 billion cubic meters of CO₂. This calculation took only about 10 seconds of computer time, compared to much longer times required for full numerical simulations.</p>
+    
+    <div class="interactive">
+        <h3>Shale Storage Calculator</h3>
+        <p>Try estimating CO₂ storage for a shale formation with your own parameters:</p>
+        
+        <div class="slider-container">
+            <label for="area">Area (km²):</label>
+            <input type="range" id="area" min="1" max="20" value="7" step="1">
+            <span id="area-value">7</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="thickness">Thickness (m):</label>
+            <input type="range" id="thickness" min="10" max="100" value="30" step="5">
+            <span id="thickness-value">30</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="porosity">Porosity (%):</label>
+            <input type="range" id="porosity" min="5" max="20" value="12" step="1">
+            <span id="porosity-value">12</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="fractures">Number of Fractures:</label>
+            <input type="range" id="fractures" min="2" max="10" value="4" step="1">
+            <span id="fractures-value">4</span>
+        </div>
+        
+        <div id="storage-result" style="margin-top: 20px; font-weight: bold; font-size: 1.2em;">
+            Estimated CO₂ Storage: <span id="storage-value">27.0</span> billion cubic meters
+        </div>
+    </div>
+    
+    <h2>Why This Matters: The Big Picture</h2>
+    
+    <p>This research provides several important contributions to carbon sequestration efforts:</p>
+    
+    <ol>
+        <li><strong>Speed and Accuracy</strong>: The analytical model provides results in seconds with only about 3% difference from more complex numerical simulations.</li>
+        <li><strong>Comprehensive Physics</strong>: By including Knudsen diffusion, adsorption, and stress sensitivity, the model captures the key physical processes that affect CO₂ storage.</li>
+        <li><strong>Practical Application</strong>: The model can be readily applied to real-world shale formations to estimate their storage potential.</li>
+        <li><strong>Environmental Impact</strong>: If widely applied, this approach could help identify and utilize significant carbon storage capacity in depleted shale formations worldwide.</li>
+    </ol>
+    
+    <h2>Conclusion: A New Tool in the Climate Change Fight</h2>
+    
+    <p>The trilinear flow model presented in this research provides a powerful new approach for estimating CO₂ storage capacity in depleted shale formations. By breaking down the complex physics into manageable equations and solving them analytically, the researchers have created a tool that is both fast and accurate.</p>
+    
+    <p>As we continue to search for ways to reduce atmospheric CO₂, depleted shale formations represent a vast and largely untapped resource. With the New Albany Shale alone potentially storing 27 billion cubic meters of CO₂, and many other shale formations around the world, this approach could contribute significantly to our carbon sequestration efforts.</p>
+    
+    <p>The key insights from this work - particularly how adsorption, storage ratio, diffusion, and stress sensitivity affect storage capacity - provide valuable guidance for selecting optimal shale formations for CO₂ storage and designing effective injection strategies.</p>
+    
+    <script>
+        // Trilinear Flow Model Visualization
+        const shaleModelCanvas = document.getElementById('shaleModel');
+        const shaleModelCtx = shaleModelCanvas.getContext('2d');
+        
+        // Storage Parameters Chart
+        const storageChartCanvas = document.getElementById('storageChart');
+        const storageChartCtx = storageChartCanvas.getContext('2d');
+        
+        // Initialize the storage parameters chart
+        let storageChart = new Chart(storageChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Adsorption Index (a)', 'Storage Ratio (ω)', 'Knudsen Diffusion (D_KD)', 'Stress Sensitivity (α_D)'],
+                datasets: [{
+                    label: 'Relative Impact on CO₂ Storage',
+                    data: [40, -6, 30, 40],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Impact on Storage Capacity'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Draw the shale model visualization
+        function drawShaleModel() {
+            const fracLength = parseInt(document.getElementById('fracture-length').value);
+            const fracNumber = parseInt(document.getElementById('fracture-number').value);
+            const innerPerm = parseInt(document.getElementById('inner-perm').value);
+            
+            // Update display values
+            document.getElementById('fracture-length-value').textContent = fracLength;
+            document.getElementById('fracture-number-value').textContent = fracNumber;
+            document.getElementById('inner-perm-value').textContent = innerPerm;
+            
+            // Clear canvas
+            shaleModelCtx.clearRect(0, 0, shaleModelCanvas.width, shaleModelCanvas.height);
+            
+            // Draw outer region (darker)
+            shaleModelCtx.fillStyle = '#e0e0e0';
+            shaleModelCtx.fillRect(0, 0, shaleModelCanvas.width, shaleModelCanvas.height);
+            
+            // Draw horizontal well
+            const wellY = shaleModelCanvas.height / 2;
+            shaleModelCtx.strokeStyle = '#000';
+            shaleModelCtx.lineWidth = 3;
+            shaleModelCtx.beginPath();
+            shaleModelCtx.moveTo(50, wellY);
+            shaleModelCtx.lineTo(shaleModelCanvas.width - 50, wellY);
+            shaleModelCtx.stroke();
+            
+            // Calculate fracture spacing
+            const fracSpacing = (shaleModelCanvas.width - 100) / (fracNumber + 1);
+            
+            // Draw fractures and inner regions
+            for (let i = 1; i <= fracNumber; i++) {
+                const fracX = 50 + i * fracSpacing;
+                
+                // Draw inner region (lighter)
+                const innerWidth = fracLength * 3;
+                shaleModelCtx.fillStyle = `rgba(144, 238, 144, ${innerPerm/100})`;
+                shaleModelCtx.fillRect(fracX - innerWidth/2, wellY - innerWidth/2, innerWidth, innerWidth);
+                
+                // Draw fracture
+                shaleModelCtx.strokeStyle = '#ff0000';
+                shaleModelCtx.lineWidth = 2;
+                shaleModelCtx.beginPath();
+                shaleModelCtx.moveTo(fracX, wellY - fracLength);
+                shaleModelCtx.lineTo(fracX, wellY + fracLength);
+                shaleModelCtx.stroke();
+            }
+            
+            // Add legend
+            shaleModelCtx.fillStyle = '#000';
+            shaleModelCtx.font = '12px Arial';
+            shaleModelCtx.fillText('Hydraulic Fracture', 20, 20);
+            shaleModelCtx.strokeStyle = '#ff0000';
+            shaleModelCtx.lineWidth = 2;
+            shaleModelCtx.beginPath();
+            shaleModelCtx.moveTo(110, 20);
+            shaleModelCtx.lineTo(150, 20);
+            shaleModelCtx.stroke();
+            
+            shaleModelCtx.fillText('Inner Region', 170, 20);
+            shaleModelCtx.fillStyle = `rgba(144, 238, 144, ${innerPerm/100})`;
+            shaleModelCtx.fillRect(240, 15, 20, 10);
+            
+            shaleModelCtx.fillStyle = '#000';
+            shaleModelCtx.fillText('Outer Region', 270, 20);
+            shaleModelCtx.fillStyle = '#e0e0e0';
+            shaleModelCtx.fillRect(340, 15, 20, 10);
+            
+            shaleModelCtx.fillStyle = '#000';
+            shaleModelCtx.fillText('Horizontal Well', 370, 20);
+            shaleModelCtx.strokeStyle = '#000';
+            shaleModelCtx.lineWidth = 3;
+            shaleModelCtx.beginPath();
+            shaleModelCtx.moveTo(450, 20);
+            shaleModelCtx.lineTo(490, 20);
+            shaleModelCtx.stroke();
+        }
+        
+        // Update the storage parameters chart
+        function updateStorageChart() {
+            const adsorptionIndex = parseFloat(document.getElementById('adsorption-index').value);
+            const storageRatio = parseFloat(document.getElementById('storage-ratio').value);
+            const knudsenCoef = parseFloat(document.getElementById('knudsen-coef').value);
+            const stressCoef = parseFloat(document.getElementById('stress-coef').value);
+            
+            // Update display values
+            document.getElementById('adsorption-index-value').textContent = adsorptionIndex;
+            document.getElementById('storage-ratio-value').textContent = storageRatio;
+            document.getElementById('knudsen-coef-value').textContent = knudsenCoef;
+            document.getElementById('stress-coef-value').textContent = stressCoef;
+            
+            // Update chart data
+            storageChart.data.datasets[0].data = [
+                adsorptionIndex,
+                -storageRatio * 100, // Negative impact, scaled for visibility
+                Math.log(knudsenCoef + 1) * 30, // Logarithmic effect
+                stressCoef * 400 // Scaled for visibility
+            ];
+            
+            storageChart.update();
+        }
+        
+        // Calculate storage capacity
+        function calculateStorage() {
+            const area = parseFloat(document.getElementById('area').value);
+            const thickness = parseFloat(document.getElementById('thickness').value);
+            const porosity = parseFloat(document.getElementById('porosity').value);
+            const fractures = parseFloat(document.getElementById('fractures').value);
+            
+            // Update display values
+            document.getElementById('area-value').textContent = area;
+            document.getElementById('thickness-value').textContent = thickness;
+            document.getElementById('porosity-value').textContent = porosity;
+            document.getElementById('fractures-value').textContent = fractures;
+            
+            // Simple model: base value * scaling factors
+            const baseStorage = 7; // Billions of cubic meters for reference case
+            const areaFactor = area / 7;
+            const thicknessFactor = thickness / 30;
+            const porosityFactor = porosity / 12;
+            const fractureFactor = fractures / 4;
+            
+            const storageCapacity = baseStorage * areaFactor * thicknessFactor * porosityFactor * fractureFactor;
+            document.getElementById('storage-value').textContent = storageCapacity.toFixed(1);
+        }
+        
+        // Initialize visualizations
+        drawShaleModel();
+        updateStorageChart();
+        calculateStorage();
+        
+        // Add event listeners for sliders
+        document.getElementById('fracture-length').addEventListener('input', drawShaleModel);
+        document.getElementById('fracture-number').addEventListener('input', drawShaleModel);
+        document.getElementById('inner-perm').addEventListener('input', drawShaleModel);
+        
+        document.getElementById('adsorption-index').addEventListener('input', updateStorageChart);
+        document.getElementById('storage-ratio').addEventListener('input', updateStorageChart);
+        document.getElementById('knudsen-coef').addEventListener('input', updateStorageChart);
+        document.getElementById('stress-coef').addEventListener('input', updateStorageChart);
+        
+        document.getElementById('area').addEventListener('input', calculateStorage);
+        document.getElementById('thickness').addEventListener('input', calculateStorage);
+        document.getElementById('porosity').addEventListener('input', calculateStorage);
+        document.getElementById('fractures').addEventListener('input', calculateStorage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well Index Calculation: From Complex to Simple</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 1.2em;
+        }
+        p, li {
+            font-size: 1.05em;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .highlight {
+            background-color: #ffffd0;
+            padding: 0.5em;
+            border-left: 3px solid #ffd700;
+            margin: 1em 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 0.5em;
+            border-left: 3px solid #5bc0de;
+            margin: 1em 0;
+        }
+        .simulator {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .simulator h3 {
+            margin-top: 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        input[type=range] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .output {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px auto;
+        }
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .formula-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .analogy {
+            background-color: #f0f4ff;
+            padding: 10px;
+            border-left: 3px solid #3f51b5;
+            margin: 15px 0;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        figcaption {
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .tabs {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 5px 5px 0 0;
+        }
+        .tabs button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 16px;
+            transition: 0.3s;
+        }
+        .tabs button:hover {
+            background-color: #ddd;
+        }
+        .tabs button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demystifying Well Index Calculation: How Petroleum Engineers Model Fluid Flow</h1>
+    
+    <p>When you turn on a faucet, water flows easily through the pipes to your sink. But what happens when petroleum engineers need to extract oil from thousands of feet below the Earth's surface? How do they model and predict the flow of fluids through complex underground rock formations? Today, we'll break down one of the fundamental concepts in reservoir simulation: the Well Index calculation.</p>
+    
+    <div class="highlight">
+        <p>In this post, we'll take a complex academic paper on well index calculation and break it down using first principles, making it accessible to anyone with basic math knowledge. We'll explore how engineers model fluid flow in oil reservoirs, and why accurate calculations matter for efficient oil production.</p>
+    </div>
+    
+    <h2>What is a Well Index and Why Does It Matter?</h2>
+    
+    <p>Imagine you're drinking a milkshake through a straw. The ease with which you can suck up that delicious shake depends on several factors: the thickness of the shake, the diameter of your straw, and how deeply the straw is inserted. In petroleum engineering, we face a similar but much more complex problem.</p>
+    
+    <div class="analogy">
+        <p><strong>Analogy:</strong> The Well Index (WI) is like a measure of how easily fluid can flow from a reservoir into a well. Just as a wider straw makes drinking a milkshake easier, a higher Well Index means fluid can flow more readily into the well.</p>
+    </div>
+    
+    <p>Mathematically, the Well Index connects the production rate of a well to the pressure difference between the reservoir and the well:</p>
+    
+    <div class="formula-box">
+        <p>\[ q_{pi}^w = T_{pi}^w(P_i - U) \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(q_{pi}^w\) is the production rate of fluid \(p\) from block \(i\)</li>
+            <li>\(P_i\) is the pressure in block \(i\)</li>
+            <li>\(U\) is the bottom hole pressure (pressure inside the well)</li>
+            <li>\(T_{pi}^w\) is the well transmissibility</li>
+        </ul>
+    </div>
+    
+    <p>The well transmissibility can be further broken down into:</p>
+    
+    <div class="formula-box">
+        <p>\[ q_{pi}^w = (WI)_i \gamma_{pi}(P_i - U) \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\((WI)_i\) is the Well Index for block \(i\)</li>
+            <li>\(\gamma_{pi}\) is the phase mobility (how easily a specific fluid can move through the rock)</li>
+        </ul>
+    </div>
+    
+    <p>Getting this calculation right is crucial. If engineers underestimate the Well Index, they might drill unnecessary wells, wasting millions of dollars. If they overestimate it, they might not extract enough oil, leaving valuable resources in the ground.</p>
+    
+    <h2>The Traditional Approach: Peaceman's Formula</h2>
+    
+    <p>For decades, petroleum engineers have relied on Peaceman's formula to calculate the Well Index. This approach works well for simple scenarios but makes several assumptions:</p>
+    
+    <ul>
+        <li>The well is located exactly in the center of a grid block</li>
+        <li>The block is fully perforated (the well is open to flow along its entire length within the block)</li>
+        <li>The flow is radial (fluid moves toward the well from all directions equally)</li>
+        <li>The reservoir has simple geometry and properties</li>
+    </ul>
+    
+    <p>Peaceman's formula for a vertical well in an isotropic reservoir with a square grid can be written as:</p>
+    
+    <div class="formula-box">
+        <p>\[ WI = \frac{2\pi kh}{\ln(r_o/r_w)} \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(k\) is the permeability of the rock</li>
+            <li>\(h\) is the thickness of the reservoir layer</li>
+            <li>\(r_w\) is the well radius</li>
+            <li>\(r_o\) is the equivalent radius (typically calculated as \(r_o = 0.2\Delta x\), where \(\Delta x\) is the grid block size)</li>
+        </ul>
+    </div>
+    
+    <p>But what happens when wells are drilled at an angle, or when they're not in the center of a block, or when the reservoir has complex properties? That's where the advanced method from our academic paper comes in.</p>
+    
+    <h2>A More Advanced Approach: The Numerical-Analytical Solution</h2>
+    
+    <p>The paper by Bakhty and Bembel presents a more sophisticated method that handles complex scenarios while still reducing to Peaceman's formula in simple cases. Let's break down how it works.</p>
+    
+    <h3>Step 1: Calculate Pressure Distribution Around the Well</h3>
+    
+    <p>The first step is to solve for the pressure distribution in the vicinity of the well. This requires solving a partial differential equation:</p>
+    
+    <div class="formula-box">
+        <p>\[ \frac{\partial}{\partial x}\Big(\frac{k_x}{\mu}\frac{\partial P}{\partial x}\Big) + \frac{\partial}{\partial y}\Big(\frac{k_y}{\mu}\frac{\partial P}{\partial y}\Big) + \frac{\partial}{\partial z}\Big(\frac{k_z}{\mu}\frac{\partial P}{\partial z}\Big) = 0 \]</p>
+        <p>With boundary conditions:</p>
+        <p>\[ -\frac{k_z}{\mu}\frac{\partial P}{\partial z}\bigg|_{z=0} = 0; \quad -\frac{k_z}{\mu}\frac{\partial P}{\partial z}\bigg|_{z=H} = 0 \]</p>
+        <p>\[ \int_{x^2+y^2=r_w^2} \frac{k_x}{\mu}\frac{\partial P}{\partial x}dy + \frac{k_y}{\mu}\frac{\partial P}{\partial y}dx = q\delta(z) \]</p>
+        <p>\[ \chi(z)(U-P)|_{x^2+y^2=r_w^2} = 0 \]</p>
+    </div>
+    
+    <p>This intimidating equation simply describes how pressure varies in space around the well. To solve it, the authors use a technique called the separation of variables and transform to elliptical coordinates, which better match the geometry of the problem.</p>
+    
+    <h3>Step 2: Account for Reservoir Boundaries</h3>
+    
+    <p>Real reservoirs have boundaries - they might be bounded by impermeable rock, faults, or other wells. The paper uses the "method of reflected sources" to account for these boundaries.</p>
+    
+    <div class="analogy">
+        <p><strong>Analogy:</strong> Imagine you're in a room with mirrors. When you look in a mirror, you see an "image" of yourself that appears to be behind the mirror. Similarly, when fluid flow hits a boundary, we can model it as if there were an "image well" on the other side of the boundary.</p>
+    </div>
+    
+    <p>Mathematically, this is represented by the Mayer function:</p>
+    
+    <div class="formula-box">
+        <p>\[ \Lambda_{results}(u_s, \varphi_s, z_s) = \Lambda(u_s, \varphi_s, z_s) + \Lambda(u_{Rs}, \varphi_{Rs}, z_{Rs}) - \Lambda(u_R, \varphi_R, z_R) \]</p>
+    </div>
+    
+    <h3>Step 3: Match the Solution with Flows Through Grid Block Boundaries</h3>
+    
+    <p>Finally, the method balances the calculated pressure distribution with the flows across the boundaries of the grid blocks in the numerical simulation:</p>
+    
+    <div class="formula-box">
+        <p>\[ WI_{i,j,k} = \frac{A_{i,j,k}}{\sum_S T_S \Lambda(u_S, \varphi_S, z_S) - 1} \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\(A_{i,j,k}\) is the sum of transmissibilities between the perforated block and its neighbors</li>
+            <li>\(T_S\) is the transmissibility between the perforated block and a neighboring block \(S\)</li>
+            <li>\(\Lambda\) is the Mayer function that describes the pressure distribution</li>
+        </ul>
+    </div>
+    
+    <p>This formula gives us a more accurate Well Index that accounts for complex well geometries, partial penetration, and reservoir heterogeneities.</p>
+    
+    <h2>Interactive Well Index Calculator</h2>
+    
+    <div class="simulator">
+        <h3>Explore How Well Index Changes With Different Parameters</h3>
+        
+        <div class="tabs">
+            <button class="tablinks active" onclick="openTab(event, 'VerticalWell')">Vertical Well</button>
+            <button class="tablinks" onclick="openTab(event, 'HydraulicFracture')">Hydraulic Fracture</button>
+        </div>
+        
+        <div id="VerticalWell" class="tabcontent" style="display: block;">
+            <div class="slider-container">
+                <label for="permeability">Permeability (mD):</label>
+                <input type="range" id="permeability" min="1" max="1000" value="100" oninput="updateWellIndex()">
+                <span class="output" id="permeabilityValue">100</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="thickness">Reservoir Thickness (m):</label>
+                <input type="range" id="thickness" min="1" max="100" value="20" oninput="updateWellIndex()">
+                <span class="output" id="thicknessValue">20</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="wellRadius">Well Radius (cm):</label>
+                <input type="range" id="wellRadius" min="5" max="30" value="10" oninput="updateWellIndex()">
+                <span class="output" id="wellRadiusValue">10</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="blockSize">Grid Block Size (m):</label>
+                <input type="range" id="blockSize" min="10" max="200" value="50" oninput="updateWellIndex()">
+                <span class="output" id="blockSizeValue">50</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="penetrationRatio">Penetration Ratio (%):</label>
+                <input type="range" id="penetrationRatio" min="10" max="100" value="100" oninput="updateWellIndex()">
+                <span class="output" id="penetrationRatioValue">100</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="wellPosition">Well Position (% from center):</label>
+                <input type="range" id="wellPosition" min="0" max="100" value="0" oninput="updateWellIndex()">
+                <span class="output" id="wellPositionValue">0</span>
+            </div>
+            
+            <div>
+                <p><strong>Peaceman's Well Index:</strong> <span id="peacemanWI">calculating...</span></p>
+                <p><strong>Advanced Method Well Index:</strong> <span id="advancedWI">calculating...</span></p>
+                <p><strong>Difference (%):</strong> <span id="difference">calculating...</span></p>
+            </div>
+            
+            <canvas id="wellCanvas" width="600" height="400"></canvas>
+        </div>
+        
+        <div id="HydraulicFracture" class="tabcontent">
+            <div class="slider-container">
+                <label for="fracPermeability">Reservoir Permeability (mD):</label>
+                <input type="range" id="fracPermeability" min="1" max="500" value="50" oninput="updateFractureIndex()">
+                <span class="output" id="fracPermeabilityValue">50</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracLength">Fracture Half-Length (m):</label>
+                <input type="range" id="fracLength" min="10" max="200" value="50" oninput="updateFractureIndex()">
+                <span class="output" id="fracLengthValue">50</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracWidth">Fracture Width (mm):</label>
+                <input type="range" id="fracWidth" min="1" max="20" value="5" oninput="updateFractureIndex()">
+                <span class="output" id="fracWidthValue">5</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="fracHeight">Fracture Height (m):</label>
+                <input type="range" id="fracHeight" min="5" max="100" value="20" oninput="updateFractureIndex()">
+                <span class="output" id="fracHeightValue">20</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="gridSize">Grid Block Size (m):</label>
+                <input type="range" id="gridSize" min="10" max="200" value="50" oninput="updateFractureIndex()">
+                <span class="output" id="gridSizeValue">50</span>
+            </div>
+            
+            <div>
+                <p><strong>Peaceman's Fracture WI:</strong> <span id="peacemanFracWI">calculating...</span></p>
+                <p><strong>Advanced Method Fracture WI:</strong> <span id="advancedFracWI">calculating...</span></p>
+                <p><strong>Analytical Solution:</strong> <span id="analyticalFracWI">calculating...</span></p>
+            </div>
+            
+            <canvas id="fractureCanvas" width="600" height="400"></canvas>
+        </div>
+    </div>
+    
+    <h2>Why This Matters: Real-World Applications</h2>
+    
+    <p>The paper shows that using the advanced method instead of Peaceman's formula can significantly affect simulation results, including:</p>
+    
+    <ul>
+        <li><strong>Oil production rates</strong> - more accurate predictions of how much oil a well will produce</li>
+        <li><strong>Gas-oil ratio</strong> - better forecasting of the ratio of gas to oil produced</li>
+        <li><strong>Reservoir pressure</strong> - improved estimates of how pressure changes over time</li>
+    </ul>
+    
+    <p>These improvements are particularly important for:</p>
+    
+    <ul>
+        <li><strong>Horizontal wells</strong> that don't align with the grid</li>
+        <li><strong>Hydraulic fractures</strong> that create complex flow patterns</li>
+        <li><strong>Partially penetrating wells</strong> that don't extend through the entire reservoir thickness</li>
+        <li><strong>Wells near boundaries</strong> such as faults or reservoir edges</li>
+    </ul>
+    
+    <h2>Special Case: Hydraulic Fractures</h2>
+    
+    <p>Hydraulic fracturing (fracking) creates fractures in the rock to increase oil flow. Modeling these fractures accurately is especially challenging.</p>
+    
+    <div class="analogy">
+        <p><strong>Analogy:</strong> If a conventional well is like drinking through a straw, a fractured well is like drinking through a straw that has many tiny slits along its length. The fluid can enter not just from the bottom, but from all along these slits.</p>
+    </div>
+    
+    <p>The traditional approach models fractures as "virtual perforations" with a well radius calculated as:</p>
+    
+    <div class="formula-box">
+        <p>\[ r_w = (w + h)/\pi \]</p>
+        <p>Where \(w\) is the fracture width and \(h\) is the fracture height.</p>
+    </div>
+    
+    <p>However, the paper shows that this approach significantly overestimates the Well Index for fractures. The advanced method provides a more accurate formula:</p>
+    
+    <div class="formula-box">
+        <p>\[ WI = \frac{2k\Delta y\Delta z/\Delta x}{2\Delta z/\pi\Delta x\left(\ln\left(\frac{\Delta x}{r_w}\right) + \sum_{n=1}^{\infty}\ln\left(\frac{\Delta x^2 + (n\Delta z)^2}{(n\Delta z)^2}\right)\right) - 1} \]</p>
+    </div>
+    
+    <p>For a simple infinite fracture, the analytical solution gives \(WI = 0.4\), while Peaceman's formula gives \(WI = 20.3\) - a 50x overestimation! The advanced method gives \(WI = 0.401\), much closer to the correct value.</p>
+    
+    <h2>Key Takeaways</h2>
+    
+    <div class="highlight">
+        <ol>
+            <li>The Well Index is a critical parameter in reservoir simulation that connects well production rates to pressure differences.</li>
+            <li>Peaceman's formula works well for simple cases but can be inaccurate for complex well geometries and reservoir properties.</li>
+            <li>The advanced numerical-analytical method provides more accurate results for:
+                <ul>
+                    <li>Wells not centered in grid blocks</li>
+                    <li>Partially penetrating wells</li>
+                    <li>Wells near boundaries</li>
+                    <li>Hydraulic fractures</li>
+                </ul>
+            </li>
+            <li>For hydraulic fractures, the traditional approach can overestimate the Well Index by a factor of 50, leading to significant errors in production forecasts.</li>
+            <li>The advanced method reduces to Peaceman's formula in simple cases, satisfying the correspondence principle.</li>
+        </ol>
+    </div>
+    
+    <p>Understanding and accurately calculating the Well Index is essential for efficient oil and gas production. The numerical-analytical method presented in the paper provides a more robust approach that can handle the complexities of modern well designs and reservoir characteristics.</p>
+    
+    <script>
+        // Initialize the simulation when the page loads
+        window.onload = function() {
+            updateWellIndex();
+            updateFractureIndex();
+        };
+        
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        function updateWellIndex() {
+            // Get values from sliders
+            const permeability = parseFloat(document.getElementById("permeability").value);
+            const thickness = parseFloat(document.getElementById("thickness").value);
+            const wellRadius = parseFloat(document.getElementById("wellRadius").value) / 100; // Convert cm to m
+            const blockSize = parseFloat(document.getElementById("blockSize").value);
+            const penetrationRatio = parseFloat(document.getElementById("penetrationRatio").value) / 100;
+            const wellPosition = parseFloat(document.getElementById("wellPosition").value) / 100;
+            
+            // Update displayed values
+            document.getElementById("permeabilityValue").textContent = permeability;
+            document.getElementById("thicknessValue").textContent = thickness;
+            document.getElementById("wellRadiusValue").textContent = wellRadius * 100;
+            document.getElementById("blockSizeValue").textContent = blockSize;
+            document.getElementById("penetrationRatioValue").textContent = penetrationRatio * 100;
+            document.getElementById("wellPositionValue").textContent = wellPosition * 100;
+            
+            // Calculate Peaceman's Well Index
+            const ro = 0.2 * blockSize; // Peaceman's equivalent radius
+            const peacemanWI = (2 * Math.PI * permeability * thickness * penetrationRatio) / Math.log(ro / wellRadius);
+            
+            // Calculate advanced method Well Index
+            // This is a simplified version of the advanced method
+            let positionFactor = 1.0;
+            if (wellPosition > 0) {
+                positionFactor = 1.0 - 0.3 * wellPosition; // Simplified factor to account for well position
+            }
+            
+            let penetrationFactor = 1.0;
+            if (penetrationRatio < 1.0) {
+                // Using a simplified version of Muskat's formula for partial penetration
+                penetrationFactor = 0.5 + 0.5 * penetrationRatio;
+            }
+            
+            const advancedWI = peacemanWI * positionFactor * penetrationFactor;
+            
+            // Calculate difference
+            const diffPercent = Math.abs((advancedWI - peacemanWI) / peacemanWI * 100);
+            
+            // Update results
+            document.getElementById("peacemanWI").textContent = peacemanWI.toFixed(2);
+            document.getElementById("advancedWI").textContent = advancedWI.toFixed(2);
+            document.getElementById("difference").textContent = diffPercent.toFixed(2) + "%";
+            
+            // Draw the well visualization
+            drawWell(wellRadius, blockSize, thickness, penetrationRatio, wellPosition);
+        }
+        
+        function updateFractureIndex() {
+            // Get values from sliders
+            const permeability = parseFloat(document.getElementById("fracPermeability").value);
+            const fracLength = parseFloat(document.getElementById("fracLength").value);
+            const fracWidth = parseFloat(document.getElementById("fracWidth").value) / 1000; // Convert mm to m
+            const fracHeight = parseFloat(document.getElementById("fracHeight").value);
+            const gridSize = parseFloat(document.getElementById("gridSize").value);
+            
+            // Update displayed values
+            document.getElementById("fracPermeabilityValue").textContent = permeability;
+            document.getElementById("fracLengthValue").textContent = fracLength;
+            document.getElementById("fracWidthValue").textContent = fracWidth * 1000;
+            document.getElementById("fracHeightValue").textContent = fracHeight;
+            document.getElementById("gridSizeValue").textContent = gridSize;
+            
+            // Calculate virtual well radius for Peaceman's approach
+            const virtualWellRadius = (fracWidth + fracHeight) / Math.PI;
+            
+            // Calculate Peaceman's equivalent radius
+            const ro = 0.14 * Math.sqrt(gridSize * gridSize + fracHeight * fracHeight);
+            
+            // Calculate Peaceman's Well Index for fracture
+            const peacemanFracWI = (2 * Math.PI * permeability * fracLength) / Math.log(ro / virtualWellRadius);
+            
+            // Calculate analytical solution for infinite fracture
+            // Simplified linear flow model
+            const analyticalWI = 2 * permeability * fracLength * fracHeight / gridSize;
+            
+            // Calculate advanced method Well Index for fracture
+            // This is a simplified version that approximates the infinite sum in the paper
+            const advancedFracWI = (2 * permeability * fracLength * fracHeight / gridSize) / 
+                                  (2 * fracHeight / (Math.PI * gridSize) * 
+                                   (Math.log(gridSize / virtualWellRadius) + 0.5) - 1);
+            
+            // Update results
+            document.getElementById("peacemanFracWI").textContent = peacemanFracWI.toFixed(2);
+            document.getElementById("advancedFracWI").textContent = advancedFracWI.toFixed(2);
+            document.getElementById("analyticalFracWI").textContent = analyticalWI.toFixed(2);
+            
+            // Draw the fracture visualization
+            drawFracture(fracLength, fracWidth, fracHeight, gridSize);
+        }
+        
+        function drawWell(wellRadius, blockSize, thickness, penetrationRatio, wellPosition) {
+            const canvas = document.getElementById("wellCanvas");
+            const ctx = canvas.getContext("2d");
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set scale
+            const scale = Math.min(canvas.width / (blockSize * 1.5), canvas.height / (thickness * 1.5));
+            
+            // Draw grid block
+            const blockWidth = blockSize * scale;
+            const blockHeight = thickness * scale;
+            const blockX = (canvas.width - blockWidth) / 2;
+            const blockY = (canvas.height - blockHeight) / 2;
+            
+            ctx.strokeStyle = "#888";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(blockX, blockY, blockWidth, blockHeight);
+            
+            // Calculate well position
+            const wellX = blockX + blockWidth / 2 + wellPosition * blockWidth / 2;
+            const wellCenterY = blockY + blockHeight / 2;
+            
+            // Draw well
+            const wellRadiusPixels = Math.max(3, wellRadius * scale);
+            
+            // Draw well casing
+            ctx.beginPath();
+            ctx.moveTo(wellX - wellRadiusPixels, blockY);
+            ctx.lineTo(wellX - wellRadiusPixels, blockY + blockHeight);
+            ctx.moveTo(wellX + wellRadiusPixels, blockY);
+            ctx.lineTo(wellX + wellRadiusPixels, blockY + blockHeight);
+            ctx.strokeStyle = "#555";
+            ctx.stroke();
+            
+            // Draw perforation
+            const perfStart = wellCenterY - (blockHeight * penetrationRatio) / 2;
+            const perfHeight = blockHeight * penetrationRatio;
+            
+            ctx.fillStyle = "rgba(0, 150, 255, 0.5)";
+            ctx.fillRect(wellX - wellRadiusPixels, perfStart, wellRadiusPixels * 2, perfHeight);
+            
+            // Draw flow lines
+            ctx.strokeStyle = "rgba(0, 100, 255, 0.3)";
+            ctx.lineWidth = 1;
+            
+            for (let angle = 0; angle < 2 * Math.PI; angle += Math.PI / 8) {
+                const startRadius = blockWidth / 2;
+                const startX = wellX + Math.cos(angle) * startRadius;
+                const startY = wellCenterY + Math.sin(angle) * startRadius;
+                
+                if (startY >= perfStart && startY <= perfStart + perfHeight) {
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(wellX + Math.cos(angle) * wellRadiusPixels, 
+                               wellCenterY + Math.sin(angle) * wellRadiusPixels);
+                    ctx.stroke();
+                }
+            }
+            
+            // Add labels
+            ctx.fillStyle = "#000";
+            ctx.font = "14px Arial";
+            ctx.fillText(`Block Size: ${blockSize}m × ${thickness}m`, 10, 20);
+            ctx.fillText(`Well Radius: ${(wellRadius * 100).toFixed(1)}cm`, 10, 40);
+            ctx.fillText(`Penetration: ${(penetrationRatio * 100).toFixed(0)}%`, 10, 60);
+            ctx.fillText(`Position: ${(wellPosition * 100).toFixed(0)}% from center`, 10, 80);
+        }
+        
+        function drawFracture(fracLength, fracWidth, fracHeight, gridSize) {
+            const canvas = document.getElementById("fractureCanvas");
+            const ctx = canvas.getContext("2d");
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set scale for top view
+            const scale = Math.min(canvas.width / (gridSize * 3), canvas.height / (gridSize * 3));
+            
+            // Draw grid block from top view
+            const blockSize = gridSize * scale;
+            const blockX = (canvas.width - blockSize) / 2;
+            const blockY = (canvas.height - blockSize) / 2;
+            
+            ctx.strokeStyle = "#888";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(blockX, blockY, blockSize, blockSize);
+            
+            // Draw well in center
+            const wellX = blockX + blockSize / 2;
+            const wellY = blockY + blockSize / 2;
+            const wellRadius = 5;
+            
+            ctx.fillStyle = "#555";
+            ctx.beginPath();
+            ctx.arc(wellX, wellY, wellRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw fracture
+            const fracLengthPixels = fracLength * scale;
+            const fracWidthPixels = Math.max(2, fracWidth * scale * 100); // Exaggerate for visibility
+            
+            ctx.fillStyle = "rgba(255, 50, 50, 0.7)";
+            ctx.fillRect(wellX - fracLengthPixels, wellY - fracWidthPixels / 2, fracLengthPixels * 2, fracWidthPixels);
+            
+            // Draw flow lines
+            ctx.strokeStyle = "rgba(255, 100, 100, 0.3)";
+            ctx.lineWidth = 1;
+            
+            // Vertical flow lines (from top and bottom)
+            for (let x = wellX - fracLengthPixels + 10; x <= wellX + fracLengthPixels - 10; x += 20) {
+                // Flow from top
+                ctx.beginPath();
+                ctx.moveTo(x, blockY);
+                ctx.lineTo(x, wellY - fracWidthPixels / 2);
+                ctx.stroke();
+                
+                // Flow from bottom
+                ctx.beginPath();
+                ctx.moveTo(x, blockY + blockSize);
+                ctx.lineTo(x, wellY + fracWidthPixels / 2);
+                ctx.stroke();
+            }
+            
+            // Horizontal flow lines (from sides)
+            for (let y = wellY - fracHeight * scale / 2; y <= wellY + fracHeight * scale / 2; y += 20) {
+                // Flow from left
+                if (wellX - fracLengthPixels > blockX) {
+                    ctx.beginPath();
+                    ctx.moveTo(blockX, y);
+                    ctx.lineTo(wellX - fracLengthPixels, y);
+                    ctx.stroke();
+                }
+                
+                // Flow from right
+                if (wellX + fracLengthPixels < blockX + blockSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(blockX + blockSize, y);
+                    ctx.lineTo(wellX + fracLengthPixels, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // Add labels
+            ctx.fillStyle = "#000";
+            ctx.font = "14px Arial";
+            ctx.fillText(`Grid Size: ${gridSize}m × ${gridSize}m`, 10, 20);
+            ctx.fillText(`Fracture Length: ${fracLength * 2}m`, 10, 40);
+            ctx.fillText(`Fracture Width: ${(fracWidth * 1000).toFixed(1)}mm`, 10, 60);
+            ctx.fillText(`Fracture Height: ${fracHeight}m`, 10, 80);
+        }
+    </script>
+</body>
+</html>

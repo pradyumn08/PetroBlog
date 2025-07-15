@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>First Principles: Well Models in Reservoir Simulation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 10px;
+            border-left: 4px solid #f39c12;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        figure {
+            text-align: center;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 150px;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .interactive-section {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Well Models in Reservoir Simulation: A First Principles Approach</h1>
+    
+    <p>Have you ever wondered how engineers model oil wells in computer simulations? It's a fascinating problem that combines fluid dynamics, numerical methods, and practical engineering. In this post, we'll break down the complex concept of well models in reservoir simulation using first principles.</p>
+    
+    <div class="note">
+        <p><strong>Key Insight:</strong> A well in a reservoir is much smaller than the grid blocks used to simulate the reservoir. This creates a mathematical challenge that requires special treatment.</p>
+    </div>
+    
+    <h2>The Scale Problem: Why Wells Need Special Treatment</h2>
+    
+    <p>Imagine trying to represent a drinking straw inserted into a swimming pool using only 1-foot cubes to build your model. The straw (well) is much smaller than your building blocks (grid cells), making it impossible to represent directly.</p>
+    
+    <p>In reservoir simulation, this scale disparity is even more extreme:</p>
+    
+    <ul>
+        <li>Typical well radius: 0.1-0.5 ft</li>
+        <li>Typical grid block size: 100-1000 ft</li>
+        <li>Ratio: 0.001 or less</li>
+    </ul>
+    
+    <p>This means we can't directly model the well as a boundary in our numerical grid. Instead, we need to represent it as a <strong>source term</strong> in our equations.</p>
+    
+    <h2>The Mathematical Foundation</h2>
+    
+    <p>Let's start with the basic equation for steady-state, single-phase radial flow into a well:</p>
+    
+    <p>\[ q = \frac{2\pi k h}{\mu} \cdot \frac{p_{\text{well}} - p_e}{\ln(r_e/r_w) + s} \]</p>
+    
+    <p>Where:</p>
+    <ul>
+        <li>\(q\) = flow rate</li>
+        <li>\(k\) = permeability</li>
+        <li>\(h\) = reservoir thickness</li>
+        <li>\(\mu\) = fluid viscosity</li>
+        <li>\(p_{\text{well}}\) = pressure at the well</li>
+        <li>\(p_e\) = pressure at the drainage radius</li>
+        <li>\(r_e\) = drainage radius</li>
+        <li>\(r_w\) = wellbore radius</li>
+        <li>\(s\) = skin factor (additional flow resistance)</li>
+    </ul>
+    
+    <p>This equation comes from the analytical solution of radial flow, which is:</p>
+    
+    <p>\[ p = p_{\text{well}} - \frac{q\mu}{2\pi k h}\ln\frac{r}{r_w} \]</p>
+    
+    <h2>The Problem with Grid Blocks</h2>
+    
+    <p>In a numerical simulator, we don't work with continuous space but with discrete grid blocks. Each grid block has a pressure value at its center (the node).</p>
+    
+    <p>The key question becomes: <strong>How do we relate the well pressure and flow rate to the pressure in the grid block containing the well?</strong></p>
+    
+    <p>The naive approach would be to use:</p>
+    
+    <p>\[ q = \frac{2\pi k h}{\mu} \cdot \frac{p_{\text{well}} - p_{\text{node},0}}{\ln(r_e/r_w)} \]</p>
+    
+    <p>But this leads to large errors because the pressure at the node doesn't accurately represent the average pressure in the grid block due to the steep pressure gradient near the well.</p>
+    
+    <div class="highlight">
+        <p><strong>Key insight:</strong> The pressure at the node of a grid block containing a well is NOT equal to what you would calculate from the analytical solution at that point. The numerical approximation breaks down close to the well.</p>
+    </div>
+    
+    <h2>Peaceman's Solution: The Equivalent Radius</h2>
+    
+    <p>In 1978, Peaceman discovered a more accurate approach. He found that the pressure at the node of a well block corresponds to the analytical solution at an <strong>equivalent radius</strong> \(r_0\), not at the center of the grid block.</p>
+    
+    <p>For a square grid with dimensions \(\Delta x = \Delta y\), this equivalent radius is:</p>
+    
+    <p>\[ r_0 = 0.2 \Delta x \]</p>
+    
+    <p>More generally:</p>
+    
+    <p>\[ r_0 = 0.28 \frac{\sqrt{k_y/k_x}\Delta x^2 + \sqrt{k_x/k_y}\Delta y^2}{\sqrt[4]{k_y/k_x} + \sqrt[4]{k_x/k_y}} \]</p>
+    
+    <p>This leads to the improved well model:</p>
+    
+    <p>\[ q = \frac{2\pi k h}{\mu} \cdot \frac{p_{\text{well}} - p_{\text{node},0}}{\ln(r_0/r_w)} \]</p>
+    
+    <p>For a square grid with \(\Delta x = \Delta y\), this simplifies to:</p>
+    
+    <p>\[ q = \frac{2\pi k h}{\mu} \cdot \frac{p_{\text{well}} - p_{\text{node},0}}{\ln(0.2\Delta x/r_w)} \]</p>
+    
+    <h2>Understanding Through Analogy</h2>
+    
+    <p>Think of the well model as a "correction factor" for the grid resolution problem. It's like using a magnifying glass to see details that are too small for your normal vision.</p>
+    
+    <p>Another analogy: Imagine measuring the temperature at the center of a room with a heater in one corner. The center temperature doesn't tell you the temperature right next to the heater. You need a mathematical model to relate the two.</p>
+    
+    <div class="interactive-section">
+        <h3>Interactive Well Model Simulator</h3>
+        
+        <p>Adjust the parameters below to see how they affect the pressure distribution around a well and the calculated flow rate.</p>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (mD):</label>
+            <input type="range" id="permeability" min="1" max="1000" value="100">
+            <span class="value-display" id="permeability-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="thickness">Thickness (ft):</label>
+            <input type="range" id="thickness" min="10" max="200" value="50">
+            <span class="value-display" id="thickness-value">50</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="viscosity">Viscosity (cp):</label>
+            <input type="range" id="viscosity" min="0.1" max="10" step="0.1" value="1">
+            <span class="value-display" id="viscosity-value">1.0</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="wellPressure">Well Pressure (psi):</label>
+            <input type="range" id="wellPressure" min="1000" max="5000" value="2000">
+            <span class="value-display" id="wellPressure-value">2000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="resPressure">Reservoir Pressure (psi):</label>
+            <input type="range" id="resPressure" min="1000" max="5000" value="4000">
+            <span class="value-display" id="resPressure-value">4000</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="wellRadius">Well Radius (ft):</label>
+            <input type="range" id="wellRadius" min="0.1" max="1" step="0.1" value="0.3">
+            <span class="value-display" id="wellRadius-value">0.3</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="gridSize">Grid Size (ft):</label>
+            <input type="range" id="gridSize" min="50" max="500" step="10" value="100">
+            <span class="value-display" id="gridSize-value">100</span>
+        </div>
+        
+        <div class="slider-container">
+            <label for="skin">Skin Factor:</label>
+            <input type="range" id="skin" min="-5" max="20" value="0">
+            <span class="value-display" id="skin-value">0</span>
+        </div>
+        
+        <button id="calculate">Calculate Flow</button>
+        
+        <div style="margin-top: 20px;">
+            <p><strong>Results:</strong></p>
+            <p>Flow Rate: <span id="flowRate">0</span> STB/day</p>
+            <p>Equivalent Radius: <span id="equivRadius">0</span> ft</p>
+            <p>Pressure at Equivalent Radius: <span id="equivPressure">0</span> psi</p>
+        </div>
+        
+        <figure>
+            <canvas id="pressureCanvas" width="600" height="400"></canvas>
+            <figcaption>Pressure distribution around the well (radial view)</figcaption>
+        </figure>
+    </div>
+    
+    <h2>Extensions to More Complex Scenarios</h2>
+    
+    <h3>Multiple Wells in a Grid Block</h3>
+    
+    <p>When multiple wells exist in a single grid block, we have two options:</p>
+    
+    <ol>
+        <li>Create a "pseudowell" with combined properties</li>
+        <li>Model each well separately, accounting for interference</li>
+    </ol>
+    
+    <p>For option 1, if we know the ratio of production rates \(\lambda_j\):</p>
+    
+    <p>\[ q = -\frac{2\pi k h}{\mu}\sum_{j=1}^{N}\sum_{i=1}^{4}g_{1i}(j)(p_{\text{well}}-p_i) \]</p>
+    
+    <h3>Multiphase Flow</h3>
+    
+    <p>For multiphase flow (oil, gas, water), we modify the permeability term to include relative permeability:</p>
+    
+    <p>\[ q_p = \frac{2\pi k k_{rp} h}{\mu_p}\sum_{i=1}^{4}g_{1i}(p_{\text{well}}-p_i) \]</p>
+    
+    <p>Where \(k_{rp}\) is the relative permeability of phase \(p\).</p>
+    
+    <h3>Compressible Flow</h3>
+    
+    <p>For compressible fluids, we need to check if the flow can be considered quasi-steady. We define a dimensionless number:</p>
+    
+    <p>\[ N_{\dot{p}} = \frac{\phi\mu c_t\Delta x^2}{k t_{sc}} \]</p>
+    
+    <p>Where \(t_{sc}\) is the characteristic time for pressure change. If \(N_{\dot{p}} \ll 1\), we can use the steady-state approximation.</p>
+    
+    <h2>Well Bottomhole Pressure Gradient</h2>
+    
+    <p>The pressure inside the wellbore isn't constant but varies with depth due to:</p>
+    
+    <ol>
+        <li>Gravity (hydrostatic pressure)</li>
+        <li>Friction</li>
+        <li>Acceleration (inertial effects)</li>
+    </ol>
+    
+    <p>For most oil wells at bottomhole conditions, the pressure gradient is dominated by hydrostatic pressure:</p>
+    
+    <p>\[ \frac{dp}{dz} = \bar{\rho}g \]</p>
+    
+    <p>Where \(\bar{\rho}\) is the average density of the fluid mixture:</p>
+    
+    <p>\[ \bar{\rho} = \alpha\rho_g + (1-\alpha)\rho_{\ell} \]</p>
+    
+    <p>And \(\alpha\) is the void fraction (gas volume fraction).</p>
+    
+    <h2>Conclusion: The Power of Mathematical Models</h2>
+    
+    <p>Well models in reservoir simulation demonstrate how mathematical abstractions help us solve practical engineering problems. By representing a physical boundary (the well) as a source term with carefully calculated properties, we can accurately simulate flow behavior despite the limitations of our numerical grid.</p>
+    
+    <p>This approach has enabled the oil and gas industry to optimize production, plan field development, and maximize recovery from reservoirs for decades.</p>
+    
+    <div class="note">
+        <p><strong>Key takeaway:</strong> When direct representation is impossible due to scale differences, we can use mathematical models to bridge the gap between the physical reality and our computational representation.</p>
+    </div>
+    
+    <script>
+        // Initialize sliders and display values
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            const valueDisplay = document.getElementById(`${slider.id}-value`);
+            valueDisplay.textContent = slider.value;
+            
+            slider.addEventListener('input', () => {
+                valueDisplay.textContent = parseFloat(slider.value).toFixed(slider.step === '0.1' ? 1 : 0);
+            });
+        });
+        
+        // Set up the canvas for pressure visualization
+        const canvas = document.getElementById('pressureCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Calculate button functionality
+        document.getElementById('calculate').addEventListener('click', () => {
+            // Get values from sliders
+            const k = parseFloat(document.getElementById('permeability').value) * 0.001; // Convert mD to Darcy
+            const h = parseFloat(document.getElementById('thickness').value);
+            const mu = parseFloat(document.getElementById('viscosity').value) * 0.001; // Convert cp to Pa·s
+            const pWell = parseFloat(document.getElementById('wellPressure').value);
+            const pRes = parseFloat(document.getElementById('resPressure').value);
+            const rw = parseFloat(document.getElementById('wellRadius').value);
+            const dx = parseFloat(document.getElementById('gridSize').value);
+            const skin = parseFloat(document.getElementById('skin').value);
+            
+            // Calculate equivalent radius (Peaceman's formula)
+            const r0 = 0.2 * dx;
+            
+            // Calculate flow rate using well model
+            const q = (2 * Math.PI * k * h / mu) * (pRes - pWell) / (Math.log(r0/rw) + skin);
+            
+            // Convert to STB/day (simplified conversion)
+            const qSTB = Math.abs(q) * 6.33; // Approximate conversion factor
+            
+            // Calculate pressure at equivalent radius
+            const pEquiv = pWell + (q * mu / (2 * Math.PI * k * h)) * Math.log(r0/rw);
+            
+            // Display results
+            document.getElementById('flowRate').textContent = qSTB.toFixed(2);
+            document.getElementById('equivRadius').textContent = r0.toFixed(2);
+            document.getElementById('equivPressure').textContent = pEquiv.toFixed(2);
+            
+            // Draw pressure distribution
+            drawPressureDistribution(k, h, mu, pWell, pRes, rw, dx, skin);
+        });
+        
+        function drawPressureDistribution(k, h, mu, pWell, pRes, rw, dx, skin) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const margin = 50;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin, height - margin);
+            ctx.lineTo(width - margin, height - margin);
+            ctx.moveTo(margin, height - margin);
+            ctx.lineTo(margin, margin);
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+            
+            // Label axes
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText('Distance from well (ft)', width/2, height - 20);
+            ctx.save();
+            ctx.translate(15, height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Pressure (psi)', 0, 0);
+            ctx.restore();
+            
+            // Calculate pressure profile
+            const r0 = 0.2 * dx;
+            const maxDist = dx * 3;
+            const q = (2 * Math.PI * k * h / mu) * (pRes - pWell) / (Math.log(r0/rw) + skin);
+            
+            // Draw pressure curve
+            ctx.beginPath();
+            
+            for (let x = 0; x < width - 2*margin; x++) {
+                const r = rw + (x / (width - 2*margin)) * maxDist;
+                let p;
+                
+                if (r < rw) {
+                    p = pWell;
+                } else {
+                    p = pWell + (q * mu / (2 * Math.PI * k * h)) * Math.log(r/rw);
+                }
+                
+                const xPos = margin + x;
+                const yPos = height - margin - ((p - pWell) / (pRes - pWell)) * (height - 2*margin);
+                
+                if (x === 0) {
+                    ctx.moveTo(xPos, yPos);
+                } else {
+                    ctx.lineTo(xPos, yPos);
+                }
+            }
+            
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Mark well position
+            ctx.beginPath();
+            ctx.arc(margin, height - margin - ((pWell - pWell) / (pRes - pWell)) * (height - 2*margin), 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.fillText('Well', margin + 10, height - margin - 10);
+            
+            // Mark equivalent radius
+            const r0Pos = margin + (r0 / maxDist) * (width - 2*margin);
+            const p0 = pWell + (q * mu / (2 * Math.PI * k * h)) * Math.log(r0/rw);
+            const y0Pos = height - margin - ((p0 - pWell) / (pRes - pWell)) * (height - 2*margin);
+            
+            ctx.beginPath();
+            ctx.arc(r0Pos, y0Pos, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            ctx.fillText('r₀', r0Pos + 10, y0Pos - 10);
+            
+            // Draw grid block boundary
+            const dxPos = margin + (dx / maxDist) * (width - 2*margin);
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(dxPos, margin);
+            ctx.lineTo(dxPos, height - margin);
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillText('Grid Block Edge', dxPos - 50, margin + 20);
+        }
+        
+        // Initial calculation
+        document.getElementById('calculate').click();
+    </script>
+</body>
+</html>

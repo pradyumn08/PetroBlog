@@ -1,0 +1,912 @@
+<html>
+<head>
+  <title>Understanding Unsteady-State Spherical Flow: A First Principles Exploration</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    h1 {
+      font-size: 2.2em;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    h2 {
+      font-size: 1.8em;
+      border-bottom: 1px solid #bdc3c7;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+    h3 {
+      font-size: 1.4em;
+      margin-top: 25px;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    .container {
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 5px solid #3498db;
+    }
+    .highlight {
+      background-color: #ffffcc;
+      padding: 2px 4px;
+    }
+    .note {
+      background-color: #e8f4f8;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      border-left: 5px solid #3498db;
+    }
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', monospace;
+      background-color: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .simulation {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 20px 0;
+      background-color: #f9f9f9;
+    }
+    .slider-container {
+      margin: 20px 0;
+    }
+    .slider {
+      width: 80%;
+    }
+    .slider-value {
+      display: inline-block;
+      width: 50px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .formula-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <h1>Understanding Unsteady-State Spherical Flow: A First Principles Exploration</h1>
+  
+  <p>Welcome to a deep dive into one of the more fascinating but less commonly discussed flow patterns in reservoir engineering: spherical flow. While most petroleum engineers are familiar with radial flow (think of a horizontal well producing from a cylindrical reservoir), spherical flow presents unique characteristics that make it both challenging to understand and valuable in certain scenarios.</p>
+  
+  <div class="note">
+    <p><strong>Why should you care about spherical flow?</strong> Because it appears in several important scenarios:</p>
+    <ul>
+      <li>Wireline formation testing</li>
+      <li>Vertical interference testing</li>
+      <li>Partially penetrating wells</li>
+      <li>Selectively completed wells</li>
+      <li>Blocked perforations or damaged open-hole completions</li>
+    </ul>
+  </div>
+  
+  <h2>From Complex to Simple: The Core Concepts</h2>
+  
+  <p>At its heart, spherical flow is about fluid moving toward a spherical sink (or away from a spherical source) in three dimensions. The key insight that makes this problem tractable is the transformation from a complex 3D problem to a simpler 1D problem.</p>
+  
+  <h3>The Fundamental Equation</h3>
+  
+  <div class="formula-box">
+    <p>The diffusion equation for spherical flow is:</p>
+    <p>\[ \frac{1}{r^{2}}\frac{\partial}{\partial r}\left(r^{2}\frac{\partial p}{\partial r}\right) = \frac{\phi\mu c}{k}\frac{\partial p}{\partial t} \]</p>
+  </div>
+  
+  <p>This equation might look intimidating, but let's break it down:</p>
+  
+  <ul>
+    <li>The left side describes how pressure changes with distance in a spherical coordinate system</li>
+    <li>The right side describes how pressure changes with time</li>
+    <li>\(\phi\) is porosity (fraction of rock that's pore space)</li>
+    <li>\(\mu\) is fluid viscosity (resistance to flow)</li>
+    <li>\(c\) is compressibility (how much the fluid volume changes with pressure)</li>
+    <li>\(k\) is permeability (how easily fluid flows through the rock)</li>
+  </ul>
+  
+  <h3>The Magic Transformation</h3>
+  
+  <p>The genius move in solving this equation comes from Carslaw and Jaeger: by setting \(b = pr\), we transform the spherical flow problem into a linear flow problem! This is the key that unlocks the entire solution.</p>
+  
+  <div class="container">
+    <h3>Real-World Analogy</h3>
+    <p>Think of a crowd of people in a large stadium all trying to exit through a single doorway. If the stadium is circular and everyone moves directly toward the exit, that's radial flow. If the stadium is spherical (imagine a dome) and people can come from all directions including above and below, that's spherical flow.</p>
+  </div>
+  
+  <h2>Dimensionless Variables: The Universal Language</h2>
+  
+  <p>To make our solutions applicable to any reservoir, we use dimensionless variables. These are like converting different currencies to a single standard so we can compare them directly.</p>
+  
+  <div class="formula-box">
+    <p>\[ p_{D} = \frac{4\pi k r_{sw}(p_{i} - p_{r,t})}{q\mu} \]</p>
+    <p>\[ t_{D} = \frac{k r_{sw}^{2}t}{\phi\mu c r^{4}} \]</p>
+    <p>\[ r_{D} = \frac{r - r_{sw}}{r} \]</p>
+  </div>
+  
+  <p>Where:</p>
+  <ul>
+    <li>\(p_D\) is dimensionless pressure drop</li>
+    <li>\(t_D\) is dimensionless time</li>
+    <li>\(r_D\) is dimensionless distance</li>
+    <li>\(r_{sw}\) is the pseudo-spherical wellbore radius (we'll explain this soon)</li>
+  </ul>
+  
+  <h3>The Pseudo-Spherical Wellbore Radius</h3>
+  
+  <p>Here's where things get interesting. Real wells are cylindrical, not spherical. So how do we apply spherical flow equations? We use an equivalent radius \(r_{sw}\) that represents our cylindrical wellbore as if it were a sphere:</p>
+  
+  <div class="formula-box">
+    <p>\[ r_{sw} = \frac{0.5b}{\ln(b/r_w)} \]</p>
+  </div>
+  
+  <p>Where \(b\) is the length of the open or perforated interval and \(r_w\) is the actual wellbore radius.</p>
+  
+  <div class="note">
+    <p><strong>Visualization tip:</strong> A cylindrical wellbore with radius of 5 inches might be represented by a pseudo-spherical wellbore with radius of 3 feet. The spherical model is just a mathematical convenience that gives us the same flow behavior.</p>
+  </div>
+  
+  <div class="simulation">
+    <h3>Interactive Visualization: Cylindrical vs. Spherical Wellbore</h3>
+    <canvas id="wellboreCanvas" width="800" height="400"></canvas>
+    <div class="slider-container">
+      <label for="intervalLength">Perforated Interval Length (b): </label>
+      <input type="range" id="intervalLength" class="slider" min="5" max="100" value="28">
+      <span id="intervalValue" class="slider-value">28 ft</span>
+    </div>
+    <div class="slider-container">
+      <label for="wellboreRadius">Wellbore Radius (r<sub>w</sub>): </label>
+      <input type="range" id="wellboreRadius" class="slider" min="0.1" max="1" step="0.1" value="0.4">
+      <span id="radiusValue" class="slider-value">0.4 ft</span>
+    </div>
+    <p>Calculated Pseudo-Spherical Radius (r<sub>sw</sub>): <span id="pseudoRadius">3.33 ft</span></p>
+  </div>
+  
+  <h2>The Boundary Value Problem</h2>
+  
+  <p>To solve our diffusion equation, we need to define:</p>
+  <ol>
+    <li>Initial conditions (what's happening at time zero)</li>
+    <li>Boundary conditions (what's happening at the wellbore and far from the well)</li>
+  </ol>
+  
+  <h3>Initial Condition</h3>
+  
+  <div class="formula-box">
+    <p>\[ p_D(r_D, t_D=0) = 0; 0 \leq r_D \leq 1 \]</p>
+  </div>
+  
+  <p>This means the pressure is initially uniform throughout the reservoir.</p>
+  
+  <h3>Outer Boundary Condition</h3>
+  
+  <div class="formula-box">
+    <p>\[ \lim_{r_D \rightarrow 1} [p_D(r_D, t_D)] = 0; t_D > 0 \]</p>
+  </div>
+  
+  <p>This means the pressure at the far boundary remains at the initial pressure.</p>
+  
+  <h3>Inner Boundary Condition</h3>
+  
+  <p>This is where we account for wellbore storage and skin effects:</p>
+  
+  <div class="formula-box">
+    <p>\[ C_D\frac{dp_{wD}}{dt_D} - \left(\frac{\partial p_D}{\partial r_D}\right)_{r_D=0} = 1 \]</p>
+  </div>
+  
+  <p>Where:</p>
+  <ul>
+    <li>\(C_D\) is the dimensionless wellbore storage coefficient</li>
+    <li>\(p_{wD}\) is the dimensionless wellbore pressure</li>
+  </ul>
+  
+  <h2>Understanding Skin Effect</h2>
+  
+  <p>The skin effect represents damage (or improvement) in the near-wellbore region. It's like a thin membrane around the wellbore that creates additional pressure drop:</p>
+  
+  <div class="formula-box">
+    <p>\[ s = \frac{4\pi k r_{sw}\Delta p_s}{q_{sf}\mu} \]</p>
+  </div>
+  
+  <p>And the relationship between wellbore pressure and formation pressure is:</p>
+  
+  <div class="formula-box">
+    <p>\[ p_{wD}(t_D) = p_D(r_D=0, t_D) - s\left(\frac{\partial p_D}{\partial r_D}\right)_{r_D=0} \]</p>
+  </div>
+  
+  <h2>Understanding Wellbore Storage</h2>
+  
+  <p>When we open a well, fluid doesn't instantly flow from the formation. First, fluid stored in the wellbore must be produced. This is wellbore storage, quantified by:</p>
+  
+  <div class="formula-box">
+    <p>\[ C_D = \frac{C}{2\pi\phi c_t r_{sw}^3} \]</p>
+  </div>
+  
+  <p>Where \(C\) is the volume of wellbore fluid unloaded per unit pressure change.</p>
+  
+  <h2>The Complete Solution</h2>
+  
+  <p>The full solution to this problem requires the Laplace transform. The result is:</p>
+  
+  <div class="formula-box">
+    <p>\[ \bar{p}_{wD}(z) = \frac{A+s\sqrt{z}B}{z^{3/2}[\sqrt{z}C_D(A+s\sqrt{z}B)+B]} \]</p>
+  </div>
+  
+  <p>Where:</p>
+  <ul>
+    <li>\(A = 1-e^{-2\sqrt{z}}\)</li>
+    <li>\(B = 1+e^{-2\sqrt{z}}\)</li>
+    <li>\(z\) is the Laplace transform variable</li>
+  </ul>
+  
+  <p>This complex solution must be numerically inverted to get pressure as a function of time. However, we can derive simpler approximations for early and late time behavior.</p>
+  
+  <h3>Early-Time Approximation</h3>
+  
+  <div class="formula-box">
+    <p>\[ p_{wD}(t_D) = \frac{t_D}{C_D}; s \geq 0; C_D > 0 \]</p>
+  </div>
+  
+  <p>This is the wellbore storage-dominated period, showing up as a unit slope line on a log-log plot.</p>
+  
+  <h3>Late-Time Approximation</h3>
+  
+  <div class="formula-box">
+    <p>\[ p_{wD}(t_D) = \sqrt{\frac{t_D}{\pi}}(1-e^{-1/t_D})+\text{erfc}\left(\frac{1}{\sqrt{t_D}}\right)+s \]</p>
+  </div>
+  
+  <p>Which further simplifies for very long times to:</p>
+  
+  <div class="formula-box">
+    <p>\[ p_{wD}(t_D) = 1 - \frac{1}{\sqrt{\pi t_D}} + s \]</p>
+  </div>
+  
+  <h3>The Unique Behavior of Spherical Flow</h3>
+  
+  <div class="note">
+    <p><strong>Key insight:</strong> Unlike radial flow, spherical flow reaches a steady-state pressure at the wellbore even though the reservoir is still in transient flow! The steady-state value is \(p_{wD} = 1 + s\).</p>
+  </div>
+  
+  <h2>Interactive Type Curve Explorer</h2>
+  
+  <div class="simulation">
+    <h3>Spherical Flow Type Curves</h3>
+    <canvas id="typeCurveCanvas" width="800" height="500"></canvas>
+    <div class="slider-container">
+      <label for="skinFactor">Skin Factor (s): </label>
+      <input type="range" id="skinFactor" class="slider" min="0" max="10" value="0">
+      <span id="skinValue" class="slider-value">0</span>
+    </div>
+    <div class="slider-container">
+      <label for="storageFactor">Storage Coefficient (C<sub>D</sub>): </label>
+      <input type="range" id="storageFactor" class="slider" min="1" max="5" value="2">
+      <span id="storageValue" class="slider-value">100</span>
+    </div>
+  </div>
+  
+  <h2>Real-World Application: Analyzing a Well Test</h2>
+  
+  <p>Let's walk through how to analyze a pressure drawdown test in a spherical flow system:</p>
+  
+  <h3>Step 1: Plot the pressure data on a log-log plot and match with type curves</h3>
+  
+  <p>This gives us initial estimates of skin factor (s) and storage coefficient (C<sub>D</sub>).</p>
+  
+  <h3>Step 2: Determine when wellbore effects end</h3>
+  
+  <p>The paper provides a useful rule of thumb:</p>
+  
+  <div class="formula-box">
+    <p>\[ t_D \geq C_D(9.005 + 7.538s) \]</p>
+    <p>Or in field units:</p>
+    <p>\[ t \geq \frac{1,695C(9.005 + 7.538s)}{T} \]</p>
+  </div>
+  
+  <h3>Step 3: Analyze late-time data</h3>
+  
+  <p>For spherical flow, a plot of p<sub>wf</sub> vs. 1/√t should be linear with:</p>
+  
+  <div class="formula-box">
+    <p>Slope: \[ m = 2,454.26\frac{qB\mu}{k^{3/2}}\sqrt{\phi\mu c} \]</p>
+    <p>Intercept: \[ I = p_i - \frac{70.627qB\mu}{kr_{sw}}(1+s) \]</p>
+  </div>
+  
+  <h3>Step 4: Calculate permeability and skin</h3>
+  
+  <div class="formula-box">
+    <p>\[ k = \left(\frac{2,454.26qB\mu\sqrt{\phi\mu c}}{m}\right)^{2/3} \]</p>
+    <p>\[ s = \left[\frac{(p_i-I)kr_{sw}}{70.627qB\mu}\right] - 1 \]</p>
+  </div>
+  
+  <h2>Wellbore Phase Redistribution: An Advanced Concept</h2>
+  
+  <p>Sometimes, multi-phase fluids in the wellbore can segregate, causing additional pressure effects. This is modeled by modifying the inner boundary condition:</p>
+  
+  <div class="formula-box">
+    <p>\[ \frac{dq_a}{dq} + \frac{dq_{sf}}{dq} - \frac{dq_\phi}{dq} = 1 \]</p>
+  </div>
+  
+  <p>Where \(q_\phi\) is the flow rate associated with phase redistribution.</p>
+  
+  <p>The phase redistribution pressure is modeled as:</p>
+  
+  <div class="formula-box">
+    <p>\[ p_{\phi D}(t_D) = C_{\phi D}(1-e^{-\gamma_D t_D}) \]</p>
+  </div>
+  
+  <p>This creates a characteristic "hump" in the pressure response that can be identified on log-log plots.</p>
+  
+  <h2>The Spherical Flow Game: Test Your Understanding</h2>
+  
+  <div class="simulation">
+    <h3>Spherical Flow Simulator</h3>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <div class="slider-container">
+      <label for="flowRate">Production Rate (q): </label>
+      <input type="range" id="flowRate" class="slider" min="100" max="1000" value="250">
+      <span id="flowValue" class="slider-value">250 STB/D</span>
+    </div>
+    <div class="slider-container">
+      <label for="permeability">Permeability (k): </label>
+      <input type="range" id="permeability" class="slider" min="1" max="200" value="88">
+      <span id="permValue" class="slider-value">88 md</span>
+    </div>
+    <div class="slider-container">
+      <label for="gameSkin">Skin Factor (s): </label>
+      <input type="range" id="gameSkin" class="slider" min="0" max="20" value="5">
+      <span id="gameSkinValue" class="slider-value">5</span>
+    </div>
+    <button id="startTest">Run Test</button>
+    <div id="results" style="margin-top: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 5px; display: none;">
+      <h4>Test Results</h4>
+      <p>Estimated permeability: <span id="estimatedPerm">0</span> md</p>
+      <p>Estimated skin factor: <span id="estimatedSkin">0</span></p>
+      <p>Accuracy: <span id="accuracy">0</span>%</p>
+    </div>
+  </div>
+  
+  <h2>Key Takeaways</h2>
+  
+  <div class="container">
+    <ol>
+      <li>Spherical flow occurs in partially penetrating wells, wireline formation testing, and other specialized scenarios.</li>
+      <li>The key to solving spherical flow is transforming it to linear flow using the substitution \(b = pr\).</li>
+      <li>Unlike radial flow, spherical flow reaches a steady-state pressure at the wellbore (\(p_{wD} = 1 + s\)).</li>
+      <li>Wellbore storage creates a unit slope line on log-log plots at early times.</li>
+      <li>Late-time analysis uses a plot of pressure vs. 1/√t to determine permeability and skin.</li>
+      <li>Phase redistribution can create a characteristic "hump" in pressure responses.</li>
+    </ol>
+  </div>
+  
+  <h2>Conclusion</h2>
+  
+  <p>Spherical flow analysis provides a powerful tool for understanding specialized well testing scenarios. By transforming a complex 3D problem into a more manageable 1D problem, we can derive practical solutions that help characterize reservoirs and wellbore conditions.</p>
+  
+  <p>The unique characteristic of spherical flow reaching a steady-state wellbore pressure while the reservoir is still in transient flow makes it particularly interesting from both theoretical and practical perspectives.</p>
+  
+  <p>Next time you encounter a partially penetrating well or analyze wireline formation test data, remember the principles of spherical flow and how they differ from the more common radial flow patterns.</p>
+
+  <script>
+    // Wellbore visualization
+    const wellboreCanvas = document.getElementById('wellboreCanvas');
+    const ctx = wellboreCanvas.getContext('2d');
+    const intervalSlider = document.getElementById('intervalLength');
+    const radiusSlider = document.getElementById('wellboreRadius');
+    const intervalValue = document.getElementById('intervalValue');
+    const radiusValue = document.getElementById('radiusValue');
+    const pseudoRadius = document.getElementById('pseudoRadius');
+    
+    function calculatePseudoRadius(b, rw) {
+      return (0.5 * b) / Math.log(b / rw);
+    }
+    
+    function drawWellbores() {
+      const b = parseFloat(intervalSlider.value);
+      const rw = parseFloat(radiusSlider.value);
+      const rsw = calculatePseudoRadius(b, rw);
+      
+      intervalValue.textContent = b + ' ft';
+      radiusValue.textContent = rw.toFixed(1) + ' ft';
+      pseudoRadius.textContent = rsw.toFixed(2) + ' ft';
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, wellboreCanvas.width, wellboreCanvas.height);
+      
+      // Draw cylindrical wellbore
+      ctx.fillStyle = '#f5f5f5';
+      ctx.fillRect(0, 0, wellboreCanvas.width/2, wellboreCanvas.height);
+      ctx.fillStyle = '#e0e0e0';
+      
+      const centerX = wellboreCanvas.width/4;
+      const centerY = wellboreCanvas.height/2;
+      const scale = 3; // Scale factor for visualization
+      
+      // Draw formation
+      ctx.fillStyle = '#d9edf7';
+      ctx.fillRect(centerX - 150, centerY - b*scale/2, 300, b*scale);
+      
+      // Draw wellbore
+      ctx.fillStyle = '#f8d7da';
+      ctx.fillRect(centerX - rw*scale, centerY - b*scale/2, rw*scale*2, b*scale);
+      
+      // Draw labels
+      ctx.fillStyle = '#333';
+      ctx.font = '14px Arial';
+      ctx.fillText('Cylindrical Wellbore', centerX - 70, 30);
+      ctx.fillText('rw = ' + rw.toFixed(1) + ' ft', centerX - 40, centerY + b*scale/2 + 30);
+      ctx.fillText('b = ' + b + ' ft', centerX - 40, centerY - b*scale/2 - 10);
+      
+      // Draw spherical wellbore
+      ctx.fillStyle = '#f5f5f5';
+      ctx.fillRect(wellboreCanvas.width/2, 0, wellboreCanvas.width/2, wellboreCanvas.height);
+      
+      const centerX2 = wellboreCanvas.width*3/4;
+      
+      // Draw formation (implied)
+      ctx.fillStyle = '#d9edf7';
+      ctx.beginPath();
+      ctx.arc(centerX2, centerY, 150, 0, Math.PI*2);
+      ctx.fill();
+      
+      // Draw spherical wellbore
+      ctx.fillStyle = '#f8d7da';
+      ctx.beginPath();
+      ctx.arc(centerX2, centerY, rsw*scale, 0, Math.PI*2);
+      ctx.fill();
+      
+      // Draw labels
+      ctx.fillStyle = '#333';
+      ctx.font = '14px Arial';
+      ctx.fillText('Equivalent Spherical Wellbore', centerX2 - 100, 30);
+      ctx.fillText('rsw = ' + rsw.toFixed(2) + ' ft', centerX2 - 50, centerY + rsw*scale + 30);
+      
+      // Draw arrows to show flow
+      ctx.strokeStyle = '#3498db';
+      ctx.lineWidth = 1;
+      
+      // Cylindrical flow arrows
+      for (let angle = 0; angle < Math.PI*2; angle += Math.PI/8) {
+        const startX = centerX + Math.cos(angle) * 120;
+        const startY = centerY + Math.sin(angle) * 120;
+        const endX = centerX + Math.cos(angle) * (rw*scale + 5);
+        const endY = centerY + Math.sin(angle) * (rw*scale + 5);
+        
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+        
+        // Arrow head
+        ctx.beginPath();
+        ctx.moveTo(endX, endY);
+        ctx.lineTo(endX - 5*Math.cos(angle-Math.PI/6), endY - 5*Math.sin(angle-Math.PI/6));
+        ctx.lineTo(endX - 5*Math.cos(angle+Math.PI/6), endY - 5*Math.sin(angle+Math.PI/6));
+        ctx.closePath();
+        ctx.fillStyle = '#3498db';
+        ctx.fill();
+      }
+      
+      // Spherical flow arrows
+      for (let angle1 = 0; angle1 < Math.PI*2; angle1 += Math.PI/8) {
+        for (let angle2 = -Math.PI/4; angle2 <= Math.PI/4; angle2 += Math.PI/4) {
+          const startX = centerX2 + Math.cos(angle1)*Math.cos(angle2) * 120;
+          const startY = centerY + Math.sin(angle1)*Math.cos(angle2) * 120;
+          const endX = centerX2 + Math.cos(angle1)*Math.cos(angle2) * (rsw*scale + 5);
+          const endY = centerY + Math.sin(angle1)*Math.cos(angle2) * (rsw*scale + 5);
+          
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(endX, endY);
+          ctx.stroke();
+          
+          // Arrow head
+          ctx.beginPath();
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX - 5*Math.cos(angle1-Math.PI/6)*Math.cos(angle2), endY - 5*Math.sin(angle1-Math.PI/6)*Math.cos(angle2));
+          ctx.lineTo(endX - 5*Math.cos(angle1+Math.PI/6)*Math.cos(angle2), endY - 5*Math.sin(angle1+Math.PI/6)*Math.cos(angle2));
+          ctx.closePath();
+          ctx.fillStyle = '#3498db';
+          ctx.fill();
+        }
+      }
+    }
+    
+    intervalSlider.addEventListener('input', drawWellbores);
+    radiusSlider.addEventListener('input', drawWellbores);
+    
+    // Type curve visualization
+    const typeCurveCanvas = document.getElementById('typeCurveCanvas');
+    const tcCtx = typeCurveCanvas.getContext('2d');
+    const skinSlider = document.getElementById('skinFactor');
+    const storageSlider = document.getElementById('storageFactor');
+    const skinValue = document.getElementById('skinValue');
+    const storageValue = document.getElementById('storageValue');
+    
+    function drawTypeCurves() {
+      const s = parseInt(skinSlider.value);
+      const cdIndex = parseInt(storageSlider.value);
+      const cdValues = [1, 10, 100, 1000, 10000];
+      const cd = cdValues[cdIndex-1];
+      
+      skinValue.textContent = s;
+      storageValue.textContent = cd;
+      
+      // Clear canvas
+      tcCtx.clearRect(0, 0, typeCurveCanvas.width, typeCurveCanvas.height);
+      
+      // Set up coordinate system (log-log)
+      const margin = 50;
+      const width = typeCurveCanvas.width - 2*margin;
+      const height = typeCurveCanvas.height - 2*margin;
+      
+      // Draw axes
+      tcCtx.strokeStyle = '#000';
+      tcCtx.lineWidth = 2;
+      tcCtx.beginPath();
+      tcCtx.moveTo(margin, margin);
+      tcCtx.lineTo(margin, margin + height);
+      tcCtx.lineTo(margin + width, margin + height);
+      tcCtx.stroke();
+      
+      // Draw axis labels
+      tcCtx.fillStyle = '#000';
+      tcCtx.font = '14px Arial';
+      tcCtx.fillText('tD (Dimensionless Time)', margin + width/2 - 80, margin + height + 30);
+      tcCtx.save();
+      tcCtx.translate(margin - 30, margin + height/2);
+      tcCtx.rotate(-Math.PI/2);
+      tcCtx.fillText('pD (Dimensionless Pressure)', 0, 0);
+      tcCtx.restore();
+      
+      // Draw log scale ticks
+      tcCtx.font = '12px Arial';
+      const logTicks = [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000];
+      const logTickPositionsX = logTicks.map(t => margin + width * (Math.log10(t) - Math.log10(0.001)) / (Math.log10(10000) - Math.log10(0.001)));
+      const logTickPositionsY = logTicks.map(t => margin + height - height * (Math.log10(t) - Math.log10(0.001)) / (Math.log10(10000) - Math.log10(0.001)));
+      
+      for (let i = 0; i < logTicks.length; i++) {
+        // X-axis ticks
+        tcCtx.beginPath();
+        tcCtx.moveTo(logTickPositionsX[i], margin + height);
+        tcCtx.lineTo(logTickPositionsX[i], margin + height + 5);
+        tcCtx.stroke();
+        tcCtx.fillText(logTicks[i], logTickPositionsX[i] - 15, margin + height + 20);
+        
+        // Y-axis ticks
+        tcCtx.beginPath();
+        tcCtx.moveTo(margin, logTickPositionsY[i]);
+        tcCtx.lineTo(margin - 5, logTickPositionsY[i]);
+        tcCtx.stroke();
+        tcCtx.fillText(logTicks[i], margin - 35, logTickPositionsY[i] + 5);
+      }
+      
+      // Draw grid lines
+      tcCtx.strokeStyle = '#ddd';
+      tcCtx.lineWidth = 1;
+      for (let i = 0; i < logTicks.length; i++) {
+        // Vertical grid lines
+        tcCtx.beginPath();
+        tcCtx.moveTo(logTickPositionsX[i], margin);
+        tcCtx.lineTo(logTickPositionsX[i], margin + height);
+        tcCtx.stroke();
+        
+        // Horizontal grid lines
+        tcCtx.beginPath();
+        tcCtx.moveTo(margin, logTickPositionsY[i]);
+        tcCtx.lineTo(margin + width, logTickPositionsY[i]);
+        tcCtx.stroke();
+      }
+      
+      // Function to convert actual values to pixel positions
+      function xToPixel(x) {
+        return margin + width * (Math.log10(x) - Math.log10(0.001)) / (Math.log10(10000) - Math.log10(0.001));
+      }
+      
+      function yToPixel(y) {
+        return margin + height - height * (Math.log10(y) - Math.log10(0.001)) / (Math.log10(10000) - Math.log10(0.001));
+      }
+      
+      // Draw type curves
+      
+      // Early time approximation: pwD = tD/CD
+      tcCtx.strokeStyle = '#3498db';
+      tcCtx.lineWidth = 2;
+      tcCtx.beginPath();
+      for (let tD = 0.001; tD <= cd; tD *= 1.5) {
+        const pwD = tD / cd;
+        if (tD === 0.001) {
+          tcCtx.moveTo(xToPixel(tD), yToPixel(pwD));
+        } else {
+          tcCtx.lineTo(xToPixel(tD), yToPixel(pwD));
+        }
+      }
+      tcCtx.stroke();
+      
+      // Late time approximation: pwD = 1 - 1/sqrt(π*tD) + s
+      tcCtx.strokeStyle = '#e74c3c';
+      tcCtx.beginPath();
+      for (let tD = cd; tD <= 10000; tD *= 1.2) {
+        const pwD = 1 - 1/Math.sqrt(Math.PI * tD) + s;
+        if (tD === cd) {
+          tcCtx.moveTo(xToPixel(tD), yToPixel(pwD));
+        } else {
+          tcCtx.lineTo(xToPixel(tD), yToPixel(pwD));
+        }
+      }
+      tcCtx.stroke();
+      
+      // Transition region (simplified approximation)
+      tcCtx.strokeStyle = '#2ecc71';
+      tcCtx.beginPath();
+      const transitionStart = cd * 0.1;
+      const transitionEnd = cd * 1.5;
+      for (let tD = transitionStart; tD <= transitionEnd; tD *= 1.2) {
+        const factor = (tD - transitionStart) / (transitionEnd - transitionStart);
+        const earlyPwD = tD / cd;
+        const latePwD = 1 - 1/Math.sqrt(Math.PI * tD) + s;
+        const pwD = earlyPwD * (1-factor) + latePwD * factor;
+        if (tD === transitionStart) {
+          tcCtx.moveTo(xToPixel(tD), yToPixel(pwD));
+        } else {
+          tcCtx.lineTo(xToPixel(tD), yToPixel(pwD));
+        }
+      }
+      tcCtx.stroke();
+      
+      // Add legend
+      tcCtx.font = '14px Arial';
+      tcCtx.fillStyle = '#3498db';
+      tcCtx.fillText('Early time (Wellbore storage)', margin + 20, margin + 20);
+      tcCtx.fillStyle = '#2ecc71';
+      tcCtx.fillText('Transition period', margin + 20, margin + 40);
+      tcCtx.fillStyle = '#e74c3c';
+      tcCtx.fillText('Late time (Spherical flow)', margin + 20, margin + 60);
+      tcCtx.fillStyle = '#000';
+      tcCtx.fillText(`Skin (s) = ${s}, Storage (CD) = ${cd}`, margin + 20, margin + 80);
+    }
+    
+    skinSlider.addEventListener('input', drawTypeCurves);
+    storageSlider.addEventListener('input', drawTypeCurves);
+    
+    // Spherical Flow Simulator/Game
+    const gameCanvas = document.getElementById('gameCanvas');
+    const gameCtx = gameCanvas.getContext('2d');
+    const flowRateSlider = document.getElementById('flowRate');
+    const permSlider = document.getElementById('permeability');
+    const gameSkinSlider = document.getElementById('gameSkin');
+    const flowValue = document.getElementById('flowValue');
+    const permValue = document.getElementById('permValue');
+    const gameSkinValue = document.getElementById('gameSkinValue');
+    const startTestButton = document.getElementById('startTest');
+    const resultsDiv = document.getElementById('results');
+    const estimatedPermSpan = document.getElementById('estimatedPerm');
+    const estimatedSkinSpan = document.getElementById('estimatedSkin');
+    const accuracySpan = document.getElementById('accuracy');
+    
+    let testRunning = false;
+    let testTime = 0;
+    let pressureData = [];
+    let animationId = null;
+    
+    function drawGame() {
+      const q = parseInt(flowRateSlider.value);
+      const k = parseInt(permSlider.value);
+      const s = parseInt(gameSkinSlider.value);
+      
+      flowValue.textContent = q + ' STB/D';
+      permValue.textContent = k + ' md';
+      gameSkinValue.textContent = s;
+      
+      // Clear canvas
+      gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+      
+      // Draw well and reservoir
+      const centerX = gameCanvas.width / 2;
+      const centerY = gameCanvas.height / 2;
+      const wellRadius = 10;
+      const reservoirRadius = 200;
+      
+      // Draw reservoir
+      const gradient = gameCtx.createRadialGradient(centerX, centerY, wellRadius, centerX, centerY, reservoirRadius);
+      gradient.addColorStop(0, '#f8d7da');
+      gradient.addColorStop(1, '#d9edf7');
+      gameCtx.fillStyle = gradient;
+      gameCtx.beginPath();
+      gameCtx.arc(centerX, centerY, reservoirRadius, 0, Math.PI*2);
+      gameCtx.fill();
+      
+      // Draw wellbore
+      gameCtx.fillStyle = '#721c24';
+      gameCtx.beginPath();
+      gameCtx.arc(centerX, centerY, wellRadius, 0, Math.PI*2);
+      gameCtx.fill();
+      
+      // Draw skin zone if present
+      if (s > 0) {
+        gameCtx.fillStyle = 'rgba(255, 193, 7, 0.5)';
+        gameCtx.beginPath();
+        gameCtx.arc(centerX, centerY, wellRadius + 10, 0, Math.PI*2);
+        gameCtx.fill();
+      }
+      
+      // Draw pressure profile if test is running
+      if (testRunning) {
+        // Draw pressure vs distance curve
+        gameCtx.strokeStyle = '#3498db';
+        gameCtx.lineWidth = 3;
+        gameCtx.beginPath();
+        
+        for (let r = wellRadius; r <= reservoirRadius; r += 2) {
+          // Simplified pressure calculation based on spherical flow
+          let p = 4264 - (q * 1.19 * 2.18 / (4 * Math.PI * k * r)) * (1 + s * (wellRadius/r));
+          if (testTime < 10) {
+            // Adjust for early time transient
+            p = 4264 - (q * 1.19 * 2.18 / (4 * Math.PI * k * r)) * (1 + s * (wellRadius/r)) * (1 - Math.exp(-testTime/10));
+          }
+          
+          const x = centerX + (r - wellRadius) * (gameCanvas.width/2 - 50) / (reservoirRadius - wellRadius);
+          const y = 50 + (4264 - p) * (gameCanvas.height - 100) / 1000;
+          
+          if (r === wellRadius) {
+            gameCtx.moveTo(x, y);
+          } else {
+            gameCtx.lineTo(x, y);
+          }
+        }
+        gameCtx.stroke();
+        
+        // Draw time indicator
+        gameCtx.fillStyle = '#333';
+        gameCtx.font = '16px Arial';
+        gameCtx.fillText(`Test time: ${testTime.toFixed(1)} hours`, 50, 30);
+        
+        // Record pressure data
+        if (testTime % 1 === 0 && testTime <= 72) {
+          // Calculate bottomhole pressure
+          const pwf = 4264 - (q * 1.19 * 2.18 / (4 * Math.PI * k * 3.33)) * (1 + s);
+          if (testTime < 10) {
+            // Adjust for early time transient and wellbore storage
+            const adjustedPwf = 4264 - (4264 - pwf) * (1 - Math.exp(-testTime/5));
+            pressureData.push({time: testTime, pressure: adjustedPwf});
+          } else {
+            pressureData.push({time: testTime, pressure: pwf});
+          }
+        }
+        
+        // Draw recorded data points
+        gameCtx.fillStyle = '#e74c3c';
+        for (const point of pressureData) {
+          const x = 50 + point.time * (gameCanvas.width - 100) / 72;
+          const y = 50 + (4264 - point.pressure) * (gameCanvas.height - 100) / 1000;
+          
+          gameCtx.beginPath();
+          gameCtx.arc(x, y, 5, 0, Math.PI*2);
+          gameCtx.fill();
+        }
+        
+        // End test after 72 hours
+        if (testTime >= 72) {
+          testRunning = false;
+          analyzeTest();
+        } else {
+          testTime += 0.1;
+        }
+      } else {
+        // Draw instructions
+        gameCtx.fillStyle = '#333';
+        gameCtx.font = '16px Arial';
+        gameCtx.fillText('Set reservoir and well parameters, then click "Run Test"', 50, 30);
+        gameCtx.fillText('to simulate a pressure drawdown test with spherical flow.', 50, 50);
+      }
+    }
+    
+    function analyzeTest() {
+      // Filter data to late time (after wellbore effects)
+      const lateTimeData = pressureData.filter(point => point.time >= 20);
+      
+      // Prepare data for 1/sqrt(t) plot
+      const plotData = lateTimeData.map(point => ({
+        invSqrtT: 1 / Math.sqrt(point.time),
+        pressure: point.pressure
+      }));
+      
+      // Linear regression for slope and intercept
+      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+      for (const point of plotData) {
+        sumX += point.invSqrtT;
+        sumY += point.pressure;
+        sumXY += point.invSqrtT * point.pressure;
+        sumX2 += point.invSqrtT * point.invSqrtT;
+      }
+      
+      const n = plotData.length;
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      
+      // Calculate permeability and skin
+      const q = parseInt(flowRateSlider.value);
+      const mu = 2.18;
+      const B = 1.19;
+      const phi = 0.08;
+      const ct = 12e-6;
+      const rsw = 3.33;
+      
+      const k_estimated = Math.pow((2454.26 * q * B * mu * Math.sqrt(phi * mu * ct)) / (-slope), 2/3);
+      const s_estimated = ((4264 - intercept) * k_estimated * rsw / (70.627 * q * B * mu)) - 1;
+      
+      // Calculate accuracy
+      const k_actual = parseInt(permSlider.value);
+      const s_actual = parseInt(gameSkinSlider.value);
+      
+      const k_accuracy = 100 * (1 - Math.abs(k_estimated - k_actual) / k_actual);
+      const s_accuracy = 100 * (1 - Math.abs(s_estimated - s_actual) / (s_actual + 1));
+      const overall_accuracy = (k_accuracy + s_accuracy) / 2;
+      
+      // Display results
+      estimatedPermSpan.textContent = k_estimated.toFixed(1);
+      estimatedSkinSpan.textContent = s_estimated.toFixed(2);
+      accuracySpan.textContent = overall_accuracy.toFixed(1);
+      resultsDiv.style.display = 'block';
+    }
+    
+    startTestButton.addEventListener('click', function() {
+      testRunning = true;
+      testTime = 0;
+      pressureData = [];
+      resultsDiv.style.display = 'none';
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      animate();
+    });
+    
+    function animate() {
+      drawGame();
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    // Initialize all visualizations
+    drawWellbores();
+    drawTypeCurves();
+    drawGame();
+  </script>
+</body>
+</html>

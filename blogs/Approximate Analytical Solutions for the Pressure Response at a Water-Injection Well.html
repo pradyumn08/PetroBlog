@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Pressure Response at Water-Injection Wells</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            margin-bottom: 1.2em;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .interactive-container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-container label {
+            display: inline-block;
+            width: 200px;
+        }
+        .slider {
+            width: 300px;
+        }
+        .chart-container {
+            height: 400px;
+            margin-top: 20px;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .equation-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .two-column {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .column {
+            flex: 1;
+            padding: 0 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            margin-top: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Fascinating World of Pressure Response at Water-Injection Wells</h1>
+    
+    <p>Have you ever wondered what happens beneath our feet when we inject water into an oil reservoir? Today, we're going to break down a complex academic paper on pressure response at water-injection wells using first principles. By the end of this post, you'll understand how engineers predict and analyze pressure changes when water is pumped into oil reservoirs – a critical process for enhanced oil recovery.</p>
+    
+    <div class="highlight">
+        <p>This blog post explores the paper "Approximate Analytical Solutions for the Pressure Response at a Water-Injection Well" by Boughrara et al., which presents mathematical models to predict pressure behavior when water is injected into oil reservoirs.</p>
+    </div>
+    
+    <h2>Why Understanding Injection Well Pressure Matters</h2>
+    
+    <p>Water injection is a common technique used to maintain reservoir pressure and displace oil toward production wells. But how do we know if the injection is working as intended? The pressure response at the injection well tells us crucial information about:</p>
+    
+    <ul>
+        <li>Reservoir permeability (how easily fluids flow through rock)</li>
+        <li>Potential damage around the wellbore</li>
+        <li>The movement of the water front as it displaces oil</li>
+        <li>Nearby geological features like faults</li>
+    </ul>
+    
+    <h2>The Core Concept: Two-Phase Flow</h2>
+    
+    <p>When water is injected into an oil reservoir, we're dealing with two-phase flow - water and oil moving through porous rock. The paper introduces a clever approach: split the pressure response into two components:</p>
+    
+    <ol>
+        <li>The single-phase solution (as if we were injecting oil into oil)</li>
+        <li>A two-phase term that accounts for the water front movement</li>
+    </ol>
+    
+    <p>This approach gives us analytical solutions that are much faster to calculate than running full numerical simulations.</p>
+    
+    <div class="equation-box">
+        <p>The general solution for the pressure change at an injection well is:</p>
+        <p>\[ p_{wf}-p_i = \Delta\hat{p}_o + \frac{\alpha q_{inj}}{kh\hat{\lambda}_o}\left[\left(\frac{k}{k_s}-1\right)\int_{r_w}^{r_s}\left(\frac{\hat{\lambda}_o}{\hat{\lambda}_t(r,t)}-1\right)\frac{h}{h(r)}\frac{dr}{r} + \int_{r_w}^{r_f(t)}\left(\frac{\hat{\lambda}_o}{\hat{\lambda}_t(r,t)}-1\right)\frac{h}{h(r)}\frac{dr}{r}\right] \]</p>
+        <p>Where:</p>
+        <ul>
+            <li>\( p_{wf} \) is the wellbore flowing pressure</li>
+            <li>\( p_i \) is the initial reservoir pressure</li>
+            <li>\( \Delta\hat{p}_o \) is the single-phase oil pressure solution</li>
+            <li>\( \hat{\lambda}_o \) is the endpoint oil mobility</li>
+            <li>\( \hat{\lambda}_t \) is the total mobility</li>
+            <li>\( r_f \) is the radius of the flood front</li>
+        </ul>
+    </div>
+    
+    <h2>Key Dimensionless Variables</h2>
+    
+    <p>To make the equations more universal, the authors use dimensionless variables. This is a common practice in engineering that helps us compare different scenarios regardless of specific units or scales.</p>
+    
+    <div class="equation-box">
+        <p>Dimensionless pressure change:</p>
+        <p>\[ p_D(r_D,t_D) = \frac{k\hat{\lambda}_oh(p(r,t)-p_i)}{\alpha q_{inj}} \]</p>
+        
+        <p>Dimensionless wellbore pressure change:</p>
+        <p>\[ p_{wD} = \frac{k\hat{\lambda}_oh(p_{wf}(t)-p_i)}{\alpha q_{inj}} \]</p>
+        
+        <p>Dimensionless radial distance:</p>
+        <p>\[ r_D = \frac{r}{r_w} \]</p>
+        
+        <p>Dimensionless time:</p>
+        <p>\[ t_D = \frac{\beta k\hat{\lambda}_ot}{\phi\hat{c}_{to}r_w^2} \]</p>
+    </div>
+    
+    <h2>Understanding Mobility: The Key to Two-Phase Flow</h2>
+    
+    <p>A crucial concept in the paper is "mobility," which determines how easily fluids flow through the reservoir. The total mobility is the sum of oil and water mobilities:</p>
+    
+    <div class="equation-box">
+        <p>\[ \lambda_t = \lambda_o + \lambda_w = \frac{k_{ro}(S_w)}{\mu_o} + \frac{k_{rw}(S_w)}{\mu_w} \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\( k_{ro} \) and \( k_{rw} \) are relative permeabilities to oil and water</li>
+            <li>\( \mu_o \) and \( \mu_w \) are oil and water viscosities</li>
+            <li>\( S_w \) is water saturation</li>
+        </ul>
+    </div>
+    
+    <p>The mobility ratio (\( \hat{M} \)) is particularly important:</p>
+    
+    <div class="equation-box">
+        <p>\[ \hat{M} = \frac{\hat{\lambda}_w}{\hat{\lambda}_o} = \frac{k_{rw}(S_w=1-S_{or})}{\mu_w}\frac{\mu_o}{k_{ro}(S_{iw})} \]</p>
+    </div>
+    
+    <p>When \( \hat{M} > 1 \) (unfavorable mobility ratio), the water moves more easily than oil, potentially leading to inefficient displacement. When \( \hat{M} < 1 \) (favorable mobility ratio), the displacement is more efficient.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Mobility Ratio Explorer</h3>
+        
+        <div class="slider-container">
+            <label for="oilViscosity">Oil Viscosity (cp): <span id="oilViscosityValue">5.1</span></label>
+            <input type="range" id="oilViscosity" class="slider" min="0.5" max="10" step="0.1" value="5.1">
+        </div>
+        
+        <div class="slider-container">
+            <label for="waterViscosity">Water Viscosity (cp): <span id="waterViscosityValue">0.516</span></label>
+            <input type="range" id="waterViscosity" class="slider" min="0.1" max="2" step="0.001" value="0.516">
+        </div>
+        
+        <div class="slider-container">
+            <label for="kro">Endpoint k<sub>ro</sub>: <span id="kroValue">0.75</span></label>
+            <input type="range" id="kro" class="slider" min="0.1" max="1" step="0.01" value="0.75">
+        </div>
+        
+        <div class="slider-container">
+            <label for="krw">Endpoint k<sub>rw</sub>: <span id="krwValue">0.2</span></label>
+            <input type="range" id="krw" class="slider" min="0.05" max="0.5" step="0.01" value="0.2">
+        </div>
+        
+        <div>
+            <p>Mobility Ratio (M): <span id="mobilityRatio">3.165</span></p>
+            <p>Mobility Condition: <span id="mobilityCondition">Unfavorable</span></p>
+        </div>
+        
+        <div class="note">
+            <p>Adjust the sliders to see how different fluid and rock properties affect the mobility ratio. A mobility ratio > 1 is unfavorable for displacement efficiency.</p>
+        </div>
+    </div>
+    
+    <h2>The Buckley-Leverett Equation: Tracking the Water Front</h2>
+    
+    <p>To determine where the water front is at any given time, the paper uses the Buckley-Leverett equation. This equation describes how the water saturation profile evolves during displacement.</p>
+    
+    <div class="equation-box">
+        <p>For radial flow with variable thickness:</p>
+        <p>\[ \int_{r_w}^{r(S_w)}rh(r)dr = \frac{\Theta q_{inj}t}{2\pi\phi}\frac{df_w(S_w)}{dS_w} \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\( r(S_w) \) is the radius at which saturation equals \( S_w \)</li>
+            <li>\( f_w \) is the fractional flow of water</li>
+            <li>\( \Theta \) is a unit conversion constant</li>
+        </ul>
+    </div>
+    
+    <p>For a complete-penetration vertical well, this simplifies to:</p>
+    
+    <div class="equation-box">
+        <p>\[ r^2(S_w) = r_w^2 + \frac{\Theta q_{inj}t}{\pi\phi h}\frac{df_w(S_w)}{dS_w} \]</p>
+    </div>
+    
+    <h2>Different Well Configurations</h2>
+    
+    <p>The paper analyzes several well configurations:</p>
+    
+    <h3>1. Complete-Penetration Vertical Well</h3>
+    
+    <p>This is the simplest case, where the well extends through the entire thickness of the reservoir. The pressure derivative (rate of change of pressure with respect to the logarithm of time) eventually stabilizes at:</p>
+    
+    <div class="equation-box">
+        <p>\[ \Delta p' = \frac{d(p_{wf}-p_i)}{d\ln(t)} = \frac{1}{2}\frac{\alpha q_{inj}}{k\hat{\lambda}_wh} \]</p>
+    </div>
+    
+    <h3>2. Restricted-Entry Vertical Well</h3>
+    
+    <p>Here, the well only penetrates part of the reservoir thickness. The paper introduces two models for water movement:</p>
+    
+    <ul>
+        <li><strong>Model 1:</strong> Water moves radially with height equal to the perforated interval until reaching a radius of convergence, then moves radially over the total thickness.</li>
+        <li><strong>Model 2:</strong> Water moves radially through a region of increasing thickness.</li>
+    </ul>
+    
+    <p>A fascinating finding is that for restricted-entry wells, the pressure derivative can remain negative throughout a long test period.</p>
+    
+    <h3>3. Vertical Well Near a Fault</h3>
+    
+    <p>When a vertical well is near a fault, the pressure derivative doesn't show the classical doubling of slope seen in single-phase flow. Instead, it increases by a factor of (1+M̂).</p>
+    
+    <h3>4. Horizontal Wells</h3>
+    
+    <p>For horizontal wells, the paper extends previous solutions to cases with unequal offsets from reservoir boundaries and anisotropic permeability.</p>
+    
+    <div class="interactive-container">
+        <h3>Interactive Well Configuration Simulator</h3>
+        
+        <div class="slider-container">
+            <label for="wellType">Well Type:</label>
+            <select id="wellType">
+                <option value="complete">Complete-Penetration Vertical Well</option>
+                <option value="restricted">Restricted-Entry Vertical Well</option>
+                <option value="fault">Vertical Well Near Fault</option>
+                <option value="horizontal">Horizontal Well</option>
+            </select>
+        </div>
+        
+        <div class="slider-container" id="penetrationRatioContainer" style="display: none;">
+            <label for="penetrationRatio">Penetration Ratio (b): <span id="penetrationRatioValue">0.345</span></label>
+            <input type="range" id="penetrationRatio" class="slider" min="0.1" max="1" step="0.01" value="0.345">
+        </div>
+        
+        <div class="slider-container" id="faultDistanceContainer" style="display: none;">
+            <label for="faultDistance">Distance to Fault (ft): <span id="faultDistanceValue">50</span></label>
+            <input type="range" id="faultDistance" class="slider" min="10" max="500" step="10" value="50">
+        </div>
+        
+        <div class="slider-container">
+            <label for="injectionTime">Injection Time (hours): <span id="injectionTimeValue">10</span></label>
+            <input type="range" id="injectionTime" class="slider" min="0.1" max="100" step="0.1" value="10">
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="pressureChart"></canvas>
+        </div>
+        
+        <div class="note">
+            <p>This simulator shows approximate pressure and pressure derivative responses for different well configurations. The actual mathematical model is more complex, but this gives you an intuitive understanding of the behavior.</p>
+        </div>
+    </div>
+    
+    <h2>Skin Factor: The Effect of Near-Wellbore Damage</h2>
+    
+    <p>The paper incorporates the skin factor to account for damage or stimulation around the wellbore. Unlike traditional approaches that use a "thin skin" assumption, the authors use Hawkins' formula for a "thick skin":</p>
+    
+    <div class="equation-box">
+        <p>\[ s = \left(\frac{k}{k_s}-1\right)\ln\left(\frac{r_s}{r_w}\right) \]</p>
+        
+        <p>Where:</p>
+        <ul>
+            <li>\( k_s \) is the permeability in the skin zone</li>
+            <li>\( r_s \) is the radius of the skin zone</li>
+        </ul>
+    </div>
+    
+    <p>A key insight from the paper is that even a small damaged zone (just a few inches thick) can dramatically affect the pressure response during the first few hours of injection.</p>
+    
+    <h2>Negative Pressure Derivative: A Counter-Intuitive Phenomenon</h2>
+    
+    <p>One of the most interesting findings in the paper is that the pressure derivative can be negative during water injection tests. This happens when:</p>
+    
+    <div class="equation-box">
+        <p>For a complete-penetration well with the flood front within the skin zone:</p>
+        <p>\[ \hat{M}\left(1-\frac{k_s}{k}\right) > 1 \]</p>
+        
+        <p>For a restricted-entry well:</p>
+        <p>\[ \hat{M}(1-b) > 1 \]</p>
+    </div>
+    
+    <p>This negative derivative is counter-intuitive because in traditional pressure transient analysis, we expect pressure derivatives to be positive. The paper explains that this occurs due to the interplay between mobility contrast and flow geometry.</p>
+    
+    <h2>Real-World Application: Analyzing Injection Tests</h2>
+    
+    <p>The analytical solutions provided in the paper are valuable for:</p>
+    
+    <ol>
+        <li>Quickly analyzing injection test data without running full numerical simulations</li>
+        <li>Understanding unusual pressure behaviors like negative derivatives</li>
+        <li>Determining reservoir properties and wellbore damage</li>
+        <li>Planning injection strategies for enhanced oil recovery</li>
+    </ol>
+    
+    <div class="interactive-container">
+        <h3>Injection Test Analyzer</h3>
+        
+        <p>Upload your injection test data or use our sample data to analyze the pressure response:</p>
+        
+        <div class="slider-container">
+            <label for="dataType">Data Source:</label>
+            <select id="dataType">
+                <option value="sample">Use Sample Data</option>
+                <option value="upload" disabled>Upload Data (Coming Soon)</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <label for="permeability">Permeability (md): <span id="permeabilityValue">350</span></label>
+            <input type="range" id="permeability" class="slider" min="10" max="1000" step="10" value="350">
+        </div>
+        
+        <div class="slider-container">
+            <label for="skinFactor">Skin Factor: <span id="skinFactorValue">0</span></label>
+            <input type="range" id="skinFactor" class="slider" min="-5" max="20" step="0.5" value="0">
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="analysisChart"></canvas>
+        </div>
+        
+        <div id="analysisResults">
+            <p>Estimated Parameters:</p>
+            <ul>
+                <li>Permeability: <span id="estimatedPerm">350</span> md</li>
+                <li>Skin Factor: <span id="estimatedSkin">0</span></li>
+                <li>Mobility Ratio: <span id="estimatedMobility">3.165</span></li>
+            </ul>
+        </div>
+    </div>
+    
+    <h2>Conclusion: The Power of Analytical Solutions</h2>
+    
+    <p>The paper by Boughrara et al. provides valuable analytical solutions for predicting pressure responses at water injection wells. These solutions:</p>
+    
+    <ul>
+        <li>Are much faster to compute than full numerical simulations</li>
+        <li>Provide insights into the physical processes occurring during water injection</li>
+        <li>Help explain counter-intuitive phenomena like negative pressure derivatives</li>
+        <li>Can be used to analyze real injection test data</li>
+    </ul>
+    
+    <p>By breaking down the complex problem into simpler components (single-phase solution plus two-phase effects), the authors have created practical tools that bridge the gap between theoretical understanding and practical application.</p>
+    
+    <div class="note">
+        <p>The next time you look at an injection well pressure test, remember that beneath the seemingly simple pressure curve lies a fascinating interplay of fluid dynamics, rock properties, and well geometry!</p>
+    </div>
+    
+    <script>
+        // Update display values for sliders
+        document.getElementById('oilViscosity').addEventListener('input', updateMobilityRatio);
+        document.getElementById('waterViscosity').addEventListener('input', updateMobilityRatio);
+        document.getElementById('kro').addEventListener('input', updateMobilityRatio);
+        document.getElementById('krw').addEventListener('input', updateMobilityRatio);
+        
+        function updateMobilityRatio() {
+            const oilViscosity = parseFloat(document.getElementById('oilViscosity').value);
+            const waterViscosity = parseFloat(document.getElementById('waterViscosity').value);
+            const kro = parseFloat(document.getElementById('kro').value);
+            const krw = parseFloat(document.getElementById('krw').value);
+            
+            document.getElementById('oilViscosityValue').textContent = oilViscosity.toFixed(2);
+            document.getElementById('waterViscosityValue').textContent = waterViscosity.toFixed(3);
+            document.getElementById('kroValue').textContent = kro.toFixed(2);
+            document.getElementById('krwValue').textContent = krw.toFixed(2);
+            
+            const mobilityRatio = (krw / waterViscosity) * (oilViscosity / kro);
+            document.getElementById('mobilityRatio').textContent = mobilityRatio.toFixed(3);
+            
+            if (mobilityRatio > 1) {
+                document.getElementById('mobilityCondition').textContent = 'Unfavorable';
+                document.getElementById('mobilityCondition').style.color = '#e74c3c';
+            } else {
+                document.getElementById('mobilityCondition').textContent = 'Favorable';
+                document.getElementById('mobilityCondition').style.color = '#2ecc71';
+            }
+        }
+        
+        // Well Configuration Simulator
+        const wellTypeSelect = document.getElementById('wellType');
+        const penetrationRatioContainer = document.getElementById('penetrationRatioContainer');
+        const faultDistanceContainer = document.getElementById('faultDistanceContainer');
+        
+        wellTypeSelect.addEventListener('change', function() {
+            penetrationRatioContainer.style.display = 'none';
+            faultDistanceContainer.style.display = 'none';
+            
+            if (this.value === 'restricted') {
+                penetrationRatioContainer.style.display = 'block';
+            } else if (this.value === 'fault') {
+                faultDistanceContainer.style.display = 'block';
+            }
+            
+            updatePressureChart();
+        });
+        
+        document.getElementById('penetrationRatio').addEventListener('input', function() {
+            document.getElementById('penetrationRatioValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        document.getElementById('faultDistance').addEventListener('input', function() {
+            document.getElementById('faultDistanceValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        document.getElementById('injectionTime').addEventListener('input', function() {
+            document.getElementById('injectionTimeValue').textContent = this.value;
+            updatePressureChart();
+        });
+        
+        // Create pressure chart
+        let pressureChart;
+        function initPressureChart() {
+            const ctx = document.getElementById('pressureChart').getContext('2d');
+            pressureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Pressure Change',
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            data: [],
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Pressure Derivative',
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            data: [],
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time (hours)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Pressure Change (psi)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updatePressureChart();
+        }
+        
+        function updatePressureChart() {
+            const wellType = wellTypeSelect.value;
+            const injectionTime = parseFloat(document.getElementById('injectionTime').value);
+            const timePoints = generateLogTimePoints(0.01, injectionTime, 50);
+            
+            // Generate pressure data based on well type
+            let pressureData = [];
+            let derivativeData = [];
+            
+            if (wellType === 'complete') {
+                // Complete-penetration vertical well
+                for (const t of timePoints) {
+                    pressureData.push(calculateCompletePenetrationPressure(t));
+                    derivativeData.push(calculateCompletePenetrationDerivative(t));
+                }
+            } else if (wellType === 'restricted') {
+                // Restricted-entry vertical well
+                const penetrationRatio = parseFloat(document.getElementById('penetrationRatio').value);
+                for (const t of timePoints) {
+                    pressureData.push(calculateRestrictedEntryPressure(t, penetrationRatio));
+                    derivativeData.push(calculateRestrictedEntryDerivative(t, penetrationRatio));
+                }
+            } else if (wellType === 'fault') {
+                // Vertical well near fault
+                const faultDistance = parseFloat(document.getElementById('faultDistance').value);
+                for (const t of timePoints) {
+                    pressureData.push(calculateFaultPressure(t, faultDistance));
+                    derivativeData.push(calculateFaultDerivative(t, faultDistance));
+                }
+            } else if (wellType === 'horizontal') {
+                // Horizontal well
+                for (const t of timePoints) {
+                    pressureData.push(calculateHorizontalPressure(t));
+                    derivativeData.push(calculateHorizontalDerivative(t));
+                }
+            }
+            
+            pressureChart.data.labels = timePoints;
+            pressureChart.data.datasets[0].data = pressureData;
+            pressureChart.data.datasets[1].data = derivativeData;
+            pressureChart.update();
+        }
+        
+        function generateLogTimePoints(start, end, count) {
+            const logStart = Math.log10(start);
+            const logEnd = Math.log10(end);
+            const step = (logEnd - logStart) / (count - 1);
+            
+            const points = [];
+            for (let i = 0; i < count; i++) {
+                points.push(Math.pow(10, logStart + i * step));
+            }
+            
+            return points;
+        }
+        
+        // Simplified model functions for demonstration purposes
+        function calculateCompletePenetrationPressure(t) {
+            // Simplified model based on paper equations
+            const M = 3.165; // Mobility ratio
+            return 100 * Math.log10(t) + 50;
+        }
+        
+        function calculateCompletePenetrationDerivative(t) {
+            // Simplified derivative model
+            const M = 3.165; // Mobility ratio
+            if (t < 1) {
+                return 100 * (1 - 0.5 * Math.exp(-t));
+            } else {
+                return 100 / M;
+            }
+        }
+        
+        function calculateRestrictedEntryPressure(t, b) {
+            // Simplified model for restricted entry
+            const M = 3.165; // Mobility ratio
+            return (100 * Math.log10(t) + 50) * (1 + (1 - b) * 0.5);
+        }
+        
+        function calculateRestrictedEntryDerivative(t, b) {
+            // Simplified derivative model for restricted entry
+            const M = 3.165; // Mobility ratio
+            
+            // If M(1-b) > 1, we can have negative derivative
+            if (M * (1 - b) > 1) {
+                return -50 + 100 * Math.tanh(t/5);
+            } else {
+                return 100 / (b * M) * (1 - 0.5 * Math.exp(-t));
+            }
+        }
+        
+        function calculateFaultPressure(t, d) {
+            // Simplified model for well near fault
+            const M = 3.165; // Mobility ratio
+            const td = 0.0002637 * 350 * t / (0.22 * 0.00000563 * 0.35 * 0.35); // Dimensionless time
+            const td_fault = 0.0002637 * 350 * d * d / (0.22 * 0.00000563 * 0.35 * 0.35); // Time when fault effect appears
+            
+            if (td < td_fault / 10) {
+                return 100 * Math.log10(t) + 50;
+            } else {
+                return 100 * Math.log10(t) + 50 + 50 * Math.log10(1 + td/td_fault);
+            }
+        }
+        
+        function calculateFaultDerivative(t, d) {
+            // Simplified derivative model for well near fault
+            const M = 3.165; // Mobility ratio
+            const td = 0.0002637 * 350 * t / (0.22 * 0.00000563 * 0.35 * 0.35); // Dimensionless time
+            const td_fault = 0.0002637 * 350 * d * d / (0.22 * 0.00000563 * 0.35 * 0.35); // Time when fault effect appears
+            
+            if (td < td_fault / 100) {
+                return 100; // Early time - oil mobility
+            } else if (td < td_fault / 10) {
+                return 100 / M; // Intermediate time - water mobility
+            } else {
+                return 100 / M * (1 + M) * (td_fault / (td_fault + td) + td / (td_fault + td)); // Late time - fault effect
+            }
+        }
+        
+        function calculateHorizontalPressure(t) {
+            // Simplified model for horizontal well
+            return 75 * Math.log10(t) + 40;
+        }
+        
+        function calculateHorizontalDerivative(t) {
+            // Simplified derivative model for horizontal well
+            if (t < 0.1) {
+                return 150; // Early radial flow
+            } else if (t < 1) {
+                return 75; // Linear flow
+            } else {
+                return 37.5; // Late radial flow
+            }
+        }
+        
+        // Analysis chart
+        let analysisChart;
+        function initAnalysisChart() {
+            const ctx = document.getElementById('analysisChart').getContext('2d');
+            
+            // Generate sample data
+            const timePoints = generateLogTimePoints(0.01, 100, 50);
+            const samplePressure = timePoints.map(t => calculateCompletePenetrationPressure(t));
+            const sampleDerivative = timePoints.map(t => calculateCompletePenetrationDerivative(t));
+            
+            analysisChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Pressure Data',
+                            borderColor: '#3498db',
+                            backgroundColor: '#3498db',
+                            data: timePoints.map((t, i) => ({ x: t, y: samplePressure[i] })),
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Pressure Derivative',
+                            borderColor: '#e74c3c',
+                            backgroundColor: '#e74c3c',
+                            data: timePoints.map((t, i) => ({ x: t, y: sampleDerivative[i] })),
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Model Pressure',
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            data: timePoints.map((t, i) => ({ x: t, y: samplePressure[i] })),
+                            type: 'line',
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Model Derivative',
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            data: timePoints.map((t, i) => ({ x: t, y: sampleDerivative[i] })),
+                            type: 'line',
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Time (hours)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Pressure Change (psi)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('permeability').addEventListener('input', function() {
+            document.getElementById('permeabilityValue').textContent = this.value;
+            document.getElementById('estimatedPerm').textContent = this.value;
+            updateAnalysisChart();
+        });
+        
+        document.getElementById('skinFactor').addEventListener('input', function() {
+            document.getElementById('skinFactorValue').textContent = this.value;
+            document.getElementById('estimatedSkin').textContent = this.value;
+            updateAnalysisChart();
+        });
+        
+        function updateAnalysisChart() {
+            const permeability = parseFloat(document.getElementById('permeability').value);
+            const skin = parseFloat(document.getElementById('skinFactor').value);
+            
+            // Update model lines based on parameters
+            const timePoints = generateLogTimePoints(0.01, 100, 50);
+            const modelPressure = timePoints.map(t => calculateModelPressure(t, permeability, skin));
+            const modelDerivative = timePoints.map(t => calculateModelDerivative(t, permeability, skin));
+            
+            analysisChart.data.datasets[2].data = timePoints.map((t, i) => ({ x: t, y: modelPressure[i] }));
+            analysisChart.data.datasets[3].data = timePoints.map((t, i) => ({ x: t, y: modelDerivative[i] }));
+            analysisChart.update();
+        }
+        
+        function calculateModelPressure(t, k, s) {
+            // Simplified model with permeability and skin
+            const base = calculateCompletePenetrationPressure(t);
+            return base * (350 / k) + s * 20;
+        }
+        
+        function calculateModelDerivative(t, k, s) {
+            // Simplified derivative with permeability and skin
+            const base = calculateCompletePenetrationDerivative(t);
+            return base * (350 / k);
+        }
+        
+        // Initialize charts when the page loads
+        window.onload = function() {
+            updateMobilityRatio();
+            initPressureChart();
+            initAnalysisChart();
+        };
+    </script>
+</body>
+</html>
