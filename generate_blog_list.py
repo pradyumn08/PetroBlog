@@ -1,23 +1,39 @@
+#!/usr/bin/env python3
 import os
 import json
 
-blogs_dir = 'blogs'
-html_files = []
+BLOGS_DIR  = 'blogs'
+OUTPUT_FILE = 'blogs.json'
 
-# Check if the blogs directory exists
-if os.path.isdir(blogs_dir):
-    # Walk through the blogs directory
-    for file in os.listdir(blogs_dir):
-        # Check if the file is an HTML file
-        if file.endswith('.html'):
-            # Prepend the directory to the filename for the correct path
-            html_files.append(os.path.join(blogs_dir, file))
+def make_title(path):
+    # Derive a human-readable title from the filename
+    name = os.path.splitext(os.path.basename(path))[0]
+    return name.replace('-', ' ').replace('_', ' ').strip()
 
-# Sort the files alphabetically for consistent ordering
-html_files.sort()
+def main():
+    if not os.path.isdir(BLOGS_DIR):
+        print(f"Error: directory '{BLOGS_DIR}' not found.")
+        return 1
 
-# Write the list of HTML files to a JSON file
-with open('blogs.json', 'w') as f:
-    json.dump(html_files, f, indent=4)
+    entries = []
+    for fname in sorted(os.listdir(BLOGS_DIR), key=str.lower):
+        if not fname.lower().endswith('.html'):
+            continue
+        url   = os.path.join(BLOGS_DIR, fname).replace(os.sep, '/')
+        title = make_title(url)
+        entries.append({
+            "title": title,
+            "url":   url
+        })
 
-print(f"Successfully generated blogs.json with {len(html_files)} files from the '{blogs_dir}' directory.")
+    # Wrap under the "blogs" key so old JS (data.blogs) continues working
+    output = { "blogs": entries }
+
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
+    print(f"Generated {OUTPUT_FILE} with {len(entries)} entries.")
+    return 0
+
+if __name__ == "__main__":
+    exit(main())
