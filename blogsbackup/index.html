@@ -446,15 +446,16 @@
                         blogListContainer.innerHTML = '<p>No articles found.</p>';
                         return;
                     }
-                    blogsToDisplay.forEach(blog => {
+                    blogsToDisplay.forEach(blogPath => {
                         const tile = document.createElement('div');
                         tile.className = 'tile';
-                        tile.dataset.url = blog.url;
-                        tile.onclick = () => loadBlog(blog.url);
+                        tile.dataset.url = blogPath;
+                        tile.onclick = () => loadBlog(blogPath);
 
                         const title = document.createElement('h5');
                         title.className = 'tile-title';
-                        title.textContent = blog.title;
+                        const titleText = blogPath.split('/').pop().replace('.html', '').replace(/-/g, ' ');
+                        title.textContent = titleText.charAt(0).toUpperCase() + titleText.slice(1);
 
                         tile.appendChild(title);
                         blogListContainer.appendChild(tile);
@@ -466,7 +467,7 @@
                     document.querySelector(`#alphabet-nav .btn[data-letter='${letter}']`).classList.add('active');
                     const filtered = (letter === 'All') 
                         ? allBlogs 
-                        : allBlogs.filter(blog => blog.title.toUpperCase().startsWith(letter));
+                        : allBlogs.filter(blogPath => blogPath.split('/').pop().toUpperCase().startsWith(letter));
                     displayBlogs(filtered);
                 }
 
@@ -483,7 +484,7 @@
                             throw new Error('Invalid or empty blog list format.');
                         }
                         allBlogs = data.blogs;
-                        const uniqueFirstLetters = [...new Set(allBlogs.map(blog => blog.title.charAt(0).toUpperCase()))].sort();
+                        const uniqueFirstLetters = [...new Set(allBlogs.map(blog => blog.split('/').pop().charAt(0).toUpperCase()))].sort();
 
                         let buttonsHTML = '<button class="btn btn-outline-secondary m-1 active" data-letter="All">All</button>';
                         buttonsHTML += uniqueFirstLetters.map(letter =>
