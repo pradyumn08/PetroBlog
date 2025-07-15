@@ -1,9 +1,13 @@
 name: Update Blog List
 
+# Grant the built-in GITHUB_TOKEN write access to repo contents
+permissions:
+  contents: write
+
 on:
   push:
     branches:
-      - main  # Or your default branch
+      - main
     paths:
       - '**.html'
 
@@ -12,7 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
+        # persist-credentials: true is the default, but being explicit can help
         uses: actions/checkout@v3
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
